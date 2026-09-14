@@ -2,7 +2,7 @@
 
 A local-first, Git-native project and context management system, built around a reusable Go core and delivered first as a CLI. Jira and GitHub connections are optional. Future TUI and web interfaces use the same application services.
 
-This document records the intended product and bootstrap plan. The product is not implemented yet. Its name, permanent record schema, package layout, and interface libraries remain open.
+This document records the intended product and bootstrap plan. The product is not implemented yet. Its name, work-item schema, package layout, and interface libraries remain open.
 
 ## Independent configuration choices
 
@@ -14,6 +14,14 @@ This document records the intended product and bootstrap plan. The product is no
 | Interface | CLI first, then TUI, web, and API access to the same core |
 
 These are configurations of one product. A tracker choice does not determine record location. Adding an interface does not require moving records.
+
+## Record format direction
+
+[Open Knowledge Format (OKF) v0.2](https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/ad30107c31c06aec8a7d5636e0d1058118604e6f/SPEC.md) is the preferred format for authored project records. The link pins the specification examined during design.
+
+Work-state conventions remain open. The [bundle-boundary decision](adr/0001-one-okf-bundle-per-project.md) defines project identity and grouping. The [relationship representation](adr/0002-work-relationships-in-markdown-sections.md) defines links between work records.
+
+Managed work records use OKF. The first reader also accepts explicitly linked plain Markdown context sources outside the OKF bundle.
 
 ## Product constraints
 
@@ -53,7 +61,23 @@ The bootstrap layout is temporary. A later importer can translate it when the pr
 
 ## First milestone
 
-Given a project directory and a local ticket, assemble context containing the ticket, its dependencies, and explicitly linked project documents.
+Given an explicit project directory and ticket path, assemble context containing the ticket, its dependencies, and explicitly linked project documents. The project directory locates records and need not be a Git root.
+
+The result includes the source text, file path, and reason for inclusion for each selected record.
+
+Read records as they currently exist on disk, including uncommitted edits and new files.
+
+The caller supplies allowed source directories for context files outside the OKF bundle.
+
+A work item can contain its own requirements and acceptance criteria. Its Spec section is optional. A broken link in a present Spec section makes the result incomplete.
+
+Follow blockers recursively and include each selected ticket's Spec and Context links. Include each file once. Other links in document prose remain references.
+
+Report dependency cycles as warnings. A result with all selected sources present remains complete and returns success.
+
+If a selected file is missing or unreadable, return the available context marked incomplete, with diagnostics and a nonzero exit status. Context completeness is separate from OKF document validity.
+
+Limits on file count and total source bytes are configurable. Include whole files within the limits. Report omissions explicitly and return an incomplete result with a nonzero exit status.
 
 Use explicit links and predictable selection rules. Keep the first milestone read-only. Include a second fixture project to expose assumptions that the current repository is always the project. Establish structured output and clear noninteractive errors early.
 
