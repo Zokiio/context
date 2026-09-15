@@ -4,6 +4,18 @@ A local-first, Git-native project and context management system, built around a 
 
 This document records the intended product and bootstrap plan. The product is not implemented yet. Its name, work-item schema, package layout, and interface libraries remain open.
 
+## Problem and responsibility
+
+Agent sessions lose project context, and their work can diverge from agreed goals and architectural boundaries. Humans compensate by repeating decisions, reconstructing project state, and manually maintaining status reports. The product makes project understanding durable and actionable so humans can direct several agents without reconstructing that understanding for each session.
+
+The product first owns project records, context assembly, and queries about ready work, blockers, and inconsistencies. Agent runners can use those operations. Launching agents, assigning tasks to them, and managing their execution remain a separate, later capability.
+
+The first user is the project's author. A possible next pilot is a small team working in a smaller monorepo within an enterprise. The solo workflow comes first; the pilot can test shared conventions and project boundaries in an existing repository.
+
+Workflows share a small foundation: explicit intent, linked work, acceptance criteria, and completion evidence. Lifecycle stages and additional requirements are configurable. This describes the intended workflow foundation; the first milestone below remains read-only context assembly.
+
+When implementation conflicts with agreed goals or architectural boundaries, an agent records the discovery and proposes a revision. A human decides whether to change those commitments before the agent proceeds on the revised basis. This keeps disagreement visible instead of allowing an agent to rewrite the commitments to match its implementation.
+
 ## Independent configuration choices
 
 | Concern | Intended support |
@@ -45,9 +57,57 @@ Managed work records use OKF. The first reader also accepts explicitly linked pl
 
 Start with native tracking and links to external issues. Add synchronization only with declared field ownership.
 
+After the local reader, add read-only Jira retrieval as an early follow-up for the first user's pilot. Retrieve parent relationships and expose source freshness. Propose ticket edits locally until write-back is explicitly supported.
+
 In record-owned mode, the connector publishes designated fields from the project record. In tracker-owned mode, local copies of designated fields are identified as snapshots, and edits go through the connector. Freshness remains visible. A remote completed state does not override failed local readiness checks.
 
+Projects can configure pickup triggers using tracker labels, keywords, assignment, or other supported signals. Rules support all-condition and any-condition combinations, and selection reports which rule matched. A matching trigger makes a work item a candidate for pickup; it does not establish readiness or permission to start.
+
+Readiness requires explicit acceptance criteria, available required context, satisfied dependencies, and no unresolved decision marked as blocking. Report unmet conditions separately from the matching pickup trigger.
+
+Pickup triggers are entry conditions. If a trigger stops matching during active work, flag the change for review. Pausing or cancelling active work requires an explicit signal.
+
+Projects configure how to handle work that matches a pickup trigger but is not ready: warn only, or allow an agent to investigate and propose missing information. Preparation does not authorize implementation. Implementation waits until readiness conditions are satisfied, and proposed changes to agreed goals or architectural boundaries still require a human decision.
+
+Default to warn only. Projects can enable preparation assistance, and individual work items can override the project setting.
+
+## Work claims
+
+Track one active implementation claim per work item. Agent runners acquire the claim before starting implementation; supporting reviewers and researchers can work under that claim. Keep the claim separate from the human assignee in an external tracker so agent pickup preserves human responsibility for the ticket.
+
+Claiming work is a coordination operation exposed to agent runners. It does not require the product to launch agents or manage their execution, and it is outside the first read-only milestone.
+
+Before implementation, the agent refreshes context, rechecks readiness, and acquires the implementation claim. It continues within the agreed scope and surfaces discoveries that require changing goals or architectural boundaries.
+
+Initially guarantee exclusive claims among agents on one machine. Cross-machine exclusivity requires a shared claim authority; synchronizing Git checkouts alone cannot guarantee it.
+
+Mark a claim stale after missed check-ins. Initially require explicit takeover, preserving the previous handoff and checking unfinished changes before continuing. A stale claim does not prove that the original agent has stopped.
+
+## Verification and development deployment
+
+Associate verification evidence with acceptance criteria and the code revision tested. Distinguish local checks from tests in a development environment, and show untested criteria explicitly. Passing local tests does not establish successful configuration delivery to a device.
+
+Project policy defines whether development deployment is preauthorized or requires a human decision. The workflow skill checks that policy and records the target environment and deployed revision. Where deployment restrictions require enforcement, use deployment tooling or access controls; a skill instruction alone is insufficient.
+
+## Review, merge, and completion
+
+Prepare a review summary linking the intended outcome, code changes, acceptance evidence, unresolved concerns, and accepted design changes. Keep automated review findings distinct from a teammate's approval.
+
+Preserve evidence and approvals against their original revisions. When code changes, mark them as needing reassessment for the new revision. Project policy determines which checks and approvals must be renewed.
+
+Default to the user merging after required checks and teammate approval. Merge authorization is configurable. After merge, record the merged revision and evaluate completion against the subtask's acceptance criteria. Completing the subtask does not complete its parent work item.
+
 ## Bootstrap workflow
+
+### Agent execution model
+
+Use workflow skills inside an existing coding-agent environment, backed by the shared CLI. The agent environment runs the model and provides tools for code inspection, edits, and tests. Skills guide grooming, implementation, and handoffs. The Go core owns context assembly, record validation, readiness, and later safe writes and claims.
+
+Skills initially read and update repository files directly. As CLI operations become available, skills use them for consistent selection, validation, and writes. Add optional hooks for specific checks at supported points in the agent environment. Defer a custom agent runtime until the product needs to launch, pause, or directly supervise agents.
+
+Skill instructions guide behavior but cannot guarantee compliance. Managed CLI operations can reject invalid record changes or conflicting claims; they cannot prevent application-code edits outside those operations. Hooks cover only the execution paths they intercept and cannot establish that an agent understood an architectural decision. Initially, waiting for readiness is a workflow rule backed by checked operations. Strict enforcement would require control over the relevant execution path.
+
+### Adoption stages
 
 Use the installed Matt Pocock skills to plan, specify, implement, review, and hand off work. Keep persistent context in repository files. The conventions for authoritative specs and tickets live in [Issue tracker](agents/issue-tracker.md).
 
@@ -83,7 +143,41 @@ Use explicit links and predictable selection rules. Keep the first milestone rea
 
 Jira synchronization, a TUI, a web interface, and autonomous agent scheduling are later work. They are not prerequisites for this milestone.
 
+## After the first milestone
+
+The next milestone is session orientation: project goals, current commitments, ready work, and unresolved decisions. It helps a fresh agent identify suitable work before requesting detailed task context.
+
+Alongside read-only Jira retrieval, extend task context to include requirements and acceptance criteria from the work item's parent chain, identifying their sources. Include sibling work only through explicit relevant relationships. Parent-chain selection extends the first reader's blocker and document-link rules; its local representation remains to be specified. Until then, link parent requirements explicitly as context for the local reader.
+
+Parent acceptance criteria provide context; they do not automatically become the subtask's acceptance criteria. Each subtask defines the criteria for its own contribution. Completing a backend subtask does not establish that the entire device feature works.
+
+Grooming produces a reviewable proposal with affected components, investigation findings, open questions, and suggested ticket splits. Unverified design choices remain proposals. The user decides which questions to take to colleagues and which ticket changes to accept.
+
+Grooming also proposes missing context links with reasons. Accepted links become part of the project record for subsequent sessions. Context completeness continues to mean that all selected sources are present, not that every relevant source has been identified.
+
+Continue independent investigation while questions remain unanswered. Record which decisions depend on each answer, and pause only work that would require guessing. Prepare questions for colleagues with relevant findings, options, and what the answer unblocks. The user chooses whether and where to send them, then brings back answers to record with their sources.
+
+Propose ticket splits around independently verifiable outcomes or separate ownership and dependencies. Keep tightly coupled changes together. Each proposed ticket identifies its outcome, acceptance criteria, and blockers.
+
+When requirements change during implementation, flag the older requirement revision used by the active work and reassess the affected work. Retain that revision so the agent can explain the change and propose an adjustment.
+
+Support interrupted work with a durable handoff that records completed work, unfinished work, relevant code revisions, verification results, and unresolved questions. A replacement agent checks current state before relying on the handoff.
+
+Agents save progress after meaningful decisions, completed steps, and verification results so recovery does not depend on a session ending normally. Capture enough to resume the work without preserving the whole conversation.
+
+During discovery, agents propose focused record updates as conclusions emerge. Confirmed goals and decisions become authoritative; unresolved ideas remain discovery material. Retain references to source conversations or documents when available.
+
+Begin inconsistency detection with deterministic checks for broken links, missing required information, and absent or outdated evidence. Later agent-assisted reviews can identify contradictions between code and prose. Present those findings separately from mechanically verified failures.
+
 ## Broader acceptance scenario
+
+### First user's working scenario
+
+A product owner assigns work to enable Wi-Fi on a device. The user owns a backend subtask for delivering configuration to that device. The subtask may lack enough detail to implement directly. Grooming can require questions to colleagues and code investigation to establish the scope, including possible changes across services, APIs, and infrastructure such as an event queue. The user may split the work into smaller tickets.
+
+Implementation includes code changes and tests, possibly deployment to a live development environment for testing, followed by a teammate's review before merging to main. This scenario describes the user's workflow; it does not add Jira integration, deployment, or agent execution to the first read-only milestone.
+
+### Project arrangements
 
 Create a project inside an application repository and manage a complete task natively. Register that project in a workspace alongside another project. Continue using the same records without copying or migrating them. Attach an external issue to one project while the other continues to work independently.
 
