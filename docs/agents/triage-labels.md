@@ -1,6 +1,6 @@
 # Triage labels
 
-Use this mapping when a skill names a triage role. The local tracker records the role in a ticket's `Status:` line.
+Use this mapping when a skill names a triage role. Implementation tickets record the role in their YAML frontmatter `triage` field. Plain Markdown bootstrap specs retain their `Status:` line. Wayfinding execution states are separate, as defined in [Issue tracker](issue-tracker.md).
 
 | Canonical role | Label in this tracker | Meaning |
 | --- | --- | --- |
