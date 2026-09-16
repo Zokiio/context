@@ -27,13 +27,23 @@ _Avoid_: Project, record store
 **Work item**:
 A unit of work tracked within a project. It can carry its own requirements and acceptance criteria or refer to a separate specification.
 
+**Current commitment**:
+Work the project has explicitly chosen to deliver, including work that has not started.
+
+**Execution state**:
+A work item's recorded progress: unstarted, in progress, completed, or cancelled. Execution state is separate from work readiness and evidence that the acceptance criteria are satisfied.
+_Avoid_: Triage role, document lifecycle
+
 **Pickup trigger**:
 A project-configured condition that identifies a work item as a candidate for pickup.
 _Avoid_: Work readiness, assignment, permission to start
 
 **Work readiness**:
-Whether a work item has explicit acceptance criteria, available required context, satisfied dependencies, and no unresolved decision marked as blocking.
-_Avoid_: Pickup trigger, workflow state, assignment, permission to start
+Whether a work item has explicit acceptance criteria, available required context, satisfied dependencies, and no unresolved decision marked as blocking. The result is ready when all required checks pass, blocked when a known condition prevents starting, or unknown when missing information prevents a decision.
+_Avoid_: Pickup trigger, execution state, assignment, permission to start
+
+**Blocking decision**:
+An unresolved choice explicitly linked as a blocker of a work item. Its effect on readiness applies to the linked work items.
 
 **Implementation claim**:
 The record identifying the agent responsible for active implementation of a work item. A work item has at most one active implementation claim, distinct from its human assignment.
@@ -50,6 +60,9 @@ A checkable condition that a work item must satisfy to be accepted.
 
 **Completion evidence**:
 Recorded results or observations that support a claim that a work item satisfies its acceptance criteria. Evidence retains its origin and the revision it concerns.
+
+**Acceptance decision**:
+A recorded conclusion that a work item's acceptance criteria are satisfied, identifying the criteria, supporting completion evidence, and tested revision. Its author and any human approval remain separately identifiable.
 
 **Task context**:
 The source content selected for one work item, with the origin of each included record and the reason for its inclusion.
