@@ -3,7 +3,7 @@ type: WorkItem
 id: 18a3d758-2b28-48d7-a05c-e4ffc225fb8e
 title: "Connect existing records through setup"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Connect existing records through setup
@@ -38,3 +38,7 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+2026-09-17: Implementation claimed by Codex subagent `/root/configuration_pr_review`, coordinated by `/root`, on `feat/discovery-setup` after complete task context and passing readiness checks at `39483dd`. The setup core reuses the reviewed implementation from `baa1a3e` and corrects preservation of tagged metadata and unrelated YAML alias values before CLI integration.
