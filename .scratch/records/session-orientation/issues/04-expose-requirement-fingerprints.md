@@ -52,8 +52,11 @@ None
 
 ## Comments
 
+Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/04-fingerprints-20260916.md)
+
 - Verified all 11 criteria. [Immutable verification evidence](../../../session-orientation/evidence/04-fingerprints.md) retains the actual tested source identity and results.
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/04-fingerprints-20260916.md)
+- [Current acceptance](../acceptances/04-authoring-reassessment-20260916.md)

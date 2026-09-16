@@ -66,6 +66,9 @@ func (e *evaluator) selectSources() {
 				e.selectSource(r, section.Start, link)
 			}
 		}
+		if r.kind == "WorkItem" {
+			e.selectAcceptanceSources(r)
+		}
 	}
 }
 
@@ -172,6 +175,7 @@ func (e *evaluator) presentWorkItem(r *record) {
 	work.IdentityAmbiguous = r.ambiguous
 	work.Triage = e.enumField(r, "triage", "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "wontfix")
 	work.Execution = e.enumField(r, "execution", "unstarted", "in-progress", "completed", "cancelled")
+	work.Acceptance = e.evaluateAcceptance(r)
 	committed := false
 	if e.result.Project != nil && e.result.Project.CommitmentsKnown && !r.ambiguous {
 		work.Committed = &committed

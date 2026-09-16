@@ -47,7 +47,7 @@ func TestWorkInventoryAndCommitments(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !got.Complete || !got.InventoryComplete || len(got.WorkItems) != 4 || len(got.Shortlist) != 1 {
+	if got.Complete || !hasCode(got, "invalid_current_acceptance") || !got.InventoryComplete || len(got.WorkItems) != 4 || len(got.Shortlist) != 1 {
 		t.Fatalf("inventory: %+v", got)
 	}
 	if len(got.Goals) != 2 || len(got.Goals[1].References) != 1 || got.Goals[1].References[0].Link != "goal.md#direction" {
@@ -80,7 +80,7 @@ func TestWorkInventoryAndCommitments(t *testing.T) {
 		t.Fatalf("sources: %+v", got.Sources)
 	}
 	for _, d := range got.Diagnostics {
-		if d.Code != "unsupported_check" {
+		if d.Code != "invalid_current_acceptance" {
 			t.Fatalf("unexpected diagnostic: %+v", d)
 		}
 	}

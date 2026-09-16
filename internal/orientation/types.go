@@ -91,8 +91,44 @@ type Finding struct {
 }
 
 type AcceptanceSummary struct {
-	Status string     `json:"status"`
-	Record *Reference `json:"record"`
+	Status             string          `json:"status"`
+	CheckStatus        string          `json:"checkStatus"`
+	Record             *Reference      `json:"record"`
+	Actor              *Actor          `json:"actor"`
+	DecidedAt          *string         `json:"decidedAt"`
+	TestedRevision     *TestedRevision `json:"testedRevision"`
+	FingerprintVersion *int            `json:"fingerprintVersion"`
+	TicketSHA256       *string         `json:"ticketSHA256"`
+	CriteriaSHA256     *string         `json:"criteriaSHA256"`
+	HumanApprovals     []HumanApproval `json:"humanApprovals"`
+	Requirements       []Snapshot      `json:"requirements"`
+	Evidence           []Snapshot      `json:"evidence"`
+	Reasons            []Finding       `json:"reasons"`
+	Metadata           map[string]any  `json:"metadata"`
+}
+
+type Actor struct {
+	Kind     string `json:"kind"`
+	Identity string `json:"identity"`
+}
+
+type TestedRevision struct {
+	Origin   string `json:"origin"`
+	Revision string `json:"revision"`
+}
+
+type HumanApproval struct {
+	Actor          *Actor          `json:"actor"`
+	DecidedAt      *string         `json:"decidedAt"`
+	TestedRevision *TestedRevision `json:"testedRevision"`
+}
+
+type Snapshot struct {
+	Reference     Reference `json:"reference"`
+	SHA256        *string   `json:"sha256"`
+	CurrentSHA256 *string   `json:"currentSHA256"`
+	Status        string    `json:"status"`
+	Reasons       []Finding `json:"reasons"`
 }
 
 type Decision struct {

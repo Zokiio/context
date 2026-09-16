@@ -24,7 +24,7 @@ func TestEligibleWorkUsesCommitmentOrderAndSeparateStates(t *testing.T) {
 		"deprecated.md": strings.Replace(workItem("h", "unstarted", ""), "execution: unstarted", "execution: unstarted\nstatus: deprecated", 1),
 	})
 	got, err := orientation.Orient(context.Background(), orientation.Request{ProjectDir: project})
-	if err != nil || !got.Complete || !got.InventoryComplete {
+	if err != nil || got.Complete || !hasCode(got, "invalid_current_acceptance") || !got.InventoryComplete {
 		t.Fatalf("evaluation: complete=%v diagnostics=%+v error=%v", got.Complete, got.Diagnostics, err)
 	}
 	if !reflect.DeepEqual(referenceIDs(got.Shortlist), []string{"b", "a", "h"}) {
@@ -97,7 +97,7 @@ func TestReadinessDistinguishesMissingEmptyAndUnsupportedConditions(t *testing.T
 		{"prose-only spec", base + "## Spec\nWe will find a spec later.\n", "required_context", "unknown", "unknown", false, nil},
 		{"missing dependency declaration", strings.Replace(base, "## Blocked by\nNone\n", "", 1), "dependencies", "unknown", "unknown", false, nil},
 		{"malformed decisions declaration", strings.Replace(base, "## Blocked by decisions\nNone", "## Blocked by decisions\nAsk someone first.", 1), "blocking_decisions", "unknown", "unknown", false, nil},
-		{"unsupported dependency", strings.Replace(base, "## Blocked by\nNone", "## Blocked by\n[Previous](previous.md)", 1), "dependencies", "unknown", "unknown", false, map[string]string{"previous.md": workItem("previous", "completed", "")}},
+		{"unaccepted completed dependency", strings.Replace(base, "## Blocked by\nNone", "## Blocked by\n[Previous](previous.md)", 1), "dependencies", "unknown", "unknown", false, map[string]string{"previous.md": workItem("previous", "completed", "")}},
 		{"resolved decision", strings.Replace(base, "## Blocked by decisions\nNone", "## Blocked by decisions\n[Choice](decision.md)", 1), "blocking_decisions", "pass", "ready", true, map[string]string{"decision.md": "---\ntype: Decision\nid: choice\ntitle: Choice\ndecisionState: resolved\n---\n## Resolution\nAn answer.\n"}},
 		{"known failure with unknown", strings.Replace(base, "- A useful result.\n", "", 1) + "## Context\n[Required](missing.md)\n", "required_context", "unknown", "blocked", false, nil},
 	} {

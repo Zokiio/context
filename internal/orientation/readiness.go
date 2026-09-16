@@ -10,7 +10,7 @@ import (
 )
 
 func (e *evaluator) evaluateReadiness(r *record, work *WorkItem) {
-	work.Checks = []Check{e.criteriaCheck(r), e.contextCheck(r), e.emptyRelationshipCheck(r, "Blocked by", "dependencies", "no_dependencies"), e.blockingDecisionCheck(r)}
+	work.Checks = []Check{e.criteriaCheck(r), e.contextCheck(r), e.dependencyCheck(r), e.blockingDecisionCheck(r)}
 	work.Readiness = "ready"
 	for _, check := range work.Checks {
 		if check.Status == "fail" {

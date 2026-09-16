@@ -60,6 +60,9 @@ None
 
 ## Comments
 
+Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/01-overview-20260916.md)
+
 - Implementation started on branch feat/session-orientation. The coordinating agent owns the ticket; orientation_core handles the Go operation and shared reader, and orientation_cli handles command output and CLI tests. Baseline tests passed before implementation.
 
 - Verified all 14 criteria. [Immutable verification evidence](../../../session-orientation/evidence/01-overview.md) and its source manifest retain the actual tested working tree. Structured acceptance awaits tickets 04 and 05; unsupported readiness remains unknown.
@@ -68,4 +71,4 @@ None
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/01-overview-20260916.md)
+- [Current acceptance](../acceptances/01-authoring-reassessment-20260916.md)

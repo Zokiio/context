@@ -64,14 +64,7 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 		for _, reason := range item.ExclusionReasons {
 			writeFinding(&text, "    excluded: ", reason)
 		}
-		if item.Acceptance == nil {
-			fmt.Fprintln(&text, "    acceptance: unknown")
-		} else {
-			fmt.Fprintf(&text, "    acceptance: %s\n", item.Acceptance.Status)
-			if item.Acceptance.Record != nil {
-				writeReferences(&text, "    Acceptance record", []orientation.Reference{*item.Acceptance.Record})
-			}
-		}
+		writeAcceptance(&text, item.Acceptance)
 		if item.FingerprintVersion == nil {
 			fmt.Fprintln(&text, "    fingerprint: unknown")
 		} else {

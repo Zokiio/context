@@ -33,7 +33,7 @@ func Orient(ctx context.Context, request Request) (Result, error) {
 		return Result{}, err
 	}
 	defer reader.Close()
-	e := evaluator{ctx: ctx, request: request, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, omitted: map[string]bool{}, inspected: map[string]bool{}, decisionResults: map[string]Decision{}}
+	e := evaluator{ctx: ctx, request: request, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, omitted: map[string]bool{}, inspected: map[string]bool{}, decisionResults: map[string]Decision{}, acceptanceSources: map[string]acceptanceSources{}, acceptanceResults: map[string]*AcceptanceSummary{}}
 	manifest := e.read(filepath.Join(reader.Project(), "project.md"), recordread.RecordSource, Reason{Kind: "project"})
 	if manifest != nil {
 		e.manifest = e.parse(*manifest)
@@ -55,20 +55,22 @@ func emptyResult() Result {
 }
 
 type evaluator struct {
-	ctx             context.Context
-	request         Request
-	reader          *recordread.Reader
-	result          Result
-	captured        map[string]int
-	records         map[string]*record
-	recordOrder     []*record
-	manifest        *record
-	selections      []*selection
-	totalBytes      int64
-	stopped         bool
-	omitted         map[string]bool
-	inspected       map[string]bool
-	decisionResults map[string]Decision
+	ctx               context.Context
+	request           Request
+	reader            *recordread.Reader
+	result            Result
+	captured          map[string]int
+	records           map[string]*record
+	recordOrder       []*record
+	manifest          *record
+	selections        []*selection
+	totalBytes        int64
+	stopped           bool
+	omitted           map[string]bool
+	inspected         map[string]bool
+	decisionResults   map[string]Decision
+	acceptanceSources map[string]acceptanceSources
+	acceptanceResults map[string]*AcceptanceSummary
 }
 
 type record struct {

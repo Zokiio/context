@@ -86,6 +86,20 @@ func checkOrientationJSON(ts *testscript.TestScript, neg bool, args []string) {
 		result.Decisions == nil || result.Sources == nil || result.Diagnostics == nil {
 		ts.Fatalf("unexpected orientation JSON: %+v", result)
 	}
+	for _, work := range result.WorkItems {
+		if acceptance := work.Acceptance; acceptance != nil {
+			if acceptance.HumanApprovals == nil || acceptance.Requirements == nil || acceptance.Evidence == nil || acceptance.Reasons == nil {
+				ts.Fatalf("acceptance lists must be arrays: %+v", acceptance)
+			}
+			for _, snapshots := range [][]orientation.Snapshot{acceptance.Requirements, acceptance.Evidence} {
+				for _, snapshot := range snapshots {
+					if snapshot.Reasons == nil {
+						ts.Fatalf("snapshot reasons must be an array: %+v", snapshot)
+					}
+				}
+			}
+		}
+	}
 }
 
 type failingWriter struct{}

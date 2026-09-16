@@ -1,0 +1,77 @@
+[
+  {
+    "name": "quoted-criteria",
+    "body": "> ## Acceptance criteria\n> - [Use][r]\n\n## Comments\n[r]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "b9a20c05e779dcd8eeb9bfd7da0dd0daf99faa0e5adf1720406f3b902a11d9cf",
+      "1108eeafbbae0d2821e8d46839345e33bdffa9cefefa628c90e5390dfffc781c"
+    ],
+    "expected": [
+      "b9a20c05e779dcd8eeb9bfd7da0dd0daf99faa0e5adf1720406f3b902a11d9cf",
+      "1108eeafbbae0d2821e8d46839345e33bdffa9cefefa628c90e5390dfffc781c"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "list-criteria",
+    "body": "- ## Acceptance criteria\n  - [Use][r]\n\n## Comments\n[r]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "cb008acc363c8ebc28954ad1b9da4b486f85ba7c89aa24788eff2dc1496f42c4",
+      "842b51e65c5ff80d78f11620bdd088c95861940da944c82b7ffc89b48aff763d"
+    ],
+    "expected": [
+      "cb008acc363c8ebc28954ad1b9da4b486f85ba7c89aa24788eff2dc1496f42c4",
+      "842b51e65c5ff80d78f11620bdd088c95861940da944c82b7ffc89b48aff763d"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "multiline-use",
+    "body": "## Acceptance criteria\n- [Use][one\n two]\n\n## Comments\n[one two]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "de5bfb74ffc262a2050b93667490ce8e4850d7af36a099f564003f3452f563b1",
+      "a7fd51adfaec3db9e6c4c48a3945981a45655ff928c969b8349f4cb4f0f42d7f"
+    ],
+    "expected": [
+      "de5bfb74ffc262a2050b93667490ce8e4850d7af36a099f564003f3452f563b1",
+      "a7fd51adfaec3db9e6c4c48a3945981a45655ff928c969b8349f4cb4f0f42d7f"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "mixed-line-endings",
+    "body": "## Acceptance criteria\r\n- [Use][r]\n\r\n## Comments\n[r]: target.md\r\n  \"Title\"\n",
+    "exitStatus": 1,
+    "got": [
+      "a07275623bcc2fedef99a09b4ff47221b483645ac8460aaba05b715770e0c307",
+      "0cee75c2275ab47003ab1c186a6e74d47004771e57be07565cb251b19cd0995d"
+    ],
+    "expected": [
+      "a07275623bcc2fedef99a09b4ff47221b483645ac8460aaba05b715770e0c307",
+      "0cee75c2275ab47003ab1c186a6e74d47004771e57be07565cb251b19cd0995d"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "repeated-criteria-retained-definition",
+    "body": "## Acceptance criteria\n- [Use][r]\n\n[r]: first.md\n\n## Comments\n[r]: ignored.md\n## Acceptance criteria\n- [Use][r]\n",
+    "exitStatus": 1,
+    "got": [
+      "fc87c0f4608c11ef572c21165ca8a6f4bd8472da2e1322c89520a2a48d869963",
+      "ccfe35475ba5ee31036dab0717f08929d17d5064fdcc45c3e8ad3825cf4ab11c"
+    ],
+    "expected": [
+      "fc87c0f4608c11ef572c21165ca8a6f4bd8472da2e1322c89520a2a48d869963",
+      "ccfe35475ba5ee31036dab0717f08929d17d5064fdcc45c3e8ad3825cf4ab11c"
+    ],
+    "match": true,
+    "stderr": ""
+  }
+]

@@ -24,6 +24,7 @@ func TestOrientationTextRetainsPartialFacts(t *testing.T) {
 			Checks:           []orientation.Check{{Name: "acceptance_criteria", Status: "unknown", Reasons: []orientation.Finding{{Code: "unsupported_check", Message: "This check is unavailable."}}}},
 			ExclusionReasons: []orientation.Finding{{Code: "completed_work", Message: "Completed work is not eligible."}},
 			Specifications:   []orientation.Reference{{Path: "/docs/spec.md", From: "/bundle/task.md", Link: "../docs/spec.md"}},
+			Acceptance:       &orientation.AcceptanceSummary{Status: "unknown", CheckStatus: "unknown"},
 		}},
 		Decisions:   []orientation.Decision{{ID: str("decision-1"), Title: str("Choice"), Source: "/bundle/choice.md"}},
 		Sources:     []orientation.Source{{Path: "/bundle/project.md", SHA256: strings.Repeat("a", 64), Reasons: []orientation.Reason{{Kind: "manifest"}}}},

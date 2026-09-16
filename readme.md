@@ -104,7 +104,7 @@ The decision record's state overrides an outdated Open decisions index link. Res
 
 When a decision answer imposes implementation requirements, also link it through the ticket's Spec or Context section. `ctx context` retains its existing selection rules and does not automatically follow Blocked by decisions.
 
-During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Requirement fingerprints are available even without acceptance records. Acceptance validation remains unavailable until its implementation slice. An empty project with all required declarations can produce a complete report.
+During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Direct prerequisites can pass when completed work has valid, fresh acceptance, resolved blocking decisions, and an explicitly empty Blocked by declaration. Prerequisites with their own dependencies remain unknown until recursive evaluation is implemented. An empty project with all required declarations can produce a complete report.
 
 Exit status `0` means complete evaluation, including an empty shortlist or known blocked work. Status `1` means a partial report, including a missing manifest, malformed record, unknown required fact, or collection limit. Status `2` means invalid arguments, unusable configured roots, cancellation, or an application or output failure. Reports and data diagnostics go to stdout. Invocation and operation errors go to stderr. An output failure can leave partial bytes on stdout.
 
@@ -119,6 +119,20 @@ Both fingerprints include effective reference definitions used by retained conte
 The separate `sources[].sha256` identifies the whole source file, so it changes after a comment or metadata edit. Fingerprints use the captured source bytes, preserve line endings and Unicode, and perform no filesystem rereads. They do not certify acceptance or the current code checkout.
 
 The [acceptance authoring reference](docs/agents/acceptance.md#reproduce-version-1-fingerprints) defines the exact domain tags and byte encoding. [Conformance fixtures](internal/orientation/testdata/fingerprints/) retain manually selected input parts and literal expected digests, independently checked with Python and OpenSSL.
+
+### Recorded acceptance
+
+A ticket's single current Acceptance link selects its decision. Orientation validates the record's subject, attribution, fingerprints, and retained Requirements and Evidence snapshots. Missing or malformed information leaves acceptance unknown. Changed requirements or evidence make acceptance stale and block a prerequisite, while remaining a complete evaluation when every required fact is known.
+
+Each work item's `acceptance` is `null` when unfinished work has no current decision. Otherwise, the summary contains `status`, `checkStatus`, `record`, `actor`, `decidedAt`, `testedRevision`, `fingerprintVersion`, `ticketSHA256`, `criteriaSHA256`, `humanApprovals`, `requirements`, `evidence`, `reasons`, and authored `metadata`. Status is `valid`, `stale`, or `unknown`; the corresponding check is `pass`, `fail`, or `unknown`. Recorded fingerprints in this summary remain separate from the work item's current fingerprints.
+
+Each requirement or evidence snapshot contains its `reference`, recorded `sha256`, observed `currentSHA256`, `status`, and `reasons`. Unavailable digests are `null`. Actor entries contain `kind` and `identity`; tested revisions contain `origin` and `revision`. Each human approval has its own `actor`, `decidedAt`, and `testedRevision`.
+
+Requirement snapshots cover the ticket's selected Spec and Context documents and linked decisions. Additional snapshots remain explicit accepted requirements. Evidence must include at least one local UTF-8 source. Allowed-source roots, collection limits, and source digests apply to both kinds of snapshot. The [acceptance authoring guide](docs/agents/acceptance.md) describes the record format and reassessment procedure.
+
+The acceptance actor can be a human or a workflow. Optional human approvals retain their own actor, decision time, and tested revision. The report attributes these assertions without authenticating the named actors. A workflow decision does not imply human approval.
+
+Tested revisions retain their original origin and revision value. A later Git HEAD does not invalidate unchanged historical acceptance. Orientation checks the current requirements and retained evidence against the recorded decision; it does not rerun verification or certify the current application checkout.
 
 ## Read task context
 

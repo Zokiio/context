@@ -53,8 +53,11 @@ None
 
 ## Comments
 
+Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/02-eligibility-20260916.md)
+
 - Verified all 12 criteria. [Immutable verification evidence](../../../session-orientation/evidence/02-eligibility.md) retains the actual tested source identity and results.
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/02-eligibility-20260916.md)
+- [Current acceptance](../acceptances/02-authoring-reassessment-20260916.md)

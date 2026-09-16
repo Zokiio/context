@@ -22,7 +22,7 @@ This is a working coordination log. Immutable slice evidence and Acceptance reco
 - Ticket 01 implementation is verified and execution is completed. Agent orientation_core owns the application operation and shared reading; orientation_cli owns CLI output and its tests; the coordinating agent owns authoring conventions, ticket states, integration, and evidence.
 - The existing reader supplied ticket 01's full authored context. Both completeness fields were true.
 - Ticket 01 was committed as 9666b19 after integration verification. Tickets 02 and 04 then ran in parallel and were committed as c69d818 after shared integration verification. Each agent received complete task-context JSON from the retained reader build.
-- Ticket 03 is in progress. orientation_core owns decision semantics and operation tests; orientation_cli owns output and CLI tests. The coordinating agent owns integration, records, and evidence.
+- Ticket 03 was verified and committed as b266094. Ticket 05 is verified and completed. orientation_core owns acceptance semantics and operation tests; orientation_cli owns output and CLI tests. The coordinating agent owns integration, records, and evidence.
 - A separate compatibility review found no shared-reader regressions in 11 comparisons. A read-only preparation review is mapping historical reader evidence for the later migration; legacy records remain unchanged.
 
 ## Review during ticket 01
@@ -32,4 +32,4 @@ This is a working coordination log. Immutable slice evidence and Acceptance reco
 
 ## Completion
 
-Tickets [01](evidence/01-overview.md), [02](evidence/02-eligibility.md), and [04](evidence/04-fingerprints.md) have immutable evidence and current Acceptance records. Ticket 04 exercised authoring for ticket 01 before tickets 02 or 03 completed. Validation awaits ticket 05. No unsupported check is reported as passed.
+Tickets [01](evidence/01-overview.md), [02](evidence/02-eligibility.md), [03](evidence/03-decisions.md), and [04](evidence/04-fingerprints.md) have immutable evidence and current Acceptance records. Ticket 04 exercised authoring for ticket 01 before tickets 02 or 03 completed. Ticket 05's retained intermediate build validated all four current records after a documented acceptance-authoring clarification and reassessment. Their original tested revisions remain intact. Non-leaf prerequisite checks remain unsupported until ticket 06 and are reported as unknown. [Ticket 05 evidence](evidence/05-acceptance.md) and its post-authoring observation establish valid acceptance for slices 01 through 05.

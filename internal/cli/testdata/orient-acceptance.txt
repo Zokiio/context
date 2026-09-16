@@ -1,0 +1,161 @@
+# A completed leaf with current recorded acceptance releases its dependent.
+# Literal digests were independently checked with Python hashlib and OpenSSL.
+exec ctx orient --project bundle --allow-source docs
+! stderr .
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'acceptance: valid'
+stdout 'acceptance check: pass'
+stdout 'actor: workflow build-agent'
+stdout 'decided at: 2026-09-15T15:00:00\+02:00'
+stdout 'tested revision \(historical\): local-artifact leaf-build-123'
+stdout 'accepted fingerprint: version 1'
+stdout 'Human approvals:'
+stdout 'actor: human Alice'
+stdout 'decided at: 2026-09-15T16:00:00\+02:00'
+stdout 'tested revision \(historical\): review-artifact reviewed-leaf-123'
+stdout 'Requirements:'
+stdout 'recordedSHA256: 7047822efc7d1bca9634e6211ba6b1facb23e31d4051508eb0b8f272d1436294'
+stdout 'Evidence:'
+stdout 'currentSHA256: 1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92db539f084'
+stdout 'readiness: ready; eligible: true'
+
+exec ctx orient --project bundle --allow-source docs --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json true
+stdout '"status":"valid"'
+stdout '"actor":\{"kind":"workflow","identity":"build-agent"\}'
+stdout '"testedRevision":\{"origin":"local-artifact","revision":"leaf-build-123"\}'
+stdout '"humanApprovals":\[\{"actor":\{"kind":"human","identity":"Alice"\}'
+stdout '"testedRevision":\{"origin":"review-artifact","revision":"reviewed-leaf-123"\}'
+stdout '"reviewChannel":"local"'
+stdout '"requirements":\[\{"reference":'
+stdout '"evidence":\[\{"reference":'
+stdout '"currentSHA256":"1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92db539f084"'
+stdout '"shortlist":\[\{[^}]*"id":"dependent"'
+
+# Changed retained evidence is a known stale decision, with a complete report.
+cp changed-evidence.md docs/evidence.md
+exec ctx orient --project bundle --allow-source docs
+! stderr .
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'acceptance: stale'
+stdout 'acceptance check: fail'
+stdout 'snapshot_changed'
+stdout 'dependencies: fail'
+stdout 'readiness: blocked; eligible: false'
+stdout 'Shortlist: none'
+stdout 'tested revision \(historical\): local-artifact leaf-build-123'
+exec ctx orient --project bundle --allow-source docs --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json true
+stdout '"status":"stale"'
+stdout '"code":"snapshot_changed"'
+stdout '"shortlist":\[\]'
+stdout '"testedRevision":\{"origin":"local-artifact","revision":"leaf-build-123"\}'
+
+# Unavailable evidence preserves attribution and the recorded digest but is unknown.
+rm docs/evidence.md
+exit 1 ctx orient --project bundle --allow-source docs
+! stderr .
+stdout 'Evaluation: partial; inventory: complete'
+stdout 'acceptance: unknown'
+stdout 'acceptance check: unknown'
+stdout 'actor: workflow build-agent'
+stdout 'currentSHA256: unknown'
+stdout 'recordedSHA256: 1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92db539f084'
+stdout 'snapshot_unavailable'
+stdout 'dependencies: unknown'
+stdout 'Shortlist: none'
+exit 1 ctx orient --project bundle --allow-source docs --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json false
+stdout '"status":"unknown"'
+stdout '"currentSHA256":null'
+stdout '"code":"snapshot_unavailable"'
+stdout '"actor":\{"kind":"workflow","identity":"build-agent"\}'
+stdout '"shortlist":\[\]'
+
+-- bundle/project.md --
+---
+type: Project
+id: project
+title: Acceptance example
+---
+## Goals
+Require evidence before releasing dependent work.
+## Current commitments
+- [Dependent](dependent.md)
+## Open decisions
+None
+-- bundle/dependent.md --
+---
+type: WorkItem
+id: dependent
+title: Dependent
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Use the accepted leaf.
+## Blocked by
+- [Leaf](leaf.md)
+## Blocked by decisions
+None
+-- bundle/leaf.md --
+---
+type: WorkItem
+id: leaf
+title: Completed leaf
+triage: ready-for-agent
+execution: completed
+---
+## Acceptance criteria
+- [x] The leaf delivers its result.
+## Blocked by
+None
+## Blocked by decisions
+None
+## Context
+- [Requirements](../docs/requirements.md)
+## Acceptance
+- [Current](acceptance.md)
+-- bundle/acceptance.md --
+---
+type: Acceptance
+id: leaf-acceptance
+title: Accept leaf implementation
+reviewChannel: local
+projectId: project
+workItemId: leaf
+actor:
+  kind: workflow
+  identity: build-agent
+decidedAt: "2026-09-15T15:00:00+02:00"
+testedRevision:
+  origin: local-artifact
+  revision: leaf-build-123
+fingerprintVersion: 1
+ticketSHA256: 323b8932189ac2403fbce9cb9aa6bd8d4446eb44a327f3f3f63235c9a1111c32
+criteriaSHA256: 7365c0cd6afdf28231f56b32c937fb48bb6fcf5c63b1c99318ba4bcf941f93b6
+humanApprovals:
+  - actor:
+      kind: human
+      identity: Alice
+    decidedAt: "2026-09-15T16:00:00+02:00"
+    testedRevision:
+      origin: review-artifact
+      revision: reviewed-leaf-123
+---
+## Requirements
+- [Requirements](../docs/requirements.md) `7047822efc7d1bca9634e6211ba6b1facb23e31d4051508eb0b8f272d1436294`
+## Evidence
+- [Local tests](../docs/evidence.md) `1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92db539f084`
+-- docs/requirements.md --
+Deliver the local leaf result.
+-- docs/evidence.md --
+Local tests passed against artifact leaf-build-123.
+-- changed-evidence.md --
+A later result changed this retained evidence file.
