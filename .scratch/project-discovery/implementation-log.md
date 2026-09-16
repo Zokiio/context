@@ -68,3 +68,7 @@ A [test-name erratum](evidence/03-cli-evidence-erratum.json) corrects criterion0
 ## Directory-input regression
 
 Workspace review identified that opening a FIFO as a directory can block on this macOS runtime, including through os.OpenRoot. Root added an original-path Stat/IsDir guard before opening directory handles, with timed CLI regressions for bundle, selector, source-root, and setup inputs. Focused resolver/setup/direct-path race checks pass. Final source verification and acceptance reassessment will cover this shared change.
+
+## Ticket 04 accepted
+
+Workspace navigation passed the combined discovery/workspace/CLI race suite: 342 cases, zero skips. Output preserves membership order and separate same-ID record stores, reports shallow availability, and emits safe POSIX commands and structured argument arrays with member-specific roots. [Criterion evidence](evidence/04-workspace-verification.json) and [acceptance observation](evidence/04-workspace-navigation-implementation-observation.json) retain the tested source identity and valid acceptance with passing checks. Ticket 06 is ready.

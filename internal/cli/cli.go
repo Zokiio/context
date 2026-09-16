@@ -106,7 +106,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 					}
 				}
 				if scope.Kind == discovery.Workspace {
-					return fmt.Errorf("workspace navigation is unavailable for workspace %q [%s]; select a project with --project PATH or --bundle PATH", scope.Workspace.Title, scope.Workspace.ID)
+					return runWorkspaceOrientation(ctx, stdout, *scope.Workspace, cmd.Bool("json"))
 				}
 				if operations.Orient == nil {
 					return errors.New("orientation operation is unavailable")
