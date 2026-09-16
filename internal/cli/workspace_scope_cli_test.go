@@ -3,6 +3,7 @@ package cli_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -55,16 +56,36 @@ func TestWorkspaceScopeSelectionNeverInvokesProjectReaders(t *testing.T) {
 					args = append(args, "--json")
 				}
 				status := cli.RunWithEnvironment(context.Background(), args, &stdout, &stderr, operations, scopeEnvironment(selection.cwd, home))
-				if status != 2 || stdout.Len() != 0 {
-					t.Fatalf("status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
-				}
-				for _, fact := range []string{"Scope: workspace", "workspace-1", checkout, selection.origin, "--project", "--bundle"} {
+				for _, fact := range []string{"Scope: workspace", "workspace-1", checkout, selection.origin} {
 					if !strings.Contains(stderr.String(), fact) {
 						t.Errorf("missing selected workspace or selection guidance %q in %s", fact, stderr.String())
 					}
 				}
-				if command == "context" && !strings.Contains(stderr.String(), "requires project scope") {
-					t.Fatalf("context must explain its project requirement: %s", stderr.String())
+				if command == "context" {
+					if status != 2 || stdout.Len() != 0 {
+						t.Fatalf("status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
+					}
+					for _, fact := range []string{"requires project scope", "--project", "--bundle"} {
+						if !strings.Contains(stderr.String(), fact) {
+							t.Fatalf("context must explain project selection %q: %s", fact, stderr.String())
+						}
+					}
+				} else {
+					var result struct {
+						Kind       string
+						Complete   bool
+						WorkStatus string
+						Members    []struct {
+							Key          string
+							Availability string
+						}
+					}
+					if err := json.Unmarshal(stdout.Bytes(), &result); err != nil || status != 0 || result.Kind != "workspace-navigation" || !result.Complete || result.WorkStatus != "unevaluated" {
+						t.Fatalf("status=%d stdout=%q stderr=%q decode=%v", status, stdout.String(), stderr.String(), err)
+					}
+					if len(result.Members) != 1 || result.Members[0].Key != "sole-member" || result.Members[0].Availability != "unavailable" {
+						t.Fatalf("membership = %#v", result.Members)
+					}
 				}
 			})
 		}

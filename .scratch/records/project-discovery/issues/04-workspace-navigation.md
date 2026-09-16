@@ -3,7 +3,7 @@ type: WorkItem
 id: 411b505a-db97-4a45-94df-71289bff5a21
 title: "Show workspace member navigation"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Show workspace member navigation
@@ -38,3 +38,7 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+2026-09-17: Codex started ticket 04 after complete task context and passing readiness checks on `5c21482`. This slice reuses workspace navigation from `baa1a3e` and verifies workspace aliases when cwd is unavailable.
