@@ -72,3 +72,9 @@ Workspace review identified that opening a FIFO as a directory can block on this
 ## Ticket 04 accepted
 
 Workspace navigation passed the combined discovery/workspace/CLI race suite: 342 cases, zero skips. Output preserves membership order and separate same-ID record stores, reports shallow availability, and emits safe POSIX commands and structured argument arrays with member-specific roots. [Criterion evidence](evidence/04-workspace-verification.json) and [acceptance observation](evidence/04-workspace-navigation-implementation-observation.json) retain the tested source identity and valid acceptance with passing checks. Ticket 06 is ready.
+
+## Ticket 06 verification
+
+Root read all 11 sources in the refreshed task context. `/root/setup` owns the documentation slice under root's claim; root owns the trial and final acceptance. Full `go test ./... -count=1`, `go test -race ./... -count=1`, `go vet ./...`, and build checks passed against one unchanged program-source manifest. [The trial](evidence/06-trial.json) passed all 37 scenarios across this repository, a separate non-Git project, a moved shared checkout, personal aliases, and a workspace. Reader and dry-run snapshots are unchanged. Setup changed only the intended registration, persistent sidecar, and immediate parent metadata. The caller's personal registry was not used or changed.
+
+The generated repository `.context/config.md` is retained. Its lock sidecar is ignored. The trial verifies both complete orientation with explicit larger budgets and the expected partial report at preserved default budgets. Documentation and independent review remain outstanding before final acceptance.
