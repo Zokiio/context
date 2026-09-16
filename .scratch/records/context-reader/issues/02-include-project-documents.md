@@ -15,17 +15,17 @@ This slice supports documents inside the selected bundle. It establishes relatio
 
 ## Acceptance criteria
 
-- [ ] Use Goldmark v2 on the Markdown body after frontmatter separation. Recognize exactly level-two Spec, Blocked by, and Context headings. Sections end at the next level-one or level-two heading; nested subsections remain inside them and repeated sections combine in document order.
-- [ ] Recognize inline and reference-style Markdown links in relationship sections. Ignore images, links inside code, fenced heading examples, and apparent headings or links inside YAML metadata. Unresolved reference-style links in recognized sections produce identifying diagnostics and incomplete context.
-- [ ] Include the starting ticket, then its Spec sources, then its Context sources, preserving link order within each relationship kind. A ticket without a Spec section remains supported.
-- [ ] Resolve relative document links from the referring document's directory and leading-slash links from the selected bundle root. Do not interpret a leading slash in a document link as the operating-system root.
-- [ ] Select the whole target file for a fragment link, preserve the original link including its fragment in the inclusion reason, and do not check whether the heading exists.
-- [ ] Use resolved absolute paths for source identity and containment, with os.Root enforcing permitted reads. Deduplicate repeated links and symlink aliases while retaining every distinct referring file and original link. Keep separate files with identical contents as separate sources.
-- [ ] Each included document retains its full original text and matching SHA-256 digest. Full OKF validation is not required, and linked context documents without frontmatter remain consumable.
-- [ ] Do not recursively follow links in included Spec or Context documents. A parent explicitly linked as Context is included; unlinked parents, siblings, and the project manifest are not automatically selected.
-- [ ] A missing or unreadable Spec or Context document makes complete false and returns exit code 1, while traversalComplete remains true if the ticket's relationships were fully discovered. Return all other available sources.
-- [ ] HTTP links in relationship sections and links outside the currently permitted bundle produce diagnostics and incomplete results. Do not fetch remote content. Web links in ordinary prose remain references.
-- [ ] Behavioral tests cover section boundaries, both link forms, raw-source preservation, fragments, symlink aliases and escapes, stable source order, and partial results. Add only the CLI checks needed to demonstrate linked context and its exit behavior.
+- [x] Use Goldmark v2 on the Markdown body after frontmatter separation. Recognize exactly level-two Spec, Blocked by, and Context headings. Sections end at the next level-one or level-two heading; nested subsections remain inside them and repeated sections combine in document order.
+- [x] Recognize inline and reference-style Markdown links in relationship sections. Ignore images, links inside code, fenced heading examples, and apparent headings or links inside YAML metadata. Unresolved reference-style links in recognized sections produce identifying diagnostics and incomplete context.
+- [x] Include the starting ticket, then its Spec sources, then its Context sources, preserving link order within each relationship kind. A ticket without a Spec section remains supported.
+- [x] Resolve relative document links from the referring document's directory and leading-slash links from the selected bundle root. Do not interpret a leading slash in a document link as the operating-system root.
+- [x] Select the whole target file for a fragment link, preserve the original link including its fragment in the inclusion reason, and do not check whether the heading exists.
+- [x] Use resolved absolute paths for source identity and containment, with os.Root enforcing permitted reads. Deduplicate repeated links and symlink aliases while retaining every distinct referring file and original link. Keep separate files with identical contents as separate sources.
+- [x] Each included document retains its full original text and matching SHA-256 digest. Full OKF validation is not required, and linked context documents without frontmatter remain consumable.
+- [x] Do not recursively follow links in included Spec or Context documents. A parent explicitly linked as Context is included; unlinked parents, siblings, and the project manifest are not automatically selected.
+- [x] A missing or unreadable Spec or Context document makes complete false and returns exit code 1, while traversalComplete remains true if the ticket's relationships were fully discovered. Return all other available sources.
+- [x] HTTP links in relationship sections and links outside the currently permitted bundle produce diagnostics and incomplete results. Do not fetch remote content. Web links in ordinary prose remain references.
+- [x] Behavioral tests cover section boundaries, both link forms, raw-source preservation, fragments, symlink aliases and escapes, stable source order, and partial results. Add only the CLI checks needed to demonstrate linked context and its exit behavior.
 
 ## Blocked by
 
@@ -42,3 +42,13 @@ This slice supports documents inside the selected bundle. It establishes relatio
 - [Project bundle decision](../../../../docs/adr/0001-one-okf-bundle-per-project.md)
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+
+## Comments
+
+- 2026-09-15: Assigned to agent `requirements_review` after ticket 01 passed application tests, CLI tests, race checks, vet, and build. Implementation covers linked-document selection, relationship parsing, tests, and the JSON contract documentation. Tickets 03 and 04 remain dependent on this slice.
+
+- 2026-09-16: Implemented linked Spec and Context selection with Goldmark v2.1.0. The application preserves authored source bytes, canonical paths, distinct reasons, and partial results. Private source loading takes an explicit ticket or document role for the later traversal and authorization slices. `Request` lives in `options.go` to permit separate ownership.
+- Verification against the current uncommitted implementation: `go test ./...`, `go vet ./...`, `go test -race ./...`, and `go build -o /tmp/context-ticket02 ./cmd/ctx` passed. Application tests cover section boundaries, repeated headings, nested subsections, frontmatter exclusions, inline and reference links, escaped reference labels, fragments, raw source/digest preservation, duplicate reasons, internal symlink aliases, escapes, unavailable sources, unsupported URLs, and unchanged source files. The linked-context testscript checks successful JSON and exit 1 with `traversalComplete: true` after a linked document disappears.
+- Full and collapsed undefined reference links produce diagnostics. Undefined shortcut syntax such as `[note]` remains prose because it does not establish reference intent. Linked documents are included without traversing their own relationships or validating their frontmatter.
+- Implementation ownership released after verification. Recursive blocker traversal and external roots remain for tickets 03 and 04. No commit or milestone-wide completion is claimed here.
+- 2026-09-16 review follow-up: Fixed nested bracket labels such as `[outer [inner]](doc.md)`. Selection now uses Goldmark's normal AST. A separate diagnostic parse handles explicit undefined references and checks their positions against ordinary text in the normal AST. This preserves valid outer links and prevents nested reference-like text inside links or images from causing false diagnostics. Added nested-label, image, and unresolved outer-reference regression tests. `go test ./...`, `go test -race ./internal/taskcontext`, and `go vet ./internal/taskcontext` passed. Ownership released again after this bounded correction.

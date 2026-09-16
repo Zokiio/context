@@ -1,0 +1,66 @@
+# Relative project resolution from an unrelated caller directory.
+mkdir caller
+cd caller
+exec ctx context --project ../project --ticket ticket.md
+! stderr .
+cp stdout result.json
+jsonresult result.json true
+stdout '"text":"---\\ntype: WorkItem\\ntitle: Café\\n---\\n# Ticket\\n"'
+stdout '"kind":"root"'
+cmp ../project/ticket.md ../original.md
+
+# A second project is independent of the first.
+exec ctx context --project ../second --ticket new.md
+stdout 'Second project'
+cp stdout result.json
+jsonresult result.json true
+
+# Missing and unreadable tickets are incomplete JSON, status 1.
+exit 1 ctx context --project ../project --ticket missing.md
+cp stdout result.json
+jsonresult result.json false
+stdout 'source_missing'
+exit 1 ctx context --project ../project --ticket .
+stdout 'source_unreadable'
+exit 1 ctx context --project ../project --ticket broken.md
+stdout 'invalid_frontmatter'
+cp stdout result.json
+jsonresult result.json false
+
+# Invalid invocations do not emit JSON and cannot use an environment fallback.
+env PROJECT=../project
+env TICKET=ticket.md
+exit 2 ctx context
+! stdout .
+exit 2 ctx context --project ../project
+! stdout .
+exit 2 ctx context --project '' --ticket ticket.md
+! stdout .
+exit 2 ctx context --project ../absent --ticket ticket.md
+! stdout .
+exit 2 ctx context --project ../project --ticket ticket.md extra
+! stdout .
+exit 2 ctx context --unknown
+! stdout .
+exit 2 ctx nonsense
+! stdout .
+
+-- project/ticket.md --
+---
+type: WorkItem
+title: Café
+---
+# Ticket
+-- original.md --
+---
+type: WorkItem
+title: Café
+---
+# Ticket
+-- project/broken.md --
+---
+title: [broken
+---
+# Still preserved
+-- second/new.md --
+# Second project

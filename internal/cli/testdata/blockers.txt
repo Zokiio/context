@@ -1,0 +1,66 @@
+# Recursion includes each ticket's own documents.
+exec ctx context --project project --ticket root.md
+! stderr .
+cp stdout result.json
+jsonresult result.json true
+stdout 'leaf requirements'
+stdout 'blocker specification'
+stdout '"kind":"blocked_by"'
+! stdout dependency_cycle
+
+# A cycle warns without changing successful completeness or exit status.
+exec ctx context --project project --ticket cycle.md
+! stderr .
+cp stdout result.json
+jsonresult result.json true
+stdout 'dependency_cycle'
+stdout '"severity":"warning"'
+
+# Missing blocker context preserves discovered tickets and completed traversal.
+exit 1 ctx context --project project --ticket missing-document.md
+! stderr .
+cp stdout result.json
+jsonresult result.json false true
+stdout 'source_missing'
+stdout 'leaf requirements'
+
+# A missing blocker makes traversal incomplete while known branches continue.
+exit 1 ctx context --project project --ticket missing-ticket.md
+cp stdout result.json
+jsonresult result.json false false
+stdout 'source_missing'
+stdout 'leaf requirements'
+
+-- project/root.md --
+# Root
+## Blocked by
+[blocker](blocker.md)
+-- project/blocker.md --
+# Blocker
+## Spec
+[spec](spec.md)
+## Blocked by
+[leaf](leaf.md)
+-- project/leaf.md --
+# leaf requirements
+-- project/spec.md --
+# blocker specification
+-- project/cycle.md --
+# Cycle
+## Blocked by
+[self](cycle.md)
+-- project/missing-document.md --
+# Missing document
+## Blocked by
+[ticket](with-missing-spec.md)
+-- project/with-missing-spec.md --
+# Nested ticket
+## Spec
+[missing](absent-spec.md)
+## Blocked by
+[leaf](leaf.md)
+-- project/missing-ticket.md --
+# Missing blocker
+## Blocked by
+[absent](absent.md)
+[available](leaf.md)

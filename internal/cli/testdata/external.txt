@@ -1,0 +1,49 @@
+# Allowed roots resolve from the caller, and comma-containing roots stay literal.
+mkdir caller
+cd caller
+exec ctx context --project ../bundle --ticket ticket.md --allow-source ../docs,extra --allow-source ../other
+! stderr .
+stdout '"complete":true'
+stdout 'Comma directory content'
+stdout 'Other directory content'
+stdout '"kind":"spec"'
+stdout '"kind":"context"'
+cmp ../docs,extra/guide.md ../original.md
+
+# An environment variable cannot authorize a directory.
+env ALLOW_SOURCE=../docs,extra
+env CTX_ALLOW_SOURCE=../docs,extra
+exit 1 ctx context --project ../bundle --ticket ticket.md
+stdout '"complete":false'
+stdout '"traversalComplete":true'
+stdout 'source_outside_scope'
+! stdout 'Comma directory content'
+
+# Invalid allowed roots are invocation errors.
+exit 2 ctx context --project ../bundle --ticket ticket.md --allow-source ''
+! stdout .
+stderr 'nonempty'
+exit 2 ctx context --project ../bundle --ticket ticket.md --allow-source ../absent
+! stdout .
+stderr 'allowed source'
+exit 2 ctx context --project ../bundle --ticket ticket.md --allow-source ../original.md
+! stdout .
+stderr 'allowed source'
+
+# Authorizing the external file's directory does not permit it as a ticket.
+exit 1 ctx context --project ../bundle --ticket ../docs,extra/guide.md --allow-source ../docs,extra
+stdout 'source_outside_scope'
+! stdout 'Comma directory content'
+
+-- bundle/ticket.md --
+# Ticket
+## Spec
+[guide](../docs,extra/guide.md)
+## Context
+[other](../other/context.md)
+-- docs,extra/guide.md --
+# Comma directory content
+-- original.md --
+# Comma directory content
+-- other/context.md --
+# Other directory content

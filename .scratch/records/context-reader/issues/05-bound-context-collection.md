@@ -15,17 +15,17 @@ This ticket closes the first-reader milestone. Its dependency on external-contex
 
 ## Acceptance criteria
 
-- [ ] Accept optional --max-files and --max-bytes flags with defaults of 100 files and 1,048,576 source bytes. Require positive integers and reject zero, negative, or malformed values with exit code 2 and an invocation error.
-- [ ] Count the actual bytes read for each included file before JSON encoding, counting deduplicated sources once. Digests and returned text are derived from those same source bytes.
-- [ ] Apply limits to the established order: starting ticket, its Spec and Context documents, then breadth-first blockers with their documents. Stop adding sources at the first limit breach instead of skipping a large source to fit later smaller sources.
-- [ ] Include only whole files. If the starting ticket alone exceeds the byte limit, return no sources, an identifying diagnostic, both completeness fields false, and exit code 1.
-- [ ] Report the source that breached the limit and already-known pending sources. Mark traversalComplete false, and do not claim an exhaustive list or count of unknown downstream omissions.
-- [ ] Preserve available sources and diagnostics in the JSON result on limit failures. Missing linked documents, unavailable tickets, cycles, and frontmatter failures retain their distinct behavior from the earlier slices.
-- [ ] Behavioral tests cover exact-fit and first-overflow cases for both limits, multibyte source text and JSON escaping, repeated sources counted once, an oversized first ticket, and a blocker whose undiscovered descendants are not falsely enumerated.
-- [ ] Use a small CLI testscript suite to verify defaults, overrides, invalid flags, result fields, and exit codes. Run the complete required application and CLI checks before the milestone trial.
-- [ ] Use the reader through a skill for one real development task. The skill invokes the reader with explicit project, ticket, and allowed-source scope and supplies the result to the coding agent. Verify delivery of the task's linked requirements, blockers, and context without the user gathering them manually.
-- [ ] Link acceptance evidence from this ticket recording the real task, invocation, reader revision, result completeness, and observed outcome. Record relevant documents lacking authored links separately from reader defects; do not claim automatic relevance discovery.
-- [ ] All required tests and the real-task trial pass before this ticket and the first-reader milestone are considered complete. The trial must use actual recorded results rather than a fixture-only demonstration.
+- [x] Accept optional --max-files and --max-bytes flags with defaults of 100 files and 1,048,576 source bytes. Require positive integers and reject zero, negative, or malformed values with exit code 2 and an invocation error.
+- [x] Count the actual bytes read for each included file before JSON encoding, counting deduplicated sources once. Digests and returned text are derived from those same source bytes.
+- [x] Apply limits to the established order: starting ticket, its Spec and Context documents, then breadth-first blockers with their documents. Stop adding sources at the first limit breach instead of skipping a large source to fit later smaller sources.
+- [x] Include only whole files. If the starting ticket alone exceeds the byte limit, return no sources, an identifying diagnostic, both completeness fields false, and exit code 1.
+- [x] Report the source that breached the limit and already-known pending sources. Mark traversalComplete false, and do not claim an exhaustive list or count of unknown downstream omissions.
+- [x] Preserve available sources and diagnostics in the JSON result on limit failures. Missing linked documents, unavailable tickets, cycles, and frontmatter failures retain their distinct behavior from the earlier slices.
+- [x] Behavioral tests cover exact-fit and first-overflow cases for both limits, multibyte source text and JSON escaping, repeated sources counted once, an oversized first ticket, and a blocker whose undiscovered descendants are not falsely enumerated.
+- [x] Use a small CLI testscript suite to verify defaults, overrides, invalid flags, result fields, and exit codes. Run the complete required application and CLI checks before the milestone trial.
+- [x] Use the reader through a skill for one real development task. The skill invokes the reader with explicit project, ticket, and allowed-source scope and supplies the result to the coding agent. Verify delivery of the task's linked requirements, blockers, and context without the user gathering them manually.
+- [x] Link acceptance evidence from this ticket recording the real task, invocation, reader revision, result completeness, and observed outcome. Record relevant documents lacking authored links separately from reader defects; do not claim automatic relevance discovery.
+- [x] All required tests and the real-task trial pass before this ticket and the first-reader milestone are considered complete. The trial must use actual recorded results rather than a fixture-only demonstration.
 
 ## Blocked by
 
@@ -43,3 +43,20 @@ This ticket closes the first-reader milestone. Its dependency on external-contex
 - [Project bundle decision](../../../../docs/adr/0001-one-okf-bundle-per-project.md)
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+
+## Comments
+
+- 2026-09-16: Assigned limits implementation to agent `requirements_review` after tickets 03 and 04 passed their checks. This assignment covers application limits, CLI flags, and behavioral tests. The coordinating agent owns the README, skill, and real-task acceptance trial. Trial criteria remain pending until recorded evidence is available.
+
+- 2026-09-16 code verification: Implemented defaults of 100 files and 1,048,576 source bytes, positive CLI overrides, and application defaults when limits are omitted. Limits count each included resolved source once, preserve whole source text, and stop at the first breach. `source_limit_exceeded` identifies that source. `source_omitted` identifies unique known pending sources not already included, with referring paths and authored links. Both completeness fields become false. Current-ticket blockers are queued before its documents are read, so their known omissions remain visible.
+- Verification passed against the uncommitted working tree based on `0c74f92506a67242247a4e76a40785561a561bb3`: `go test ./...`, `go vet ./...`, `go test -race ./...`, and `go build -o /tmp/context-ticket05 ./cmd/ctx`. Tests cover exact fit and overflow for both limits, default boundaries, byte counts with multibyte and JSON-escaped text, deduplication with cycles, oversized initial tickets, first-breach stopping, queued blocker omissions, undiscovered descendants, retained earlier errors, and CLI defaults, overrides, invalid values, JSON, and exits.
+- Code/test ownership released. The last three acceptance criteria remain pending for the coordinating agent's real-task skill trial and recorded evidence. No commit or milestone completion is claimed by this code handoff.
+
+
+### 2026-09-16 real-task acceptance
+
+Agent `/root/milestone_trial` applied the [task-context skill](../../../../.agents/skills/task-context/SKILL.md) to this ticket after the required application and CLI checks passed. The reader delivered all 11 authored sources as full text, with complete context and matching digests. Seventeen real-task invocations verified defaults, exact-fit limits, first overflow, known omissions, and invalid flags. The independent verification found no defects.
+
+[Acceptance evidence](../../../context-reader/acceptance-trial.md) records the exact commands, observed outcomes, and relevant unlinked documents. Its [digest manifest](../../../context-reader/acceptance-trial-manifest.json) identifies the uncommitted reader and delivered source revisions. The trial captured this ticket before this completion note and checklist update, so its recorded byte boundaries apply to that snapshot.
+
+All acceptance criteria for this ticket and the first-reader milestone now have local evidence. The implementation and records remain uncommitted; no merge or external approval is claimed.
