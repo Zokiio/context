@@ -3,6 +3,7 @@ type: WorkItem
 id: 583073dd-c167-494a-96d5-5606ef1e988f
 title: "Migrate project records and prepare the pickup trial"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 07: Migrate project records and prepare the pickup trial
@@ -47,6 +48,7 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
 - [Reader ticket 01](../../context-reader/issues/01-read-okf-ticket.md)
 - [Reader ticket 02](../../context-reader/issues/02-include-project-documents.md)
 - [Reader ticket 03](../../context-reader/issues/03-follow-blocker-tickets.md)

@@ -3,6 +3,7 @@ type: WorkItem
 id: 8888abfc-d72c-42c0-8a28-08c7235d68c6
 title: "Expose reproducible requirement fingerprints"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 04: Expose reproducible requirement fingerprints
@@ -47,3 +48,4 @@ None
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)

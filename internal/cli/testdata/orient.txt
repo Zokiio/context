@@ -1,0 +1,56 @@
+# Orientation works from an unrelated directory and requires no ticket.
+mkdir caller
+cd caller
+exec ctx orient --project ../empty
+! stderr .
+stdout 'Project: Empty project \[empty-project\]'
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'Goals:'
+stdout 'No current delivery goals\.'
+stdout 'Current commitments: none'
+stdout 'Shortlist: none'
+stdout 'Sources:'
+cmp ../empty/project.md ../original.md
+
+# The machine-readable form contains one versioned report with array fields.
+exec ctx orient --project ../empty --json
+! stderr .
+cp stdout orientation.json
+jsonorientation orientation.json true
+stdout '"schemaVersion":1'
+stdout '"complete":true'
+stdout '"inventoryComplete":true'
+stdout '"workItems":\[\]'
+stdout '"shortlist":\[\]'
+stdout '"inProgress":\[\]'
+stdout '"backlog":\[\]'
+stdout '"decisions":\[\]'
+stdout '"diagnostics":\[\]'
+cmp ../empty/project.md ../original.md
+
+-- empty/project.md --
+---
+type: Project
+id: empty-project
+title: Empty project
+---
+# Empty project
+## Goals
+No current delivery goals.
+## Current commitments
+None
+## Open decisions
+None
+-- original.md --
+---
+type: Project
+id: empty-project
+title: Empty project
+---
+# Empty project
+## Goals
+No current delivery goals.
+## Current commitments
+None
+## Open decisions
+None

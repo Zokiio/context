@@ -1,0 +1,63 @@
+# Missing project information is a report, not an invocation error.
+mkdir missing-manifest
+exit 1 ctx orient --project missing-manifest
+! stderr .
+stdout 'Project: unknown'
+stdout 'Goals: unknown'
+stdout 'Current commitments: unknown'
+stdout 'Open decisions: unknown'
+stdout 'source_missing'
+exit 1 ctx orient --project missing-manifest --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json false
+stdout '"project":null'
+
+# Scope and limits are explicit; invalid invocations write errors only to stderr.
+env PROJECT=missing-manifest
+env CTX_PROJECT=missing-manifest
+exit 2 ctx orient
+! stdout .
+stderr .
+exit 2 ctx orient --project ''
+! stdout .
+stderr 'nonempty'
+exit 2 ctx orient --project absent
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest extra
+! stdout .
+stderr 'positional'
+exit 2 ctx orient --project missing-manifest --ticket task.md
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest --unknown
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest --json=maybe
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest --max-files 0
+! stdout .
+stderr 'positive'
+exit 2 ctx orient --project missing-manifest --max-files -1
+! stdout .
+stderr 'positive'
+exit 2 ctx orient --project missing-manifest --max-bytes 0
+! stdout .
+stderr 'positive'
+exit 2 ctx orient --project missing-manifest --max-bytes -1
+! stdout .
+stderr 'positive'
+exit 2 ctx orient --project missing-manifest --max-files many
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest --max-bytes many
+! stdout .
+stderr .
+exit 2 ctx orient --project missing-manifest --allow-source ''
+! stdout .
+stderr 'nonempty'
+exit 2 ctx orient --project missing-manifest --allow-source absent
+! stdout .
+stderr 'allowed source'

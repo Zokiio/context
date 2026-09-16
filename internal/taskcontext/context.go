@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+
+	"github.com/Zokiio/context/internal/recordread"
 )
 
 type Result struct {
@@ -16,27 +18,9 @@ type Result struct {
 	Diagnostics       []Diagnostic `json:"diagnostics"`
 }
 
-type Source struct {
-	Path    string   `json:"path"`
-	Text    string   `json:"text"`
-	SHA256  string   `json:"sha256"`
-	Reasons []Reason `json:"reasons"`
-}
-
-type Reason struct {
-	Kind string `json:"kind"`
-	From string `json:"from,omitempty"`
-	Link string `json:"link,omitempty"`
-}
-
-type Diagnostic struct {
-	Code     string `json:"code"`
-	Severity string `json:"severity"`
-	Message  string `json:"message"`
-	Path     string `json:"path"`
-	From     string `json:"from,omitempty"`
-	Link     string `json:"link,omitempty"`
-}
+type Source = recordread.Source
+type Reason = recordread.Reason
+type Diagnostic = recordread.Diagnostic
 
 // Assemble returns incomplete data for unavailable sources and invalid frontmatter.
 // Errors mean the operation could not run. It does not print, exit, or write files.

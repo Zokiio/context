@@ -23,4 +23,6 @@ If either completeness field is false, report the diagnostics and resolve missin
 
 Continue the assigned implementation or verification using the ticket's acceptance criteria. Authored links define selection; inspect additional code or guidance as the task requires. Keep relevant documents without authored links separate from reader defects.
 
+Context completeness means the selected sources were supplied. It does not establish work readiness or accepted completion. When orientation is available, inspect its separate checks before choosing work. For completion or reassessment, follow [Record acceptance](../../../docs/agents/acceptance.md).
+
 When recording an acceptance trial, retain the ticket path, invocation, reader source revision, exit status, completeness fields, delivered source digests, and observed development outcome. For an uncommitted reader, identify the base commit and a digest manifest of its source files rather than attributing the result to the base commit alone.

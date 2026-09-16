@@ -3,6 +3,7 @@ type: WorkItem
 id: 9881a140-ff67-47f8-8b61-a7cc173743b2
 title: "Verify fresh-session pickup on the real project"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 08: Verify fresh-session pickup on the real project
@@ -46,4 +47,5 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
 - [Task-context workflow](../../../../.agents/skills/task-context/SKILL.md)

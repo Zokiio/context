@@ -3,6 +3,7 @@ type: WorkItem
 id: c810606f-6a64-460d-9223-8a8515fdcd65
 title: "Explain blocking decisions"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 03: Explain blocking decisions
@@ -46,3 +47,4 @@ None
 - [Project bundle decision](../../../../docs/adr/0001-one-okf-bundle-per-project.md)
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)

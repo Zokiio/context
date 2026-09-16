@@ -3,6 +3,7 @@ type: WorkItem
 id: 940635b3-0697-45c6-804b-43f9ec1d3e58
 title: "List eligible work with reasons"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 02: List eligible work with reasons
@@ -48,3 +49,4 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)

@@ -78,10 +78,10 @@ The existing reader selects an explicit ticket, recursive blockers, and linked S
 
 ## User-provided structure references
 
-On 2026-09-16, the user pointed to images in `removethis/` as possible structural references. The observations below are design input.
+On 2026-09-16, the user pointed to local images in `removethis/` as possible structural references. Those images are not part of the repository. The observations below retain the design input without requiring the local files.
 
-- The [agent orientation screenshot](<../../removethis/Screenshot 2026-09-14 at 23.28.35.png>) separates project identity from a product and engineering map. It lists epics and specifications with execution labels and open-ticket counts. The visible excerpt does not establish parent relationships between those groups or show individual ticket readiness.
-- The [repository and conventions screenshot](<../../removethis/Screenshot 2026-09-14 at 23.26.37.png>) separates documentation, epics, specifications, logs, external material, and scratch work. Its conventions index explains the scope and responsibility of linked documents.
-- The [operator screenshot](<../../removethis/Screenshot 2026-09-14 at 23.27.26.png>) groups workspace identity, diagnostic counts, and suggested commands. Its integrations, caches, and runtime checks extend beyond the settled local-project milestone.
+- The agent orientation screenshot, `Screenshot 2026-09-14 at 23.28.35.png`, separates project identity from a product and engineering map. It lists epics and specifications with execution labels and open-ticket counts. The visible excerpt does not establish parent relationships between those groups or show individual ticket readiness.
+- The repository and conventions screenshot, `Screenshot 2026-09-14 at 23.26.37.png`, separates documentation, epics, specifications, logs, external material, and scratch work. Its conventions index explains the scope and responsibility of linked documents.
+- The operator screenshot, `Screenshot 2026-09-14 at 23.27.26.png`, groups workspace identity, diagnostic counts, and suggested commands. Its integrations, caches, and runtime checks extend beyond the settled local-project milestone.
 
 The useful design questions are how much work hierarchy to show and how to separate project direction, delivery progress, readiness, and diagnostic information. The existing OKF bundle and linked-document conventions remain the constraints for this milestone.

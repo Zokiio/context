@@ -3,6 +3,7 @@ type: WorkItem
 id: baf829dd-5016-47a9-aa76-368e50c8f327
 title: "Evaluate prerequisite chains and cycles"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 06: Evaluate prerequisite chains and cycles
@@ -46,4 +47,5 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
 - [Existing reader contract](../../../context-reader/spec.md)

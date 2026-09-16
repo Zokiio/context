@@ -1,0 +1,83 @@
+# Both reports retain known work facts when required readiness information is missing.
+mkdir caller
+cd caller
+exit 1 ctx orient --project ../bundle --allow-source ../docs,extra --allow-source ../other
+! stderr .
+stdout 'Project: Independent project \[independent-project\]'
+stdout 'Current commitments:'
+stdout 'Finished setup \[setup\]'
+stdout 'execution: completed'
+stdout 'triage: ready-for-agent'
+stdout 'committed: true'
+stdout 'readiness: unknown'
+stdout 'eligible: false'
+stdout 'Shortlist: none'
+stdout 'Sources:'
+stdout 'goal.md'
+stdout 'spec.md'
+stdout 'Task context:'
+! stdout 'Private linked goal body'
+! stdout 'Private linked requirement body'
+cmp ../bundle/task.md ../original-task.md
+
+exit 1 ctx orient --project ../bundle --allow-source ../docs,extra --allow-source ../other --json
+! stderr .
+cp stdout report.json
+jsonorientation report.json false
+stdout '"execution":"completed"'
+stdout '"committed":true'
+stdout '"eligible":false'
+stdout '"fingerprintVersion":'
+! stdout 'Private linked goal body'
+! stdout 'Private linked requirement body'
+cmp ../bundle/task.md ../original-task.md
+
+# External documents require the supplied roots.
+exit 1 ctx orient --project ../bundle --json
+! stderr .
+stdout 'source_outside_scope'
+
+-- bundle/project.md --
+---
+type: Project
+id: independent-project
+title: Independent project
+---
+## Goals
+[Deliver the independent project](../docs,extra/goal.md)
+## Current commitments
+[Setup](task.md)
+## Open decisions
+None
+-- bundle/task.md --
+---
+type: WorkItem
+id: setup
+title: Finished setup
+triage: ready-for-agent
+execution: completed
+---
+## Spec
+[Requirements](../other/spec.md)
+## Blocked by
+None
+## Blocked by decisions
+None
+-- original-task.md --
+---
+type: WorkItem
+id: setup
+title: Finished setup
+triage: ready-for-agent
+execution: completed
+---
+## Spec
+[Requirements](../other/spec.md)
+## Blocked by
+None
+## Blocked by decisions
+None
+-- docs,extra/goal.md --
+Private linked goal body
+-- other/spec.md --
+Private linked requirement body

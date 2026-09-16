@@ -21,11 +21,35 @@ Include spec and ticket changes in the repository's Git history through the norm
 
 Require YAML frontmatter with `type: WorkItem`, a nonempty stable `id`, `title`, and `triage`. Keep the ID when moving or renaming a ticket. Each ticket has its own ID, independent of its filename or feature-local number.
 
-Use `triage` as the single home for the triage role. Reserve OKF's optional `status` field for document lifecycle: `draft`, `stable`, or `deprecated`. Omission means `stable`. Execution-state fields are deferred for implementation tickets. Computed readiness is a later evaluation result.
+Use `triage` as the single home for the triage role. Reserve OKF's optional `status` field for document lifecycle: `draft`, `stable`, or `deprecated`. Omission means `stable`. Record execution separately as `execution: unstarted`, `in-progress`, `completed`, or `cancelled`. Missing or invalid execution is unknown, never implicitly unstarted. Orientation computes readiness separately.
 
-Keep requirements and acceptance criteria in the ticket body. Its Spec section is optional. Full OKF validation is outside the first reader; the authoring profile still applies to new tickets.
+Keep requirements and acceptance criteria in the ticket body. Require at least one nonempty criterion under `## Acceptance criteria`. Its Spec section is optional. Full OKF validation is outside the readers; the authoring profile still applies to new tickets.
+
+Every work item declares `## Blocked by` and `## Blocked by decisions`. Use local Markdown links for relationships. An empty section or the literal word `None` declares none. A missing section means unknown. Do not use explanatory prose as a substitute for an explicit declaration.
+
+After acceptance, use `## Acceptance` for one link to the current Acceptance record. Keep old links under Comments or other history. A completed execution state alone does not satisfy a dependency. Follow [Record acceptance](acceptance.md) when finishing, reassessing, or migrating work.
 
 Keep plain Markdown specs and context documents outside `.scratch/records/`. Link them using paths relative to the ticket, and supply their directories through `--allow-source`. For example, a ticket in `.scratch/records/context-reader/issues/` links to the existing spec at `../../../context-reader/spec.md`. A leading `/` in a document link means the bundle root.
+
+## Project and decision profiles
+
+The project manifest has required level-two `Goals`, `Current commitments`, and `Open decisions` sections. Goals contains authored direction and links to designated documents. Current commitments links directly to chosen WorkItems, including unstarted work. A specification link does not commit every associated ticket.
+
+Open decisions links to Decision records. Each Decision has `type: Decision`, a stable `id`, a `title`, and `decisionState: open` or `resolved`. A resolved decision requires a nonempty `## Resolution`. The record owns its state even when an index still lists it as open.
+
+Only a ticket's explicit Blocked by decisions links make a decision block that ticket. If its answer imposes implementation requirements, also select the decision through Spec or Context so the existing task-context reader supplies it.
+
+An empty link-only section or literal `None` declares no links. A missing section leaves information unknown. Goals may contain prose. Repeated recognized sections combine in document order, with nested headings inside the section. IDs are unique across typed records in a project.
+
+Keep Decision and Acceptance records within the selected bundle, for example under feature-local `decisions/` and `acceptances/` directories. Keep immutable evidence documents outside the bundle and authorize their containing source roots. This avoids treating every historical evidence document as an inventory candidate.
+
+## Completion during orientation adoption
+
+The [orientation tickets](../../.scratch/session-orientation/discovery.md#implementation-handoff) introduce the checks incrementally. Record these tickets' execution states as work progresses. Migrate legacy reader records in their designated migration ticket rather than inferring completion from triage.
+
+Before required orientation checks exist, use the approved blocker graph, recorded verification, and the existing task-context workflow for these bootstrap tickets. An unsupported check stays unknown in command output. Once the checks exist, inspect their result before pickup and acceptance.
+
+Retain criteria results, source identity, and evidence after every slice. Begin structured acceptance authoring when current fingerprint output is available, then validate those records when acceptance checking lands. [Record acceptance](acceptance.md) owns the exact procedure and fingerprint reference.
 
 ## When a skill says "publish to the issue tracker"
 

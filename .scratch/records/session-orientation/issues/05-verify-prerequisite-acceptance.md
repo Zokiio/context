@@ -3,6 +3,7 @@ type: WorkItem
 id: f2a2f976-d844-4e27-86fc-a3ec9b0025e3
 title: "Satisfy direct prerequisites using recorded acceptance"
 triage: ready-for-agent
+execution: unstarted
 ---
 
 # 05: Satisfy direct prerequisites using recorded acceptance
@@ -50,3 +51,4 @@ None
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
+- [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
