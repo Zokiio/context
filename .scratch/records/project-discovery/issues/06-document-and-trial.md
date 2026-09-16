@@ -3,7 +3,7 @@ type: WorkItem
 id: 14cf4188-8cc0-451b-b5d4-758b32a0db52
 title: "Document migration and verify discovery end to end"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Document migration and verify discovery end to end
@@ -40,3 +40,9 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Acceptance
+
+## Comments
+
+2026-09-17: Codex /root claimed the final documentation and trial slice after complete task context and passing prerequisite checks at `933d9c7`. The docs and trial driver reuse `baa1a3e`; verification will run against this stack with a disposable personal registry and fixtures outside the repository.
