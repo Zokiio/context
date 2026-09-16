@@ -83,3 +83,39 @@ func TestResolveDirectoryBindingsRespectPathComponentBoundaries(t *testing.T) {
 	}
 	conformanceAssertProject(t, scope, f.cwd, records)
 }
+
+func TestResolveAliasesWithoutWorkingDirectory(t *testing.T) {
+	f := newResolverFixture(t)
+	records := resolverBundle(t, filepath.Join(f.root, "records"), "saved")
+	resolverPersonal(t, f.home, "projects:\n"+resolverProjectEntry("project", "saved", filepath.Join(f.root, "missing-checkout"), records)+
+		"workspaces:\n  - key: workspace\n    alias: saved\n    id: saved-workspace\n    title: Saved workspace\n    members: []")
+	for _, kind := range []discovery.Kind{discovery.Project, discovery.Workspace} {
+		t.Run(string(kind), func(t *testing.T) {
+			request := discovery.Request{Home: f.home, Kind: kind, Selector: "@saved"}
+			scope, err := discovery.Resolve(context.Background(), request)
+			if err != nil || scope.Kind != kind || scope.StartDirectory != "" {
+				t.Fatalf("alias with omitted cwd = %+v, %v", scope, err)
+			}
+			if kind == discovery.Project && scope.Project.Records != records {
+				t.Fatalf("project alias records = %+v", scope.Project)
+			}
+			if kind == discovery.Workspace && scope.Workspace.ID != "saved-workspace" {
+				t.Fatalf("workspace alias = %+v", scope.Workspace)
+			}
+			request.Cwd = "relative"
+			if _, err := discovery.Resolve(context.Background(), request); err == nil || !strings.Contains(err.Error(), "cwd must be an absolute") {
+				t.Fatalf("relative cwd accepted for alias: %v", err)
+			}
+		})
+	}
+	for _, selector := range []string{"", ".", f.cwd, "@saved"} {
+		request := discovery.Request{Home: f.home, Selector: selector}
+		if _, err := discovery.Resolve(context.Background(), request); err == nil {
+			t.Fatalf("implicit or directory selection %q accepted an omitted cwd", selector)
+		}
+	}
+	request := discovery.Request{Kind: discovery.Project, Selector: "@saved"}
+	if _, err := discovery.Resolve(context.Background(), request); err == nil || !strings.Contains(err.Error(), "home must be an absolute") {
+		t.Fatalf("alias without absolute home accepted: %v", err)
+	}
+}

@@ -23,7 +23,8 @@ const (
 // Request supplies the invocation environment explicitly. Selector is either a
 // directory, relative to Cwd, or a personal alias beginning with @. An empty
 // selector starts at Cwd. Kind filters candidates, with Any preferring a project
-// over a workspace at the same directory.
+// over a workspace at the same directory. Cwd may be empty for an explicit alias
+// when the caller's working directory is unavailable. Home must be absolute.
 type Request struct {
 	Cwd      string
 	Home     string
@@ -69,15 +70,20 @@ func resolve(ctx context.Context, request Request, replacement *Config) (scope S
 	if request.Kind != Any && request.Kind != Project && request.Kind != Workspace {
 		return Scope{}, fmt.Errorf("unsupported scope kind %q; choose project or workspace", request.Kind)
 	}
-	if !filepath.IsAbs(request.Cwd) || !filepath.IsAbs(request.Home) {
-		return Scope{}, errors.New("cwd and home must be absolute directories; supply the invocation environment")
+	alias := strings.HasPrefix(request.Selector, "@")
+	if !filepath.IsAbs(request.Home) {
+		return Scope{}, errors.New("home must be an absolute directory; supply the invocation environment")
+	}
+	if !filepath.IsAbs(request.Cwd) && !(alias && request.Kind != Any && request.Cwd == "") {
+		return Scope{}, errors.New("cwd must be an absolute directory, or omitted for explicit alias selection; supply the invocation environment")
 	}
 	r := resolver{ctx: ctx, request: request, replacement: replacement,
 		personalPath: appendPath(request.Home, ".context/config.md")}
-	alias := strings.HasPrefix(request.Selector, "@")
 	if alias {
 		// No checkout or cwd availability is needed to select a saved entry.
-		r.start, _ = CanonicalPath(request.Cwd)
+		if request.Cwd != "" {
+			r.start, _ = CanonicalPath(request.Cwd)
+		}
 	} else {
 		start := request.Cwd
 		if request.Selector != "" {
