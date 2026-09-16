@@ -104,18 +104,23 @@ func invocationDirectory(cwd, entered, label string) (string, error) {
 	}
 	// Validate the entered traversal before canonicalizing it. Cleaning first can
 	// silently turn missing/../records into an available, different location.
-	directory, err := os.Open(path)
-	if err != nil {
-		return fail(err)
-	}
-	defer directory.Close()
-	info, err := directory.Stat()
+	info, err := os.Stat(path)
 	if err != nil {
 		return fail(err)
 	}
 	if !info.IsDir() {
 		return fail(errors.New("path is not a directory"))
 	}
+	root, err := os.OpenRoot(path)
+	if err != nil {
+		return fail(err)
+	}
+	defer root.Close()
+	directory, err := root.Open(".")
+	if err != nil {
+		return fail(err)
+	}
+	defer directory.Close()
 	if _, err := directory.ReadDir(1); err != nil && !errors.Is(err, io.EOF) {
 		return fail(err)
 	}

@@ -434,18 +434,23 @@ func pathFailure(path PathValue, problem string, err error) error {
 }
 
 func checkDirectory(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	info, err := file.Stat()
+	info, err := os.Stat(path)
 	if err != nil {
 		return err
 	}
 	if !info.IsDir() {
 		return fmt.Errorf("%s is not a directory", path)
 	}
+	root, err := os.OpenRoot(path)
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+	file, err := root.Open(".")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 	return nil
 }
 

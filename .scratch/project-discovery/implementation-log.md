@@ -64,3 +64,7 @@ The reader CLI slice passed 120 focused race test cases, including setup factory
 Setup passed 59 focused race test cases after root registered the command and verified setup followed by a selector-free reader invocation. The plan preserves unrelated content and file permissions, reports replacement removals, checks other declarations, and applies an atomic update with concurrent-change detection. [Criterion evidence](evidence/05-setup-verification.json) retains the tested source identity. [Acceptance observation](evidence/05-connect-records-implementation-observation.json) reports valid acceptance and passing checks. The persistent lock sidecar coordinates writers; dry-run and identical setup create no lock.
 
 A [test-name erratum](evidence/03-cli-evidence-erratum.json) corrects criterion03 evidence from TestScripts to the actual TestCLI driver. The original executed stdout is retained unchanged. Final reassessment will include the erratum.
+
+## Directory-input regression
+
+Workspace review identified that opening a FIFO as a directory can block on this macOS runtime, including through os.OpenRoot. Root added an original-path Stat/IsDir guard before opening directory handles, with timed CLI regressions for bundle, selector, source-root, and setup inputs. Focused resolver/setup/direct-path race checks pass. Final source verification and acceptance reassessment will cover this shared change.
