@@ -331,6 +331,36 @@ func TestResolveRegistryStructureAlwaysValidated(t *testing.T) {
 	}
 }
 
+func TestResolveUnrelatedNonDirectoryBindingsDoNotBlockSelection(t *testing.T) {
+	f := newResolverFixture(t)
+	records := resolverBundle(t, filepath.Join(f.root, "records"), "local")
+	writeConfig(t, filepath.Join(f.cwd, ".context", "config.md"), configDocument(fmt.Sprintf("project: {records: %q}\nworkspace: {id: local, title: Local, members: []}", records)))
+	oldCheckout := filepath.Join(f.root, "old-checkout")
+	writeConfig(t, oldCheckout, "This former directory is now a regular file.\n")
+	unavailable := filepath.Join(oldCheckout, "subdir")
+	resolverPersonal(t, f.home, "projects:\n"+resolverProjectEntry("old-project", "old", unavailable, records)+fmt.Sprintf("workspaces:\n  - key: old-workspace\n    directory: %q\n    id: old\n    title: Old\n    members: []\n", unavailable))
+	for _, kind := range []discovery.Kind{discovery.Any, discovery.Project, discovery.Workspace} {
+		t.Run(string(kind), func(t *testing.T) {
+			scope, err := discovery.Resolve(context.Background(), f.request(kind, ""))
+			if err != nil {
+				t.Fatalf("unrelated unavailable binding blocked selection: %v", err)
+			}
+			if kind == discovery.Workspace {
+				if scope.Kind != discovery.Workspace || scope.Workspace.ID != "local" {
+					t.Fatalf("workspace scope = %#v", scope)
+				}
+			} else if scope.Kind != discovery.Project || scope.Project.Records != records {
+				t.Fatalf("project scope = %#v", scope)
+			}
+		})
+	}
+	// Alias selection still needs only the saved records, not the old checkout.
+	scope, err := discovery.Resolve(context.Background(), f.request(discovery.Project, "@old"))
+	if err != nil || scope.Project.Records != records {
+		t.Fatalf("alias with unavailable checkout = %#v, %v", scope, err)
+	}
+}
+
 func TestResolveUnreadableRegistryFailsEvenWithLocalProject(t *testing.T) {
 	f := newResolverFixture(t)
 	resolverBundle(t, f.cwd, "usable")

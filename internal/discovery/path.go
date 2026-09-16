@@ -1,11 +1,24 @@
 package discovery
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"syscall"
 )
+
+// Check the target before opening it: opening a FIFO can wait for a writer.
+func checkRegularFile(path string) error {
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", path)
+	}
+	return nil
+}
 
 // PathValue keeps the authored value and encountered location for diagnostics.
 // Canonical can identify a missing target. Err records failures that prevent

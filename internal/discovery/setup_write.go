@@ -25,6 +25,9 @@ func observeSetupFile(path string) (string, setupSnapshot, error) {
 	if err != nil || !present {
 		return target, setupSnapshot{}, err
 	}
+	if err := checkRegularFile(path); err != nil {
+		return target, setupSnapshot{}, fmt.Errorf("read setup destination %s: %w", path, err)
+	}
 	file, err := os.Open(path)
 	if err != nil {
 		return target, setupSnapshot{}, fmt.Errorf("read setup destination %s: %w", path, err)

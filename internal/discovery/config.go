@@ -93,6 +93,9 @@ func (e *ConfigError) Error() string {
 func (e *ConfigError) Unwrap() error { return e.Err }
 
 func ReadConfig(path string, profile ConfigProfile) (*Config, error) {
+	if err := checkRegularFile(path); err != nil {
+		return nil, fmt.Errorf("read configuration %s: %w", path, err)
+	}
 	source, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read configuration %s: %w", path, err)

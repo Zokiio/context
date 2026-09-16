@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/Zokiio/context/internal/recordread"
 )
@@ -309,6 +310,10 @@ func (r *resolver) checkUnresolvedBindings() error {
 		}
 	}
 	for _, binding := range bindings {
+		// A non-directory component proves this path cannot contain the start.
+		if errors.Is(binding.Err, syscall.ENOTDIR) {
+			continue
+		}
 		// An unreadable component can hide a symlink into the start directory,
 		// even when its known prefix is elsewhere. Ordinary missing targets have
 		// a canonical inferred identity and do not enter this case.
@@ -461,6 +466,9 @@ func validateManifest(directory string) error {
 	}
 	defer reader.Close()
 	path := filepath.Join(directory, "project.md")
+	if err := checkRegularFile(path); err != nil {
+		return fmt.Errorf("project marker %s: %w; repair the reserved marker", path, err)
+	}
 	source, diagnostic := reader.Read(path, recordread.RecordSource)
 	if diagnostic != nil {
 		return fmt.Errorf("project marker %s: %s; repair the reserved marker", path, diagnostic.Message)
