@@ -1,0 +1,257 @@
+{
+  "actor": "Codex agent /root/discovery_scope_cases",
+  "observedAt": "2026-09-17T01:01:47+02:00",
+  "testedRevision": {
+    "origin": "local repository",
+    "revision": "72dd8d7c203dbc14a45dab0f7347771246c5cb29"
+  },
+  "command": [
+    "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.cache/discovery-reader-cli/ctx",
+    "orient",
+    "--bundle",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli",
+    "--max-files",
+    "500",
+    "--max-bytes",
+    "8388608",
+    "--json"
+  ],
+  "exitStatus": 0,
+  "complete": true,
+  "inventoryComplete": true,
+  "diagnostics": [],
+  "reportSHA256": "334b2d986d951e420d62967947e11496d7ddb812e24a9af613850ae46dc47939",
+  "workItems": [
+    {
+      "id": "cab6f066-8afe-43cb-be4d-8238740e183a",
+      "source": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptanceStatus": "valid",
+      "acceptanceCheckStatus": "pass",
+      "acceptanceRecord": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/acceptances/03-reader-cli-20260917.md",
+      "fingerprintVersion": 1,
+      "ticketSHA256": "ff8a80b951d64d5b02982aa1033b71f1277dcebc2c369d0fa3d694972dc91012",
+      "criteriaSHA256": "06e218ab5bc16f518af53fdf7e82643971fbd57db0cbeca544e29432103b1e7a",
+      "snapshots": [
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/spec.md",
+          "recordedSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/vision.md",
+          "recordedSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/CONTEXT.md",
+          "recordedSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/adr/0004-directory-specific-project-selection.md",
+          "recordedSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/agents/acceptance.md",
+          "recordedSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/evidence/03-reader-cli-verification.md",
+          "recordedSHA256": "b330705c728565800e7701810f76dd04e298c5455f80b6ef1ecd428048797298",
+          "currentSHA256": "b330705c728565800e7701810f76dd04e298c5455f80b6ef1ecd428048797298",
+          "status": "valid"
+        }
+      ],
+      "prerequisites": [
+        {
+          "from": "cab6f066-8afe-43cb-be4d-8238740e183a",
+          "to": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+          "status": "pass"
+        },
+        {
+          "from": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+          "to": "591c566c-1d96-4824-8cf0-aa775a69a35f",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+      "source": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptanceStatus": "valid",
+      "acceptanceCheckStatus": "pass",
+      "acceptanceRecord": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/acceptances/02-scope-20260917.md",
+      "fingerprintVersion": 1,
+      "ticketSHA256": "3c0ea54f3258d2b08076f1a18521901cc0d9d61b27e73e0ab1d520ad2e6f1c0f",
+      "criteriaSHA256": "70ddce0d91de66fbe0628e01975a79e20a7c1f5e11a2100218ed7780065d8a5e",
+      "snapshots": [
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/spec.md",
+          "recordedSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/vision.md",
+          "recordedSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/CONTEXT.md",
+          "recordedSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/adr/0004-directory-specific-project-selection.md",
+          "recordedSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/agents/acceptance.md",
+          "recordedSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/evidence/02-scope-verification.md",
+          "recordedSHA256": "931ea234d41ad51d4f11bf320500acda50a079e2485343c13ae3acdf3f1caac0",
+          "currentSHA256": "931ea234d41ad51d4f11bf320500acda50a079e2485343c13ae3acdf3f1caac0",
+          "status": "valid"
+        }
+      ],
+      "prerequisites": [
+        {
+          "from": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+          "to": "591c566c-1d96-4824-8cf0-aa775a69a35f",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "591c566c-1d96-4824-8cf0-aa775a69a35f",
+      "source": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/issues/01-read-configuration.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptanceStatus": "valid",
+      "acceptanceCheckStatus": "pass",
+      "acceptanceRecord": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/records/project-discovery/acceptances/01-configuration-reassessed-20260917.md",
+      "fingerprintVersion": 1,
+      "ticketSHA256": "ac734016ef5d59a7f84c0bde67cb715e03a8a2d5b60fb69c09f957c4c82a4dfa",
+      "criteriaSHA256": "58e1d5bd114cc919150cebfbe8bdbef37d338f2cf6a75f294b3f3105e4476653",
+      "snapshots": [
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/spec.md",
+          "recordedSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/vision.md",
+          "recordedSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/CONTEXT.md",
+          "recordedSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/adr/0004-directory-specific-project-selection.md",
+          "recordedSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/docs/agents/acceptance.md",
+          "recordedSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        },
+        {
+          "path": "/Users/zoki/code/context/.cache/worktrees/discovery-reader-cli/.scratch/project-discovery/evidence/01-configuration-reassessment.md",
+          "recordedSHA256": "a5529223c4b32a28fe46557c56a3e055fc06e3912fb59fb6a904dc3a5d7a3bbf",
+          "currentSHA256": "a5529223c4b32a28fe46557c56a3e055fc06e3912fb59fb6a904dc3a5d7a3bbf",
+          "status": "valid"
+        }
+      ],
+      "prerequisites": []
+    }
+  ],
+  "nextWorkItem": {
+    "id": "411b505a-db97-4a45-94df-71289bff5a21",
+    "readiness": "ready",
+    "eligible": true
+  }
+}
