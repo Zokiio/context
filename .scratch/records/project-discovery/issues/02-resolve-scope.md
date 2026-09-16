@@ -3,7 +3,7 @@ type: WorkItem
 id: 9cb1ab9e-8d7c-4358-948f-1b928ab2472a
 title: "Resolve scope from directories and aliases"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Resolve scope from directories and aliases
@@ -38,3 +38,7 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+2026-09-17: Codex started ticket 02 after complete task context and passing readiness checks on `18728ee`. This slice reuses the resolver from `baa1a3e` with the shared configuration core and adds focused boundary tests.
