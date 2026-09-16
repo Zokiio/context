@@ -44,3 +44,13 @@ Under ticket 02's implementation claim, `/root/integration_design` owns `resolve
 ## Ticket 02 accepted
 
 The resolver slice passed 147 discovery test cases under the race detector, with no skipped cases. The independently authored conformance slice passed. Review corrected a prefix heuristic that could discard an unreadable registration hiding a symlink into the start directory. The setup proposal seam validates future configuration without writing or cleaning away broken target components. [Criterion evidence](evidence/02-resolver-verification.json) retains the actual source identity. [Acceptance observation](evidence/02-resolve-scope-implementation-observation.json) reports valid, fresh acceptance and passing checks. Tickets 03 and 05 are now ready for parallel implementation.
+
+## Tickets 03 and 05 in progress
+
+`/root/integration_design` owns CLI discovery integration and migration of existing reader-focused fixtures to direct bundle mode. `/root/setup` owns setup preparation, atomic persistence, setup-specific CLI code, and tests. Both received refreshed complete task context from a reader built at `9d04352`. CLI environment callbacks keep cwd and home lookup lazy and support injected input and terminal detection. Setup registration remains separate until its implementation is ready.
+
+Ticket 03 covers workspace selection/provenance and protection against invoking a project reader for workspace scope. Ticket 04 supplies workspace navigation rendering. `/root/configuration` is preparing that rendering design without implementation while ticket 04 remains blocked.
+
+## Ticket 03 accepted
+
+The reader CLI slice passed 120 focused race test cases, including setup factory tests compiled in the shared worktree. Root reviewed scope selection, output isolation, source authorization, and unchanged filesystem snapshots. Original direct path traversal now validates before canonicalization so missing path components cannot silently select another directory. [Criterion evidence](evidence/03-cli-verification.json) retains the complete tested source identity. [Acceptance observation](evidence/03-integrate-cli-implementation-observation.json) reports valid acceptance and passing checks. Ticket 04 is ready for implementation.

@@ -1,5 +1,5 @@
 # A known cycle is a complete blocked result, alongside independently ready work.
-exec ctx orient --project bundle
+exec ctx orient --bundle bundle
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'dependency_cycle'
@@ -10,7 +10,7 @@ stdout 'B \[b\]'
 stdout 'readiness: blocked; eligible: false'
 stdout 'readiness: ready; eligible: true'
 
-exec ctx orient --project bundle --json
+exec ctx orient --bundle bundle --json
 ! stderr .
 cp stdout report.json
 jsonorientation report.json true
@@ -19,7 +19,7 @@ stdout '"code":"dependency_cycle"'
 stdout '"shortlist":\[\{[^}]*"id":"ready"[^}]*\}\]'
 
 # The same cycle can have complete task context, with its established warning.
-exec ctx context --project bundle --ticket a.md
+exec ctx context --bundle bundle --ticket a.md
 ! stderr .
 cp stdout context.json
 jsonresult context.json true true
@@ -27,14 +27,14 @@ stdout 'dependency_cycle'
 
 # A missing target makes affected work unknown while independent work stays eligible.
 rm bundle/b.md
-exit 1 ctx orient --project bundle
+exit 1 ctx orient --bundle bundle
 ! stderr .
 stdout 'Evaluation: partial; inventory: complete'
 stdout 'source_missing'
 stdout 'status: unknown; cycle: false'
 stdout 'readiness: unknown; eligible: false'
 stdout 'readiness: ready; eligible: true'
-exit 1 ctx orient --project bundle --json
+exit 1 ctx orient --bundle bundle --json
 ! stderr .
 cp stdout partial.json
 jsonorientation partial.json false

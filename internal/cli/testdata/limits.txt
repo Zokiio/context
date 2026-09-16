@@ -1,14 +1,14 @@
-exec ctx context --project bundle --ticket root.md
+exec ctx context --bundle bundle --ticket root.md
 cp stdout default.json
 jsonresult default.json true
 ! stderr .
 
-exec ctx context --project bundle --ticket root.md --max-files 2 --max-bytes 1000
+exec ctx context --bundle bundle --ticket root.md --max-files 2 --max-bytes 1000
 cp stdout overridden.json
 jsonresult overridden.json true
 ! stderr .
 
-exit 1 ctx context --project bundle --ticket root.md --max-files 1
+exit 1 ctx context --bundle bundle --ticket root.md --max-files 1
 stdout 'source_limit_exceeded'
 stdout '"text":"# Root'
 ! stdout '"text":"# Document'
@@ -16,32 +16,32 @@ cp stdout file-limit.json
 jsonresult file-limit.json false
 ! stderr .
 
-exit 1 ctx context --project bundle --ticket root.md --max-bytes 1
+exit 1 ctx context --bundle bundle --ticket root.md --max-bytes 1
 stdout '"sources":\[\]'
 stdout 'source_limit_exceeded'
 cp stdout byte-limit.json
 jsonresult byte-limit.json false
 ! stderr .
 
-exit 2 ctx context --project bundle --ticket root.md --max-files 0
+exit 2 ctx context --bundle bundle --ticket root.md --max-files 0
 ! stdout .
 stderr 'positive integers'
-exit 2 ctx context --project bundle --ticket root.md --max-bytes 0
+exit 2 ctx context --bundle bundle --ticket root.md --max-bytes 0
 ! stdout .
 stderr 'positive integers'
-exit 2 ctx context --project bundle --ticket root.md --max-files=-1
+exit 2 ctx context --bundle bundle --ticket root.md --max-files=-1
 ! stdout .
 stderr 'positive integers'
-exit 2 ctx context --project bundle --ticket root.md --max-bytes=-1
+exit 2 ctx context --bundle bundle --ticket root.md --max-bytes=-1
 ! stdout .
 stderr 'positive integers'
-exit 2 ctx context --project bundle --ticket root.md --max-files nonsense
+exit 2 ctx context --bundle bundle --ticket root.md --max-files nonsense
 ! stdout .
 stderr .
-exit 2 ctx context --project bundle --ticket root.md --max-bytes 1.5
+exit 2 ctx context --bundle bundle --ticket root.md --max-bytes 1.5
 ! stdout .
 stderr .
-exit 2 ctx context --project bundle --ticket root.md --max-bytes 99999999999999999999999999
+exit 2 ctx context --bundle bundle --ticket root.md --max-bytes 99999999999999999999999999
 ! stdout .
 stderr .
 

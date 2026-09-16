@@ -1,6 +1,6 @@
 # Two accepted prerequisite levels release their dependent.
 # Literal digests were independently checked with Python hashlib and OpenSSL.
-exec ctx orient --project bundle --allow-source docs
+exec ctx orient --bundle bundle --allow-source docs
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'acceptance: valid'
@@ -20,7 +20,7 @@ stdout 'currentSHA256: 1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92db
 stdout 'readiness: ready; eligible: true'
 stdout 'Edge 2: status: pass; cycle: false'
 
-exec ctx orient --project bundle --allow-source docs --json
+exec ctx orient --bundle bundle --allow-source docs --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json true
@@ -38,7 +38,7 @@ stdout '"shortlist":\[\{[^}]*"id":"dependent"'
 
 # A stale leaf blocks the dependent even though the middle's acceptance stays valid.
 cp changed-evidence.md docs/evidence.md
-exec ctx orient --project bundle --allow-source docs
+exec ctx orient --bundle bundle --allow-source docs
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'acceptance: stale'
@@ -49,7 +49,7 @@ stdout 'dependencies: fail'
 stdout 'readiness: blocked; eligible: false'
 stdout 'Shortlist: none'
 stdout 'tested revision \(historical\): local-artifact leaf-build-123'
-exec ctx orient --project bundle --allow-source docs --json
+exec ctx orient --bundle bundle --allow-source docs --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json true
@@ -60,7 +60,7 @@ stdout '"testedRevision":\{"origin":"local-artifact","revision":"leaf-build-123"
 
 # Missing leaf evidence propagates unknown through the accepted middle.
 rm docs/evidence.md
-exit 1 ctx orient --project bundle --allow-source docs
+exit 1 ctx orient --bundle bundle --allow-source docs
 ! stderr .
 stdout 'Evaluation: partial; inventory: complete'
 stdout 'acceptance: unknown'
@@ -71,7 +71,7 @@ stdout 'recordedSHA256: 1ecbc7c3efb6dd79a5a27d2df920b8f7f4795322309eeeb3feeca92d
 stdout 'snapshot_unavailable'
 stdout 'dependencies: unknown'
 stdout 'Shortlist: none'
-exit 1 ctx orient --project bundle --allow-source docs --json
+exit 1 ctx orient --bundle bundle --allow-source docs --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json false

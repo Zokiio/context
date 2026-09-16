@@ -1,7 +1,7 @@
 # Orientation works from an unrelated directory and requires no ticket.
 mkdir caller
 cd caller
-exec ctx orient --project ../empty
+exec ctx orient --bundle ../empty
 ! stderr .
 stdout 'Project: Empty project \[empty-project\]'
 stdout 'Evaluation: complete; inventory: complete'
@@ -13,7 +13,7 @@ stdout 'Sources:'
 cmp ../empty/project.md ../original.md
 
 # The machine-readable form contains one versioned report with array fields.
-exec ctx orient --project ../empty --json
+exec ctx orient --bundle ../empty --json
 ! stderr .
 cp stdout orientation.json
 jsonorientation orientation.json true

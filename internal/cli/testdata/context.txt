@@ -1,7 +1,7 @@
 # Relative project resolution from an unrelated caller directory.
 mkdir caller
 cd caller
-exec ctx context --project ../project --ticket ticket.md
+exec ctx context --bundle ../project --ticket ticket.md
 ! stderr .
 cp stdout result.json
 jsonresult result.json true
@@ -10,19 +10,19 @@ stdout '"kind":"root"'
 cmp ../project/ticket.md ../original.md
 
 # A second project is independent of the first.
-exec ctx context --project ../second --ticket new.md
+exec ctx context --bundle ../second --ticket new.md
 stdout 'Second project'
 cp stdout result.json
 jsonresult result.json true
 
 # Missing and unreadable tickets are incomplete JSON, status 1.
-exit 1 ctx context --project ../project --ticket missing.md
+exit 1 ctx context --bundle ../project --ticket missing.md
 cp stdout result.json
 jsonresult result.json false
 stdout 'source_missing'
-exit 1 ctx context --project ../project --ticket .
+exit 1 ctx context --bundle ../project --ticket .
 stdout 'source_unreadable'
-exit 1 ctx context --project ../project --ticket broken.md
+exit 1 ctx context --bundle ../project --ticket broken.md
 stdout 'invalid_frontmatter'
 cp stdout result.json
 jsonresult result.json false
@@ -32,13 +32,13 @@ env PROJECT=../project
 env TICKET=ticket.md
 exit 2 ctx context
 ! stdout .
-exit 2 ctx context --project ../project
+exit 2 ctx context --bundle ../project
 ! stdout .
-exit 2 ctx context --project '' --ticket ticket.md
+exit 2 ctx context --bundle '' --ticket ticket.md
 ! stdout .
-exit 2 ctx context --project ../absent --ticket ticket.md
+exit 2 ctx context --bundle ../absent --ticket ticket.md
 ! stdout .
-exit 2 ctx context --project ../project --ticket ticket.md extra
+exit 2 ctx context --bundle ../project --ticket ticket.md extra
 ! stdout .
 exit 2 ctx context --unknown
 ! stdout .

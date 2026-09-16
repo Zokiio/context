@@ -1,7 +1,7 @@
 # Both reports retain known work facts when required readiness information is missing.
 mkdir caller
 cd caller
-exit 1 ctx orient --project ../bundle --allow-source ../docs,extra --allow-source ../other
+exit 1 ctx orient --bundle ../bundle --allow-source ../docs,extra --allow-source ../other
 ! stderr .
 stdout 'Project: Independent project \[independent-project\]'
 stdout 'Current commitments:'
@@ -20,7 +20,7 @@ stdout 'Task context:'
 ! stdout 'Private linked requirement body'
 cmp ../bundle/task.md ../original-task.md
 
-exit 1 ctx orient --project ../bundle --allow-source ../docs,extra --allow-source ../other --json
+exit 1 ctx orient --bundle ../bundle --allow-source ../docs,extra --allow-source ../other --json
 ! stderr .
 cp stdout report.json
 jsonorientation report.json false
@@ -33,7 +33,7 @@ stdout '"fingerprintVersion":'
 cmp ../bundle/task.md ../original-task.md
 
 # External documents require the supplied roots.
-exit 1 ctx orient --project ../bundle --json
+exit 1 ctx orient --bundle ../bundle --json
 ! stderr .
 stdout 'source_outside_scope'
 
