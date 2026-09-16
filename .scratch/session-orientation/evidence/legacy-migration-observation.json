@@ -1,0 +1,1792 @@
+{
+  "observedAt": "2026-09-16T13:13:23.244887+00:00",
+  "finishedAt": "2026-09-16T13:13:23.312451+00:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex agent /root/orientation_ticket_audit"
+  },
+  "purpose": "Bounded legacy record migration validation with retained ticket06 reader. Final orientation preflight and fresh-session trial are separate.",
+  "reader": {
+    "path": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-06",
+    "sha256": "5fe2390a3956d49dac8a4404af23e04d87ff762c52b021a71f78ab4c660aa704",
+    "provenance": {
+      "path": ".scratch/session-orientation/evidence/06-dependencies-verification.json",
+      "sha256": "22ff7f6f1de8ada2766575121ba68d82ef03ce654b1082404c46e39151b69f69",
+      "testedBaseCommit": "b6befb15d4db1f1ba87186a4c324cce34ee7c585"
+    }
+  },
+  "cwd": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4",
+  "jsonInvocation": [
+    "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-06",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context",
+    "--json"
+  ],
+  "textInvocation": [
+    "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-06",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context"
+  ],
+  "jsonExitStatus": 0,
+  "textExitStatus": 0,
+  "jsonOutputSHA256": "3dfb0e09c0703d176922ba1af4742176d2b262f781727a94e70a4f4748ad08b6",
+  "textOutputSHA256": "1e29ff170c08de932b6c7b5239990a31b466fd095c298417ed03946cf291db48",
+  "stderrEmpty": true,
+  "complete": true,
+  "inventoryComplete": true,
+  "sourceCount": 66,
+  "diagnostics": [],
+  "commitments": [
+    ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+    ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+    ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+    ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+    ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+    ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+    ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+    ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md"
+  ],
+  "shortlist": [],
+  "inProgress": [
+    ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md"
+  ],
+  "checks": {
+    "allFiveLegacyAcceptancesValid": true,
+    "allLegacyReadinessChecksPass": true,
+    "orientation01Through06AcceptanceAndChecksUnchanged": true,
+    "historicalCommentsAndCheckedCriteriaPreserved": true,
+    "originalTrialAndBothManifestsUnchanged": true,
+    "ticket08UnstartedAndUnchanged": true,
+    "onlyUnsatisfiedTrialPrerequisite": "session-orientation/issues/07-migrate-records-and-prepare-trial.md"
+  },
+  "readOnlyObservation": {
+    "sourceFileCount": 66,
+    "sourceDigestsUnchanged": true,
+    "bundleMarkdownInventoryUnchanged": true,
+    "gitStatusUnchanged": true,
+    "gitStatusSHA256": "dee8b91fc9e3beec30c82af1c5b8d843b305259b7690c74da44c94414ed675dd"
+  },
+  "subjects": [
+    {
+      "id": "bcbad059-f0b1-401b-99e1-3fdc468db8fb",
+      "execution": "completed",
+      "committed": false,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "91f70fffaea5ac0fc583a11503825a8fd6c83eca7cbc20bbc1f9ddf90ed21e81",
+      "criteriaSHA256": "08ae8da77a47276f1c267c1b493ceaa362c1c854b43e5c7a8268e23dbdcdb173",
+      "path": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+      "sourceSHA256": "3fc777cb4ce55536a0b28f855d636135dd8845f013d411ba3d06c27486ebd27b",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex agent /root/orientation_ticket_audit"
+        },
+        "decidedAt": "2026-09-16T13:10:25.115182+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "post-review working-tree:2fedff0f41bf59366f7f25104b5007983162aa08; reader-manifest-sha256:16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+        },
+        "path": ".scratch/records/context-reader/acceptances/01-read-okf-ticket-migration-20260916.md",
+        "sourceSHA256": "266fcbe5cbb77ac3fa863c96bc27f541cc9efda081d54d7d4f964701da8ca61a"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+          "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+          "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+          "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial.md",
+          "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+          "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/review-verification-manifest.json",
+          "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": []
+    },
+    {
+      "id": "f49ee233-f7d0-4266-92d1-f354df72a604",
+      "execution": "completed",
+      "committed": false,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "2c23f9228da000b950e6de6b853215da9a7a08b5da3a8a41b4ad1aa2743a985b",
+      "criteriaSHA256": "149618c98e350c54370de6c593cffe607eb4d132c0fbf45b0875ffb9eafd830a",
+      "path": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+      "sourceSHA256": "c2a0331fe30487f1d67b192dcd3aa9c66d4fb9e916c096046664a14fc76f8565",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex agent /root/orientation_ticket_audit"
+        },
+        "decidedAt": "2026-09-16T13:10:25.169055+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "post-review working-tree:2fedff0f41bf59366f7f25104b5007983162aa08; reader-manifest-sha256:16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+        },
+        "path": ".scratch/records/context-reader/acceptances/02-include-project-documents-migration-20260916.md",
+        "sourceSHA256": "5340d714a64ade2c8aa9c52c83b760a56df00558af49916739ffc7c75f730b38"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+          "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+          "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+          "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial.md",
+          "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+          "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/review-verification-manifest.json",
+          "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "to": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "162ad558-91e5-4c0b-b0b9-b8af2bfcc903",
+      "execution": "completed",
+      "committed": false,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "c398360e244519bc78ec0baa734b935ef9201adb569e404e8985d09c9e565bef",
+      "criteriaSHA256": "388b25d18b536b59b556a0741dca740b4169ba54fd9609093b970ff7a9846c3c",
+      "path": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+      "sourceSHA256": "f06f57ff228070850d154435a9f9ddeeeb80af238b522f6d9369796027348941",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex agent /root/orientation_ticket_audit"
+        },
+        "decidedAt": "2026-09-16T13:10:25.221961+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "post-review working-tree:2fedff0f41bf59366f7f25104b5007983162aa08; reader-manifest-sha256:16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+        },
+        "path": ".scratch/records/context-reader/acceptances/03-follow-blocker-tickets-migration-20260916.md",
+        "sourceSHA256": "450705915be24e0bf4a305a00d3c025d9bf79ce1abf13c81755217ab086cc2e3"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+          "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+          "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+          "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial.md",
+          "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+          "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/review-verification-manifest.json",
+          "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+          "to": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "to": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "0981e1d0-7916-45cb-9639-e23ac004f6d7",
+      "execution": "completed",
+      "committed": false,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "89ae54fce7d524a69e50e1de37461e3a9a758abbf75b389812e2efa82afa6aab",
+      "criteriaSHA256": "c3e697658cf6c927534c6b5e506ca6157a46dcfe73547984a8107d4eb52c1810",
+      "path": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+      "sourceSHA256": "d9910d044da99ea41020889a6243f43b0f193a4594fdfb986dd078160e1572a9",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex agent /root/orientation_ticket_audit"
+        },
+        "decidedAt": "2026-09-16T13:10:25.275295+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "post-review working-tree:2fedff0f41bf59366f7f25104b5007983162aa08; reader-manifest-sha256:16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+        },
+        "path": ".scratch/records/context-reader/acceptances/04-allow-external-context-migration-20260916.md",
+        "sourceSHA256": "0ff635ab2326c1d876e871bc83b68f12744134d807cbc3c08c3ea64ec0eba8ad"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+          "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+          "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+          "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial.md",
+          "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+          "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/review-verification-manifest.json",
+          "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+          "to": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "to": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "e8f40c26-843e-4983-a7c4-279aed609f6f",
+      "execution": "completed",
+      "committed": false,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "b630846f5e83fab004d48f4d3eb1f9f4dd90fd7b6f1ffe9665c5674944b6ba3f",
+      "criteriaSHA256": "847b8321ad7889226d305e07babfe97c7891a02118e2238e5f493836de234fb7",
+      "path": ".scratch/records/context-reader/issues/05-bound-context-collection.md",
+      "sourceSHA256": "fd6ffcac601b5669d00151851f769fa73e99b67ac7b37f363fa3aaee378dffd5",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex agent /root/orientation_ticket_audit"
+        },
+        "decidedAt": "2026-09-16T13:10:25.329010+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "post-review working-tree:2fedff0f41bf59366f7f25104b5007983162aa08; reader-manifest-sha256:16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+        },
+        "path": ".scratch/records/context-reader/acceptances/05-bound-context-collection-migration-20260916.md",
+        "sourceSHA256": "01c8bf5f3db33b354d2a0c3f99a676f933b4e33189647acdb1bfe3b8f35336e7"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+          "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+          "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+          "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial.md",
+          "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+          "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/context-reader/review-verification-manifest.json",
+          "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/context-reader/issues/05-bound-context-collection.md",
+          "to": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+          "to": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "to": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/05-bound-context-collection.md",
+          "to": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+          "to": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "e1f2dcee-d054-4311-9719-a55e29f576f5",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "cc1d01783a88aa22eb8a379aef5a3b1c3180a087a0977b5ae90cad3a1635c846",
+      "criteriaSHA256": "2bb3507aa7ed43247ce49e7ac363a2fca2978cfbbdd829ad2ea7c288d95870a5",
+      "path": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "sourceSHA256": "2ae4f0e049a850d3bad5610f43fd4fa04ec452610e89d154aff663fb94c3bba6",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.092728+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:57420636386fa64fe998f75836bb2d7aaa905011; source-manifest-sha256:60d9901e362466460e29901c973fd8a29e87d9147f10cb7d83c3601ca5f668ba"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md",
+        "sourceSHA256": "d3ad2cfabd615e3ab8125406041ee4938c6fdef5d58599de4cc0314917ba6681"
+      },
+      "requiredSources": [
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0003-recorded-acceptance-for-readiness.md",
+          "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "currentSHA256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/01-overview.md",
+          "sha256": "d9809a41f41b657818f8071a6bf7303ac78ac4eef4dc97c70d0b0a3f66a34179",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/01-overview-verification.json",
+          "sha256": "d1c88e2ba828e9b561945ebd38e380887043a6226bbbe43d1cbf7aacaac170fc",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/01-context-compatibility-review.md",
+          "sha256": "aac821c278fd447fd12e679f76d8fa132e27f43ef22778d588f4fac0ccc2d738",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+          "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+          "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+          "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": []
+    },
+    {
+      "id": "940635b3-0697-45c6-804b-43f9ec1d3e58",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "0c9ea63ec58bba404d1c15996a5c21023325c32e5965f452cb42873d15299745",
+      "criteriaSHA256": "2b59811cc89dfc5d3376d941d2b103db272e0c127860e8d9a462afbfa7100846",
+      "path": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "sourceSHA256": "e7a708a3cf0682f1bf79d89c0465b2ef55febcaa651e7cfe1daa3e01dd3e9041",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.141968+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md",
+        "sourceSHA256": "5cada481e5940c8ed6a1cea820690199875b1165b3f144edd534b6e8bcb620db"
+      },
+      "requiredSources": [
+        {
+          "path": "docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/02-eligibility.md",
+          "sha256": "d816c8819972cef8e832a0c0a09cc68650957888ead7ba1bd53c7ea37b03a2f0",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/02-04-verification.json",
+          "sha256": "37076945b9b7497ac30539fb148a160efb63bcdf2070a8f767e4318e69a06b1d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+          "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+          "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+          "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "c810606f-6a64-460d-9223-8a8515fdcd65",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "ffa4180cc573c6352cc213aaa56de4adfc39d75b1ecec5469b185189b85440ea",
+      "criteriaSHA256": "3c94aba5ad46dc618aa1ae698eb278e42446ead5a0de0c9e21c6cb602439a6b5",
+      "path": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "sourceSHA256": "98ca1d00f03f8056aad94f21d5f094ead3182b19b87fbb0e2d913dc7bc4aa2d4",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.192134+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:c69d818987541213e50858b979f3e33630ab0aa2; source-manifest-sha256:3e3e91507433fbdb31253dc4b6ca18256900b9c9fd5669584825041bcd25728b"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md",
+        "sourceSHA256": "b6c96b074ba49e553a4cb7a1cb42b2fa05a20e67d1aa8d75d688dad6ae845b51"
+      },
+      "requiredSources": [
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/03-decisions.md",
+          "sha256": "b037cec2e8eb9a861306d5f15a53c89112d676cc8bdddb1a007a768d9f333df5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/03-decisions-verification.json",
+          "sha256": "5598cd18458eda0cab666cec9400d9231858e250831d30891d12bfc70a390320",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+          "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+          "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+          "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "to": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "8888abfc-d72c-42c0-8a28-08c7235d68c6",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "7f083139488c3022e56b3da2af0811964eac47824517647173501c18db38bcd7",
+      "criteriaSHA256": "e9da0affec361f067d6ac25f34c0a8ede4ee8112e97a052045e7eb63dae5efd6",
+      "path": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "sourceSHA256": "7894736f2b06c0e2d65eb7d6d76792c642a92502a8c52e334d38e7a3747598c9",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.241160+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md",
+        "sourceSHA256": "6e4cc7b322cc0b0934d9ce8180506812108e58b7a1a21d917282ea43d43781bb"
+      },
+      "requiredSources": [
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0003-recorded-acceptance-for-readiness.md",
+          "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "currentSHA256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/04-fingerprints.md",
+          "sha256": "0b11bd112eb12baf00cb494fdc591201160f6f5d906ded72157ed75cad5b3c67",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/02-04-verification.json",
+          "sha256": "37076945b9b7497ac30539fb148a160efb63bcdf2070a8f767e4318e69a06b1d",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/04-fingerprint-review.md",
+          "sha256": "7831d725c70f7392cf6e2624cdff55d39c99a7d66a75093946e98a5fc4b964af",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/fingerprint-review/probe.py",
+          "sha256": "88e1e1a5a47f334f0d0768e9ff40db09d5b329fd34b72438271c90d7b14f8742",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/fingerprint-review/results.json",
+          "sha256": "5de41e32e850a9dbce0b2bbf25e6baeafe9311d2863cad5ce66a6773e00bb14a",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/fingerprint-review/boundary-probe.py",
+          "sha256": "0c0dbbcb67a84aa24d9ad7c8b32bd07d7e51f1669a3d410e7f37c6746b8147c2",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/fingerprint-review/boundary-results.json",
+          "sha256": "eee28c103f88ee698aee0dea5ffd28a9156fe8d126a45c5470f337a5a2a551fa",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+          "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+          "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+          "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "f2a2f976-d844-4e27-86fc-a3ec9b0025e3",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "fc73ac8f36660724f17c486819114ba4cd34f90282217d8e4c797f0f7be4e60f",
+      "criteriaSHA256": "9b12140ef41157f7ca71260c3ad458c6d0bfaa49d2f54b103340ff67ef8b22b9",
+      "path": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "sourceSHA256": "dac4117f312edd673b8983c7e43a42a708f304cdb100c22436cceaaf65f03bd5",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:46:45.688109+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:b266094c0e924606a0dd52fed3483355dacdc8db; source-manifest-sha256:b51077a315dd45d62aedac0858bf7f813741e766fbf263cfa599a40c268785f2"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/05-acceptance-20260916.md",
+        "sourceSHA256": "d0916c8c853dc4502587ed8d7d72b5c89b90b9ed0043fbb0a09489e84ad0880d"
+      },
+      "requiredSources": [
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+          "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "currentSHA256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+          "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "currentSHA256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0003-recorded-acceptance-for-readiness.md",
+          "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "currentSHA256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/05-acceptance.md",
+          "sha256": "1abad661bdd509de6f91ff479c295fae9e7ace933ceda589314dc76d5303d78f",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-acceptance-verification.json",
+          "sha256": "f9fa710a89426b5e2cf6bb65a357689be42e010445151fc1f79080d17c14fff9",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+          "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+          "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+          "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/05-after-reassessment.json",
+          "sha256": "169f72fff51f8519fca132c10e40c2ed0c6fccb68af10d841aa01c5b7e93b881",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "to": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "baf829dd-5016-47a9-aa76-368e50c8f327",
+      "execution": "completed",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "eb85f6d676dfc8b9f988f7e996b8d3f7914729b84b33663fa7ac74e063641519",
+      "criteriaSHA256": "ab4d6c6bcdffe6c46d292fca68a25776cb960329a440116df2ffbcb5e0c3a898",
+      "path": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+      "sourceSHA256": "3a0cf051dc3d6570d499613fd6b4db85f58dddb79699125cec6327af0ba8c028",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T13:00:08.716603+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:b6befb15d4db1f1ba87186a4c324cce34ee7c585; source-manifest-sha256:907c0eb4033e92067debb00a461c1c20c6e9392b67bd5010a8081f3561a51d3b"
+        },
+        "path": ".scratch/records/session-orientation/acceptances/06-dependencies-20260916.md",
+        "sourceSHA256": "1517ed740e60648bba454bf1d6155f2c3634dbe5ed6f66ab1634384b51062022"
+      },
+      "requiredSources": [
+        {
+          "path": ".scratch/context-reader/spec.md",
+          "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "currentSHA256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+          "status": "valid"
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/issue-tracker.md",
+          "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "currentSHA256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/spec.md",
+          "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "currentSHA256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+          "status": "valid"
+        },
+        {
+          "path": "docs/adr/0003-recorded-acceptance-for-readiness.md",
+          "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "currentSHA256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+          "status": "valid"
+        },
+        {
+          "path": "docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "status": "valid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".scratch/session-orientation/evidence/06-dependencies.md",
+          "sha256": "0462bf0169fcf7a24fc8710b9d9534f31d25c610f2d76c32bc9e94ca33f4c4dd",
+          "status": "valid"
+        },
+        {
+          "path": ".scratch/session-orientation/evidence/06-dependencies-verification.json",
+          "sha256": "22ff7f6f1de8ada2766575121ba68d82ef03ce654b1082404c46e39151b69f69",
+          "status": "valid"
+        }
+      ],
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+          "to": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "to": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "583073dd-c167-494a-96d5-5606ef1e988f",
+      "execution": "in-progress",
+      "committed": true,
+      "readiness": "ready",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "f5c0091e84d7370b2f48b5212c6a653a39e2c88ed2a69338bd4ccca90f3b2bb3",
+      "criteriaSHA256": "9ed0e423a2ead90c22ec6b0a9523efde31b15b26c6d859f4992ae44321a17a43",
+      "path": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+      "sourceSHA256": "159768d94171572e0d58276d71faf9cfb96869dfd067ab814316849bca925f37",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "pass",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": null,
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+          "to": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+          "to": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "to": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "id": "9881a140-ff67-47f8-8b61-a7cc173743b2",
+      "execution": "unstarted",
+      "committed": true,
+      "readiness": "blocked",
+      "eligible": false,
+      "fingerprintVersion": 1,
+      "ticketSHA256": "784b2b7ab9e5b43b83dc14e13a59208caaa8033011aa59e9afa26e17497742a8",
+      "criteriaSHA256": "f935ec5891c218989ec5c232b0398418382b45b3bb9c5f61658006632f417239",
+      "path": ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "sourceSHA256": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc",
+      "checks": {
+        "acceptance_criteria": "pass",
+        "required_context": "pass",
+        "dependencies": "fail",
+        "blocking_decisions": "pass"
+      },
+      "acceptance": null,
+      "dependencyEdges": [
+        {
+          "from": ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+          "to": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+          "status": "fail",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+          "to": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+          "to": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "to": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "to": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "from": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "to": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "path": ".scratch/records/project.md",
+      "sha256": "10713678743f0107560b752c8aad58c511f85a8c710930e08745b3136622d3f7"
+    },
+    {
+      "path": ".scratch/records/context-reader/acceptances/01-read-okf-ticket-migration-20260916.md",
+      "sha256": "266fcbe5cbb77ac3fa863c96bc27f541cc9efda081d54d7d4f964701da8ca61a"
+    },
+    {
+      "path": ".scratch/records/context-reader/acceptances/02-include-project-documents-migration-20260916.md",
+      "sha256": "5340d714a64ade2c8aa9c52c83b760a56df00558af49916739ffc7c75f730b38"
+    },
+    {
+      "path": ".scratch/records/context-reader/acceptances/03-follow-blocker-tickets-migration-20260916.md",
+      "sha256": "450705915be24e0bf4a305a00d3c025d9bf79ce1abf13c81755217ab086cc2e3"
+    },
+    {
+      "path": ".scratch/records/context-reader/acceptances/04-allow-external-context-migration-20260916.md",
+      "sha256": "0ff635ab2326c1d876e871bc83b68f12744134d807cbc3c08c3ea64ec0eba8ad"
+    },
+    {
+      "path": ".scratch/records/context-reader/acceptances/05-bound-context-collection-migration-20260916.md",
+      "sha256": "01c8bf5f3db33b354d2a0c3f99a676f933b4e33189647acdb1bfe3b8f35336e7"
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+      "sha256": "3fc777cb4ce55536a0b28f855d636135dd8845f013d411ba3d06c27486ebd27b"
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+      "sha256": "c2a0331fe30487f1d67b192dcd3aa9c66d4fb9e916c096046664a14fc76f8565"
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+      "sha256": "f06f57ff228070850d154435a9f9ddeeeb80af238b522f6d9369796027348941"
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+      "sha256": "d9910d044da99ea41020889a6243f43b0f193a4594fdfb986dd078160e1572a9"
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/05-bound-context-collection.md",
+      "sha256": "fd6ffcac601b5669d00151851f769fa73e99b67ac7b37f363fa3aaee378dffd5"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md",
+      "sha256": "d3ad2cfabd615e3ab8125406041ee4938c6fdef5d58599de4cc0314917ba6681"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/01-overview-20260916.md",
+      "sha256": "7f88f34a00e457c52549fb3ad35732d6b61521d923f409ef0118732156cd2820"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md",
+      "sha256": "5cada481e5940c8ed6a1cea820690199875b1165b3f144edd534b6e8bcb620db"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/02-eligibility-20260916.md",
+      "sha256": "78f5cb26225a0750775bb9f98226be4ae78b322648b177c42e31a7b6e3e61d88"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md",
+      "sha256": "b6c96b074ba49e553a4cb7a1cb42b2fa05a20e67d1aa8d75d688dad6ae845b51"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/03-decisions-20260916.md",
+      "sha256": "171f751f995709f49809ac98fd57eae257a03f45ae962825db8ce8e58410113e"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md",
+      "sha256": "6e4cc7b322cc0b0934d9ce8180506812108e58b7a1a21d917282ea43d43781bb"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/04-fingerprints-20260916.md",
+      "sha256": "fc7afe29c7f2296362adb7e70e5bcd151dece09c00f7fd82569bcdabcc20b6b9"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/05-acceptance-20260916.md",
+      "sha256": "d0916c8c853dc4502587ed8d7d72b5c89b90b9ed0043fbb0a09489e84ad0880d"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/06-dependencies-20260916.md",
+      "sha256": "1517ed740e60648bba454bf1d6155f2c3634dbe5ed6f66ab1634384b51062022"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "sha256": "2ae4f0e049a850d3bad5610f43fd4fa04ec452610e89d154aff663fb94c3bba6"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "sha256": "e7a708a3cf0682f1bf79d89c0465b2ef55febcaa651e7cfe1daa3e01dd3e9041"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "sha256": "98ca1d00f03f8056aad94f21d5f094ead3182b19b87fbb0e2d913dc7bc4aa2d4"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "sha256": "7894736f2b06c0e2d65eb7d6d76792c642a92502a8c52e334d38e7a3747598c9"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "sha256": "dac4117f312edd673b8983c7e43a42a708f304cdb100c22436cceaaf65f03bd5"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+      "sha256": "3a0cf051dc3d6570d499613fd6b4db85f58dddb79699125cec6327af0ba8c028"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+      "sha256": "159768d94171572e0d58276d71faf9cfb96869dfd067ab814316849bca925f37"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "sha256": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc"
+    },
+    {
+      "path": "docs/vision.md",
+      "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9"
+    },
+    {
+      "path": ".scratch/session-orientation/spec.md",
+      "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279"
+    },
+    {
+      "path": ".scratch/context-reader/spec.md",
+      "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37"
+    },
+    {
+      "path": "CONTEXT.md",
+      "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55"
+    },
+    {
+      "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+      "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5"
+    },
+    {
+      "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+      "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f"
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/legacy-migration.md",
+      "sha256": "7c7e4762cf14e588ed8dfee473344c7b6d35cd144e9bf35a4c629f65959ca756"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/legacy-record-snapshots.json",
+      "sha256": "c49497167b3b32ccd86d5de702111ff348544d773d128b19ce185da71e9a527a"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/legacy-merge-correspondence.json",
+      "sha256": "db0e67626452182e26fec283c1e1a5bf86d473a3324f0b6925984bc64f88c5d1"
+    },
+    {
+      "path": ".scratch/context-reader/acceptance-trial.md",
+      "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775"
+    },
+    {
+      "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+      "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d"
+    },
+    {
+      "path": ".scratch/context-reader/review-verification-manifest.json",
+      "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+    },
+    {
+      "path": "docs/adr/0003-recorded-acceptance-for-readiness.md",
+      "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56"
+    },
+    {
+      "path": "docs/agents/acceptance.md",
+      "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/01-overview.md",
+      "sha256": "d9809a41f41b657818f8071a6bf7303ac78ac4eef4dc97c70d0b0a3f66a34179"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/01-overview-verification.json",
+      "sha256": "d1c88e2ba828e9b561945ebd38e380887043a6226bbbe43d1cbf7aacaac170fc"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/01-context-compatibility-review.md",
+      "sha256": "aac821c278fd447fd12e679f76d8fa132e27f43ef22778d588f4fac0ccc2d738"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-authoring-reassessment.md",
+      "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-authoring-boundary.json",
+      "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-before-reassessment.json",
+      "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/02-eligibility.md",
+      "sha256": "d816c8819972cef8e832a0c0a09cc68650957888ead7ba1bd53c7ea37b03a2f0"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/02-04-verification.json",
+      "sha256": "37076945b9b7497ac30539fb148a160efb63bcdf2070a8f767e4318e69a06b1d"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/03-decisions.md",
+      "sha256": "b037cec2e8eb9a861306d5f15a53c89112d676cc8bdddb1a007a768d9f333df5"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/03-decisions-verification.json",
+      "sha256": "5598cd18458eda0cab666cec9400d9231858e250831d30891d12bfc70a390320"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/04-fingerprints.md",
+      "sha256": "0b11bd112eb12baf00cb494fdc591201160f6f5d906ded72157ed75cad5b3c67"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/04-fingerprint-review.md",
+      "sha256": "7831d725c70f7392cf6e2624cdff55d39c99a7d66a75093946e98a5fc4b964af"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/fingerprint-review/probe.py",
+      "sha256": "88e1e1a5a47f334f0d0768e9ff40db09d5b329fd34b72438271c90d7b14f8742"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/fingerprint-review/results.json",
+      "sha256": "5de41e32e850a9dbce0b2bbf25e6baeafe9311d2863cad5ce66a6773e00bb14a"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/fingerprint-review/boundary-probe.py",
+      "sha256": "0c0dbbcb67a84aa24d9ad7c8b32bd07d7e51f1669a3d410e7f37c6746b8147c2"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/fingerprint-review/boundary-results.json",
+      "sha256": "eee28c103f88ee698aee0dea5ffd28a9156fe8d126a45c5470f337a5a2a551fa"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-acceptance.md",
+      "sha256": "1abad661bdd509de6f91ff479c295fae9e7ace933ceda589314dc76d5303d78f"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-acceptance-verification.json",
+      "sha256": "f9fa710a89426b5e2cf6bb65a357689be42e010445151fc1f79080d17c14fff9"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/05-after-reassessment.json",
+      "sha256": "169f72fff51f8519fca132c10e40c2ed0c6fccb68af10d841aa01c5b7e93b881"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/06-dependencies.md",
+      "sha256": "0462bf0169fcf7a24fc8710b9d9534f31d25c610f2d76c32bc9e94ca33f4c4dd"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/06-dependencies-verification.json",
+      "sha256": "22ff7f6f1de8ada2766575121ba68d82ef03ce654b1082404c46e39151b69f69"
+    },
+    {
+      "path": ".agents/skills/task-context/SKILL.md",
+      "sha256": "615adfe1e4717381f084d13e95aca05abba2f029a803a19b49a8242fc30c693f"
+    }
+  ]
+}

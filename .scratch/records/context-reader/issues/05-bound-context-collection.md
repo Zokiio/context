@@ -3,6 +3,7 @@ type: WorkItem
 id: e8f40c26-843e-4983-a7c4-279aed609f6f
 title: "Bound collection and verify a real-task workflow"
 triage: ready-for-agent
+execution: completed
 ---
 
 # 05: Bound collection and verify a real-task workflow
@@ -31,6 +32,10 @@ This ticket closes the first-reader milestone. Its dependency on external-contex
 
 - [03: Follow blocker tickets recursively](03-follow-blocker-tickets.md)
 - [04: Allow authorized external context](04-allow-external-context.md)
+
+## Blocked by decisions
+
+None
 
 ## Spec
 
@@ -65,3 +70,7 @@ All acceptance criteria for this ticket and the first-reader milestone now have 
 ### 2026-09-16 verification after independent review
 
 After the blocker-reference fix, all 17 real-task checks passed again against the updated reader. Full race tests, vet, build, and the Go 1.25.0 test suite also passed. The [review follow-up](../../../context-reader/acceptance-trial.md#independent-review-follow-up-2026-09-16) and [revised source manifest](../../../context-reader/review-verification-manifest.json) preserve this evidence separately from the original trial.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/05-bound-context-collection-migration-20260916.md)

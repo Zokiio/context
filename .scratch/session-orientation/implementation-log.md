@@ -1,39 +1,19 @@
 # Session orientation implementation
 
-This is a working coordination log. Immutable slice evidence and Acceptance records retain verification history; this changing log is not an acceptance snapshot.
+This mutable coordination log links to immutable evidence and authored Acceptance records. It is not an acceptance snapshot.
 
-## Plan
+## Current state
 
-1. Establish project orientation, shared reading, CLI output, and authoring conventions.
-2. Implement standalone shortlisting and requirement fingerprints independently.
-3. Evaluate blocking decisions after shortlisting.
-4. Validate direct prerequisite acceptance after decisions and fingerprints.
-5. Evaluate recursive prerequisites and cycles.
-6. Migrate records, retain the reader build, and finish preflight checks.
-7. Use a fresh session for the unstarted real-ticket pickup trial.
-8. Review against the PR1 baseline, fix findings, retain final evidence, and create the PR.
+- Branch: `feat/session-orientation`.
+- Review baseline: merged PR1 `ecb8f294144dab8bb36f2e74e6ad174bcce17ef1`.
+- Tickets 01 through 07 are completed with valid current acceptance and passing readiness checks.
+- The actual fresh-session pickup trial remains unstarted and is now the sole eligible work item.
+- The retained reader matches code commit `4ccb1f7171082fa97af7455b0d86f56c5228b71d`. Its [handoff](preflight-handoff.md) supplies scope, binary identity, and the pickup workflow without selecting work for the new session.
 
-## Current work
+## Implementation and verification
 
-- Branch: feat/session-orientation.
-- Review baseline: ecb8f294144dab8bb36f2e74e6ad174bcce17ef1, the merged PR1 revision.
-- Planning records committed as 5742063.
-- Baseline `go test ./...` passed before implementation.
-- Ticket 01 implementation is verified and execution is completed. Agent orientation_core owns the application operation and shared reading; orientation_cli owns CLI output and its tests; the coordinating agent owns authoring conventions, ticket states, integration, and evidence.
-- The existing reader supplied ticket 01's full authored context. Both completeness fields were true.
-- Ticket 01 was committed as 9666b19 after integration verification. Tickets 02 and 04 then ran in parallel and were committed as c69d818 after shared integration verification. Each agent received complete task-context JSON from the retained reader build.
-- Ticket 03 was verified and committed as b266094. Ticket 05 is verified and completed. orientation_core owns acceptance semantics and operation tests; orientation_cli owns output and CLI tests. The coordinating agent owns integration, records, and evidence.
-- A separate compatibility review found no shared-reader regressions in 11 comparisons. A read-only preparation review is mapping historical reader evidence for the later migration; legacy records remain unchanged.
+The application and CLI agents delivered the approved slices through the public Go operation and a small CLI suite. [Per-slice evidence](evidence/01-overview.md) began with project overview and shared reading, followed by [eligibility](evidence/02-eligibility.md), [decisions](evidence/03-decisions.md), [fingerprints](evidence/04-fingerprints.md), [acceptance](evidence/05-acceptance.md), and [recursive prerequisites](evidence/06-dependencies.md). Unsupported bootstrap checks remained unknown until implemented.
 
-## Review during ticket 01
+[Independent review](evidence/review.md) found repeated orientation flags, acceptance behind empty criteria, and duplicated check merging. All findings were fixed and independently rechecked. Standards and Spec each report zero remaining findings. [Reassessment](evidence/review-reassessment.md) preserves prior decisions and identifies the corrected implementation's actual test evidence.
 
-- A separate workflow review found one P2 issue: the staged acceptance procedure would require recursive prerequisite checks before ticket 05 could close, although recursion belongs to ticket 06. The guide now keeps unsupported checks unknown through the full bootstrap, separates acceptance validity from prerequisite satisfaction, and retains the approved blocker order. Missing evidence and invalid records are not exempt.
-- CLI agent reports its suite passing, including existing context fixtures and new orientation text, JSON, scope, partial-result, and injected-failure cases. Core source and limit cases now pass, including the repeated-goal and invalid-UTF8 budget regressions.
-
-## Completion
-
-Tickets [01](evidence/01-overview.md), [02](evidence/02-eligibility.md), [03](evidence/03-decisions.md), and [04](evidence/04-fingerprints.md) have immutable evidence and current Acceptance records. Ticket 04 exercised authoring for ticket 01 before tickets 02 or 03 completed. Ticket 05's retained intermediate build validated all four current records after a documented acceptance-authoring clarification and reassessment. Their original tested revisions remain intact. Non-leaf prerequisite checks remain unsupported until ticket 06 and are reported as unknown. [Ticket 05 evidence](evidence/05-acceptance.md) and its post-authoring observation establish valid acceptance for slices 01 through 05.
-
-## Complete readiness model
-
-Ticket 06 is verified and completed. [Its evidence](evidence/06-dependencies.md) records recursive chains, shared nodes, cycles, source limits, CLI behavior, and context regression checks. All six completed slices have valid current acceptance and passing readiness checks. The project remains partial while legacy profile and manifest migration awaits ticket 07. Independent standards and specification review precedes the final preflight and fresh-session trial.
+The [migration assessment](evidence/legacy-migration.md) preserves all five reader tickets' original evidence, actors, tested working trees, and manifests. [Program preflight](evidence/07-preflight-verification.json) passed normal tests, race tests, vet, build, and minimum-Go checks. [Final record verification](evidence/07-records-verification.json) confirms complete, read-only orientation and context on the migrated project. [Ticket 07 closeout](evidence/07-closeout-observation.json) separately records the released eligible work. No human approval or successful fresh-session trial is asserted yet.

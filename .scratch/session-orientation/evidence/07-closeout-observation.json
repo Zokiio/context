@@ -1,0 +1,356 @@
+{
+  "observedAt": "2026-09-16T13:21:38.882630+00:00",
+  "actor": "Codex coordinating agent",
+  "invocation": [
+    "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-preflight",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context",
+    "--json"
+  ],
+  "exitStatus": 0,
+  "readerSHA256": "70d37e8989db00f305e05d0ce0f498b7fa00dfca45ab1a6ee74d1f93ff789a21",
+  "complete": true,
+  "inventoryComplete": true,
+  "shortlist": [
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "id": "9881a140-ff67-47f8-8b61-a7cc173743b2",
+      "title": "Verify fresh-session pickup on the real project",
+      "from": "/Users/zoki/code/context/.scratch/records/project.md",
+      "link": "session-orientation/issues/08-verify-fresh-session-pickup.md"
+    }
+  ],
+  "workItems": [
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "execution": "unstarted",
+      "readiness": "ready",
+      "eligible": true,
+      "acceptanceStatus": null,
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "acceptanceStatus": "valid",
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "trialUnchanged": true,
+  "sourceCount": 82,
+  "sourceBytes": 764843
+}
