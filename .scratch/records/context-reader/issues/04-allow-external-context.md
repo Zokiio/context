@@ -3,6 +3,7 @@ type: WorkItem
 id: 0981e1d0-7916-45cb-9639-e23ac004f6d7
 title: "Allow authorized external context"
 triage: ready-for-agent
+execution: completed
 ---
 
 # 04: Allow authorized external context
@@ -28,6 +29,10 @@ This slice adds scoped document access rather than configuration loading or cros
 ## Blocked by
 
 - [02: Include linked project documents](02-include-project-documents.md)
+
+## Blocked by decisions
+
+None
 
 ## Spec
 
@@ -59,3 +64,7 @@ Implemented by `/root/ticket01` in the uncommitted working tree based on commit 
 - Passed `go test ./...`, `go test -race ./...`, `go vet ./...`, and `git diff --check` locally with Go 1.27.1. These checks included concurrent ticket03 changes present at test time.
 
 Invalid or empty authorized directories fail operation setup with status `2`. Selected unauthorized, missing, and unreadable documents retain existing diagnostic codes and return incomplete context with status `1`. Documentation additions were handed to the coordinating agent, who owns the root readme.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/04-allow-external-context-migration-20260916.md)

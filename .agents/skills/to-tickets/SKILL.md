@@ -10,6 +10,8 @@ Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet ver
 
 The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
+Use the configured tracker's record profile and location when they differ from the generic templates below. In this repository, new tickets have WorkItem frontmatter, ready-for-agent triage, unstarted execution, and explicit Blocked by and Blocked by decisions sections. Use the literal None for an agreed empty relationship set. The tracker conventions own these fields and the completion procedure.
+
 ## Process
 
 ### 1. Gather context

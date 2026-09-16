@@ -3,6 +3,7 @@ type: WorkItem
 id: 162ad558-91e5-4c0b-b0b9-b8af2bfcc903
 title: "Follow blocker tickets recursively"
 triage: ready-for-agent
+execution: completed
 ---
 
 # 03: Follow blocker tickets recursively
@@ -28,6 +29,10 @@ Reuse the existing relationship parser, source reader, and JSON result. This is 
 ## Blocked by
 
 - [02: Include linked project documents](02-include-project-documents.md)
+
+## Blocked by decisions
+
+None
 
 ## Spec
 
@@ -61,3 +66,7 @@ Validation against the current working tree passed: `go test ./...`, `go test -r
 ### 2026-09-16 independent review fix
 
 Fixed a P2 finding where an undefined Blocked by reference incorrectly reported finished traversal. Both completeness fields now become false while available branches continue. Undefined Spec and Context references preserve finished traversal. Added application and CLI regressions; the independent reviewer verified the fix with no remaining actionable findings. [Updated verification evidence](../../../context-reader/acceptance-trial.md#independent-review-follow-up-2026-09-16) identifies the revised reader and successful checks.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/03-follow-blocker-tickets-migration-20260916.md)

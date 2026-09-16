@@ -1,0 +1,11 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n# Ticket\n\nIntro.\n\n## Scope\nDeliver café.\n\n## Acceptance criteria\n- [ ] Works.\n\n## Comments\nRoutine note.\n\n## Acceptance\n[Current](acceptance.md)\n\n## Context\nNone\n",
+  "ticketParts": [
+    "# Ticket\n\nIntro.\n\n## Scope\nDeliver café.\n\n## Acceptance criteria\n- [ ] Works.\n\n## Context\nNone\n"
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\n- [ ] Works.\n\n"
+  ],
+  "ticketSHA256": "30174732d241730b320ac9f47adf2346da4e7b3a078186f3b250bc1fcc95821c",
+  "criteriaSHA256": "98b1528102286296f5dfef6419876871da5d766ca0b1c3e61a5c390950ddd4de"
+}

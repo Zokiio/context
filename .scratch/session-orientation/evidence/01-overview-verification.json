@@ -1,0 +1,975 @@
+{
+  "label": "01-overview",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex coordinating agent"
+  },
+  "startedAt": "2026-09-16T11:50:49.268417+00:00",
+  "baseCommit": "57420636386fa64fe998f75836bb2d7aaa905011",
+  "toolchain": "go version go1.27.1 darwin/arm64",
+  "sourceManifest": [
+    {
+      "path": "cmd/ctx/main.go",
+      "sha256": "1abd2a3fb3b3374c07b72da7f004a2ff658e82dcd09847777d9079d56e8fdcdf"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e"
+    },
+    {
+      "path": "internal/cli/cli.go",
+      "sha256": "0615e74b809cded9dc3af238a5ac3ee69cf335cd820a9c0720489997cd2793b8"
+    },
+    {
+      "path": "internal/cli/cli_test.go",
+      "sha256": "cc9e2d095876d0e1a649d753eef4367407940e2c1c6e748db0eb4e008f6a6779"
+    },
+    {
+      "path": "internal/cli/orientation.go",
+      "sha256": "1bb0a23089ac87b195670b9bd309519216aa51fdda874b54c0ba073690f83386"
+    },
+    {
+      "path": "internal/cli/orientation_cli_test.go",
+      "sha256": "06d495bf97ff179f8edf6971d80e1bd517ee0f2d30d938fc113009a202a3bcb4"
+    },
+    {
+      "path": "internal/orientation/inventory.go",
+      "sha256": "e58071a2cbcd4f09f7cd56921692a47ce49fa107f14e250e969b9fe9f9773846"
+    },
+    {
+      "path": "internal/orientation/limits_test.go",
+      "sha256": "60edcd80cd085bc8c6f4f27db90b9b4b28346fc96d665c3a2606bff275f2f2f6"
+    },
+    {
+      "path": "internal/orientation/metadata.go",
+      "sha256": "1e07a3d2a30ee25603db998e606396cf0913e683e456e976af0c90aaa468745c"
+    },
+    {
+      "path": "internal/orientation/orientation.go",
+      "sha256": "d06f5a1971cf242b11179bba8d08262656f02a976e7666375e9dfa5d2b16ed93"
+    },
+    {
+      "path": "internal/orientation/orientation_test.go",
+      "sha256": "7274ea1934b01107d40258c46790bc6235bc9a1b217f66ba1a8628a9f521956b"
+    },
+    {
+      "path": "internal/orientation/profiles.go",
+      "sha256": "2ccf8c8cac548e7a3e3f25b9371bdee51032eeccc13ce75f25249fe61a938756"
+    },
+    {
+      "path": "internal/orientation/sources_test.go",
+      "sha256": "e7a28851839b78a8337ed390ba3af0a96f21bf753b19a7c7af5bbe50b56c2a8e"
+    },
+    {
+      "path": "internal/orientation/types.go",
+      "sha256": "79f3f108bb5a81a59345ef8e4ff30a3ec001fc2299dabec107b7e24beffc9b73"
+    },
+    {
+      "path": "internal/recordread/document.go",
+      "sha256": "34e45d4754c74b685c2cc4f8699bc9043525717e1523eeb5d0095131b26418f4"
+    },
+    {
+      "path": "internal/recordread/sections.go",
+      "sha256": "ea7980e8ba2252d9ea8d6e3dded8b637ce0df23e514271a4f5804a1e5becc621"
+    },
+    {
+      "path": "internal/recordread/source.go",
+      "sha256": "9d744bd6ad6e70ab678fcf85beb691bf551cd0f94c15c1884371fee1182e0ab8"
+    },
+    {
+      "path": "internal/recordread/types.go",
+      "sha256": "a0b4b97469fa25cf662e172202cfca9ecf6b55fb207c4ecb96610154466e7682"
+    },
+    {
+      "path": "internal/taskcontext/context.go",
+      "sha256": "941fe6224fa61e262e6715476db1d802a100cec978c1988c87d5dcca35a252e7"
+    },
+    {
+      "path": "internal/taskcontext/context_test.go",
+      "sha256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4"
+    },
+    {
+      "path": "internal/taskcontext/document.go",
+      "sha256": "ab086df322ce66472ac579ffebb5f35e46bc723b9605bb8ce79b80182fba0f8e"
+    },
+    {
+      "path": "internal/taskcontext/external_test.go",
+      "sha256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571"
+    },
+    {
+      "path": "internal/taskcontext/limits_test.go",
+      "sha256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5"
+    },
+    {
+      "path": "internal/taskcontext/options.go",
+      "sha256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2"
+    },
+    {
+      "path": "internal/taskcontext/relationships.go",
+      "sha256": "697166dc52dbb47e575fcfd85e29965ec4149162b85f8c93951457a048879b3b"
+    },
+    {
+      "path": "internal/taskcontext/relationships_test.go",
+      "sha256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a"
+    },
+    {
+      "path": "internal/taskcontext/source.go",
+      "sha256": "809bf450400cdc2c2d02975302fa556f56af5f63a4e1aa92d88e4695577b474f"
+    },
+    {
+      "path": "internal/taskcontext/traversal_test.go",
+      "sha256": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "go",
+        "test",
+        "./...",
+        "-count=1"
+      ],
+      "cwd": "/Users/zoki/code/context",
+      "exitStatus": 0,
+      "stdout": "?   \tgithub.com/Zokiio/context/cmd/ctx\t[no test files]\nok  \tgithub.com/Zokiio/context/internal/cli\t0.261s\nok  \tgithub.com/Zokiio/context/internal/orientation\t0.133s\n?   \tgithub.com/Zokiio/context/internal/recordread\t[no test files]\nok  \tgithub.com/Zokiio/context/internal/taskcontext\t0.171s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "cwd": "/Users/zoki/code/context",
+      "exitStatus": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zoki/code/context",
+      "exitStatus": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "go",
+        "build",
+        "-o",
+        "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-01",
+        "./cmd/ctx"
+      ],
+      "cwd": "/Users/zoki/code/context",
+      "exitStatus": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "reader": {
+    "path": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-01",
+    "sha256": "94f6f2f81d182843d58d727de6aa733ea349bf8a11f2b47133759c0e1f235b93"
+  },
+  "orientation": {
+    "jsonInvocation": [
+      "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-01",
+      "orient",
+      "--project",
+      "/Users/zoki/code/context/.scratch/records",
+      "--allow-source",
+      "/Users/zoki/code/context",
+      "--json"
+    ],
+    "textInvocation": [
+      "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-01",
+      "orient",
+      "--project",
+      "/Users/zoki/code/context/.scratch/records",
+      "--allow-source",
+      "/Users/zoki/code/context"
+    ],
+    "cwd": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4",
+    "jsonExitStatus": 1,
+    "textExitStatus": 1,
+    "complete": false,
+    "inventoryComplete": true,
+    "workItemCount": 13,
+    "shortlist": [],
+    "diagnosticCodes": [
+      "invalid_profile",
+      "missing_required_section",
+      "unsupported_check"
+    ],
+    "sourceCount": 27,
+    "sources": [
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/project.md",
+        "sha256": "ea3a180685ebb554787c609534749dc84d2dfa140bc5ca17e253255b0706ed4e",
+        "reasons": [
+          {
+            "kind": "project"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+        "sha256": "cbece8f9d9eed9ef71191604fa0ca6d61c5f7a4edf78a8a0070aea9733c4f17e",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "context-reader/issues/01-read-okf-ticket.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "01-read-okf-ticket.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../context-reader/issues/01-read-okf-ticket.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+        "sha256": "e0408409e592b89108ebe4cc3bec4549565038e448a44e2c25f0cf4a60aed423",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "context-reader/issues/02-include-project-documents.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "02-include-project-documents.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "02-include-project-documents.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../context-reader/issues/02-include-project-documents.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+        "sha256": "ea5dff205948e22e03193b13ea31c5aadeec32d9fad67042d7e980d43245aa2a",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "context-reader/issues/03-follow-blocker-tickets.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "03-follow-blocker-tickets.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../context-reader/issues/03-follow-blocker-tickets.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+        "sha256": "427cbbfeb74cb59a7ed5491af4798a86c203387653c4b8af2d11d63bcafe405b",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "context-reader/issues/04-allow-external-context.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "04-allow-external-context.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../context-reader/issues/04-allow-external-context.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+        "sha256": "79ba068314f93f18b6e743102eded49b39452f2a22250e80325b5533b04b301d",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "context-reader/issues/05-bound-context-collection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../context-reader/issues/05-bound-context-collection.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+        "sha256": "847f1f3f05ea1b39dff9f0994bba7d18ef49844d7df959874d4b19b1501baab3",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/01-show-project-orientation.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "01-show-project-orientation.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "01-show-project-orientation.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+        "sha256": "f0bc94fa9246d9f347c5e0fdbe56d794872803a81c2d21ce1bca237f7217fab6",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/02-list-eligible-work.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "02-list-eligible-work.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+        "sha256": "3fbcf4a2c9e374355b29894ca517757394d6dd85c8b898612cea82cff7ff9556",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/03-explain-blocking-decisions.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "03-explain-blocking-decisions.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+        "sha256": "1a53f7a6bb345d5bc2e0bbda6399bf5a05c8570c344aaec50d3a8462371461d2",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/04-expose-requirement-fingerprints.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "04-expose-requirement-fingerprints.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+        "sha256": "d9efe8855803412e45171f62aa15a71c720d7e0cb8301e62384b91635fed8b28",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/05-verify-prerequisite-acceptance.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "05-verify-prerequisite-acceptance.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+        "sha256": "70c4b74bfbef3c79b32607ff185b99860de28354dbcebce9ac8a4b49fbf2461f",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/06-evaluate-prerequisite-chains.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "06-evaluate-prerequisite-chains.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+        "sha256": "db22677a3c60181ff143acb8a0e86aa58845f8ba91d84b9b0802d4a8636df9a5",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/07-migrate-records-and-prepare-trial.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "07-migrate-records-and-prepare-trial.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+        "sha256": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc",
+        "reasons": [
+          {
+            "kind": "inventory",
+            "link": "session-orientation/issues/08-verify-fresh-session-pickup.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/context-reader/spec.md",
+        "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+        "reasons": [
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../context-reader/spec.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../context-reader/spec.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/vision.md",
+        "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../docs/vision.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/CONTEXT.md",
+        "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../CONTEXT.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/adr/0001-one-okf-bundle-per-project.md",
+        "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../docs/adr/0001-one-okf-bundle-per-project.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/adr/0002-work-relationships-in-markdown-sections.md",
+        "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../docs/adr/0002-work-relationships-in-markdown-sections.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/agents/issue-tracker.md",
+        "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../docs/agents/issue-tracker.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/session-orientation/spec.md",
+        "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279",
+        "reasons": [
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../session-orientation/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../session-orientation/spec.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/adr/0003-recorded-acceptance-for-readiness.md",
+        "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../docs/adr/0003-recorded-acceptance-for-readiness.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/docs/agents/acceptance.md",
+        "sha256": "e724f479243c19d805e0e1bc65e66adc3560e76ab7affb6db75492870abb4e72",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/context-reader/acceptance-trial.md",
+        "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../context-reader/acceptance-trial.md"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/context-reader/acceptance-trial-manifest.json",
+        "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../context-reader/acceptance-trial-manifest.json"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.scratch/context-reader/review-verification-manifest.json",
+        "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+            "link": "../../../context-reader/review-verification-manifest.json"
+          }
+        ]
+      },
+      {
+        "path": "/Users/zoki/code/context/.agents/skills/task-context/SKILL.md",
+        "sha256": "615adfe1e4717381f084d13e95aca05abba2f029a803a19b49a8242fc30c693f",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+            "link": "../../../../.agents/skills/task-context/SKILL.md"
+          }
+        ]
+      }
+    ]
+  },
+  "context": {
+    "invocation": [
+      "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-01",
+      "context",
+      "--project",
+      "/Users/zoki/code/context/.scratch/records",
+      "--ticket",
+      "session-orientation/issues/01-show-project-orientation.md",
+      "--allow-source",
+      "/Users/zoki/code/context"
+    ],
+    "exitStatus": 0,
+    "complete": true,
+    "sourceCount": 10
+  },
+  "readOnlyCheck": {
+    "unchanged": true,
+    "fileCount": 154,
+    "stateSHA256": "394b902fc42bebfd989f5a4f1e0d2b99936a75231643310ca917aa9cc3aea3a0"
+  },
+  "sourceManifestUnchanged": true,
+  "finishedAt": "2026-09-16T11:50:50.149376+00:00",
+  "allCommandsPassed": true
+}

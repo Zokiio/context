@@ -1,0 +1,496 @@
+{
+  "invocation": [
+    "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-05-authoring",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context",
+    "--json"
+  ],
+  "exitStatus": 1,
+  "complete": false,
+  "inventoryComplete": true,
+  "currentAcceptance": [
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "status": "valid",
+      "record": {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md",
+        "id": "9f5341a5-dc27-4eed-be5d-59aa5c13387b",
+        "title": "Acceptance: Expose reproducible requirement fingerprints",
+        "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+        "link": "../acceptances/04-authoring-reassessment-20260916.md"
+      },
+      "testedRevision": {
+        "origin": "https://github.com/Zokiio/context",
+        "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            },
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "status": "valid",
+      "record": {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md",
+        "id": "01010656-b2c7-4ff5-ac19-04625814c120",
+        "title": "Acceptance: List eligible work with reasons",
+        "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+        "link": "../acceptances/02-authoring-reassessment-20260916.md"
+      },
+      "testedRevision": {
+        "origin": "https://github.com/Zokiio/context",
+        "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            },
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "status": "valid",
+      "record": {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md",
+        "id": "8deb81a9-683e-4998-a11b-9c2359aaeb59",
+        "title": "Acceptance: Explain blocking decisions",
+        "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+        "link": "../acceptances/03-authoring-reassessment-20260916.md"
+      },
+      "testedRevision": {
+        "origin": "https://github.com/Zokiio/context",
+        "revision": "working-tree:c69d818987541213e50858b979f3e33630ab0aa2; source-manifest-sha256:3e3e91507433fbdb31253dc4b6ca18256900b9c9fd5669584825041bcd25728b"
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "unknown",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            },
+            {
+              "code": "unsupported_check",
+              "message": "Blocked by relationship evaluation is not implemented yet",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "status": "valid",
+      "record": {
+        "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md",
+        "id": "fc50ce1b-ed4f-4fd0-a34d-1aaa96420447",
+        "title": "Acceptance: Show project orientation and work inventory",
+        "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+        "link": "../acceptances/01-authoring-reassessment-20260916.md"
+      },
+      "testedRevision": {
+        "origin": "https://github.com/Zokiio/context",
+        "revision": "working-tree:57420636386fa64fe998f75836bb2d7aaa905011; source-manifest-sha256:60d9901e362466460e29901c973fd8a29e87d9147f10cb7d83c3601ca5f668ba"
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sourceDigests": [
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/project.md",
+      "sha256": "ea3a180685ebb554787c609534749dc84d2dfa140bc5ca17e253255b0706ed4e"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/01-read-okf-ticket.md",
+      "sha256": "cbece8f9d9eed9ef71191604fa0ca6d61c5f7a4edf78a8a0070aea9733c4f17e"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/02-include-project-documents.md",
+      "sha256": "e0408409e592b89108ebe4cc3bec4549565038e448a44e2c25f0cf4a60aed423"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+      "sha256": "ea5dff205948e22e03193b13ea31c5aadeec32d9fad67042d7e980d43245aa2a"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/04-allow-external-context.md",
+      "sha256": "427cbbfeb74cb59a7ed5491af4798a86c203387653c4b8af2d11d63bcafe405b"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/context-reader/issues/05-bound-context-collection.md",
+      "sha256": "79ba068314f93f18b6e743102eded49b39452f2a22250e80325b5533b04b301d"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md",
+      "sha256": "d3ad2cfabd615e3ab8125406041ee4938c6fdef5d58599de4cc0314917ba6681"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-overview-20260916.md",
+      "sha256": "7f88f34a00e457c52549fb3ad35732d6b61521d923f409ef0118732156cd2820"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md",
+      "sha256": "5cada481e5940c8ed6a1cea820690199875b1165b3f144edd534b6e8bcb620db"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-eligibility-20260916.md",
+      "sha256": "78f5cb26225a0750775bb9f98226be4ae78b322648b177c42e31a7b6e3e61d88"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md",
+      "sha256": "b6c96b074ba49e553a4cb7a1cb42b2fa05a20e67d1aa8d75d688dad6ae845b51"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-decisions-20260916.md",
+      "sha256": "171f751f995709f49809ac98fd57eae257a03f45ae962825db8ce8e58410113e"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md",
+      "sha256": "6e4cc7b322cc0b0934d9ce8180506812108e58b7a1a21d917282ea43d43781bb"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-fingerprints-20260916.md",
+      "sha256": "fc7afe29c7f2296362adb7e70e5bcd151dece09c00f7fd82569bcdabcc20b6b9"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "sha256": "cde9ea45e9b8d8c3232e623253826ba065cc03b4fa94aae237614c6e9c13770c"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "sha256": "88eabc8dd9d1c7ea5a039e35a6e40141da05774f4b739c4c04c5fac14263eec6"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "sha256": "51aa012cd3f94a19164b930709cb4f1d8d0ee035969ec927ac28f15619d63eea"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "sha256": "631774cbe3f7dc929b7a774a439d820e2852f252c145df1f9efd0a17d4459426"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "sha256": "fdd360bef69bf12968d553fb60be2b0f823e6fad4bbff688b9f8529ca3341f55"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+      "sha256": "70c4b74bfbef3c79b32607ff185b99860de28354dbcebce9ac8a4b49fbf2461f"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+      "sha256": "db22677a3c60181ff143acb8a0e86aa58845f8ba91d84b9b0802d4a8636df9a5"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "sha256": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/context-reader/spec.md",
+      "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/vision.md",
+      "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9"
+    },
+    {
+      "path": "/Users/zoki/code/context/CONTEXT.md",
+      "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/adr/0001-one-okf-bundle-per-project.md",
+      "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/adr/0002-work-relationships-in-markdown-sections.md",
+      "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/agents/issue-tracker.md",
+      "sha256": "5f8f038e1b33f595344b9a1a90d4d194331f83a5e88d6522c2e52844d77a21bb"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/spec.md",
+      "sha256": "bc021e3cd30a4bf978a2d26d530e8b778bd4f8cb250feb6e00c6cce62a024279"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/adr/0003-recorded-acceptance-for-readiness.md",
+      "sha256": "84778cb881c73f7ebbe5cc58a9acbb9c1212e1dd421d863d04f1efe021efdc56"
+    },
+    {
+      "path": "/Users/zoki/code/context/docs/agents/acceptance.md",
+      "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/01-overview.md",
+      "sha256": "d9809a41f41b657818f8071a6bf7303ac78ac4eef4dc97c70d0b0a3f66a34179"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/01-overview-verification.json",
+      "sha256": "d1c88e2ba828e9b561945ebd38e380887043a6226bbbe43d1cbf7aacaac170fc"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/01-context-compatibility-review.md",
+      "sha256": "aac821c278fd447fd12e679f76d8fa132e27f43ef22778d588f4fac0ccc2d738"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/05-authoring-reassessment.md",
+      "sha256": "dd3115b20544a2e8d548a421e9c342901b59f2861fb0a5d136ed4e85cfde13b5"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/05-authoring-boundary.json",
+      "sha256": "a8709198454b3967ea8001dbe7bea3718cf222aca4b891ec18a115d1dcbd3142"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/05-before-reassessment.json",
+      "sha256": "95042563f36a11e10b43302f92498f35db2abccc5c5c5af4056b01ca496d0d9e"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/02-eligibility.md",
+      "sha256": "d816c8819972cef8e832a0c0a09cc68650957888ead7ba1bd53c7ea37b03a2f0"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/02-04-verification.json",
+      "sha256": "37076945b9b7497ac30539fb148a160efb63bcdf2070a8f767e4318e69a06b1d"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/03-decisions.md",
+      "sha256": "b037cec2e8eb9a861306d5f15a53c89112d676cc8bdddb1a007a768d9f333df5"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/03-decisions-verification.json",
+      "sha256": "5598cd18458eda0cab666cec9400d9231858e250831d30891d12bfc70a390320"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/04-fingerprints.md",
+      "sha256": "0b11bd112eb12baf00cb494fdc591201160f6f5d906ded72157ed75cad5b3c67"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/04-fingerprint-review.md",
+      "sha256": "7831d725c70f7392cf6e2624cdff55d39c99a7d66a75093946e98a5fc4b964af"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/fingerprint-review/probe.py",
+      "sha256": "88e1e1a5a47f334f0d0768e9ff40db09d5b329fd34b72438271c90d7b14f8742"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/fingerprint-review/results.json",
+      "sha256": "5de41e32e850a9dbce0b2bbf25e6baeafe9311d2863cad5ce66a6773e00bb14a"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/fingerprint-review/boundary-probe.py",
+      "sha256": "0c0dbbcb67a84aa24d9ad7c8b32bd07d7e51f1669a3d410e7f37c6746b8147c2"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/session-orientation/evidence/fingerprint-review/boundary-results.json",
+      "sha256": "eee28c103f88ee698aee0dea5ffd28a9156fe8d126a45c5470f337a5a2a551fa"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/context-reader/acceptance-trial.md",
+      "sha256": "6807e25b385beb71a12e0386c9274fcbd04dfe3c0577b99ae792b8d1236f4775"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/context-reader/acceptance-trial-manifest.json",
+      "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d"
+    },
+    {
+      "path": "/Users/zoki/code/context/.scratch/context-reader/review-verification-manifest.json",
+      "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4"
+    },
+    {
+      "path": "/Users/zoki/code/context/.agents/skills/task-context/SKILL.md",
+      "sha256": "615adfe1e4717381f084d13e95aca05abba2f029a803a19b49a8242fc30c693f"
+    }
+  ]
+}

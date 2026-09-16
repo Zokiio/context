@@ -1,0 +1,15 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n## Acceptance criteria\r\n- [empty][] and [empty title][title].\r\n\r\n## Comments\r\n[empty]: <>\r\n[title]: destination.md\r\n  \"\"",
+  "ticketParts": [
+    "## Acceptance criteria\r\n- [empty][] and [empty title][title].\r\n\r\n",
+    "[empty]: <>\r\n",
+    "[title]: destination.md\r\n  \"\""
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\r\n- [empty][] and [empty title][title].\r\n\r\n",
+    "[empty]: <>\r\n",
+    "[title]: destination.md\r\n  \"\""
+  ],
+  "ticketSHA256": "e56d752757c3dc3f9878b9e49d324869a356da56b5c2ca9fd00f28320f6ee90c",
+  "criteriaSHA256": "48945ca479aaa610270104859d91407598cd22227726e14419e94c343b92ca18"
+}

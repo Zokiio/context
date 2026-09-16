@@ -1,0 +1,462 @@
+{
+  "observedAt": "2026-09-16T12:46:45.706900+00:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex coordinating agent"
+  },
+  "invocation": [
+    "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-05",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context",
+    "--json"
+  ],
+  "exitStatus": 1,
+  "readerSHA256": "c5c8b9e2ff33a0e156bc4c23bf105a7c98c472c2abd592be7f0143825a1669b5",
+  "complete": false,
+  "inventoryComplete": true,
+  "subjects": [
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": {
+          "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md",
+          "id": "9f5341a5-dc27-4eed-be5d-59aa5c13387b",
+          "title": "Acceptance: Expose reproducible requirement fingerprints",
+          "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md",
+          "link": "../acceptances/04-authoring-reassessment-20260916.md"
+        },
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.241160+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+        },
+        "reasons": [
+          {
+            "code": "acceptance_valid",
+            "message": "recorded acceptance matches current requirements and retained evidence",
+            "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            },
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": {
+          "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md",
+          "id": "01010656-b2c7-4ff5-ac19-04625814c120",
+          "title": "Acceptance: List eligible work with reasons",
+          "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md",
+          "link": "../acceptances/02-authoring-reassessment-20260916.md"
+        },
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.141968+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:9666b19340834db9360c43c12dc2f40920e16c21; source-manifest-sha256:6dc6e1307406f9eb1d8956f6cb0b4768de1bcffaa346681a68339a52d3bb245a"
+        },
+        "reasons": [
+          {
+            "code": "acceptance_valid",
+            "message": "recorded acceptance matches current requirements and retained evidence",
+            "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            },
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": {
+          "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md",
+          "id": "8deb81a9-683e-4998-a11b-9c2359aaeb59",
+          "title": "Acceptance: Explain blocking decisions",
+          "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md",
+          "link": "../acceptances/03-authoring-reassessment-20260916.md"
+        },
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.192134+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:c69d818987541213e50858b979f3e33630ab0aa2; source-manifest-sha256:3e3e91507433fbdb31253dc4b6ca18256900b9c9fd5669584825041bcd25728b"
+        },
+        "reasons": [
+          {
+            "code": "acceptance_valid",
+            "message": "recorded acceptance matches current requirements and retained evidence",
+            "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "unknown",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/02-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            },
+            {
+              "code": "unsupported_check",
+              "message": "Blocked by relationship evaluation is not implemented yet",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/02-list-eligible-work.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": {
+          "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md",
+          "id": "fc50ce1b-ed4f-4fd0-a34d-1aaa96420447",
+          "title": "Acceptance: Show project orientation and work inventory",
+          "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md",
+          "link": "../acceptances/01-authoring-reassessment-20260916.md"
+        },
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:34:00.092728+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:57420636386fa64fe998f75836bb2d7aaa905011; source-manifest-sha256:60d9901e362466460e29901c973fd8a29e87d9147f10cb7d83c3601ca5f668ba"
+        },
+        "reasons": [
+          {
+            "code": "acceptance_valid",
+            "message": "recorded acceptance matches current requirements and retained evidence",
+            "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/01-authoring-reassessment-20260916.md"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_dependencies",
+              "message": "Blocked by explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/01-show-project-orientation.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": {
+          "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/05-acceptance-20260916.md",
+          "id": "31880c33-d8eb-4797-af9a-8c9cc8d7020c",
+          "title": "Acceptance: Satisfy direct prerequisites using recorded acceptance",
+          "from": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+          "link": "../acceptances/05-acceptance-20260916.md"
+        },
+        "actor": {
+          "kind": "workflow",
+          "identity": "Codex coordinating agent"
+        },
+        "decidedAt": "2026-09-16T12:46:45.688109+00:00",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "working-tree:b266094c0e924606a0dd52fed3483355dacdc8db; source-manifest-sha256:b51077a315dd45d62aedac0858bf7f813741e766fbf263cfa599a40c268785f2"
+        },
+        "reasons": [
+          {
+            "code": "acceptance_valid",
+            "message": "recorded acceptance matches current requirements and retained evidence",
+            "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/05-acceptance-20260916.md"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "acceptance_criteria_present",
+              "message": "at least one nonempty acceptance criterion is authored",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md"
+            }
+          ]
+        },
+        {
+          "name": "required_context",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "required_context_available",
+              "message": "all explicitly selected requirement and context sources are available",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md"
+            }
+          ]
+        },
+        {
+          "name": "dependencies",
+          "status": "unknown",
+          "reasons": [
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/03-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            },
+            {
+              "code": "unsupported_check",
+              "message": "Blocked by relationship evaluation is not implemented yet",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/03-explain-blocking-decisions.md"
+            },
+            {
+              "code": "acceptance_valid",
+              "message": "recorded acceptance matches current requirements and retained evidence",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/acceptances/04-authoring-reassessment-20260916.md"
+            },
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            },
+            {
+              "code": "unsupported_check",
+              "message": "Blocked by relationship evaluation is not implemented yet",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/04-expose-requirement-fingerprints.md"
+            }
+          ]
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass",
+          "reasons": [
+            {
+              "code": "no_blocking_decisions",
+              "message": "Blocked by decisions explicitly declares none",
+              "path": "/Users/zoki/code/context/.scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

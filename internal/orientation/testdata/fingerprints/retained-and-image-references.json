@@ -1,0 +1,18 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n## Scope\n[Visible][inside].\n\n[inside]: inside.md\n\n## Acceptance criteria\n- [Visible][inside], ![Diagram][diagram], [shortcut], and [collapsed][].\n\n## Comments\n[diagram]: <diagram.svg>\n  \"Two lines\n  of title\"\n[shortcut]: shortcut.md\n[collapsed]: collapsed.md\n[inSIDE]: ineffective.md\n",
+  "ticketParts": [
+    "## Scope\n[Visible][inside].\n\n[inside]: inside.md\n\n## Acceptance criteria\n- [Visible][inside], ![Diagram][diagram], [shortcut], and [collapsed][].\n\n",
+    "[diagram]: <diagram.svg>\n  \"Two lines\n  of title\"\n",
+    "[shortcut]: shortcut.md\n",
+    "[collapsed]: collapsed.md\n"
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\n- [Visible][inside], ![Diagram][diagram], [shortcut], and [collapsed][].\n\n",
+    "[inside]: inside.md\n",
+    "[diagram]: <diagram.svg>\n  \"Two lines\n  of title\"\n",
+    "[shortcut]: shortcut.md\n",
+    "[collapsed]: collapsed.md\n"
+  ],
+  "ticketSHA256": "094cae135c7a1939c536986e83f0d28f00039a4b587341f5796d73829f6eb95f",
+  "criteriaSHA256": "916ee65c8fcc7658f004f743fd05d7e10046341cb4e95d896bf3d1ecfc38961b"
+}

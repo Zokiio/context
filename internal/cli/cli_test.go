@@ -12,12 +12,18 @@ import (
 	"testing"
 
 	"github.com/Zokiio/context/internal/cli"
+	"github.com/Zokiio/context/internal/orientation"
 	"github.com/Zokiio/context/internal/taskcontext"
 	"github.com/rogpeppe/go-internal/testscript"
 )
 
 func TestMain(m *testing.M) {
-	testscript.Main(m, map[string]func(){"ctx": func() { os.Exit(cli.Run(context.Background(), os.Args, os.Stdout, os.Stderr, taskcontext.Assemble)) }})
+	testscript.Main(m, map[string]func(){"ctx": func() {
+		os.Exit(cli.Run(context.Background(), os.Args, os.Stdout, os.Stderr, cli.Operations{
+			Assemble: taskcontext.Assemble,
+			Orient:   orientation.Orient,
+		}))
+	}})
 }
 
 func TestCLI(t *testing.T) {
@@ -58,7 +64,50 @@ func TestCLI(t *testing.T) {
 		if result.SchemaVersion != 1 || result.Complete != (args[1] == "true") || result.TraversalComplete != traversalComplete || result.Sources == nil || result.Diagnostics == nil {
 			ts.Fatalf("unexpected JSON: %+v", result)
 		}
-	}}})
+	}, "jsonorientation": checkOrientationJSON}})
+}
+
+func checkOrientationJSON(ts *testscript.TestScript, neg bool, args []string) {
+	if neg || len(args) != 2 {
+		ts.Fatalf("usage: jsonorientation file true|false")
+	}
+	var result orientation.Result
+	decoder := json.NewDecoder(bytes.NewBufferString(ts.ReadFile(args[0])))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&result); err != nil {
+		ts.Fatalf("%v", err)
+	}
+	if err := decoder.Decode(new(any)); err != io.EOF {
+		ts.Fatalf("unexpected trailing JSON: %v", err)
+	}
+	if result.SchemaVersion != 1 || result.Complete != (args[1] == "true") ||
+		result.Goals == nil || result.CurrentCommitments == nil || result.WorkItems == nil ||
+		result.Shortlist == nil || result.InProgress == nil || result.Backlog == nil ||
+		result.Decisions == nil || result.Sources == nil || result.Diagnostics == nil {
+		ts.Fatalf("unexpected orientation JSON: %+v", result)
+	}
+	for _, work := range result.WorkItems {
+		if work.Dependencies == nil {
+			ts.Fatalf("dependency edges must be an array: %+v", work)
+		}
+		for _, edge := range work.Dependencies {
+			if edge.Reasons == nil {
+				ts.Fatalf("dependency edge reasons must be an array: %+v", edge)
+			}
+		}
+		if acceptance := work.Acceptance; acceptance != nil {
+			if acceptance.HumanApprovals == nil || acceptance.Requirements == nil || acceptance.Evidence == nil || acceptance.Reasons == nil {
+				ts.Fatalf("acceptance lists must be arrays: %+v", acceptance)
+			}
+			for _, snapshots := range [][]orientation.Snapshot{acceptance.Requirements, acceptance.Evidence} {
+				for _, snapshot := range snapshots {
+					if snapshot.Reasons == nil {
+						ts.Fatalf("snapshot reasons must be an array: %+v", snapshot)
+					}
+				}
+			}
+		}
+	}
 }
 
 type failingWriter struct{}
@@ -79,7 +128,7 @@ func TestExecutionFailures(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var stderr bytes.Buffer
-			status := cli.Run(context.Background(), []string{"ctx", "context", "--project", ".", "--ticket", "x"}, tc.writer, &stderr, tc.operation)
+			status := cli.Run(context.Background(), []string{"ctx", "context", "--project", ".", "--ticket", "x"}, tc.writer, &stderr, cli.Operations{Assemble: tc.operation})
 			if status != 2 || stderr.Len() == 0 {
 				t.Fatalf("status=%d stderr=%q", status, stderr.String())
 			}
@@ -99,13 +148,13 @@ func TestDefaultAndExplicitLimitFlags(t *testing.T) {
 		var stdout, stderr bytes.Buffer
 		called := false
 		args := append([]string{"ctx", "context", "--project", ".", "--ticket", "root.md"}, tc.args...)
-		status := cli.Run(context.Background(), args, &stdout, &stderr, func(_ context.Context, request taskcontext.Request) (taskcontext.Result, error) {
+		status := cli.Run(context.Background(), args, &stdout, &stderr, cli.Operations{Assemble: func(_ context.Context, request taskcontext.Request) (taskcontext.Result, error) {
 			called = true
 			if request.MaxFiles != tc.files || request.MaxBytes != tc.bytes {
 				t.Fatalf("unexpected limits: %+v", request)
 			}
 			return taskcontext.Result{Complete: true}, nil
-		})
+		}})
 		if status != 0 || !called || stderr.Len() != 0 {
 			t.Fatalf("status=%d called=%v stderr=%q", status, called, stderr.String())
 		}

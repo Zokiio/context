@@ -3,6 +3,7 @@ type: WorkItem
 id: f49ee233-f7d0-4266-92d1-f354df72a604
 title: "Include linked project documents"
 triage: ready-for-agent
+execution: completed
 ---
 
 # 02: Include linked project documents
@@ -31,6 +32,10 @@ This slice supports documents inside the selected bundle. It establishes relatio
 
 - [01: Read an OKF ticket as JSON context](01-read-okf-ticket.md)
 
+## Blocked by decisions
+
+None
+
 ## Spec
 
 - [Context reader specification](../../../context-reader/spec.md)
@@ -52,3 +57,7 @@ This slice supports documents inside the selected bundle. It establishes relatio
 - Full and collapsed undefined reference links produce diagnostics. Undefined shortcut syntax such as `[note]` remains prose because it does not establish reference intent. Linked documents are included without traversing their own relationships or validating their frontmatter.
 - Implementation ownership released after verification. Recursive blocker traversal and external roots remain for tickets 03 and 04. No commit or milestone-wide completion is claimed here.
 - 2026-09-16 review follow-up: Fixed nested bracket labels such as `[outer [inner]](doc.md)`. Selection now uses Goldmark's normal AST. A separate diagnostic parse handles explicit undefined references and checks their positions against ordinary text in the normal AST. This preserves valid outer links and prevents nested reference-like text inside links or images from causing false diagnostics. Added nested-label, image, and unresolved outer-reference regression tests. `go test ./...`, `go test -race ./internal/taskcontext`, and `go vet ./internal/taskcontext` passed. Ownership released again after this bounded correction.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/02-include-project-documents-migration-20260916.md)

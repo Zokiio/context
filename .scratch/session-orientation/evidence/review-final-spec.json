@@ -1,0 +1,93 @@
+{
+  "observedAt": "2026-09-16T13:47:45.685346+00:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex agent /root/orientation_spec_review"
+  },
+  "axis": "Spec",
+  "scope": "Frozen working-tree record delta since 9485397: real ticket-08 pickup evidence and closeout; superseding evidence corrections and acceptance; no new program review or program-test run.",
+  "baselineCommit": "9485397082d1551524acba9616ebcbb354f96398",
+  "programCommit": "4ccb1f7171082fa97af7455b0d86f56c5228b71d",
+  "counts": {
+    "pathReferencesDecoded": 631,
+    "orientationSources": 82,
+    "workItems": 13,
+    "contextSources": 26,
+    "rawCommandCaptures": 22,
+    "namedRawArtifacts": 9,
+    "snapshotDigests": 95,
+    "programInputs": 64,
+    "criteria": 10,
+    "finalSourceCount": 89,
+    "finalSourceBytes": 930394
+  },
+  "checks": {
+    "decodedOrientationSourcesExact": true,
+    "decodedContextManifestExact": true,
+    "originalProjectFactsExact": true,
+    "commandsExactAndCapturesHashBound": true,
+    "allNineNamedRawArtifactsMatch": true,
+    "originalTicketByteExactAndHashBound": true,
+    "allPickupOrientationSourcesMatchRecordsCommit": true,
+    "allContextTextsMatchBytesAtPickup": true,
+    "fourEligibilityConditionsAtPickup": true,
+    "predecessorCompletedAndAcceptedAtPickup": true,
+    "pickupSequenceAndCompleteContext": true,
+    "fiveLegacyItemsAcceptedAndExcluded": true,
+    "readOnlySnapshotsAndGitStateEqual": true,
+    "readOnlyBoundaryManifestHashesMatch": true,
+    "onlyExecutionEditedAtPickup": true,
+    "postPickupStateSeparateAndRequirementsUnchanged": true,
+    "all64ProgramInputsUnchanged": true,
+    "readerIdentityAndManifestEncodingCorrect": true,
+    "trialCriteriaOneThroughNineObservedAndTenDelegated": true,
+    "specificationUnchanged": true,
+    "priorEvidenceAndFourDecisionsPreserved": true,
+    "coordinatorCloseoutCompletesCriterionTen": true,
+    "allAcceptanceSnapshotDigestsMatch": true,
+    "decodedWorkInventoryFactsMatchRawProjection": true,
+    "independentTextJsonInventorySourceAndAcceptanceComparison": true,
+    "currentFinalOrientationCompleteAll13AcceptedReadyNoShortlist": true
+  },
+  "findings": [],
+  "remainingFindingCount": 0,
+  "scopeDigests": {
+    ".scratch/session-orientation/evidence/08-pickup-trial.md": "6bdd7d6f84c6ca46ea1d8aa067fdf1747964fa7bc4b7e7099b93ec9186f75ac6",
+    ".scratch/session-orientation/evidence/08-pickup-trial.json": "1de7d962df23437119d716183b800c3820fa08a8fa411fadea93f12578a1b305",
+    ".scratch/session-orientation/evidence/08-pickup-original-ticket.md": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc",
+    ".scratch/session-orientation/evidence/08-closeout-observation.json": "911a9015e13c09864c02fcc57c0f8d7ae7a40180059ecc39287d86d579ea019f",
+    ".scratch/session-orientation/evidence/07-migration-corrected.md": "12dd98a06ea3c14d062e7915494423d742949ead275cb944c5d4375f21572bc4",
+    ".scratch/session-orientation/evidence/review-reassessment-corrected.md": "34c14226bd542968bda2b219d3abaca2355425a2dc3d8427d26b00cf22a95304",
+    ".scratch/records/session-orientation/acceptances/01-evidence-correction-20260916.md": "3450a94650c85f02f1ed6908d2096d05f131ed191fad86ed6a2d66d2f08b5c0d",
+    ".scratch/records/session-orientation/acceptances/07-evidence-correction-20260916.md": "2c5071a7f7ebbb1284549517f5fd58228c0b2885dd9b8c37796b8dcf37b443b4",
+    ".scratch/records/session-orientation/acceptances/06-evidence-correction-20260916.md": "3baed4ff299286ae4bb9e561207ddc43a0d0194260a7321e3af59e4a2a33f696",
+    ".scratch/records/session-orientation/acceptances/05-evidence-correction-20260916.md": "3b1d7fc70a8324f28c631ba8cc2cd78348dde4a5992f0256afe6b34dfc6aab5c",
+    ".scratch/records/session-orientation/acceptances/08-pickup-trial-20260916.md": "8260ed44ceaecae7a9048046c4a4612b77b6cc1769485a36ec79b4fc42fa6f60",
+    ".scratch/session-orientation/implementation-log.md": "bada2114f9d7e0a83d9658772284e856eb255de7734ef36bfc20af6fd8723381",
+    ".scratch/records/session-orientation/issues/01-show-project-orientation.md": "192dc06910488246ac580388727e3d776a37d6f3c5ee4ec2c0dd02c28ffa4f9e",
+    ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md": "f2da6ff7db54afb83e6e517ab0d87164c51b3e5d9f2a91bc7159e38c0e14a5a3",
+    ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md": "289765b7c8a1e26bbd06352915005e418a6e735694ed22bb9ae813030bca712e",
+    ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md": "188cb00d4ddc541359cc00d3a410282e5a9d16625a67f4f88dd44e4f2f0f8fe6",
+    ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md": "b057afe511db42c98ea9bb57ce8e16c27e0531c482fa5d55238d5b3015edaa2c"
+  },
+  "limitations": [
+    "Session freshness and full-text consumption retain the trial actor attribution and coordinator launch assertion; this review does not authenticate actors or replay their session.",
+    "Historical test outcomes are retained evidence. No broad program tests were rerun."
+  ],
+  "finalOrientation": {
+    "invocation": [
+      "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-preflight",
+      "orient",
+      "--project",
+      "/Users/zoki/code/context/.scratch/records",
+      "--allow-source",
+      "/Users/zoki/code/context",
+      "--json"
+    ],
+    "exitStatus": 0,
+    "complete": true,
+    "inventoryComplete": true,
+    "completedValidReadyWorkItems": 13,
+    "shortlistCount": 0
+  }
+}

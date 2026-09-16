@@ -1,0 +1,12 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n# Préface\r\n\r\n~~~md\r\n## Comments\r\nKeep fenced content.\r\n~~~\r\n\r\n## Acceptance criteria\r\n- [x] First.\r\n### Comments\r\nNested café.\r\n\r\n## Comments\r\nHidden.\r\n### Nested\r\nStill hidden.\r\n## Scope\r\nBody remains.\r\n\r\n## Comments\r\nRepeated exclusion.\r\n\r\nAcceptance criteria\r\n-------------------\r\n- [ ] Second.\r\n\r\n## Acceptance\r\nIgnored.\r\n## Acceptance\r\nRepeated current link.\r\n# Appendix\r\nRetained after the excluded section.\r\n",
+  "ticketParts": [
+    "# Préface\r\n\r\n~~~md\r\n## Comments\r\nKeep fenced content.\r\n~~~\r\n\r\n## Acceptance criteria\r\n- [x] First.\r\n### Comments\r\nNested café.\r\n\r\n## Scope\r\nBody remains.\r\n\r\nAcceptance criteria\r\n-------------------\r\n- [ ] Second.\r\n\r\n# Appendix\r\nRetained after the excluded section.\r\n"
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\r\n- [x] First.\r\n### Comments\r\nNested café.\r\n\r\n",
+    "Acceptance criteria\r\n-------------------\r\n- [ ] Second.\r\n\r\n"
+  ],
+  "ticketSHA256": "4f2bfa512def79be4dd8b2e29199b2d13c5cf0dd245f2cc64fd37f786561a158",
+  "criteriaSHA256": "8a8a8c954107489b479ddc9c2b01f279686ca1bbe832e2e5b4066ab0fd0eeb14"
+}

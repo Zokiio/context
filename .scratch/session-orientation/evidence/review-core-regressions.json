@@ -1,0 +1,41 @@
+{
+  "reviewedCommit": "0808609e8de4ad1d80c52cadd8fd0b6fca31ac0d",
+  "actor": "Codex coordinating agent",
+  "runs": [
+    {
+      "phase": "red",
+      "observedAt": "2026-09-16T13:08:10.077891+00:00",
+      "command": [
+        "go",
+        "test",
+        "./internal/orientation",
+        "-run",
+        "TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria",
+        "-count=1"
+      ],
+      "exitStatus": 1,
+      "expectedExitStatus": 1,
+      "stdout": "--- FAIL: TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria (0.02s)\n    --- FAIL: TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria/#00 (0.01s)\n        dependencies_test.go:62: middle.md: readiness=ready eligible=false dependencies=pass; empty criteria must block even with fresh acceptance\n    --- FAIL: TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria/-_[_]_ (0.01s)\n        dependencies_test.go:62: middle.md: readiness=ready eligible=false dependencies=pass; empty criteria must block even with fresh acceptance\n    --- FAIL: TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria/###_To_be_defined_ (0.01s)\n        dependencies_test.go:62: middle.md: readiness=ready eligible=false dependencies=pass; empty criteria must block even with fresh acceptance\nFAIL\nFAIL\tgithub.com/Zokiio/context/internal/orientation\t0.290s\nFAIL\n",
+      "stderr": "",
+      "testFileSHA256": "92266e89c891bc7c2c2951240cad93236651d7aa106984cb2c266e3e11a0b3dc"
+    },
+    {
+      "phase": "green",
+      "observedAt": "2026-09-16T13:08:24.960414+00:00",
+      "command": [
+        "go",
+        "test",
+        "./internal/orientation",
+        "-run",
+        "TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria",
+        "-count=1"
+      ],
+      "exitStatus": 0,
+      "expectedExitStatus": 0,
+      "stdout": "ok  \tgithub.com/Zokiio/context/internal/orientation\t0.237s\n",
+      "stderr": "",
+      "testFileSHA256": "92266e89c891bc7c2c2951240cad93236651d7aa106984cb2c266e3e11a0b3dc",
+      "implementationSHA256": "8939248872b413bb37ca98ab2071d3165078b56ac851e8a0ec49a21d7ea8814f"
+    }
+  ]
+}

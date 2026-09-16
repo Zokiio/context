@@ -1,0 +1,167 @@
+[
+  {
+    "name": "multiline-label",
+    "body": "## Acceptance criteria\n- [Use][one two]\n\n## Comments\n[one\n two]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "e514b054b8519eb4c87f6491295622a927206439397804ee9da8d8a457f406aa",
+      "9b9ae7aec143044a50699c0671376b0f8eb1b891fc2431886cb338158531f018"
+    ],
+    "expected": [
+      "e514b054b8519eb4c87f6491295622a927206439397804ee9da8d8a457f406aa",
+      "9b9ae7aec143044a50699c0671376b0f8eb1b891fc2431886cb338158531f018"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "escaped-label",
+    "body": "## Acceptance criteria\n- [Use][escaped\\]label]\n\n## Comments\n[escaped\\]label]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "40ee8de8aaab7572ca56426a83432458d8e6857d61c0e4a6cc886a629a12cfee",
+      "62e4edeae5bbc2d309f8de14da5d7104255ba52b490301f6c525d46fbf960124"
+    ],
+    "expected": [
+      "40ee8de8aaab7572ca56426a83432458d8e6857d61c0e4a6cc886a629a12cfee",
+      "62e4edeae5bbc2d309f8de14da5d7104255ba52b490301f6c525d46fbf960124"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "quoted-definition",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n> [rule]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "3db796f449c54da2810d8545560479b067298bdb25bbc9bcbd8eb9981fc1282f",
+      "006969700e7fae4367b0571137a1b7091ba169c449c590c441d385a8cebed40d"
+    ],
+    "expected": [
+      "3db796f449c54da2810d8545560479b067298bdb25bbc9bcbd8eb9981fc1282f",
+      "006969700e7fae4367b0571137a1b7091ba169c449c590c441d385a8cebed40d"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "quoted-multiline-definition",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n> [rule]:\n>   target.md\n>   \"Multi\n>   line\"\n",
+    "exitStatus": 1,
+    "got": [
+      "109d7df188654b3691e62aacd9415dc59bcaf50a13340438f4cf77e6375d484d",
+      "7822775739ce50df56e87ff18c55d67c33542d50a0b42f893f1994a8a2d12515"
+    ],
+    "expected": [
+      "109d7df188654b3691e62aacd9415dc59bcaf50a13340438f4cf77e6375d484d",
+      "7822775739ce50df56e87ff18c55d67c33542d50a0b42f893f1994a8a2d12515"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "list-definition",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n- [rule]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "83700aeabbfa79420ce42517868016d4f5834b83995812ef5f15e5e494878d2f",
+      "ca8b428737e3a247cafcf85f61881c0e179b9d5c0d7599af8ea456da96836851"
+    ],
+    "expected": [
+      "83700aeabbfa79420ce42517868016d4f5834b83995812ef5f15e5e494878d2f",
+      "ca8b428737e3a247cafcf85f61881c0e179b9d5c0d7599af8ea456da96836851"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "list-multiline-definition",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n- [rule]:\n    target.md\n    \"Multi\n    line\"\n",
+    "exitStatus": 1,
+    "got": [
+      "06bd9d2594cd0fc61f76469dbe957ec105f3f0a2a9d14b9583ed805df0099a39",
+      "5667e19183c5124b54810ab46c62520dc4ebbf4ff1b99b8926c4953a4926fde3"
+    ],
+    "expected": [
+      "06bd9d2594cd0fc61f76469dbe957ec105f3f0a2a9d14b9583ed805df0099a39",
+      "5667e19183c5124b54810ab46c62520dc4ebbf4ff1b99b8926c4953a4926fde3"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "empty-destination-title",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n[rule]: <>\n  \"title\"\n",
+    "exitStatus": 1,
+    "got": [
+      "3968a636be461f57a5824c06f0eca2603012c3d1cddc6aed385655091585d5d3",
+      "84a426ec26ec8b82e9feacb509fd72856d5d96b1c84f4682f689291b9dbf443f"
+    ],
+    "expected": [
+      "3968a636be461f57a5824c06f0eca2603012c3d1cddc6aed385655091585d5d3",
+      "84a426ec26ec8b82e9feacb509fd72856d5d96b1c84f4682f689291b9dbf443f"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "escaped-title-newline",
+    "body": "## Acceptance criteria\n- [Use][rule]\n\n## Comments\n[rule]: target.md\n  \"Escaped \\\"\n  title\"\n",
+    "exitStatus": 1,
+    "got": [
+      "6972ffd2f74b7d1413b7dbfa6f086c3f601ddbd8fb1d251e297825c318c6022a",
+      "b038724b133f192beeca7678ce0a9ec52aec4362cb9d400fddcd09a38a864f14"
+    ],
+    "expected": [
+      "6972ffd2f74b7d1413b7dbfa6f086c3f601ddbd8fb1d251e297825c318c6022a",
+      "b038724b133f192beeca7678ce0a9ec52aec4362cb9d400fddcd09a38a864f14"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "unicode-label",
+    "body": "## Acceptance criteria\n- [Use][CAF\u00c9]\n\n## Comments\n[caf\u00e9]: target.md\n",
+    "exitStatus": 1,
+    "got": [
+      "a54e9752e15b42fc59a2f91d8957300632d00df6fd969aa1ed8b506f921cc1ab",
+      "bff3ba1137996b12caf148613fdbb8f682471cc26e2af503873380521e8f66b8"
+    ],
+    "expected": [
+      "a54e9752e15b42fc59a2f91d8957300632d00df6fd969aa1ed8b506f921cc1ab",
+      "bff3ba1137996b12caf148613fdbb8f682471cc26e2af503873380521e8f66b8"
+    ],
+    "match": true,
+    "stderr": ""
+  },
+  {
+    "name": "bare-cr-boundaries",
+    "body": "## Acceptance criteria\r- Works.\r\r## Comments\rNote.\r",
+    "exitStatus": 1,
+    "got": [
+      "113e090580fac0bd48e47353e0679339ebb30fa3abacba23666c6b7ce90e8245",
+      null
+    ],
+    "expected": [
+      "dba667e1a5d19321bd63de396d867af9ec7f62217a599ff2b4deed65fb9c81fe",
+      "ab717d3a64508ca1a7bb93d8ef56314ec1176a792d9c92f14f67b7801d3a7bbb"
+    ],
+    "match": false,
+    "stderr": ""
+  },
+  {
+    "name": "container-exclusion",
+    "body": "## Acceptance criteria\n- Works.\n\n> ## Comments\n> Note.\n\n## Scope\nRetained.\n",
+    "exitStatus": 1,
+    "got": [
+      "7bc590ba8614486a230f127c9d0f8fbb296416d0392a0163df97ffe5526467d3",
+      "1bd77cf9b34a83013a617bc55282afbb552875becd63b9d7c0dd82e15c2cf0e5"
+    ],
+    "expected": [
+      "7bc590ba8614486a230f127c9d0f8fbb296416d0392a0163df97ffe5526467d3",
+      "1bd77cf9b34a83013a617bc55282afbb552875becd63b9d7c0dd82e15c2cf0e5"
+    ],
+    "match": true,
+    "stderr": ""
+  }
+]

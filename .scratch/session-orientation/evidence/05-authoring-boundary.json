@@ -1,0 +1,18 @@
+{
+  "withoutSection": "629a888506e060f49e2bce6f33e4e5e9c2eeb389446639e5d59754456df62bbb",
+  "preparedEmptySection": "a2a272e0d4361c0ce92e262aacef02f902542d4f8f56548e1a40f96cf94baf5e",
+  "filledCurrentLink": "a2a272e0d4361c0ce92e262aacef02f902542d4f8f56548e1a40f96cf94baf5e",
+  "observation": "Adding a separating blank line before a first Acceptance heading changes retained bytes. Preparing the section before fingerprinting makes later link insertion stable.",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex coordinating agent"
+  },
+  "reader": {
+    "path": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-03",
+    "sha256": "710a65de5b56f43b05607cd2faf187b45cfc28e235c5d5db9924d76f9495553d",
+    "sourceVerification": ".scratch/session-orientation/evidence/03-decisions-verification.json"
+  },
+  "bodyWithoutSection": "## Acceptance criteria\n- [ ] Work\n## Blocked by\nNone\n## Blocked by decisions\nNone\n",
+  "preparedSuffix": "\n## Acceptance\n\n",
+  "filledSuffix": "\n## Acceptance\n\n[Current](decision.md)\n"
+}

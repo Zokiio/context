@@ -1,0 +1,87 @@
+# Known blockers do not make an otherwise fully evaluated project partial.
+exec ctx orient --project bundle
+! stderr .
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'Shortlist:'
+stdout 'Pick next \[next\]'
+stdout 'readiness: ready'
+stdout 'readiness: blocked'
+stdout 'eligible: true'
+stdout 'Backlog:'
+stdout 'Later work \[later\]'
+
+exec ctx orient --project bundle --json
+! stderr .
+cp stdout report.json
+jsonorientation report.json true
+stdout '"shortlist":\[\{[^}]*"id":"next"[^}]*\}\]'
+stdout '"backlog":\[\{[^}]*"id":"later"[^}]*\}\]'
+stdout '"readiness":"blocked"'
+
+# Required context that disappears makes the report partial and removes eligibility.
+rm bundle/context.md
+exit 1 ctx orient --project bundle --json
+! stderr .
+cp stdout partial.json
+jsonorientation partial.json false
+stdout '"shortlist":\[\]'
+stdout 'source_missing'
+
+-- bundle/project.md --
+---
+type: Project
+id: project
+title: Readiness project
+---
+## Goals
+Make deliberate progress.
+## Current commitments
+- [Empty criteria](blocked.md)
+- [Pick next](next.md)
+## Open decisions
+None
+-- bundle/next.md --
+---
+type: WorkItem
+id: next
+title: Pick next
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Deliver the documented result.
+## Context
+[Requirements](context.md)
+## Blocked by
+None
+## Blocked by decisions
+None
+-- bundle/blocked.md --
+---
+type: WorkItem
+id: blocked
+title: Empty criteria
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+## Blocked by
+None
+## Blocked by decisions
+None
+-- bundle/later.md --
+---
+type: WorkItem
+id: later
+title: Later work
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Implement this when committed.
+## Blocked by
+None
+## Blocked by decisions
+None
+-- bundle/context.md --
+Use the existing context operation after choosing this work item.

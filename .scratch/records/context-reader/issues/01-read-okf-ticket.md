@@ -3,6 +3,7 @@ type: WorkItem
 id: bcbad059-f0b1-401b-99e1-3fdc468db8fb
 title: "Read an OKF ticket as JSON context"
 triage: ready-for-agent
+execution: completed
 ---
 
 # 01: Read an OKF ticket as JSON context
@@ -29,7 +30,11 @@ Exercise self-contained tickets without relationship links in this slice. Linked
 
 ## Blocked by
 
-None (can start immediately).
+None
+
+## Blocked by decisions
+
+None
 
 ## Spec
 
@@ -62,3 +67,7 @@ Implemented by `/root/ticket01` in the uncommitted working tree based on commit 
 - Review findings for valid YAML mapping wrappers and absolute paths through a project symlink were fixed and covered by tests. Invalid UTF-8 now produces `invalid_source_encoding` and no source instead of silently replacing bytes in JSON.
 
 Relationship traversal and limits remain scoped to later tickets. No milestone-level real-task acceptance is claimed by this first slice.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/01-read-okf-ticket-migration-20260916.md)

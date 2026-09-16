@@ -1,0 +1,341 @@
+{
+  "observedAt": "2026-09-16T13:11:51.814120+00:00",
+  "baseCommit": "0808609e8de4ad1d80c52cadd8fd0b6fca31ac0d",
+  "buildCommand": [
+    "go",
+    "build",
+    "-o",
+    "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+    "./cmd/ctx"
+  ],
+  "buildSHA256": "70d37e8989db00f305e05d0ce0f498b7fa00dfca45ab1a6ee74d1f93ff789a21",
+  "sourceManifest": {
+    "internal/cli/acceptance.go": "949d5912e870712227931aa3081fd4b66b535b3c2e2761e0d16066612c416009",
+    "internal/cli/acceptance_cli_test.go": "f82f525ac3b0dec1f73513fe6b44a38f2569f954d4597cf825c0f1908c936beb",
+    "internal/cli/cli.go": "eb268e11afc7aa483993277a7b7cd3b519b48e28eb5be6938f521d013b7dce81",
+    "internal/cli/cli_test.go": "345d781248c34176aa5f0f812d58908a10e6f39ca07d26c2813a7a37ccaf7016",
+    "internal/cli/dependencies_cli_test.go": "c3705b6409393eecacd275d01934cf314a441b2bca2fe2874f5317c0a794e710",
+    "internal/cli/orientation.go": "758ec5ee3756687083012810dffd9481aa4ddef95d536d96859bddf94c8f9f8e",
+    "internal/cli/orientation_cli_test.go": "84aa6576f2c7248d01db3123bf69dcff10f6ba64e0ba50745a27e905b2e68df9",
+    "internal/orientation/acceptance.go": "10f411ec16a73d70c90e5ff41b2a023b3268a5181d7a48a187e1e94f8f6ff375",
+    "internal/orientation/acceptance_snapshots.go": "474a44d7d3863cfa8318c0664ab3a69c7efa42b78755e793971f29ef01c5a847",
+    "internal/orientation/acceptance_test.go": "1929a547cc305a10fdc591173b2d6ba3c3502936cf0ddf093ce69455c8a2f09d",
+    "internal/orientation/checks.go": "f67876785e3cbfc9e347db628c571531039bac6aea56916acd31bf1208e98688",
+    "internal/orientation/decisions.go": "cb2ee48e4f4a1c3063e7242f34a871256c7c2f84081c730507b5e3ecac564f98",
+    "internal/orientation/decisions_test.go": "985d3d042ea24300453e17d97905c5b22d5b5b5675f0d406b3f2fc29c03952b6",
+    "internal/orientation/dependencies.go": "b0b13c3527bd16dea1eb4d35a450c91d0d655d7234855f731fc5c277924c3aa6",
+    "internal/orientation/dependencies_test.go": "92266e89c891bc7c2c2951240cad93236651d7aa106984cb2c266e3e11a0b3dc",
+    "internal/orientation/fingerprint.go": "8956e2d48b7023df852e152d400abd4a5847a98b13164cc38f912d5669c986ed",
+    "internal/orientation/fingerprint_test.go": "93bde08233ef7c9afb79502241702c90346168cc782edad067de6322933b1c37",
+    "internal/orientation/inventory.go": "62c02eaaf1e759949107388441ec8ef13188a007ced4af560acf4b71526f94b0",
+    "internal/orientation/limits_test.go": "60edcd80cd085bc8c6f4f27db90b9b4b28346fc96d665c3a2606bff275f2f2f6",
+    "internal/orientation/metadata.go": "1e07a3d2a30ee25603db998e606396cf0913e683e456e976af0c90aaa468745c",
+    "internal/orientation/orientation.go": "011cbc2e943225fd8fdd3925e0a0baa6e568edcadb0a376782bc793e7b331901",
+    "internal/orientation/orientation_test.go": "a04a11b9764f09f1c45fbd3c4aa5c0105ca50e72dbd42d89c7200c041d528753",
+    "internal/orientation/profiles.go": "938260d63d3d6c8175a93f4a9a4a5d8c6650f730edd7bfe6546f3ae662797fde",
+    "internal/orientation/readiness.go": "e27f7b4bece7271015f59e1fd95c7ae7077f0d198e32f1e869dace92256870c9",
+    "internal/orientation/readiness_test.go": "b3fe7e7b98f6dad2dab314d1f622cd00d61d5aae8d2b43879208716643c59e86",
+    "internal/orientation/sources_test.go": "e7a28851839b78a8337ed390ba3af0a96f21bf753b19a7c7af5bbe50b56c2a8e",
+    "internal/orientation/types.go": "2c9642c3ef98c1e79146ac3e3995dfbe9201019d52bb2b7cf0e681023f6efe3b",
+    "internal/recordread/document.go": "34e45d4754c74b685c2cc4f8699bc9043525717e1523eeb5d0095131b26418f4",
+    "internal/recordread/sections.go": "ea7980e8ba2252d9ea8d6e3dded8b637ce0df23e514271a4f5804a1e5becc621",
+    "internal/recordread/source.go": "9d744bd6ad6e70ab678fcf85beb691bf551cd0f94c15c1884371fee1182e0ab8",
+    "internal/recordread/types.go": "a0b4b97469fa25cf662e172202cfca9ecf6b55fb207c4ecb96610154466e7682",
+    "internal/taskcontext/context.go": "941fe6224fa61e262e6715476db1d802a100cec978c1988c87d5dcca35a252e7",
+    "internal/taskcontext/context_test.go": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+    "internal/taskcontext/document.go": "ab086df322ce66472ac579ffebb5f35e46bc723b9605bb8ce79b80182fba0f8e",
+    "internal/taskcontext/external_test.go": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+    "internal/taskcontext/limits_test.go": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+    "internal/taskcontext/options.go": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+    "internal/taskcontext/relationships.go": "697166dc52dbb47e575fcfd85e29965ec4149162b85f8c93951457a048879b3b",
+    "internal/taskcontext/relationships_test.go": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+    "internal/taskcontext/source.go": "809bf450400cdc2c2d02975302fa556f56af5f63a4e1aa92d88e4695577b474f",
+    "internal/taskcontext/traversal_test.go": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580",
+    "cmd/ctx/main.go": "1abd2a3fb3b3374c07b72da7f004a2ff658e82dcd09847777d9079d56e8fdcdf",
+    "go.mod": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+    "go.sum": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e"
+  },
+  "results": [
+    {
+      "name": "project",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/b"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--project may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "project-repeat",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--project may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "files",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--max-files",
+        "3",
+        "--max-files=4"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--max-files may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "files-repeat",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--max-files",
+        "3",
+        "--max-files=3"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--max-files may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "bytes",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--max-bytes",
+        "1000",
+        "--max-bytes=2000"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--max-bytes may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "bytes-repeat",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--max-bytes",
+        "1000",
+        "--max-bytes=1000"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--max-bytes may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "json",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--json=true",
+        "--json=false"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--json may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "json-repeat",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--json",
+        "--json"
+      ],
+      "exitStatus": 2,
+      "stdout": "",
+      "stderr": "--json may only be specified once\n",
+      "expected": {
+        "exitStatus": 2,
+        "stdout": ""
+      }
+    },
+    {
+      "name": "repeatable-allowed-roots",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--allow-source",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--allow-source",
+        "/tmp/context-spec-review.Rlppmk/probes/b",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"a\",\"title\":\"Project a\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/a/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"a\",\"title\":\"Project a\",\"type\":\"Project\"}},\"goals\":[],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/a/project.md\",\"sha256\":\"4449533ccb5d704c9ab46d949a48081d9bb2987c40294ffb0d770e3685327342\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": "",
+      "expected": {
+        "exitStatus": 0,
+        "complete": true
+      },
+      "facts": {
+        "complete": true,
+        "shortlist": [],
+        "items": []
+      }
+    },
+    {
+      "name": "unchanged-context-repeated-project",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "context",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/a",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/b",
+        "--ticket",
+        "work.md"
+      ],
+      "exitStatus": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/b/work.md\",\"text\":\"---\\ntype: WorkItem\\nid: work\\ntitle: Work\\ntriage: ready-for-agent\\n---\\n## Acceptance criteria\\n- Works.\\n## Blocked by\\nNone\\n\",\"sha256\":\"5090ec03c765debeb8cd0f98137d33cdb8e1bf0e845c3fbb69f07d1ed648d639\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[]}\n",
+      "stderr": "",
+      "expected": {
+        "exitStatus": 0,
+        "complete": true
+      },
+      "facts": {
+        "complete": true,
+        "shortlist": [],
+        "items": []
+      }
+    },
+    {
+      "name": "original-empty-criteria",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/accepted-empty",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"p\",\"title\":\"Probe\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"p\",\"title\":\"Probe\",\"type\":\"Project\"}},\"goals\":[],\"currentCommitments\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"id\":\"d\",\"title\":\"Dependent\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/project.md\",\"link\":\"dependent.md\"}],\"workItems\":[{\"id\":\"d\",\"title\":\"Dependent\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"identityAmbiguous\":false,\"triage\":\"ready-for-agent\",\"execution\":\"unstarted\",\"lifecycle\":\"stable\",\"committed\":true,\"specifications\":[],\"dependencies\":[{\"from\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"id\":\"d\",\"title\":\"Dependent\"},\"to\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"id\":\"pre\",\"title\":\"Prerequisite\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},\"status\":\"fail\",\"cycle\":false,\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"completed_dependency\",\"message\":\"prerequisite is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"empty_acceptance_criteria\",\"message\":\"Acceptance criteria contains no nonempty criterion\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_dependencies\",\"message\":\"Blocked by explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}]}],\"checks\":[{\"name\":\"acceptance_criteria\",\"status\":\"pass\",\"reasons\":[{\"code\":\"acceptance_criteria_present\",\"message\":\"at least one nonempty acceptance criterion is authored\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\"}]},{\"name\":\"required_context\",\"status\":\"pass\",\"reasons\":[{\"code\":\"required_context_available\",\"message\":\"all explicitly selected requirement and context sources are available\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\"}]},{\"name\":\"dependencies\",\"status\":\"fail\",\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"completed_dependency\",\"message\":\"prerequisite is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"empty_acceptance_criteria\",\"message\":\"Acceptance criteria contains no nonempty criterion\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"}]},{\"name\":\"blocking_decisions\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\"}]}],\"readiness\":\"blocked\",\"eligible\":false,\"exclusionReasons\":[{\"code\":\"readiness_blocked\",\"message\":\"readiness is blocked; inspect its checks\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\"}],\"acceptance\":null,\"fingerprintVersion\":1,\"ticketSHA256\":\"5179d5388259291f7c25436141e7ebf0df929907668a4eb8503c806b819c3a41\",\"criteriaSHA256\":\"95891c639f6d8ba010d07f2a86e4c1e12c53b6df021b011241598c8f5e1a4ba3\",\"metadata\":{\"execution\":\"unstarted\",\"id\":\"d\",\"title\":\"Dependent\",\"triage\":\"ready-for-agent\",\"type\":\"WorkItem\"}},{\"id\":\"pre\",\"title\":\"Prerequisite\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"identityAmbiguous\":false,\"triage\":\"ready-for-agent\",\"execution\":\"completed\",\"lifecycle\":\"stable\",\"committed\":false,\"specifications\":[],\"dependencies\":[],\"checks\":[{\"name\":\"acceptance_criteria\",\"status\":\"fail\",\"reasons\":[{\"code\":\"empty_acceptance_criteria\",\"message\":\"Acceptance criteria contains no nonempty criterion\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}]},{\"name\":\"required_context\",\"status\":\"pass\",\"reasons\":[{\"code\":\"required_context_available\",\"message\":\"all explicitly selected requirement and context sources are available\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}]},{\"name\":\"dependencies\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_dependencies\",\"message\":\"Blocked by explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}]},{\"name\":\"blocking_decisions\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}]}],\"readiness\":\"blocked\",\"eligible\":false,\"exclusionReasons\":[{\"code\":\"completed_work\",\"message\":\"work is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"},{\"code\":\"not_committed\",\"message\":\"work is outside current commitments\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"},{\"code\":\"readiness_blocked\",\"message\":\"readiness is blocked; inspect its checks\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\"}],\"acceptance\":{\"status\":\"valid\",\"checkStatus\":\"pass\",\"record\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"id\":\"a\",\"title\":\"Acceptance\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"link\":\"acceptance.md\"},\"actor\":{\"kind\":\"workflow\",\"identity\":\"probe\"},\"decidedAt\":\"2026-09-16T10:00:00Z\",\"testedRevision\":{\"origin\":\"fixture\",\"revision\":\"synthetic\"},\"fingerprintVersion\":1,\"ticketSHA256\":\"0346308349c59a13c359bf4b4e900adc8cbbe26270a01d9a298e022f200623c3\",\"criteriaSHA256\":\"3d84682456b072043133ba8aa0728a6bf00e0e8b481e582447ce55f0ead19d5d\",\"humanApprovals\":[],\"requirements\":[],\"evidence\":[{\"reference\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/evidence.txt\",\"id\":null,\"title\":null,\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"link\":\"evidence.txt\"},\"sha256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"currentSHA256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"status\":\"valid\",\"reasons\":[]}],\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\"}],\"metadata\":{\"actor\":{\"identity\":\"probe\",\"kind\":\"workflow\"},\"criteriaSHA256\":\"3d84682456b072043133ba8aa0728a6bf00e0e8b481e582447ce55f0ead19d5d\",\"decidedAt\":\"2026-09-16T10:00:00Z\",\"fingerprintVersion\":1,\"id\":\"a\",\"projectId\":\"p\",\"testedRevision\":{\"origin\":\"fixture\",\"revision\":\"synthetic\"},\"ticketSHA256\":\"0346308349c59a13c359bf4b4e900adc8cbbe26270a01d9a298e022f200623c3\",\"title\":\"Acceptance\",\"type\":\"Acceptance\",\"workItemId\":\"pre\"}},\"fingerprintVersion\":1,\"ticketSHA256\":\"0346308349c59a13c359bf4b4e900adc8cbbe26270a01d9a298e022f200623c3\",\"criteriaSHA256\":\"3d84682456b072043133ba8aa0728a6bf00e0e8b481e582447ce55f0ead19d5d\",\"metadata\":{\"execution\":\"completed\",\"id\":\"pre\",\"title\":\"Prerequisite\",\"triage\":\"ready-for-agent\",\"type\":\"WorkItem\"}}],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/project.md\",\"sha256\":\"332d3441fb4c94f3fde07673623c401f0c748119e25759c6bc97036b2b5ce885\",\"reasons\":[{\"kind\":\"project\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"sha256\":\"f770bea2b41fe0fcc911fa2798f48ea8e9b911ac8db8ff6c6bd29dcf6ed8c6b4\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"acceptance.md\"},{\"kind\":\"acceptance\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"link\":\"acceptance.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"sha256\":\"79b1522a7d3f563975ec8177494dbece6830f4567d7b4cac2ce06886edcbd7b9\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"dependent.md\"},{\"kind\":\"commitment\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/project.md\",\"link\":\"dependent.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/prerequisite.md\",\"sha256\":\"7d574998d3183a78a5d4bea04cd661fa79628226eb4461db02605a8407e35d9f\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"prerequisite.md\"},{\"kind\":\"blocked_by\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/dependent.md\",\"link\":\"prerequisite.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/evidence.txt\",\"sha256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"reasons\":[{\"kind\":\"evidence\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-empty/acceptance.md\",\"link\":\"evidence.txt\"}]}],\"diagnostics\":[]}\n",
+      "stderr": "",
+      "expected": {
+        "exitStatus": 0,
+        "complete": true,
+        "shortlist": [],
+        "dependentReadiness": "blocked"
+      },
+      "facts": {
+        "complete": true,
+        "shortlist": [],
+        "items": [
+          {
+            "id": "d",
+            "readiness": "blocked",
+            "eligible": false,
+            "dependencyStatus": "fail",
+            "acceptanceStatus": null
+          },
+          {
+            "id": "pre",
+            "readiness": "blocked",
+            "eligible": false,
+            "dependencyStatus": "pass",
+            "acceptanceStatus": "valid"
+          }
+        ]
+      }
+    },
+    {
+      "name": "valid-criteria-still-release",
+      "command": [
+        "/tmp/context-spec-review.Rlppmk/ctx-fixed",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed",
+        "--json"
+      ],
+      "exitStatus": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"p\",\"title\":\"Probe\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"p\",\"title\":\"Probe\",\"type\":\"Project\"}},\"goals\":[],\"currentCommitments\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"id\":\"d\",\"title\":\"Dependent\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/project.md\",\"link\":\"dependent.md\"}],\"workItems\":[{\"id\":\"d\",\"title\":\"Dependent\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"identityAmbiguous\":false,\"triage\":\"ready-for-agent\",\"execution\":\"unstarted\",\"lifecycle\":\"stable\",\"committed\":true,\"specifications\":[],\"dependencies\":[{\"from\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"id\":\"d\",\"title\":\"Dependent\"},\"to\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"id\":\"pre\",\"title\":\"Prerequisite\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},\"status\":\"pass\",\"cycle\":false,\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"completed_dependency\",\"message\":\"prerequisite is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"acceptance_criteria_present\",\"message\":\"at least one nonempty acceptance criterion is authored\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_dependencies\",\"message\":\"Blocked by explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}]}],\"checks\":[{\"name\":\"acceptance_criteria\",\"status\":\"pass\",\"reasons\":[{\"code\":\"acceptance_criteria_present\",\"message\":\"at least one nonempty acceptance criterion is authored\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\"}]},{\"name\":\"required_context\",\"status\":\"pass\",\"reasons\":[{\"code\":\"required_context_available\",\"message\":\"all explicitly selected requirement and context sources are available\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\"}]},{\"name\":\"dependencies\",\"status\":\"pass\",\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"completed_dependency\",\"message\":\"prerequisite is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"acceptance_criteria_present\",\"message\":\"at least one nonempty acceptance criterion is authored\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"},{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"}]},{\"name\":\"blocking_decisions\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\"}]}],\"readiness\":\"ready\",\"eligible\":true,\"exclusionReasons\":[],\"acceptance\":null,\"fingerprintVersion\":1,\"ticketSHA256\":\"5179d5388259291f7c25436141e7ebf0df929907668a4eb8503c806b819c3a41\",\"criteriaSHA256\":\"95891c639f6d8ba010d07f2a86e4c1e12c53b6df021b011241598c8f5e1a4ba3\",\"metadata\":{\"execution\":\"unstarted\",\"id\":\"d\",\"title\":\"Dependent\",\"triage\":\"ready-for-agent\",\"type\":\"WorkItem\"}},{\"id\":\"pre\",\"title\":\"Prerequisite\",\"source\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"identityAmbiguous\":false,\"triage\":\"ready-for-agent\",\"execution\":\"completed\",\"lifecycle\":\"stable\",\"committed\":false,\"specifications\":[],\"dependencies\":[],\"checks\":[{\"name\":\"acceptance_criteria\",\"status\":\"pass\",\"reasons\":[{\"code\":\"acceptance_criteria_present\",\"message\":\"at least one nonempty acceptance criterion is authored\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}]},{\"name\":\"required_context\",\"status\":\"pass\",\"reasons\":[{\"code\":\"required_context_available\",\"message\":\"all explicitly selected requirement and context sources are available\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}]},{\"name\":\"dependencies\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_dependencies\",\"message\":\"Blocked by explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}]},{\"name\":\"blocking_decisions\",\"status\":\"pass\",\"reasons\":[{\"code\":\"no_blocking_decisions\",\"message\":\"Blocked by decisions explicitly declares none\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}]}],\"readiness\":\"ready\",\"eligible\":false,\"exclusionReasons\":[{\"code\":\"completed_work\",\"message\":\"work is recorded as completed\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"},{\"code\":\"not_committed\",\"message\":\"work is outside current commitments\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\"}],\"acceptance\":{\"status\":\"valid\",\"checkStatus\":\"pass\",\"record\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"id\":\"a\",\"title\":\"Acceptance\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"link\":\"acceptance.md\"},\"actor\":{\"kind\":\"workflow\",\"identity\":\"probe\"},\"decidedAt\":\"2026-09-16T10:00:00Z\",\"testedRevision\":{\"origin\":\"fixture\",\"revision\":\"synthetic\"},\"fingerprintVersion\":1,\"ticketSHA256\":\"ae5ee9779ee9216d2d67d70d4d73a5a798b9ce05d36fa017276bb76af08638b7\",\"criteriaSHA256\":\"ad740a75c1b489f8394b6eed75b0825b65d7e8e8a9ce662793d8bc160dbafcab\",\"humanApprovals\":[],\"requirements\":[],\"evidence\":[{\"reference\":{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/evidence.txt\",\"id\":null,\"title\":null,\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"link\":\"evidence.txt\"},\"sha256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"currentSHA256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"status\":\"valid\",\"reasons\":[]}],\"reasons\":[{\"code\":\"acceptance_valid\",\"message\":\"recorded acceptance matches current requirements and retained evidence\",\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\"}],\"metadata\":{\"actor\":{\"identity\":\"probe\",\"kind\":\"workflow\"},\"criteriaSHA256\":\"ad740a75c1b489f8394b6eed75b0825b65d7e8e8a9ce662793d8bc160dbafcab\",\"decidedAt\":\"2026-09-16T10:00:00Z\",\"fingerprintVersion\":1,\"id\":\"a\",\"projectId\":\"p\",\"testedRevision\":{\"origin\":\"fixture\",\"revision\":\"synthetic\"},\"ticketSHA256\":\"ae5ee9779ee9216d2d67d70d4d73a5a798b9ce05d36fa017276bb76af08638b7\",\"title\":\"Acceptance\",\"type\":\"Acceptance\",\"workItemId\":\"pre\"}},\"fingerprintVersion\":1,\"ticketSHA256\":\"ae5ee9779ee9216d2d67d70d4d73a5a798b9ce05d36fa017276bb76af08638b7\",\"criteriaSHA256\":\"ad740a75c1b489f8394b6eed75b0825b65d7e8e8a9ce662793d8bc160dbafcab\",\"metadata\":{\"execution\":\"completed\",\"id\":\"pre\",\"title\":\"Prerequisite\",\"triage\":\"ready-for-agent\",\"type\":\"WorkItem\"}}],\"shortlist\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"id\":\"d\",\"title\":\"Dependent\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/project.md\",\"link\":\"dependent.md\"}],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/project.md\",\"sha256\":\"332d3441fb4c94f3fde07673623c401f0c748119e25759c6bc97036b2b5ce885\",\"reasons\":[{\"kind\":\"project\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"sha256\":\"a14a6871454e4df33e8c7fe0b956c75196fd6154ceaadb72142d10fe390fc3d9\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"acceptance.md\"},{\"kind\":\"acceptance\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"link\":\"acceptance.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"sha256\":\"79b1522a7d3f563975ec8177494dbece6830f4567d7b4cac2ce06886edcbd7b9\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"dependent.md\"},{\"kind\":\"commitment\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/project.md\",\"link\":\"dependent.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/prerequisite.md\",\"sha256\":\"091845cdd996340b99d90d27916fe7e7390aa584868ebccae9c65c1b36aaff7a\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"prerequisite.md\"},{\"kind\":\"blocked_by\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/dependent.md\",\"link\":\"prerequisite.md\"}]},{\"path\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/evidence.txt\",\"sha256\":\"89eb0e912ac7c02fa1d5a85a913f278cc9644beecaea8b772bb8a16feac5bcbc\",\"reasons\":[{\"kind\":\"evidence\",\"from\":\"/private/tmp/context-spec-review.Rlppmk/probes/accepted-valid-fixed/acceptance.md\",\"link\":\"evidence.txt\"}]}],\"diagnostics\":[]}\n",
+      "stderr": "",
+      "expected": {
+        "exitStatus": 0,
+        "complete": true,
+        "shortlist": [
+          "d"
+        ]
+      },
+      "facts": {
+        "complete": true,
+        "shortlist": [
+          "d"
+        ],
+        "items": [
+          {
+            "id": "d",
+            "readiness": "ready",
+            "eligible": true,
+            "dependencyStatus": "pass",
+            "acceptanceStatus": null
+          },
+          {
+            "id": "pre",
+            "readiness": "ready",
+            "eligible": false,
+            "dependencyStatus": "pass",
+            "acceptanceStatus": "valid"
+          }
+        ]
+      }
+    }
+  ],
+  "remainingSpecFindingCount": 0
+}

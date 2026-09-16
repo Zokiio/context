@@ -1,0 +1,55 @@
+# Requirement fingerprints are distinct from the whole-file source digest.
+exit 1 ctx orient --project bundle
+! stderr .
+stdout 'fingerprint: version 1'
+stdout 'ticketSHA256: 30174732d241730b320ac9f47adf2346da4e7b3a078186f3b250bc1fcc95821c'
+stdout 'criteriaSHA256: 98b1528102286296f5dfef6419876871da5d766ca0b1c3e61a5c390950ddd4de'
+stdout 'sha256: 57b66b0e7adc96dd485fa1b6868f2779b4e199cec9d67c81c446f646bdfb6b01'
+
+exit 1 ctx orient --project bundle --json
+! stderr .
+cp stdout report.json
+jsonorientation report.json false
+stdout '"fingerprintVersion":1'
+stdout '"ticketSHA256":"30174732d241730b320ac9f47adf2346da4e7b3a078186f3b250bc1fcc95821c"'
+stdout '"criteriaSHA256":"98b1528102286296f5dfef6419876871da5d766ca0b1c3e61a5c390950ddd4de"'
+stdout '"sha256":"57b66b0e7adc96dd485fa1b6868f2779b4e199cec9d67c81c446f646bdfb6b01"'
+
+-- bundle/project.md --
+---
+type: Project
+id: project
+title: Fingerprint example
+---
+## Goals
+Expose requirement revisions.
+## Current commitments
+None
+## Open decisions
+None
+-- bundle/work.md --
+---
+type: WorkItem
+id: work
+title: Work
+triage: ready-for-agent
+execution: unstarted
+---
+# Ticket
+
+Intro.
+
+## Scope
+Deliver café.
+
+## Acceptance criteria
+- [ ] Works.
+
+## Comments
+Routine note.
+
+## Acceptance
+[Current](acceptance.md)
+
+## Context
+None

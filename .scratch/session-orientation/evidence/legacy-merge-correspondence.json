@@ -1,0 +1,274 @@
+{
+  "observedAt": "2026-09-16T12:48:41.689080+00:00",
+  "actor": "Codex coordinating agent",
+  "mergeRevision": "ecb8f294144dab8bb36f2e74e6ad174bcce17ef1",
+  "comparisonMeaning": "Byte correspondence with retained manifests; not an assertion that historical tests were run at the merge revision.",
+  "manifests": [
+    {
+      "path": ".scratch/context-reader/acceptance-trial-manifest.json",
+      "sha256": "7808ffca77fdd670e4b15fc29239c8e02d0eed6f75c6133cf759b2928621c86d",
+      "testedBaseCommit": "0c74f92506a67242247a4e76a40785561a561bb3",
+      "files": [
+        {
+          "path": ".agents/skills/task-context/SKILL.md",
+          "historicalSHA256": "8f05611b89ae1510eae2e499e3973075d1f03bc0d1bd47227ccfeb14dd9da32d",
+          "mergeSHA256": "8f05611b89ae1510eae2e499e3973075d1f03bc0d1bd47227ccfeb14dd9da32d",
+          "matches": true
+        },
+        {
+          "path": "cmd/ctx/main.go",
+          "historicalSHA256": "995d9230ee9c57861a4490d4eafe7d44cad0862aa10f7edb310cc0fb37c4ac2c",
+          "mergeSHA256": "995d9230ee9c57861a4490d4eafe7d44cad0862aa10f7edb310cc0fb37c4ac2c",
+          "matches": true
+        },
+        {
+          "path": "go.mod",
+          "historicalSHA256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+          "mergeSHA256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+          "matches": true
+        },
+        {
+          "path": "go.sum",
+          "historicalSHA256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e",
+          "mergeSHA256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/cli.go",
+          "historicalSHA256": "cf6d34c86a6f952adfd0f2a53f1fd3eb1e8057791c2e6e78b8e8ca7c17dfbc53",
+          "mergeSHA256": "cf6d34c86a6f952adfd0f2a53f1fd3eb1e8057791c2e6e78b8e8ca7c17dfbc53",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/cli_test.go",
+          "historicalSHA256": "757feb0ce8228aa28eefb2c9aa51475f219f1aa7a13bd579142c0ce56229f2ec",
+          "mergeSHA256": "757feb0ce8228aa28eefb2c9aa51475f219f1aa7a13bd579142c0ce56229f2ec",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/blockers.txt",
+          "historicalSHA256": "075d31c36b74fae4230bc26beda2fba83d5142c6611ef486f1ce8ccd9e81fd6c",
+          "mergeSHA256": "d992d406f1bc1becf6a12f0d9bc2a91675b6b29201974597d73ffe88d459beb3",
+          "matches": false
+        },
+        {
+          "path": "internal/cli/testdata/context.txt",
+          "historicalSHA256": "12daccc57f1d02d513fbf201cad89ba2e30e929c56a953f65ce1f36dba5bde58",
+          "mergeSHA256": "12daccc57f1d02d513fbf201cad89ba2e30e929c56a953f65ce1f36dba5bde58",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/external.txt",
+          "historicalSHA256": "78cbf763ac7a1d30c2c422a3879d8aedc5fceddab195cdf7272608716f30fb46",
+          "mergeSHA256": "78cbf763ac7a1d30c2c422a3879d8aedc5fceddab195cdf7272608716f30fb46",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/limits.txt",
+          "historicalSHA256": "03e8dbd392d041885bf09e4b8bdef57644b4453ea617cf93d8a4e1d8cfd1337a",
+          "mergeSHA256": "03e8dbd392d041885bf09e4b8bdef57644b4453ea617cf93d8a4e1d8cfd1337a",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/linked.txt",
+          "historicalSHA256": "e5ef0618ae25860ed23cbacd6644b8d65f1a31e780b80e9b9691716fea4d943a",
+          "mergeSHA256": "e5ef0618ae25860ed23cbacd6644b8d65f1a31e780b80e9b9691716fea4d943a",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/context.go",
+          "historicalSHA256": "96c204766327b9b9cc09d4c70447512e385d14f6cbeda47a4043dca67703d66e",
+          "mergeSHA256": "31a849e7ba27b199b3c251c6c28e992d47091ee786d072dcb2f8727fe24a88d2",
+          "matches": false
+        },
+        {
+          "path": "internal/taskcontext/context_test.go",
+          "historicalSHA256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+          "mergeSHA256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/document.go",
+          "historicalSHA256": "7706283cef978bed2ba2c202c19115a4bdb96c18fc8c91120101e213d0d13072",
+          "mergeSHA256": "7706283cef978bed2ba2c202c19115a4bdb96c18fc8c91120101e213d0d13072",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/external_test.go",
+          "historicalSHA256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+          "mergeSHA256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/limits_test.go",
+          "historicalSHA256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+          "mergeSHA256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/options.go",
+          "historicalSHA256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+          "mergeSHA256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/relationships.go",
+          "historicalSHA256": "d9764c856e65dfeb82e0f2d163250a94b1abf1ed3a7c1957b696043cdd1417f7",
+          "mergeSHA256": "4ed5948e88f150f3161b9627ccfce6a6c57fe3e9d47c02a6f8cda17d52ae81b9",
+          "matches": false
+        },
+        {
+          "path": "internal/taskcontext/relationships_test.go",
+          "historicalSHA256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+          "mergeSHA256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/source.go",
+          "historicalSHA256": "d2d300791c1b1338d86b5eade071faa7ab14b98611e35d5827df8467f28569f2",
+          "mergeSHA256": "d2d300791c1b1338d86b5eade071faa7ab14b98611e35d5827df8467f28569f2",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/traversal_test.go",
+          "historicalSHA256": "9eda96a4fbb35940fb6ce2df5ae00a2261af9f83e1960394fd31fc9b05b3cb98",
+          "mergeSHA256": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580",
+          "matches": false
+        }
+      ]
+    },
+    {
+      "path": ".scratch/context-reader/review-verification-manifest.json",
+      "sha256": "16f14c92945bd59d95d9b39c4ce642f316004628a74f4c881e00a2780f9e19a4",
+      "testedBaseCommit": "2fedff0f41bf59366f7f25104b5007983162aa08",
+      "files": [
+        {
+          "path": ".agents/skills/task-context/SKILL.md",
+          "historicalSHA256": "8f05611b89ae1510eae2e499e3973075d1f03bc0d1bd47227ccfeb14dd9da32d",
+          "mergeSHA256": "8f05611b89ae1510eae2e499e3973075d1f03bc0d1bd47227ccfeb14dd9da32d",
+          "matches": true
+        },
+        {
+          "path": "cmd/ctx/main.go",
+          "historicalSHA256": "995d9230ee9c57861a4490d4eafe7d44cad0862aa10f7edb310cc0fb37c4ac2c",
+          "mergeSHA256": "995d9230ee9c57861a4490d4eafe7d44cad0862aa10f7edb310cc0fb37c4ac2c",
+          "matches": true
+        },
+        {
+          "path": "go.mod",
+          "historicalSHA256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+          "mergeSHA256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+          "matches": true
+        },
+        {
+          "path": "go.sum",
+          "historicalSHA256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e",
+          "mergeSHA256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/cli.go",
+          "historicalSHA256": "cf6d34c86a6f952adfd0f2a53f1fd3eb1e8057791c2e6e78b8e8ca7c17dfbc53",
+          "mergeSHA256": "cf6d34c86a6f952adfd0f2a53f1fd3eb1e8057791c2e6e78b8e8ca7c17dfbc53",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/cli_test.go",
+          "historicalSHA256": "757feb0ce8228aa28eefb2c9aa51475f219f1aa7a13bd579142c0ce56229f2ec",
+          "mergeSHA256": "757feb0ce8228aa28eefb2c9aa51475f219f1aa7a13bd579142c0ce56229f2ec",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/blockers.txt",
+          "historicalSHA256": "d992d406f1bc1becf6a12f0d9bc2a91675b6b29201974597d73ffe88d459beb3",
+          "mergeSHA256": "d992d406f1bc1becf6a12f0d9bc2a91675b6b29201974597d73ffe88d459beb3",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/context.txt",
+          "historicalSHA256": "12daccc57f1d02d513fbf201cad89ba2e30e929c56a953f65ce1f36dba5bde58",
+          "mergeSHA256": "12daccc57f1d02d513fbf201cad89ba2e30e929c56a953f65ce1f36dba5bde58",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/external.txt",
+          "historicalSHA256": "78cbf763ac7a1d30c2c422a3879d8aedc5fceddab195cdf7272608716f30fb46",
+          "mergeSHA256": "78cbf763ac7a1d30c2c422a3879d8aedc5fceddab195cdf7272608716f30fb46",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/limits.txt",
+          "historicalSHA256": "03e8dbd392d041885bf09e4b8bdef57644b4453ea617cf93d8a4e1d8cfd1337a",
+          "mergeSHA256": "03e8dbd392d041885bf09e4b8bdef57644b4453ea617cf93d8a4e1d8cfd1337a",
+          "matches": true
+        },
+        {
+          "path": "internal/cli/testdata/linked.txt",
+          "historicalSHA256": "e5ef0618ae25860ed23cbacd6644b8d65f1a31e780b80e9b9691716fea4d943a",
+          "mergeSHA256": "e5ef0618ae25860ed23cbacd6644b8d65f1a31e780b80e9b9691716fea4d943a",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/context.go",
+          "historicalSHA256": "31a849e7ba27b199b3c251c6c28e992d47091ee786d072dcb2f8727fe24a88d2",
+          "mergeSHA256": "31a849e7ba27b199b3c251c6c28e992d47091ee786d072dcb2f8727fe24a88d2",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/context_test.go",
+          "historicalSHA256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+          "mergeSHA256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/document.go",
+          "historicalSHA256": "7706283cef978bed2ba2c202c19115a4bdb96c18fc8c91120101e213d0d13072",
+          "mergeSHA256": "7706283cef978bed2ba2c202c19115a4bdb96c18fc8c91120101e213d0d13072",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/external_test.go",
+          "historicalSHA256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+          "mergeSHA256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/limits_test.go",
+          "historicalSHA256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+          "mergeSHA256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/options.go",
+          "historicalSHA256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+          "mergeSHA256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/relationships.go",
+          "historicalSHA256": "4ed5948e88f150f3161b9627ccfce6a6c57fe3e9d47c02a6f8cda17d52ae81b9",
+          "mergeSHA256": "4ed5948e88f150f3161b9627ccfce6a6c57fe3e9d47c02a6f8cda17d52ae81b9",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/relationships_test.go",
+          "historicalSHA256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+          "mergeSHA256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/source.go",
+          "historicalSHA256": "d2d300791c1b1338d86b5eade071faa7ab14b98611e35d5827df8467f28569f2",
+          "mergeSHA256": "d2d300791c1b1338d86b5eade071faa7ab14b98611e35d5827df8467f28569f2",
+          "matches": true
+        },
+        {
+          "path": "internal/taskcontext/traversal_test.go",
+          "historicalSHA256": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580",
+          "mergeSHA256": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580",
+          "matches": true
+        }
+      ]
+    }
+  ]
+}
