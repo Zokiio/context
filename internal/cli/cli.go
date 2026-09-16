@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"path/filepath"
 
+	"github.com/Zokiio/context/internal/discovery"
 	"github.com/Zokiio/context/internal/orientation"
 	"github.com/Zokiio/context/internal/taskcontext"
 	urfave "github.com/urfave/cli/v3"
@@ -25,6 +25,13 @@ type Operations struct {
 
 // Run renders one report, or an invocation/execution error on stderr.
 func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operations Operations) int {
+	return RunWithEnvironment(ctx, args, stdout, stderr, operations, Environment{})
+}
+
+// RunWithEnvironment exposes the same command behavior with an injected caller
+// environment. Getters are evaluated only by commands that need their values.
+func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Writer, operations Operations, environment Environment) int {
+	environment = environment.defaults()
 	status := 0
 	usageError := func(_ context.Context, _ *urfave.Command, err error, _ bool) error { return err }
 	exitHandler := func(context.Context, *urfave.Command, error) {}
@@ -36,7 +43,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 		},
 		Commands: []*urfave.Command{{
 			DisableSliceFlagSeparator: true,
-			Name:                      "context", Usage: "Read a ticket from an explicit project bundle",
+			Name:                      "context", Usage: "Read a ticket from the selected project",
 			Writer: stderr, ErrWriter: stderr, ExitErrHandler: exitHandler, OnUsageError: usageError,
 			Flags: append(scopeFlags(),
 				&urfave.StringFlag{Name: "ticket", Required: true, Usage: "Ticket path relative to the project"},
@@ -45,17 +52,25 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 				if cmd.NArg() != 0 {
 					return errors.New("context does not accept positional arguments")
 				}
-				if cmd.String("project") == "" || cmd.String("ticket") == "" {
-					return errors.New("project and ticket must be nonempty")
+				if cmd.String("ticket") == "" {
+					return errors.New("ticket must be nonempty")
 				}
-				project, allowed, err := resolveScope(cmd)
+				scope, err := resolveReadScope(ctx, cmd, environment)
 				if err != nil {
 					return err
+				}
+				if cmd.Bool("explain-scope") {
+					if err := explainReadScope(stderr, scope); err != nil {
+						return err
+					}
+				}
+				if scope.Kind == discovery.Workspace {
+					return projectSelectionRequired("context", scope)
 				}
 				if operations.Assemble == nil {
 					return errors.New("context operation is unavailable")
 				}
-				result, err := operations.Assemble(ctx, taskcontext.Request{ProjectDir: project, TicketPath: cmd.String("ticket"), AllowedSourceDirs: allowed, MaxFiles: cmd.Int("max-files"), MaxBytes: cmd.Int64("max-bytes")})
+				result, err := operations.Assemble(ctx, taskcontext.Request{ProjectDir: scope.Project.Records, TicketPath: cmd.String("ticket"), AllowedSourceDirs: scope.Project.AllowSources, MaxFiles: cmd.Int("max-files"), MaxBytes: cmd.Int64("max-bytes")})
 				if err != nil {
 					return err
 				}
@@ -69,11 +84,11 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 			},
 		}, {
 			DisableSliceFlagSeparator: true,
-			Name:                      "orient", Usage: "Inspect goals, commitments, and work in an explicit project bundle",
+			Name:                      "orient", Usage: "Inspect the selected project or workspace",
 			Writer: stderr, ErrWriter: stderr, ExitErrHandler: exitHandler, OnUsageError: usageError,
 			Flags: append(scopeFlags(), &urfave.BoolFlag{Name: "json", Usage: "Write the versioned JSON orientation report"}),
 			Action: func(ctx context.Context, cmd *urfave.Command) error {
-				for _, name := range []string{"project", "max-files", "max-bytes", "json"} {
+				for _, name := range []string{"max-files", "max-bytes", "json"} {
 					if cmd.Count(name) > 1 {
 						return fmt.Errorf("--%s may only be specified once", name)
 					}
@@ -81,14 +96,22 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 				if cmd.NArg() != 0 {
 					return errors.New("orient does not accept positional arguments")
 				}
-				project, allowed, err := resolveScope(cmd)
+				scope, err := resolveReadScope(ctx, cmd, environment)
 				if err != nil {
 					return err
+				}
+				if cmd.Bool("explain-scope") {
+					if err := explainReadScope(stderr, scope); err != nil {
+						return err
+					}
+				}
+				if scope.Kind == discovery.Workspace {
+					return fmt.Errorf("workspace navigation is unavailable for workspace %q [%s]; select a project with --project PATH or --bundle PATH", scope.Workspace.Title, scope.Workspace.ID)
 				}
 				if operations.Orient == nil {
 					return errors.New("orientation operation is unavailable")
 				}
-				result, err := operations.Orient(ctx, orientation.Request{ProjectDir: project, AllowedSourceDirs: allowed, MaxFiles: cmd.Int("max-files"), MaxBytes: cmd.Int64("max-bytes")})
+				result, err := operations.Orient(ctx, orientation.Request{ProjectDir: scope.Project.Records, AllowedSourceDirs: scope.Project.AllowSources, MaxFiles: cmd.Int("max-files"), MaxBytes: cmd.Int64("max-bytes")})
 				if err != nil {
 					return err
 				}
@@ -111,38 +134,4 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 		return 2
 	}
 	return status
-}
-
-func scopeFlags() []urfave.Flag {
-	return []urfave.Flag{
-		&urfave.IntFlag{Name: "max-files", Value: taskcontext.DefaultMaxFiles, Usage: "Maximum number of inspected source files"},
-		&urfave.Int64Flag{Name: "max-bytes", Value: taskcontext.DefaultMaxBytes, Usage: "Maximum total source bytes before rendering"},
-		&urfave.StringFlag{Name: "project", Required: true, Usage: "Project bundle directory"},
-		&urfave.StringSliceFlag{Name: "allow-source", Usage: "Additional directory allowed for linked documents; repeat for multiple directories"},
-	}
-}
-
-func resolveScope(cmd *urfave.Command) (string, []string, error) {
-	if cmd.String("project") == "" {
-		return "", nil, errors.New("project must be nonempty")
-	}
-	if cmd.Int("max-files") <= 0 || cmd.Int64("max-bytes") <= 0 {
-		return "", nil, errors.New("max-files and max-bytes must be positive integers")
-	}
-	project, err := filepath.Abs(cmd.String("project"))
-	if err != nil {
-		return "", nil, fmt.Errorf("resolve project: %w", err)
-	}
-	allowed := cmd.StringSlice("allow-source")
-	for index, directory := range allowed {
-		if directory == "" {
-			return "", nil, errors.New("allowed source directory must be nonempty")
-		}
-		absolute, err := filepath.Abs(directory)
-		if err != nil {
-			return "", nil, fmt.Errorf("resolve allowed source: %w", err)
-		}
-		allowed[index] = absolute
-	}
-	return project, allowed, nil
 }

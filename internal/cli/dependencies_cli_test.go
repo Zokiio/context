@@ -24,7 +24,7 @@ func TestOrientationTextExplainsDirectAndTransitiveEdges(t *testing.T) {
 				Reasons: []orientation.Finding{{Code: "dependency_cycle", Message: "Middle depends on itself.", Path: "/bundle/middle.md", From: "/bundle/middle.md", Link: "middle.md"}}},
 		},
 	}}}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--project", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 0 || stderr.Len() != 0 {

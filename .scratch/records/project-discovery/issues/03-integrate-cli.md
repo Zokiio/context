@@ -3,7 +3,7 @@ type: WorkItem
 id: cab6f066-8afe-43cb-be4d-8238740e183a
 title: "Use discovery in reader commands"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Use discovery in reader commands
@@ -38,3 +38,7 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+2026-09-17: Codex started ticket 03 after complete task context and passing readiness checks on `39483dd`. This slice reuses the reader integration from `01791c2`, retains later input guards, and fixes personal alias selection when cwd lookup fails.

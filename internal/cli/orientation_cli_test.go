@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -30,7 +31,7 @@ func TestOrientationTextRetainsPartialFacts(t *testing.T) {
 		Sources:     []orientation.Source{{Path: "/bundle/project.md", SHA256: strings.Repeat("a", 64), Reasons: []orientation.Reason{{Kind: "manifest"}}}},
 		Diagnostics: []orientation.Diagnostic{{Code: "missing_required_section", Severity: "error", Message: "Goals is missing.", Path: "/bundle/project.md"}},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--project", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 1 || stderr.Len() != 0 {
@@ -60,7 +61,7 @@ func TestOrientationTextShowsAmbiguousIdentities(t *testing.T) {
 		WorkItems:     []orientation.WorkItem{{ID: str("shared"), Title: str("Task"), Source: "/bundle/task.md", IdentityAmbiguous: true, Readiness: "unknown"}},
 		Decisions:     []orientation.Decision{{ID: str("shared"), Title: str("Choice"), Source: "/bundle/choice.md", IdentityAmbiguous: true}},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--project", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 1 || stderr.Len() != 0 || strings.Count(stdout.String(), "identity ambiguous: true") != 2 {
@@ -82,7 +83,7 @@ func TestOrientationTextUsesAuthoritativeDecisionState(t *testing.T) {
 				References:   []orientation.Reference{{Path: "/bundle/open.md", ID: str("open"), Title: str("Open choice"), From: project.Source, Link: "open.md"}}},
 		},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--project", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	text := stdout.String()
@@ -127,7 +128,7 @@ func TestOrientationExecutionFailures(t *testing.T) {
 				if failure == "cancellation" {
 					cancel()
 				}
-				args := []string{"ctx", "orient", "--project", "."}
+				args := []string{"ctx", "orient", "--bundle", "."}
 				if format == "json" {
 					args = append(args, "--json")
 				}
@@ -141,8 +142,12 @@ func TestOrientationExecutionFailures(t *testing.T) {
 }
 
 func TestOrientationReceivesExplicitScopeAndLimits(t *testing.T) {
-	caller := t.TempDir()
-	t.Chdir(caller)
+	caller := scopeTempDir(t)
+	for _, directory := range []string{"bundle", "docs,extra", "other"} {
+		if err := os.Mkdir(filepath.Join(caller, directory), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
 	for _, tc := range []struct {
 		name  string
 		flags []string
@@ -155,8 +160,8 @@ func TestOrientationReceivesExplicitScopeAndLimits(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			var stdout, stderr bytes.Buffer
 			called := false
-			args := append([]string{"ctx", "orient", "--project", "bundle", "--allow-source", "docs,extra", "--allow-source", "other"}, tc.flags...)
-			status := cli.Run(context.Background(), args, &stdout, &stderr, cli.Operations{Orient: func(_ context.Context, request orientation.Request) (orientation.Result, error) {
+			args := append([]string{"ctx", "orient", "--bundle", "bundle", "--allow-source", "docs,extra", "--allow-source", "other"}, tc.flags...)
+			status := cli.RunWithEnvironment(context.Background(), args, &stdout, &stderr, cli.Operations{Orient: func(_ context.Context, request orientation.Request) (orientation.Result, error) {
 				called = true
 				if request.ProjectDir != filepath.Join(caller, "bundle") ||
 					len(request.AllowedSourceDirs) != 2 ||
@@ -166,7 +171,7 @@ func TestOrientationReceivesExplicitScopeAndLimits(t *testing.T) {
 					t.Fatalf("unexpected scope or limits: %+v", request)
 				}
 				return orientation.Result{Complete: true}, nil
-			}})
+			}}, scopeEnvironment(caller, filepath.Join(caller, "unused-home")))
 			if status != 0 || !called || stderr.Len() != 0 {
 				t.Fatalf("status=%d called=%v stderr=%q", status, called, stderr.String())
 			}

@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"testing"
 
@@ -27,7 +28,14 @@ func TestMain(m *testing.M) {
 }
 
 func TestCLI(t *testing.T) {
-	testscript.Run(t, testscript.Params{Dir: "testdata", Cmds: map[string]func(*testscript.TestScript, bool, []string){"exit": func(ts *testscript.TestScript, neg bool, args []string) {
+	testscript.Run(t, testscript.Params{Dir: "testdata", Setup: func(environment *testscript.Env) error {
+		home := filepath.Join(environment.WorkDir, "home")
+		if err := os.MkdirAll(home, 0o755); err != nil {
+			return err
+		}
+		environment.Setenv("HOME", home)
+		return nil
+	}, Cmds: map[string]func(*testscript.TestScript, bool, []string){"exit": func(ts *testscript.TestScript, neg bool, args []string) {
 		if neg || len(args) < 2 {
 			ts.Fatalf("usage: exit code command args...")
 		}
@@ -128,7 +136,7 @@ func TestExecutionFailures(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var stderr bytes.Buffer
-			status := cli.Run(context.Background(), []string{"ctx", "context", "--project", ".", "--ticket", "x"}, tc.writer, &stderr, cli.Operations{Assemble: tc.operation})
+			status := cli.Run(context.Background(), []string{"ctx", "context", "--bundle", ".", "--ticket", "x"}, tc.writer, &stderr, cli.Operations{Assemble: tc.operation})
 			if status != 2 || stderr.Len() == 0 {
 				t.Fatalf("status=%d stderr=%q", status, stderr.String())
 			}
@@ -147,7 +155,7 @@ func TestDefaultAndExplicitLimitFlags(t *testing.T) {
 	} {
 		var stdout, stderr bytes.Buffer
 		called := false
-		args := append([]string{"ctx", "context", "--project", ".", "--ticket", "root.md"}, tc.args...)
+		args := append([]string{"ctx", "context", "--bundle", ".", "--ticket", "root.md"}, tc.args...)
 		status := cli.Run(context.Background(), args, &stdout, &stderr, cli.Operations{Assemble: func(_ context.Context, request taskcontext.Request) (taskcontext.Result, error) {
 			called = true
 			if request.MaxFiles != tc.files || request.MaxBytes != tc.bytes {

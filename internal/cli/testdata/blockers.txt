@@ -1,5 +1,5 @@
 # Recursion includes each ticket's own documents.
-exec ctx context --project project --ticket root.md
+exec ctx context --bundle project --ticket root.md
 ! stderr .
 cp stdout result.json
 jsonresult result.json true
@@ -9,7 +9,7 @@ stdout '"kind":"blocked_by"'
 ! stdout dependency_cycle
 
 # A cycle warns without changing successful completeness or exit status.
-exec ctx context --project project --ticket cycle.md
+exec ctx context --bundle project --ticket cycle.md
 ! stderr .
 cp stdout result.json
 jsonresult result.json true
@@ -17,7 +17,7 @@ stdout 'dependency_cycle'
 stdout '"severity":"warning"'
 
 # Missing blocker context preserves discovered tickets and completed traversal.
-exit 1 ctx context --project project --ticket missing-document.md
+exit 1 ctx context --bundle project --ticket missing-document.md
 ! stderr .
 cp stdout result.json
 jsonresult result.json false true
@@ -25,14 +25,14 @@ stdout 'source_missing'
 stdout 'leaf requirements'
 
 # A missing blocker makes traversal incomplete while known branches continue.
-exit 1 ctx context --project project --ticket missing-ticket.md
+exit 1 ctx context --bundle project --ticket missing-ticket.md
 cp stdout result.json
 jsonresult result.json false false
 stdout 'source_missing'
 stdout 'leaf requirements'
 
 # An unresolved blocker reference leaves discovery unfinished.
-exit 1 ctx context --project project --ticket unresolved.md
+exit 1 ctx context --bundle project --ticket unresolved.md
 ! stderr .
 cp stdout result.json
 jsonresult result.json false false

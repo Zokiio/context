@@ -74,7 +74,7 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 		}
 	}
 	if len(result.WorkItems) > 0 {
-		fmt.Fprintln(&text, "Task context: use a work item's source as --ticket with the same --project and --allow-source arguments.")
+		fmt.Fprintln(&text, "Task context: run ctx context with a work item's source as --ticket, from the same directory with the same scope selector and --allow-source arguments.")
 	}
 	fmt.Fprintln(&text)
 	var openDecisions []orientation.Reference
