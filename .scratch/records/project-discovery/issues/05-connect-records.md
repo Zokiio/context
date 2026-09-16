@@ -3,7 +3,7 @@ type: WorkItem
 id: 18a3d758-2b28-48d7-a05c-e4ffc225fb8e
 title: "Connect existing records through setup"
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # Connect existing records through setup
@@ -14,11 +14,11 @@ Implement this slice of the approved project-discovery specification. Keep chang
 
 ## Acceptance criteria
 
-- [ ] Implement the specified setup flags and guided terminal flow, with deterministic noninteractive operation and no prompts from reader commands.
-- [ ] Validate records, binding directory, and authorized roots; resolve cwd inputs before generating shared relative or personal absolute paths.
-- [ ] Support dry-run, idempotent setup, explicit replacement, and preservation of unrelated entries, frontmatter metadata, Markdown body, and file permissions.
-- [ ] Use atomic writes with concurrent-change detection; failure leaves the previous usable file intact. Never create records or silently repair malformed configuration.
-- [ ] Tests cover shared and personal registration, aliases, path rebasing from a nested cwd, conflicts, dry-run, replacement, concurrent edits, and write failures.
+- [x] Implement the specified setup flags and guided terminal flow, with deterministic noninteractive operation and no prompts from reader commands.
+- [x] Validate records, binding directory, and authorized roots; resolve cwd inputs before generating shared relative or personal absolute paths.
+- [x] Support dry-run, idempotent setup, explicit replacement, and preservation of unrelated entries, frontmatter metadata, Markdown body, and file permissions.
+- [x] Use atomic writes with concurrent-change detection; failure leaves the previous usable file intact. Never create records or silently repair malformed configuration.
+- [x] Tests cover shared and personal registration, aliases, path rebasing from a nested cwd, conflicts, dry-run, replacement, concurrent edits, and write failures.
 
 ## Blocked by
 
@@ -38,3 +38,11 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+Implementation claimed by Codex subagent `/root/setup`, coordinated by `/root`, after ticket 02 had valid, fresh acceptance and passing prerequisite checks.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/05-connect-records-implementation.md)

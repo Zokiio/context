@@ -1,0 +1,9 @@
+{
+  "actor": "Codex coordinating agent /root",
+  "recordedAt": "2026-09-16T21:48:33.098864+00:00",
+  "testedRevision": "working-tree:9d0435280e3544cab15a3f02315af75beadff635; source-manifest-sha256:546f007745a4c65eb16405b056a3b85ee767cbb5269168b983d56030eb6f6620",
+  "correction": "Criterion 3 in 03-cli-verification.json names TestScripts. The actual testscript driver is TestCLI, which passed in the retained stdout. This corrects the test-name reference only; no command, output, source identity, or pass result changed.",
+  "criterion": 3,
+  "result": "pass",
+  "actualTest": "TestCLI"
+}

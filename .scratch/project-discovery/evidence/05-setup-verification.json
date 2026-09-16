@@ -1,0 +1,160 @@
+{
+  "actor": "Codex coordinating agent /root",
+  "startedAt": "2026-09-16T21:50:10.842977+00:00",
+  "finishedAt": "2026-09-16T21:50:12.733341+00:00",
+  "cwd": "/Users/zoki/.codex/worktrees/b888/context",
+  "baseCommit": "01791c21792b747d201ae3785dc649b804eda535",
+  "testedRevision": "working-tree:01791c21792b747d201ae3785dc649b804eda535; source-manifest-sha256:065ce2a484af9e36f916d6c5909a13f582e9aee5ce730204e0f8a8d9fff05eb5",
+  "programSourceManifestSHA256": "065ce2a484af9e36f916d6c5909a13f582e9aee5ce730204e0f8a8d9fff05eb5",
+  "programSources": {
+    "cmd/ctx/main.go": "1abd2a3fb3b3374c07b72da7f004a2ff658e82dcd09847777d9079d56e8fdcdf",
+    "go.mod": "c26fd251cbece277bdec9184e8e24e37adaa36dfc584c36073aa625f0379b7fe",
+    "go.sum": "1322bae169feef416dd1583204a528d2aa7a6e440939306bbe694008b9037bb5",
+    "internal/cli/acceptance.go": "949d5912e870712227931aa3081fd4b66b535b3c2e2761e0d16066612c416009",
+    "internal/cli/acceptance_cli_test.go": "23cc7d5d124a57fdb23f08c09ba36348c8f8b4c294afb378959236e4a2e5ab9c",
+    "internal/cli/cli.go": "42e6cd73e47507073d0fd226ba55be4e952e35e7d99d458d1b2b40f7f08e7260",
+    "internal/cli/cli_test.go": "7cc52f7abcdbf6351342b37d077d176dc3914a44c4d64b71df7268ac0784debf",
+    "internal/cli/dependencies_cli_test.go": "b059db0e8fa5eeecaae349b73d88588ebeec8249eb7c9b955da2b77a80ceed43",
+    "internal/cli/environment.go": "58247c970364059d26ba655ffcf177ee265793020dcbb4eee72728b8d072c7ef",
+    "internal/cli/orientation.go": "ae2f95a6feb24ebabad3358d035d497d9ba891bdc1d0ce51e8f189b3cd6c8e07",
+    "internal/cli/orientation_cli_test.go": "219f20599dd28c00966da2dc246f5d2f7ed374c230c0f94da73e39f07a98b92d",
+    "internal/cli/scope.go": "118b440c8ede0912c283fa250e82c2915613547f1c3230cb6db660b5004d3c41",
+    "internal/cli/scope_cli_test.go": "7d4da2146bcbc54c66042d2c59266b30096999de688350f371a9abf18163ad25",
+    "internal/cli/setup.go": "592a77e5948291ad0667fb9fa17ee557f66f94eda57fa18755b388659f0ca3a9",
+    "internal/cli/setup_command_test.go": "e17777c5c348131a7a2a78271c488890e39e1e50dd1c6f09201dc1db986b5841",
+    "internal/cli/setup_test.go": "b47b00a687662f401ddad861f57644b4675ad9a5621e6c41c9c813d8a921ea72",
+    "internal/cli/workspace_scope_cli_test.go": "63409af90ded81b7bb67ba30ef8334e93f830d4ced2b9345ee8cc599463c1ba4",
+    "internal/discovery/compare.go": "db562047271b9b2cc6fa969f228ac33a2d63c78a06849ee43f043e7f8d159c48",
+    "internal/discovery/config.go": "656f9d91bfd43ab10da14a8a1086581646439f12127488363ca4f6babfbb6697",
+    "internal/discovery/config_test.go": "9f5ee07610a01a7deeb325236f60b8289337dbbdc93e380f34419972c8bb494c",
+    "internal/discovery/path.go": "9bc7ee52b4dc5377a7e1f9d1e6b61b1b765b1d83292c8d064c3536bb776d19de",
+    "internal/discovery/path_test.go": "94dc31e93bb4acaaabfa645346afe246037acb4f179ff451dccc888d1b2bf877",
+    "internal/discovery/resolve.go": "d7617fbe8138fedf9f118b93adce91ec6d5b60dbd34d9053050a3b7d16488e68",
+    "internal/discovery/resolve_conformance_test.go": "624d03614a35b55c522940ed18971e826b20875f514d7c8d240403c53dfcb0e9",
+    "internal/discovery/resolve_proposal_test.go": "a029571089d6d38f9385359e720623b8a61beb050bbe0a0974866994b5760ab4",
+    "internal/discovery/resolve_test.go": "62d12935b7bd25e59cd7e0c24d75538ab455dc19b64b63d23f525217b20c890e",
+    "internal/discovery/setup.go": "bb474e3f0e1ccb896e68cb9d7af04c2e065c5c7fbecea160948a05a28dc5e033",
+    "internal/discovery/setup_test.go": "e636241476b1f80c8fd7a79fa8c26ae44048a76bfb2887d8e23c817b3f062400",
+    "internal/discovery/setup_write.go": "178c48fd3e78107ccb1abbffa220680c1036b9ae87e50fa5b6809c6c1b1ad37d",
+    "internal/discovery/setup_write_test.go": "4c1443d7df6d8cc54fd1e7aff8c4f43cdf0a42175f8669f4284198ba24809505",
+    "internal/orientation/acceptance.go": "10f411ec16a73d70c90e5ff41b2a023b3268a5181d7a48a187e1e94f8f6ff375",
+    "internal/orientation/acceptance_snapshots.go": "474a44d7d3863cfa8318c0664ab3a69c7efa42b78755e793971f29ef01c5a847",
+    "internal/orientation/acceptance_test.go": "1929a547cc305a10fdc591173b2d6ba3c3502936cf0ddf093ce69455c8a2f09d",
+    "internal/orientation/checks.go": "f67876785e3cbfc9e347db628c571531039bac6aea56916acd31bf1208e98688",
+    "internal/orientation/decisions.go": "cb2ee48e4f4a1c3063e7242f34a871256c7c2f84081c730507b5e3ecac564f98",
+    "internal/orientation/decisions_test.go": "985d3d042ea24300453e17d97905c5b22d5b5b5675f0d406b3f2fc29c03952b6",
+    "internal/orientation/dependencies.go": "b0b13c3527bd16dea1eb4d35a450c91d0d655d7234855f731fc5c277924c3aa6",
+    "internal/orientation/dependencies_test.go": "92266e89c891bc7c2c2951240cad93236651d7aa106984cb2c266e3e11a0b3dc",
+    "internal/orientation/fingerprint.go": "8956e2d48b7023df852e152d400abd4a5847a98b13164cc38f912d5669c986ed",
+    "internal/orientation/fingerprint_test.go": "93bde08233ef7c9afb79502241702c90346168cc782edad067de6322933b1c37",
+    "internal/orientation/inventory.go": "62c02eaaf1e759949107388441ec8ef13188a007ced4af560acf4b71526f94b0",
+    "internal/orientation/limits_test.go": "60edcd80cd085bc8c6f4f27db90b9b4b28346fc96d665c3a2606bff275f2f2f6",
+    "internal/orientation/metadata.go": "1e07a3d2a30ee25603db998e606396cf0913e683e456e976af0c90aaa468745c",
+    "internal/orientation/orientation.go": "011cbc2e943225fd8fdd3925e0a0baa6e568edcadb0a376782bc793e7b331901",
+    "internal/orientation/orientation_test.go": "a04a11b9764f09f1c45fbd3c4aa5c0105ca50e72dbd42d89c7200c041d528753",
+    "internal/orientation/profiles.go": "938260d63d3d6c8175a93f4a9a4a5d8c6650f730edd7bfe6546f3ae662797fde",
+    "internal/orientation/readiness.go": "e27f7b4bece7271015f59e1fd95c7ae7077f0d198e32f1e869dace92256870c9",
+    "internal/orientation/readiness_test.go": "b3fe7e7b98f6dad2dab314d1f622cd00d61d5aae8d2b43879208716643c59e86",
+    "internal/orientation/sources_test.go": "e7a28851839b78a8337ed390ba3af0a96f21bf753b19a7c7af5bbe50b56c2a8e",
+    "internal/orientation/types.go": "2c9642c3ef98c1e79146ac3e3995dfbe9201019d52bb2b7cf0e681023f6efe3b",
+    "internal/recordread/document.go": "34e45d4754c74b685c2cc4f8699bc9043525717e1523eeb5d0095131b26418f4",
+    "internal/recordread/sections.go": "ea7980e8ba2252d9ea8d6e3dded8b637ce0df23e514271a4f5804a1e5becc621",
+    "internal/recordread/source.go": "9d744bd6ad6e70ab678fcf85beb691bf551cd0f94c15c1884371fee1182e0ab8",
+    "internal/recordread/types.go": "a0b4b97469fa25cf662e172202cfca9ecf6b55fb207c4ecb96610154466e7682",
+    "internal/taskcontext/context.go": "941fe6224fa61e262e6715476db1d802a100cec978c1988c87d5dcca35a252e7",
+    "internal/taskcontext/context_test.go": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+    "internal/taskcontext/document.go": "ab086df322ce66472ac579ffebb5f35e46bc723b9605bb8ce79b80182fba0f8e",
+    "internal/taskcontext/external_test.go": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+    "internal/taskcontext/limits_test.go": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+    "internal/taskcontext/options.go": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+    "internal/taskcontext/relationships.go": "697166dc52dbb47e575fcfd85e29965ec4149162b85f8c93951457a048879b3b",
+    "internal/taskcontext/relationships_test.go": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+    "internal/taskcontext/source.go": "809bf450400cdc2c2d02975302fa556f56af5f63a4e1aa92d88e4695577b474f",
+    "internal/taskcontext/traversal_test.go": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580"
+  },
+  "sourcesUnchangedDuringRun": true,
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "-v",
+    "./internal/discovery",
+    "./internal/cli",
+    "-run",
+    "Setup",
+    "-count=1"
+  ],
+  "exitCode": 0,
+  "stdout": "=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges\n=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges/content\n=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges/mode\n=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges/replacement\n=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges/creation\n=== RUN   TestSetupApplyDetectsConcurrentDestinationChanges/symlink\n--- PASS: TestSetupApplyDetectsConcurrentDestinationChanges (0.01s)\n    --- PASS: TestSetupApplyDetectsConcurrentDestinationChanges/content (0.00s)\n    --- PASS: TestSetupApplyDetectsConcurrentDestinationChanges/mode (0.00s)\n    --- PASS: TestSetupApplyDetectsConcurrentDestinationChanges/replacement (0.00s)\n    --- PASS: TestSetupApplyDetectsConcurrentDestinationChanges/creation (0.00s)\n    --- PASS: TestSetupApplyDetectsConcurrentDestinationChanges/symlink (0.00s)\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/create\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/write\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/short-write\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/chmod\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/sync\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/close\n=== RUN   TestSetupWriteFailuresKeepPreviousUsableFile/rename\n--- PASS: TestSetupWriteFailuresKeepPreviousUsableFile (0.05s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/create (0.00s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/write (0.00s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/short-write (0.00s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/chmod (0.00s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/sync (0.00s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/close (0.02s)\n    --- PASS: TestSetupWriteFailuresKeepPreviousUsableFile/rename (0.01s)\n=== RUN   TestSetupRechecksChangesWhileTemporaryFileIsWritten\n=== RUN   TestSetupRechecksChangesWhileTemporaryFileIsWritten/destination\n=== RUN   TestSetupRechecksChangesWhileTemporaryFileIsWritten/other-declaration\n--- PASS: TestSetupRechecksChangesWhileTemporaryFileIsWritten (0.02s)\n    --- PASS: TestSetupRechecksChangesWhileTemporaryFileIsWritten/destination (0.01s)\n    --- PASS: TestSetupRechecksChangesWhileTemporaryFileIsWritten/other-declaration (0.01s)\n=== RUN   TestSetupSerializesCooperatingWriters\n--- PASS: TestSetupSerializesCooperatingWriters (0.01s)\n=== RUN   TestSetupSharedRebasesNestedInputsAndPreparationNeverWrites\n--- PASS: TestSetupSharedRebasesNestedInputsAndPreparationNeverWrites (0.01s)\n=== RUN   TestSetupSharedReplacementPreservesMetadataBodyAndPermissions\n--- PASS: TestSetupSharedReplacementPreservesMetadataBodyAndPermissions (0.01s)\n=== RUN   TestSetupIdenticalBindingKeepsOriginalBytesAndCreatesNoLock\n--- PASS: TestSetupIdenticalBindingKeepsOriginalBytesAndCreatesNoLock (0.00s)\n=== RUN   TestSetupPersonalIdentityAliasesAndRootRemoval\n--- PASS: TestSetupPersonalIdentityAliasesAndRootRemoval (0.02s)\n=== RUN   TestSetupPersonalKeepsUnrelatedEntriesAndMatchesPhysicalDirectory\n--- PASS: TestSetupPersonalKeepsUnrelatedEntriesAndMatchesPhysicalDirectory (0.01s)\n=== RUN   TestSetupRejectsAmbiguousDirectoryAndAliasCollision\n=== RUN   TestSetupRejectsAmbiguousDirectoryAndAliasCollision/alias\n=== RUN   TestSetupRejectsAmbiguousDirectoryAndAliasCollision/directory\n--- PASS: TestSetupRejectsAmbiguousDirectoryAndAliasCollision (0.00s)\n    --- PASS: TestSetupRejectsAmbiguousDirectoryAndAliasCollision/alias (0.00s)\n    --- PASS: TestSetupRejectsAmbiguousDirectoryAndAliasCollision/directory (0.00s)\n=== RUN   TestSetupReplaceCannotHideOtherFileConflict\n=== RUN   TestSetupReplaceCannotHideOtherFileConflict/shared\n=== RUN   TestSetupReplaceCannotHideOtherFileConflict/personal\n--- PASS: TestSetupReplaceCannotHideOtherFileConflict (0.01s)\n    --- PASS: TestSetupReplaceCannotHideOtherFileConflict/shared (0.00s)\n    --- PASS: TestSetupReplaceCannotHideOtherFileConflict/personal (0.00s)\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/manifestless\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/missing-directory\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/missing-root\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/unclean-records\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/unclean-root\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/alias-without-personal\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/empty-alias\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/reserved-home\n=== RUN   TestSetupRejectsInvalidInputsAndMalformedConfiguration/malformed-config\n--- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration (0.01s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/manifestless (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/missing-directory (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/missing-root (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/unclean-records (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/unclean-root (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/alias-without-personal (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/empty-alias (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/reserved-home (0.00s)\n    --- PASS: TestSetupRejectsInvalidInputsAndMalformedConfiguration/malformed-config (0.00s)\n=== RUN   TestSetupSymlinkedConfigKeepsEncounteredBaseAndLink\n--- PASS: TestSetupSymlinkedConfigKeepsEncounteredBaseAndLink (0.01s)\nPASS\nok  \tgithub.com/Zokiio/context/internal/discovery\t1.441s\n=== RUN   TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration\n--- PASS: TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration (0.01s)\n=== RUN   TestSetupCLIPrintsSummaryBeforeWritingWithoutPrompting\n--- PASS: TestSetupCLIPrintsSummaryBeforeWritingWithoutPrompting (0.01s)\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites/error\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites/short\n--- PASS: TestSetupCLIOutputFailurePreventsAllWrites (0.01s)\n    --- PASS: TestSetupCLIOutputFailurePreventsAllWrites/error (0.00s)\n    --- PASS: TestSetupCLIOutputFailurePreventsAllWrites/short (0.00s)\n=== RUN   TestSetupCLIGuidesOnlyTerminalInput\n--- PASS: TestSetupCLIGuidesOnlyTerminalInput (0.01s)\n=== RUN   TestSetupCLIGuidedEOFAndInvalidAnswerNeverWrite\n--- PASS: TestSetupCLIGuidedEOFAndInvalidAnswerNeverWrite (0.00s)\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records_a_--records_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory_a_--directory_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--personal_--alias_a_--alias_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias_mine\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--replace_--replace\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/extra\n--- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts (0.01s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records_a_--records_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory_a_--directory_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--personal_--alias_a_--alias_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias_mine (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--replace_--replace (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/extra (0.00s)\n=== RUN   TestSetupCLIReplacementReportsRemovedRootsAndRetainsAlias\n--- PASS: TestSetupCLIReplacementReportsRemovedRootsAndRetainsAlias (0.02s)\n=== RUN   TestSetupCommandConnectsSubsequentReaderInvocation\n--- PASS: TestSetupCommandConnectsSubsequentReaderInvocation (0.01s)\nPASS\nok  \tgithub.com/Zokiio/context/internal/cli\t1.356s\n",
+  "stderr": "",
+  "criteria": [
+    {
+      "number": 1,
+      "result": "pass",
+      "tests": [
+        "TestSetupCLIGuidesOnlyTerminalInput",
+        "TestSetupCLIRejectsInvalidFlagsBeforePrompts",
+        "TestSetupCLIPrintsSummaryBeforeWritingWithoutPrompting",
+        "TestSetupCommandConnectsSubsequentReaderInvocation"
+      ],
+      "observation": "All specified flags are registered under ctx setup. Guided prompts run only on a terminal; specified records skip terminal checks and input. Integrated setup connects a subsequent selector-free reader invocation and failures exit2."
+    },
+    {
+      "number": 2,
+      "result": "pass",
+      "tests": [
+        "TestSetupSharedRebasesNestedInputsAndPreparationNeverWrites",
+        "TestSetupRejectsInvalidInputsAndMalformedConfiguration",
+        "TestSetupSymlinkedConfigKeepsEncounteredBaseAndLink"
+      ],
+      "observation": "Records manifests, original directory traversal, and roots are validated. Inputs rebase from nested cwd to relative shared paths or absolute personal paths. Symlinked config values retain their encountered base."
+    },
+    {
+      "number": 3,
+      "result": "pass",
+      "tests": [
+        "TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration",
+        "TestSetupIdenticalBindingKeepsOriginalBytesAndCreatesNoLock",
+        "TestSetupSharedReplacementPreservesMetadataBodyAndPermissions",
+        "TestSetupPersonalIdentityAliasesAndRootRemoval",
+        "TestSetupPersonalKeepsUnrelatedEntriesAndMatchesPhysicalDirectory",
+        "TestSetupCLIReplacementReportsRemovedRootsAndRetainsAlias"
+      ],
+      "observation": "Dry-run is exact and write-free. Identical setup preserves bytes, inode, and mtime without creating a lock. Replacement retains unrelated metadata/body/workspaces, file permissions, personal keys, omitted aliases, and unrelated entries; summaries report removals."
+    },
+    {
+      "number": 4,
+      "result": "pass",
+      "tests": [
+        "TestSetupApplyDetectsConcurrentDestinationChanges",
+        "TestSetupWriteFailuresKeepPreviousUsableFile",
+        "TestSetupRechecksChangesWhileTemporaryFileIsWritten",
+        "TestSetupSerializesCooperatingWriters",
+        "TestSetupCLIOutputFailurePreventsAllWrites"
+      ],
+      "observation": "Cooperating writers serialize using a persistent sidecar. Snapshot checks catch content/mode/inode/creation/symlink changes and late conflicting declarations. Injected create/write/short-write/chmod/sync/close/rename failures preserve the prior usable file and remove temporary files."
+    },
+    {
+      "number": 5,
+      "result": "pass",
+      "tests": [
+        "TestSetupSharedRebasesNestedInputsAndPreparationNeverWrites",
+        "TestSetupPersonalIdentityAliasesAndRootRemoval",
+        "TestSetupRejectsAmbiguousDirectoryAndAliasCollision",
+        "TestSetupReplaceCannotHideOtherFileConflict",
+        "TestSetupApplyDetectsConcurrentDestinationChanges",
+        "TestSetupWriteFailuresKeepPreviousUsableFile"
+      ],
+      "observation": "Real temporary filesystem coverage includes shared/personal setup, aliases, nested cwd, conflicts, dry-run, replacement, concurrent edits, and write failures."
+    }
+  ],
+  "environment": {
+    "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+    "goVersion": "go version go1.27.1 darwin/arm64"
+  },
+  "reviewNotes": [
+    "Root read setup plan preparation, serialization, atomic persistence, and factory tests. Root registered setupCommand and added a full-command setup-to-reader integration test.",
+    "Setup writes only the chosen configuration target plus its persistent lock sidecar. Dry-run/no-op create no directory or lock. Existing record bundles are never created or edited.",
+    "Snapshot detection covers changes observed before replacement; the sidecar coordinates ctx writers. No claim is made that arbitrary editors participate in the lock."
+  ]
+}

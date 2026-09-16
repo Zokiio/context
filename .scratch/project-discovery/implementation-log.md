@@ -54,3 +54,13 @@ Ticket 03 covers workspace selection/provenance and protection against invoking 
 ## Ticket 03 accepted
 
 The reader CLI slice passed 120 focused race test cases, including setup factory tests compiled in the shared worktree. Root reviewed scope selection, output isolation, source authorization, and unchanged filesystem snapshots. Original direct path traversal now validates before canonicalization so missing path components cannot silently select another directory. [Criterion evidence](evidence/03-cli-verification.json) retains the complete tested source identity. [Acceptance observation](evidence/03-integrate-cli-implementation-observation.json) reports valid acceptance and passing checks. Ticket 04 is ready for implementation.
+
+## Ticket 04 in progress
+
+`/root/configuration` received refreshed complete task context from the verified ticket03 working-tree reader. The agent owns workspace membership inspection and the separate CLI renderer. Root owns registration in the orient command. Membership availability is shallow directory access and never evaluates work readiness.
+
+## Ticket 05 accepted
+
+Setup passed 59 focused race test cases after root registered the command and verified setup followed by a selector-free reader invocation. The plan preserves unrelated content and file permissions, reports replacement removals, checks other declarations, and applies an atomic update with concurrent-change detection. [Criterion evidence](evidence/05-setup-verification.json) retains the tested source identity. [Acceptance observation](evidence/05-connect-records-implementation-observation.json) reports valid acceptance and passing checks. The persistent lock sidecar coordinates writers; dry-run and identical setup create no lock.
+
+A [test-name erratum](evidence/03-cli-evidence-erratum.json) corrects criterion03 evidence from TestScripts to the actual TestCLI driver. The original executed stdout is retained unchanged. Final reassessment will include the erratum.
