@@ -280,7 +280,7 @@ func TestDirectDependenciesRetainExecutionDecisionAndNonleafReasons(t *testing.T
 	reacceptLeaf(t, project, "None\n", "")
 	got := orientProject(t, project)
 	leaf, dependent := findWork(t, got, "leaf.md"), findWork(t, got, "dependent.md")
-	if got.Complete || leaf.Acceptance.Status != "valid" || checkStatus(dependent, "dependencies") != "unknown" || !hasCode(got, "unsupported_check") {
+	if !got.Complete || leaf.Acceptance.Status != "valid" || checkStatus(dependent, "dependencies") != "fail" || !hasCheckFinding(dependent, "dependencies", "unfinished_dependency") {
 		t.Fatalf("nonleaf leaf=%+v dependent=%+v diagnostics=%+v", leaf, dependent, got.Diagnostics)
 	}
 	decision := decisionRecord("choice", "open", "")
@@ -289,8 +289,8 @@ func TestDirectDependenciesRetainExecutionDecisionAndNonleafReasons(t *testing.T
 	reacceptLeaf(t, project, "- [Decision](choice.md) `"+sourceHash(decision)+"`\n", "")
 	got = orientProject(t, project)
 	dependent = findWork(t, got, "dependent.md")
-	if got.Complete || dependent.Readiness != "blocked" || !hasCheckFinding(dependent, "dependencies", "open_decision") || !hasCheckFinding(dependent, "dependencies", "unsupported_check") {
-		t.Fatalf("mixed decision fail and unsupported chain: %+v diagnostics=%+v", dependent, got.Diagnostics)
+	if !got.Complete || dependent.Readiness != "blocked" || !hasCheckFinding(dependent, "dependencies", "open_decision") || !hasCheckFinding(dependent, "dependencies", "unfinished_dependency") {
+		t.Fatalf("decision and deeper unfinished prerequisite: %+v diagnostics=%+v", dependent, got.Diagnostics)
 	}
 }
 

@@ -71,6 +71,7 @@ type evaluator struct {
 	decisionResults   map[string]Decision
 	acceptanceSources map[string]acceptanceSources
 	acceptanceResults map[string]*AcceptanceSummary
+	dependencies      map[string]*dependencyNode
 }
 
 type record struct {

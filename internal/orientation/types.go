@@ -65,6 +65,7 @@ type WorkItem struct {
 	Lifecycle          *string            `json:"lifecycle"`
 	Committed          *bool              `json:"committed"`
 	Specifications     []Reference        `json:"specifications"`
+	Dependencies       []DependencyEdge   `json:"dependencies"`
 	Checks             []Check            `json:"checks"`
 	Readiness          string             `json:"readiness"`
 	Eligible           bool               `json:"eligible"`
@@ -79,6 +80,16 @@ type WorkItem struct {
 type Check struct {
 	Name    string    `json:"name"`
 	Status  string    `json:"status"`
+	Reasons []Finding `json:"reasons"`
+}
+
+// DependencyEdge preserves an authored edge and its prerequisite closure result.
+// Cycle identifies an edge participating in a cycle, not just one leading to it.
+type DependencyEdge struct {
+	From    Reference `json:"from"`
+	To      Reference `json:"to"`
+	Status  string    `json:"status"`
+	Cycle   bool      `json:"cycle"`
 	Reasons []Finding `json:"reasons"`
 }
 

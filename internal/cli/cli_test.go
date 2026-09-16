@@ -87,6 +87,14 @@ func checkOrientationJSON(ts *testscript.TestScript, neg bool, args []string) {
 		ts.Fatalf("unexpected orientation JSON: %+v", result)
 	}
 	for _, work := range result.WorkItems {
+		if work.Dependencies == nil {
+			ts.Fatalf("dependency edges must be an array: %+v", work)
+		}
+		for _, edge := range work.Dependencies {
+			if edge.Reasons == nil {
+				ts.Fatalf("dependency edge reasons must be an array: %+v", edge)
+			}
+		}
 		if acceptance := work.Acceptance; acceptance != nil {
 			if acceptance.HumanApprovals == nil || acceptance.Requirements == nil || acceptance.Evidence == nil || acceptance.Reasons == nil {
 				ts.Fatalf("acceptance lists must be arrays: %+v", acceptance)

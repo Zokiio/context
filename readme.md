@@ -8,7 +8,7 @@ Agent sessions lose context. Developers then repeat requirements, reconstruct de
 
 The CLI reads a ticket, its recursive blockers, and each ticket's explicitly linked Spec and Context documents. Callers authorize external document directories and bound collection by file count and source bytes. The product name remains open; the development executable is `ctx`.
 
-`ctx orient` also shows one project's authored goals, commitments, and work inventory. It reports missing or unsupported checks as unknown and keeps affected work off the shortlist. Requirement fingerprints support authored acceptance records.
+`ctx orient` shows one project's authored goals, commitments, work inventory, and eligible work with reasons. It evaluates prerequisites, cycles, blocking decisions, and recorded acceptance from captured local sources. Missing required information remains explicit, and requirement fingerprints support authored acceptance records.
 
 The first-reader milestone has passed local tests and a [skill-driven real-task acceptance trial](.scratch/context-reader/acceptance-trial.md).
 
@@ -64,7 +64,7 @@ The default text report shows project identity, authored goals, current commitme
 
 Use a selected work item's source path as `ctx context --ticket` to obtain its complete requirements. Reuse the project and allowed-source arguments. The [authoring profiles](docs/agents/issue-tracker.md) define the manifest sections and record fields.
 
-Authorize external goal, specification, and context documents with repeatable `--allow-source` arguments. Each argument is literal, including commas. Project and allowed-source paths resolve against the caller's working directory. Record targets must remain inside the bundle, even when external document roots are authorized.
+Authorize external goal, specification, context, and evidence documents with repeatable `--allow-source` arguments. Each argument is literal, including commas. Project and allowed-source paths resolve against the caller's working directory. Record targets must remain inside the bundle, even when external document roots are authorized.
 
 Collection defaults to 100 distinct files and 1,048,576 source bytes across the manifest, inventory, and linked documents. `--max-files` and `--max-bytes` accept positive overrides. Each resolved source is read once; all parsing and digests use that captured content. Collection stops at the first limit breach and identifies known pending sources. It does not claim to enumerate undiscovered records.
 
@@ -90,7 +90,9 @@ The command leaves records and Git state unchanged. Digests identify observed fi
 | `sources` | Resolved paths, whole-file SHA-256 digests, and distinct inclusion reasons |
 | `diagnostics` | Stable codes, severity, explanations, and affected source or relationship |
 
-Each work item includes `id`, `title`, `source`, `identityAmbiguous`, `triage`, `execution`, `lifecycle`, `committed`, `specifications`, `checks`, `readiness`, `eligible`, `exclusionReasons`, `acceptance`, `fingerprintVersion`, `ticketSHA256`, `criteriaSHA256`, and authored `metadata`. A check contains `name`, `status`, and `reasons`. Check status is `pass`, `fail`, or `unknown`; aggregate readiness is `ready`, `blocked`, or `unknown`. `eligible` is a separate boolean.
+Each work item includes `id`, `title`, `source`, `identityAmbiguous`, `triage`, `execution`, `lifecycle`, `committed`, `specifications`, `dependencies`, `checks`, `readiness`, `eligible`, `exclusionReasons`, `acceptance`, `fingerprintVersion`, `ticketSHA256`, `criteriaSHA256`, and authored `metadata`. A check contains `name`, `status`, and `reasons`. Check status is `pass`, `fail`, or `unknown`; aggregate readiness is `ready`, `blocked`, or `unknown`. `eligible` is a separate boolean.
+
+`dependencies` contains each reachable direct or transitive authored edge once, in depth-first authored order. Each edge has `from` and `to` references, `status`, `cycle`, and `reasons`. The target reference retains the referring source and authored link. `cycle: true` identifies edges inside a cyclic component. The separate `dependencies` check retains the aggregate result and explanations.
 
 Work items and decisions expose `identityAmbiguous: true` when typed records share their ID. Reports retain each record and source path without selecting one as authoritative. Missing IDs remain `null`. An omitted work-item `status` gives the effective lifecycle `stable`, while its authored metadata remains unchanged.
 
@@ -104,7 +106,11 @@ The decision record's state overrides an outdated Open decisions index link. Res
 
 When a decision answer imposes implementation requirements, also link it through the ticket's Spec or Context section. `ctx context` retains its existing selection rules and does not automatically follow Blocked by decisions.
 
-During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Direct prerequisites can pass when completed work has valid, fresh acceptance, resolved blocking decisions, and an explicitly empty Blocked by declaration. Prerequisites with their own dependencies remain unknown until recursive evaluation is implemented. An empty project with all required declarations can produce a complete report.
+Readiness checks acceptance criteria, selected context, work dependencies, and blocking decisions. A prerequisite passes only when its work is completed, its acceptance is valid and fresh, its blocking decisions are resolved, and all of its own prerequisites pass. Known failures make readiness blocked; otherwise, unknown information takes precedence over ready. Reasons retain unknown conditions even when another condition is a known blocker.
+
+Cycles block their members and work that depends on them. A fully observed cycle remains a complete evaluation. `ctx context` can still return complete source context for that cycle. Unrelated work remains inspectable, and a partial report can retain independently established eligible work. Incomplete inventory suppresses the shortlist because undiscovered identities may affect the result.
+
+The shortlist preserves authored commitment order. Other work is ordered by stable ID and resolved path. The report lists eligible choices with reasons without ranking a preferred task. An empty project with all required declarations can produce a complete report.
 
 Exit status `0` means complete evaluation, including an empty shortlist or known blocked work. Status `1` means a partial report, including a missing manifest, malformed record, unknown required fact, or collection limit. Status `2` means invalid arguments, unusable configured roots, cancellation, or an application or output failure. Reports and data diagnostics go to stdout. Invocation and operation errors go to stderr. An output failure can leave partial bytes on stdout.
 

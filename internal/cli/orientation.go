@@ -55,6 +55,7 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 		}
 		fmt.Fprintf(&text, "    committed: %s; readiness: %s; eligible: %t\n", committed, item.Readiness, item.Eligible)
 		writeReferences(&text, "    Specifications", item.Specifications)
+		writeDependencies(&text, item.Dependencies)
 		for _, check := range item.Checks {
 			fmt.Fprintf(&text, "    %s: %s\n", check.Name, check.Status)
 			for _, reason := range check.Reasons {
@@ -140,6 +141,22 @@ func writeProjectReferences(output *strings.Builder, heading string, refs []orie
 	fmt.Fprintf(output, "%s: unknown\n", heading)
 	if len(refs) > 0 {
 		writeReferences(output, "  Known references", refs)
+	}
+}
+
+func writeDependencies(output *strings.Builder, edges []orientation.DependencyEdge) {
+	if len(edges) == 0 {
+		fmt.Fprintln(output, "    Dependency edges: none observed")
+		return
+	}
+	fmt.Fprintln(output, "    Dependency edges:")
+	for i, edge := range edges {
+		fmt.Fprintf(output, "      Edge %d: status: %s; cycle: %t\n", i+1, edge.Status, edge.Cycle)
+		writeReferences(output, "        From", []orientation.Reference{edge.From})
+		writeReferences(output, "        To", []orientation.Reference{edge.To})
+		for _, reason := range edge.Reasons {
+			writeFinding(output, "        ", reason)
+		}
 	}
 }
 

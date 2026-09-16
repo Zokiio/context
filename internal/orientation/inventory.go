@@ -108,6 +108,7 @@ func (e *evaluator) selectSource(r *record, sectionStart int, link recordread.Re
 func (e *evaluator) present() {
 	e.checkIdentities()
 	e.presentManifest()
+	e.prepareDependencies()
 	records := append([]*record{}, e.recordOrder...)
 	sort.SliceStable(records, func(i, j int) bool {
 		left, right := stringValue(records[i].id), stringValue(records[j].id)
@@ -176,6 +177,7 @@ func (e *evaluator) presentWorkItem(r *record) {
 	work.Triage = e.enumField(r, "triage", "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "wontfix")
 	work.Execution = e.enumField(r, "execution", "unstarted", "in-progress", "completed", "cancelled")
 	work.Acceptance = e.evaluateAcceptance(r)
+	work.Dependencies = e.dependencyEdges(r)
 	committed := false
 	if e.result.Project != nil && e.result.Project.CommitmentsKnown && !r.ambiguous {
 		work.Committed = &committed

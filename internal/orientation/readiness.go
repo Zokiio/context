@@ -118,18 +118,6 @@ func hasAuthoredContent(body []byte) bool {
 	return codeContent || strings.TrimSpace(emptyCheckbox.ReplaceAllString(content.String(), "")) != ""
 }
 
-func (e *evaluator) emptyRelationshipCheck(r *record, sectionName, checkName, noneCode string) Check {
-	if !e.declaration(r, sectionName, true) {
-		return e.check(r, checkName, "unknown", "incomplete_relationship_declaration", sectionName+" declaration is missing, malformed, or unavailable")
-	}
-	for _, section := range r.sections.Sections {
-		if section.Name == sectionName && len(section.Links) > 0 {
-			return e.check(r, checkName, "unknown", "unsupported_check", sectionName+" relationship evaluation is not implemented yet")
-		}
-	}
-	return e.check(r, checkName, "pass", noneCode, sectionName+" explicitly declares none")
-}
-
 func (e *evaluator) check(r *record, name, status, code, message string) Check {
 	if status == "unknown" {
 		e.diagnose(Diagnostic{Code: code, Severity: "error", Message: message, Path: r.source.Path})

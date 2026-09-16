@@ -1,0 +1,98 @@
+# A known cycle is a complete blocked result, alongside independently ready work.
+exec ctx orient --project bundle
+! stderr .
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'dependency_cycle'
+stdout 'Dependency edges:'
+stdout 'status: fail; cycle: true'
+stdout 'A \[a\]'
+stdout 'B \[b\]'
+stdout 'readiness: blocked; eligible: false'
+stdout 'readiness: ready; eligible: true'
+
+exec ctx orient --project bundle --json
+! stderr .
+cp stdout report.json
+jsonorientation report.json true
+stdout '"cycle":true'
+stdout '"code":"dependency_cycle"'
+stdout '"shortlist":\[\{[^}]*"id":"ready"[^}]*\}\]'
+
+# The same cycle can have complete task context, with its established warning.
+exec ctx context --project bundle --ticket a.md
+! stderr .
+cp stdout context.json
+jsonresult context.json true true
+stdout 'dependency_cycle'
+
+# A missing target makes affected work unknown while independent work stays eligible.
+rm bundle/b.md
+exit 1 ctx orient --project bundle
+! stderr .
+stdout 'Evaluation: partial; inventory: complete'
+stdout 'source_missing'
+stdout 'status: unknown; cycle: false'
+stdout 'readiness: unknown; eligible: false'
+stdout 'readiness: ready; eligible: true'
+exit 1 ctx orient --project bundle --json
+! stderr .
+cp stdout partial.json
+jsonorientation partial.json false
+stdout '"code":"source_missing"'
+stdout '"shortlist":\[\{[^}]*"id":"ready"[^}]*\}\]'
+
+-- bundle/project.md --
+---
+type: Project
+id: project
+title: Cyclic dependencies
+---
+## Goals
+Explain known cycles and preserve independent work.
+## Current commitments
+- [A](a.md)
+- [Ready](ready.md)
+## Open decisions
+None
+-- bundle/a.md --
+---
+type: WorkItem
+id: a
+title: A
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Deliver A.
+## Blocked by
+- [B](b.md)
+## Blocked by decisions
+None
+-- bundle/b.md --
+---
+type: WorkItem
+id: b
+title: B
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Deliver B.
+## Blocked by
+- [A](a.md)
+## Blocked by decisions
+None
+-- bundle/ready.md --
+---
+type: WorkItem
+id: ready
+title: Independent work
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Deliver the independent result.
+## Blocked by
+None
+## Blocked by decisions
+None
