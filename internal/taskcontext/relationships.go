@@ -15,19 +15,26 @@ type relationship struct {
 	destination string
 }
 
+type relationshipResult struct {
+	links             []relationship
+	diagnostics       []Diagnostic
+	traversalComplete bool
+}
+
 // Missing definitions normally become plain text. The normal AST owns selection.
 // A second parse seeds missing definitions only to diagnose explicit references.
 // Diagnostics must start in ordinary text from the normal AST, so added definitions
 // cannot turn nested labels inside existing links or images into relationships.
 var referenceLabel = regexp.MustCompile(`\[((?:\\[\s\S]|[^\[\]\\])+)\]`)
 
-func extractRelationships(body []byte, path string) ([]relationship, []Diagnostic) {
+func extractRelationships(body []byte, path string) relationshipResult {
 	context := parser.NewContext()
 	markdown := parser.New()
 	tree := markdown.Parse(body, parser.WithContext(context))
 	links := []relationship{}
 	diagnostics := []Diagnostic{}
-	ordinaryText := make([]bool, len(body))
+	ordinaryText := make([]string, len(body))
+	traversalComplete := true
 	kind := ""
 	_ = ast.Walk(tree, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
 		if !entering {
@@ -65,7 +72,7 @@ func extractRelationships(body []byte, path string) ([]relationship, []Diagnosti
 			if !node.Value.IsOwned() {
 				position := node.Value.Index()
 				for i := position.Start; i < position.Stop; i++ {
-					ordinaryText[i] = true
+					ordinaryText[i] = kind
 				}
 			}
 		}
@@ -97,7 +104,10 @@ func extractRelationships(body []byte, path string) ([]relationship, []Diagnosti
 		if link, ok := node.(*ast.Link); ok {
 			rawDestination := string(link.Destination.Bytes(body))
 			position := link.Pos()
-			if strings.HasPrefix(rawDestination, "\x00") && link.Reference != nil && link.Reference.ReferenceLinkKind != ast.ReferenceLinkKindShortcut && position >= 0 && position < len(ordinaryText) && ordinaryText[position] {
+			if strings.HasPrefix(rawDestination, "\x00") && link.Reference != nil && link.Reference.ReferenceLinkKind != ast.ReferenceLinkKindShortcut && position >= 0 && position < len(ordinaryText) && ordinaryText[position] != "" {
+				if ordinaryText[position] == "blocked_by" {
+					traversalComplete = false
+				}
 				label := strings.TrimPrefix(rawDestination, "\x00")
 				diagnostics = append(diagnostics, Diagnostic{Code: "unresolved_reference", Severity: "error", Message: "unresolved Markdown reference: " + label, Path: path, From: path, Link: "[" + label + "]"})
 			}
@@ -105,7 +115,7 @@ func extractRelationships(body []byte, path string) ([]relationship, []Diagnosti
 		}
 		return ast.WalkContinue, nil
 	})
-	return links, diagnostics
+	return relationshipResult{links: links, diagnostics: diagnostics, traversalComplete: traversalComplete}
 }
 
 func plainText(node ast.Node, source []byte) string {

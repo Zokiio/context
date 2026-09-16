@@ -118,7 +118,7 @@ At the first limit breach, the reader stops adding files and returns the whole f
 | `source_limit_exceeded` | Including this source would exceed a collection limit |
 | `source_omitted` | A known pending source was not processed after a limit breach |
 
-Source and relationship errors set `complete` to `false`. A missing linked document or unresolved reference does not prevent ticket relationship discovery, so `traversalComplete` stays `true`. An unavailable ticket or invalid ticket frontmatter sets both fields to `false`. Invalid frontmatter retains the full source and digest. Invalid UTF-8 omits the source to avoid returning changed bytes. Unknown metadata keys and concept types are accepted. Successful parsing does not certify OKF schema validity or work readiness.
+Source and relationship errors set `complete` to `false`. A missing linked document or unresolved Spec or Context reference does not prevent ticket relationship discovery, so `traversalComplete` stays `true`. An unresolved blocker reference sets both fields to `false` because the blocker and its descendants cannot be discovered. An unavailable ticket or invalid ticket frontmatter sets both fields to `false`. Invalid frontmatter retains the full source and digest. Invalid UTF-8 omits the source to avoid returning changed bytes. Unknown metadata keys and concept types are accepted. Successful parsing does not certify OKF schema validity or work readiness.
 
 Exit status is `0` for complete JSON, `1` for incomplete JSON, and `2` for invalid invocation or failure to run or render the operation. A missing ticket is status `1`; an invalid project directory is status `2`.
 

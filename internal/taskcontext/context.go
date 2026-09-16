@@ -178,10 +178,14 @@ func Assemble(ctx context.Context, request Request) (Result, error) {
 			unavailable(Diagnostic{Code: "invalid_frontmatter", Severity: "error", Message: err.Error(), Path: ticket.Path}, pending.reason, true)
 			continue
 		}
-		links, diagnostics := extractRelationships(doc.body, ticket.Path)
-		if len(diagnostics) > 0 {
+		relationships := extractRelationships(doc.body, ticket.Path)
+		links := relationships.links
+		if !relationships.traversalComplete {
+			result.TraversalComplete = false
+		}
+		if len(relationships.diagnostics) > 0 {
 			result.Complete = false
-			result.Diagnostics = append(result.Diagnostics, diagnostics...)
+			result.Diagnostics = append(result.Diagnostics, relationships.diagnostics...)
 		}
 		// Discover every outgoing blocker before reading documents. A document limit
 		// breach must still report blockers already known from this ticket's body.

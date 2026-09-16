@@ -31,6 +31,18 @@ jsonresult result.json false false
 stdout 'source_missing'
 stdout 'leaf requirements'
 
+# An unresolved blocker reference leaves discovery unfinished.
+exit 1 ctx context --project project --ticket unresolved.md
+! stderr .
+cp stdout result.json
+jsonresult result.json false false
+stdout 'unresolved_reference'
+stdout 'leaf requirements'
+
+-- project/unresolved.md --
+## Blocked by
+[required][missing]
+[available](leaf.md)
 -- project/root.md --
 # Root
 ## Blocked by

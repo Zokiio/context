@@ -60,3 +60,8 @@ Agent `/root/milestone_trial` applied the [task-context skill](../../../../.agen
 [Acceptance evidence](../../../context-reader/acceptance-trial.md) records the exact commands, observed outcomes, and relevant unlinked documents. Its [digest manifest](../../../context-reader/acceptance-trial-manifest.json) identifies the uncommitted reader and delivered source revisions. The trial captured this ticket before this completion note and checklist update, so its recorded byte boundaries apply to that snapshot.
 
 All acceptance criteria for this ticket and the first-reader milestone now have local evidence. The implementation and records remain uncommitted; no merge or external approval is claimed.
+
+
+### 2026-09-16 verification after independent review
+
+After the blocker-reference fix, all 17 real-task checks passed again against the updated reader. Full race tests, vet, build, and the Go 1.25.0 test suite also passed. The [review follow-up](../../../context-reader/acceptance-trial.md#independent-review-follow-up-2026-09-16) and [revised source manifest](../../../context-reader/review-verification-manifest.json) preserve this evidence separately from the original trial.

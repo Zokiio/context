@@ -98,3 +98,12 @@ Existing behavioral tests cover multibyte and JSON-escaped source text, cycles, 
 The external `technical-writing` and `unslop` skills guided this evidence document. They are workflow instructions, not ticket-selected sources. Code and tests were inspected separately to verify implementation. None of these separate reads is a reader defect or evidence of automatic relevance discovery.
 
 The trial establishes delivery of the authored task context and the observed acceptance behavior. It does not establish automatic discovery of every relevant document, work readiness, or full OKF validity. The source manifest records the ticket before the coordinating agent adds the evidence link and completes its remaining checklist entries. Later ticket edits change its digest and exact byte boundaries.
+
+
+## Independent review follow-up, 2026-09-16
+
+An independent standards review found no actionable issues. An independent specification review found one P2 defect: an undefined Blocked by reference left `traversalComplete` true although its blocker could not be discovered. The reader now retains the relationship kind during reference diagnosis and marks traversal incomplete for that case. Undefined Spec and Context references retain their existing behavior. Application and CLI regressions cover both full and collapsed references and continued discovery of available branches.
+
+The specification reviewer independently verified the fix with six CLI probes and the application and CLI suites, with no remaining actionable findings. Full race tests, vet, and build passed on Go 1.27.1; the full test suite also passed on the declared Go 1.25.0 minimum.
+
+The coordinator reran all 17 real-task checks against the updated reader and current ticket snapshot. All passed with 11 selected sources totaling 84,813 bytes. The [review verification manifest](review-verification-manifest.json) records the exact invocations, outcomes, delivered source digests, and source-file digests for this revised implementation. The original trial and manifest remain historical evidence. Subsequent evidence notes change ticket bytes, so the recorded exact-fit limits apply to the captured snapshot.

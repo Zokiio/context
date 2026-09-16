@@ -56,3 +56,8 @@ The new `dependency_cycle` diagnostic is a warning with the referring file, orig
 Acceptance coverage is in [application traversal tests](../../../../internal/taskcontext/traversal_test.go) and [CLI blocker tests](../../../../internal/cli/testdata/blockers.txt). Tests cover branching order, repeated and shared dependencies, symlink aliases, source digests and unchanged records, malformed metadata, nested missing/unreadable sources, document-to-ticket traversal, external blocker rejection after document inclusion, and successful cycle-warning exits.
 
 Validation against the current working tree passed: `go test ./...`, `go test -race ./...`, `go vet ./...`, and `go build ./...`. This evidence covers ticket 03; the milestone real-task trial remains owned by ticket 05.
+
+
+### 2026-09-16 independent review fix
+
+Fixed a P2 finding where an undefined Blocked by reference incorrectly reported finished traversal. Both completeness fields now become false while available branches continue. Undefined Spec and Context references preserve finished traversal. Added application and CLI regressions; the independent reviewer verified the fix with no remaining actionable findings. [Updated verification evidence](../../../context-reader/acceptance-trial.md#independent-review-follow-up-2026-09-16) identifies the revised reader and successful checks.

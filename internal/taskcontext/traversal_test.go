@@ -223,3 +223,30 @@ func TestBlockerScopeCheckedForPreviouslyIncludedDocument(t *testing.T) {
 		t.Fatalf("unauthorized ticket reason: %+v", result.Sources[1])
 	}
 }
+
+func TestUnresolvedReferencesPreserveTraversalStatus(t *testing.T) {
+	for _, section := range []string{"Spec", "Context", "Blocked by"} {
+		for _, reference := range []string{"[required][missing]", "[required][]"} {
+			t.Run(section+reference, func(t *testing.T) {
+				project := t.TempDir()
+				project, _ = filepath.EvalSymlinks(project)
+				writeSources(t, project, map[string]string{
+					"root.md":   "## Blocked by\n[branch](branch.md)\n[other](other.md)\n",
+					"branch.md": "## " + section + "\n" + reference + "\n## Blocked by\n[leaf](leaf.md)\n",
+					"other.md":  "Other available branch",
+					"leaf.md":   "Available descendant",
+				})
+				result := readContext(t, project, "root.md")
+				if result.Complete || result.TraversalComplete != (section != "Blocked by") {
+					t.Fatalf("unexpected completeness: %+v", result)
+				}
+				if diff := cmp.Diff([]string{"root.md", "branch.md", "other.md", "leaf.md"}, selectedNames(t, project, result)); diff != "" {
+					t.Fatal(diff)
+				}
+				if len(result.Diagnostics) != 1 || result.Diagnostics[0].Code != "unresolved_reference" {
+					t.Fatalf("unexpected diagnostics: %+v", result.Diagnostics)
+				}
+			})
+		}
+	}
+}
