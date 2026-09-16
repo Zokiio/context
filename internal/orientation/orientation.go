@@ -90,7 +90,7 @@ type selection struct {
 
 var sectionKinds = map[string]string{
 	"Goals": "goal", "Current commitments": "commitment", "Open decisions": "open_decision",
-	"Spec": "spec", "Context": "context", "Blocked by": "blocked_by", "Blocked by decisions": "blocked_by_decision", "Acceptance": "acceptance", "Acceptance criteria": "acceptance_criteria",
+	"Spec": "spec", "Context": "context", "Blocked by": "blocked_by", "Blocked by decisions": "blocked_by_decision", "Acceptance": "acceptance",
 }
 
 func stringField(metadata map[string]any, name string) string {

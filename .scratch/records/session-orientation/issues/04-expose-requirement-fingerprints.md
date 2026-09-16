@@ -3,7 +3,7 @@ type: WorkItem
 id: 8888abfc-d72c-42c0-8a28-08c7235d68c6
 title: "Expose reproducible requirement fingerprints"
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # 04: Expose reproducible requirement fingerprints
@@ -18,17 +18,17 @@ Implement the confirmed whole-body coverage and exact version-1 encoding in the 
 
 ## Acceptance criteria
 
-- [ ] Return fingerprintVersion, ticketSHA256, and criteriaSHA256 for each work item when computable, even without recorded acceptance. Present the values in text and JSON, clearly separate from whole-file source digests. Derive every value from the already captured source bytes.
-- [ ] The ticket fingerprint covers the Markdown body after frontmatter removal, excluding every exact level-two Comments and Acceptance section with its nested content. Retain introductory requirements, Scope, criteria, and dependency relationships.
-- [ ] Use parsed Markdown structure for exclusions and section spans. Fenced heading-like text must not act as a section boundary. Preserve repeated sections, document order, whitespace, Unicode, and original line endings.
-- [ ] Include effective raw reference definitions used by retained content when their bytes are outside retained spans. Append each additional definition once, in first-use order, including its line ending. Changes to a retained reference's meaning must affect the fingerprint even when its definition appears in Comments.
-- [ ] Compute the criteria fingerprint from complete raw Acceptance criteria section spans in document order, plus required external reference definitions. Follow the specification's exact section-boundary rules.
-- [ ] Use the specified domain tags, zero separator, unsigned 64-bit big-endian counts and lengths, and lowercase SHA-256 digests. Independently checked conformance fixtures cover both encodings rather than deriving expected values with the production fingerprint function.
-- [ ] Public-operation tests show that introductory requirements, Scope, criteria, dependency links, and used reference definitions change the relevant fingerprint. Ordinary comments, current Acceptance links, and frontmatter-only execution or title edits do not change accepted requirement bytes.
-- [ ] Tests cover fenced headings, nested and repeated sections, CRLF, multibyte text, reference definitions already retained, and definitions in excluded sections. A comment edit changes the whole-source digest while leaving the requirement fingerprint unchanged when no retained meaning changed.
-- [ ] Missing or malformed inputs retain identifying diagnostics and explicit unavailable values where computation is impossible. Fingerprint availability does not imply readiness or accepted completion, and must not remove unrelated partial-result diagnostics.
-- [ ] Exercise the documented authoring procedure on orientation slices already verified at this point, using retained evidence and actual decision times. Record current acceptance links and snapshots after final requirement edits; preserve any earlier decisions and original tested revisions. Do not claim that the new acceptance validator has run.
-- [ ] Do not wait for unfinished tickets 02 or 03 to complete this slice. Record which completed slices received acceptance records and which still lack evidence or await validation. Retain this slice's own verification evidence for its closeout.
+- [x] Return fingerprintVersion, ticketSHA256, and criteriaSHA256 for each work item when computable, even without recorded acceptance. Present the values in text and JSON, clearly separate from whole-file source digests. Derive every value from the already captured source bytes.
+- [x] The ticket fingerprint covers the Markdown body after frontmatter removal, excluding every exact level-two Comments and Acceptance section with its nested content. Retain introductory requirements, Scope, criteria, and dependency relationships.
+- [x] Use parsed Markdown structure for exclusions and section spans. Fenced heading-like text must not act as a section boundary. Preserve repeated sections, document order, whitespace, Unicode, and original line endings.
+- [x] Include effective raw reference definitions used by retained content when their bytes are outside retained spans. Append each additional definition once, in first-use order, including its line ending. Changes to a retained reference's meaning must affect the fingerprint even when its definition appears in Comments.
+- [x] Compute the criteria fingerprint from complete raw Acceptance criteria section spans in document order, plus required external reference definitions. Follow the specification's exact section-boundary rules.
+- [x] Use the specified domain tags, zero separator, unsigned 64-bit big-endian counts and lengths, and lowercase SHA-256 digests. Independently checked conformance fixtures cover both encodings rather than deriving expected values with the production fingerprint function.
+- [x] Public-operation tests show that introductory requirements, Scope, criteria, dependency links, and used reference definitions change the relevant fingerprint. Ordinary comments, current Acceptance links, and frontmatter-only execution or title edits do not change accepted requirement bytes.
+- [x] Tests cover fenced headings, nested and repeated sections, CRLF, multibyte text, reference definitions already retained, and definitions in excluded sections. A comment edit changes the whole-source digest while leaving the requirement fingerprint unchanged when no retained meaning changed.
+- [x] Missing or malformed inputs retain identifying diagnostics and explicit unavailable values where computation is impossible. Fingerprint availability does not imply readiness or accepted completion, and must not remove unrelated partial-result diagnostics.
+- [x] Exercise the documented authoring procedure on orientation slices already verified at this point, using retained evidence and actual decision times. Record current acceptance links and snapshots after final requirement edits; preserve any earlier decisions and original tested revisions. Do not claim that the new acceptance validator has run.
+- [x] Do not wait for unfinished tickets 02 or 03 to complete this slice. Record which completed slices received acceptance records and which still lack evidence or await validation. Retain this slice's own verification evidence for its closeout.
 
 ## Blocked by
 
@@ -49,3 +49,11 @@ None
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
 - [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+- Verified all 11 criteria. [Immutable verification evidence](../../../session-orientation/evidence/04-fingerprints.md) retains the actual tested source identity and results.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/04-fingerprints-20260916.md)

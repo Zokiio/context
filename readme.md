@@ -8,7 +8,7 @@ Agent sessions lose context. Developers then repeat requirements, reconstruct de
 
 The CLI reads a ticket, its recursive blockers, and each ticket's explicitly linked Spec and Context documents. Callers authorize external document directories and bound collection by file count and source bytes. The product name remains open; the development executable is `ctx`.
 
-`ctx orient` also shows one project's authored goals, commitments, and work inventory. Its first implementation reports readiness checks as unknown and returns a partial report when those checks are not yet supported. It does not shortlist work until its readiness can be established.
+`ctx orient` also shows one project's authored goals, commitments, and work inventory. It reports missing or unsupported checks as unknown and keeps affected work off the shortlist. Requirement fingerprints support authored acceptance records.
 
 The first-reader milestone has passed local tests and a [skill-driven real-task acceptance trial](.scratch/context-reader/acceptance-trial.md).
 
@@ -98,9 +98,21 @@ Unknown metadata fields are retained in JSON. YAML values that JSON cannot repre
 
 A reference contains resolved `path`, nullable `id` and `title`, and optional referring `from` and authored `link`. Source reasons contain `kind` and optional `from` and `link`. Findings and diagnostics retain their source path and relationship when known. Source digests are separate from requirement fingerprints. Orientation does not return each source's full body.
 
-During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Fingerprints and acceptance details remain unavailable until their implementation slices. An empty project with all required declarations can still produce a complete report.
+During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Requirement fingerprints are available even without acceptance records. Acceptance validation remains unavailable until its implementation slice. An empty project with all required declarations can produce a complete report.
 
 Exit status `0` means complete evaluation, including an empty shortlist or known blocked work. Status `1` means a partial report, including a missing manifest, malformed record, unknown required fact, or collection limit. Status `2` means invalid arguments, unusable configured roots, cancellation, or an application or output failure. Reports and data diagnostics go to stdout. Invocation and operation errors go to stderr. An output failure can leave partial bytes on stdout.
+
+### Requirement fingerprints
+
+Each parsed work item exposes `fingerprintVersion: 1` and `ticketSHA256`. The ticket fingerprint covers its exact Markdown body after frontmatter removal, excluding every level-two Comments and Acceptance section. Nested content in those excluded sections is also excluded. Other requirements, including introductory text, Scope, criteria, and dependency links, remain covered.
+
+`criteriaSHA256` covers each complete Acceptance criteria section in document order, including its heading and nested content. A missing section gives `null`. An explicitly empty section still has a fingerprint; its availability does not establish readiness.
+
+Both fingerprints include effective reference definitions used by retained content when those definitions are outside the retained bytes. Definitions are appended once in first-use order. Changing a used definition in Comments changes the relevant fingerprint. Ordinary comments, current acceptance links, and frontmatter-only edits leave requirement fingerprints unchanged.
+
+The separate `sources[].sha256` identifies the whole source file, so it changes after a comment or metadata edit. Fingerprints use the captured source bytes, preserve line endings and Unicode, and perform no filesystem rereads. They do not certify acceptance or the current code checkout.
+
+The [acceptance authoring reference](docs/agents/acceptance.md#reproduce-version-1-fingerprints) defines the exact domain tags and byte encoding. [Conformance fixtures](internal/orientation/testdata/fingerprints/) retain manually selected input parts and literal expected digests, independently checked with Python and OpenSSL.
 
 ## Read task context
 

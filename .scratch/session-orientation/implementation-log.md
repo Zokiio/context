@@ -21,6 +21,8 @@ This is a working coordination log. Immutable slice evidence and Acceptance reco
 - Baseline `go test ./...` passed before implementation.
 - Ticket 01 implementation is verified and execution is completed. Agent orientation_core owns the application operation and shared reading; orientation_cli owns CLI output and its tests; the coordinating agent owns authoring conventions, ticket states, integration, and evidence.
 - The existing reader supplied ticket 01's full authored context. Both completeness fields were true.
+- Ticket 01 was committed as 9666b19 after integration verification. Tickets 02 and 04 are in progress in parallel. Each agent received complete task-context JSON from that retained reader build.
+- orientation_core owns eligibility and readiness for ticket 02. orientation_cli owns fingerprints for ticket 04. The coordinating agent added a CLI readiness fixture and is preparing immutable evidence and acceptance authoring. A separate reviewer is checking shared-reader compatibility against the first-reader contract.
 
 ## Review during ticket 01
 

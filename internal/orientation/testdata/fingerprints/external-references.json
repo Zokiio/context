@@ -1,0 +1,15 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n# Ticket\n\n[Second][b] then [First][a].\n\n## Acceptance criteria\n- [First][a] and [Second][b], again [First][a].\n\n## Comments\n[b]: second.md \"B\"\n[a]: first.md\n[a]: ignored.md\nUnrelated note.\n",
+  "ticketParts": [
+    "# Ticket\n\n[Second][b] then [First][a].\n\n## Acceptance criteria\n- [First][a] and [Second][b], again [First][a].\n\n",
+    "[b]: second.md \"B\"\n",
+    "[a]: first.md\n"
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\n- [First][a] and [Second][b], again [First][a].\n\n",
+    "[a]: first.md\n",
+    "[b]: second.md \"B\"\n"
+  ],
+  "ticketSHA256": "cdf8f84efff37c2c9074e24101704714b4968ebfd2b64887e213ce7ca18789b4",
+  "criteriaSHA256": "5a9078b48fa813f18f367630731437757f57441c2e7310d31e9a1812498ddbcf"
+}

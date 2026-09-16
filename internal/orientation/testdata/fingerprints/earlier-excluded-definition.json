@@ -1,0 +1,13 @@
+{
+  "source": "---\ntype: WorkItem\nid: work\ntitle: Work\ntriage: ready-for-agent\nexecution: unstarted\n---\n## Comments\n[rule]: rule.md\n  \"Title\n  \"\n## Acceptance criteria\n- [Rule][rule].\n## Appendix\n[rule]: ignored.md\n",
+  "ticketParts": [
+    "## Acceptance criteria\n- [Rule][rule].\n## Appendix\n[rule]: ignored.md\n",
+    "[rule]: rule.md\n  \"Title\n  \"\n"
+  ],
+  "criteriaParts": [
+    "## Acceptance criteria\n- [Rule][rule].\n",
+    "[rule]: rule.md\n  \"Title\n  \"\n"
+  ],
+  "ticketSHA256": "90807c3a766b6cbeee297c4a319a729d69e259e7dc27e12f21b3eef44d02fdf9",
+  "criteriaSHA256": "51b815cf65fb131c18bd16dabb1ca4329815eb55fe990c04f663d8aa3441066d"
+}

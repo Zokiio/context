@@ -47,7 +47,7 @@ func TestWorkInventoryAndCommitments(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.Complete || !got.InventoryComplete || len(got.WorkItems) != 4 || len(got.Shortlist) != 0 {
+	if got.Complete || !got.InventoryComplete || len(got.WorkItems) != 4 || len(got.Shortlist) != 1 {
 		t.Fatalf("inventory: %+v", got)
 	}
 	if len(got.Goals) != 2 || len(got.Goals[1].References) != 1 || got.Goals[1].References[0].Link != "goal.md#direction" {
@@ -58,12 +58,12 @@ func TestWorkInventoryAndCommitments(t *testing.T) {
 	}
 	for i, want := range []string{"a", "b", "c", "d"} {
 		work := got.WorkItems[i]
-		if work.ID == nil || *work.ID != want || work.Committed == nil || *work.Committed != (i < 2) || work.Readiness != "unknown" || work.Eligible || len(work.Checks) != 4 || work.TicketSHA256 != nil {
+		if work.ID == nil || *work.ID != want || work.Committed == nil || *work.Committed != (i < 2) || work.Readiness != "ready" || work.Eligible != (i == 0) || len(work.Checks) != 4 {
 			t.Fatalf("work: %+v", work)
 		}
 		for _, check := range work.Checks {
-			if check.Status != "unknown" {
-				t.Fatalf("unsupported check: %+v", check)
+			if check.Status != "pass" {
+				t.Fatalf("check: %+v", check)
 			}
 		}
 		if work.Metadata["custom"] == nil {

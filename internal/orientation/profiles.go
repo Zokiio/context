@@ -46,7 +46,7 @@ func (e *evaluator) invalidField(r *record, field string) {
 }
 
 func (e *evaluator) enumField(r *record, name string, allowed ...string) *string {
-	value := stringField(r.doc.Metadata, name)
+	value, _ := r.doc.Metadata[name].(string)
 	for _, valid := range allowed {
 		if value == valid {
 			return &value

@@ -121,6 +121,7 @@ func (e *evaluator) present() {
 			e.presentDecision(r)
 		}
 	}
+	e.presentShortlist()
 }
 
 func (e *evaluator) presentManifest() {
@@ -164,6 +165,7 @@ func (e *evaluator) presentManifest() {
 
 func (e *evaluator) presentWorkItem(r *record) {
 	work := WorkItem{ID: r.id, Title: r.title, Source: r.source.Path, Lifecycle: stringPointer(stringField(r.doc.Metadata, "status")), Specifications: []Reference{}, Checks: []Check{}, Readiness: "unknown", ExclusionReasons: []Finding{}, Metadata: metadataForOutput(r.doc.Metadata)}
+	setWorkItemFingerprints(&work, r.doc.Body)
 	if _, authored := r.doc.Metadata["status"]; !authored {
 		work.Lifecycle = stringPointer("stable")
 	}
@@ -183,15 +185,8 @@ func (e *evaluator) presentWorkItem(r *record) {
 			work.Specifications = append(work.Specifications, s.reference)
 		}
 	}
-	if r.ambiguous {
-		work.ExclusionReasons = append(work.ExclusionReasons, Finding{Code: "duplicate_identity", Message: "record identity is ambiguous", Path: r.source.Path})
-	}
-	for _, name := range []string{"acceptance_criteria", "required_context", "dependencies", "blocking_decisions"} {
-		reason := Finding{Code: "unsupported_check", Message: name + " evaluation is not implemented yet", Path: r.source.Path}
-		work.Checks = append(work.Checks, Check{Name: name, Status: "unknown", Reasons: []Finding{reason}})
-	}
-	work.ExclusionReasons = append(work.ExclusionReasons, Finding{Code: "unsupported_check", Message: "readiness checks are not implemented yet", Path: r.source.Path})
-	e.diagnose(Diagnostic{Code: "unsupported_check", Severity: "error", Message: "readiness checks are not implemented yet", Path: r.source.Path})
+	e.evaluateReadiness(r, &work)
+	e.evaluateEligibility(&work)
 	ref := Reference{Path: r.source.Path, ID: r.id, Title: r.title}
 	if stringValue(work.Execution) == "in-progress" {
 		e.result.InProgress = append(e.result.InProgress, ref)
