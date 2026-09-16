@@ -1,74 +1,48 @@
 # Read discovery configuration
 
-The configuration reader owns ContextConfig validation and filesystem path interpretation. Existing application readers continue to receive explicit scope. This slice implements [ticket 01](../records/project-discovery/issues/01-read-configuration.md).
+The configuration reader owns ContextConfig validation and saved filesystem paths in `internal/discovery`. It shares path identity rules with the following resolver and setup slices. Existing application readers continue to receive explicit scope. This slice implements [ticket 01](../records/project-discovery/issues/01-read-configuration.md).
 
 ## Caller usage
 
 ```go
-doc, err := discoveryconfig.Read(configFile, discoveryconfig.SharedProfile)
+config, err := discovery.ReadConfig(configFile, discovery.SharedConfig)
 if err != nil {
 	return err
 }
-records := doc.Shared.Project.Records
-// A valid declaration can name an unavailable target.
-// Discovery decides whether this path affects the selected scope.
-if records.Failure != nil {
-	return records.Failure
+records := config.Project.Records
+if records.Err != nil {
+	return records.Err
 }
-useRecords(records.Canonical)
+// Selection must still check the original path's availability and directory type.
+considerRecords(records.Path, records.Canonical)
 ```
 
-Personal callers read `doc.Personal.Projects` and `doc.Personal.Workspaces` in authored order. Future setup can use the original `doc.Source` to preserve unknown YAML and compare the observed file before editing.
+Personal callers read `config.Projects` and `config.Workspaces` in authored order. Future setup can validate proposed bytes through `ParseConfig` and retain `config.Raw` for concurrent-change detection. `Metadata` and `Body` preserve unknown authored fields and Markdown.
 
-## Shape
+## Module boundary
 
-One `Read(filename, profile)` operation returns typed declarations and captured source text. The filename must be absolute. Home lookup, ancestor search, selection, and writes belong to subsequent tickets.
+`config.go` owns profile parsing and validation. `path.go` owns saved path provenance, canonical identity, and physical-location comparison. `recordread.ParseDocument` owns Markdown framing and YAML decoding. No YAML AST crosses the discovery interface.
 
-```go
-func Read(filename string, profile Profile) (Document, error) {
-	// Read UTF-8 bytes and reuse recordread.ParseDocument.
-	// Validate both profile structure and scoped key/alias uniqueness.
-	// Resolve paths from the encountered file directory, then observe symlinks.
-	return Document{}, errors.New("not implemented")
-}
+`Config` contains either shared project/workspace declarations or personal registrations. Project bindings contain records and allowed sources. Personal project registrations add a key, optional alias, and directory. Workspace declarations contain identity, title, and ordered members. Personal workspace registrations add a key, optional alias, and optional directory. Members retain their own records and allowed roots.
 
-type Document struct {
-	File, Source, Body string
-	Metadata map[string]any
-	Shared *SharedConfig
-	Personal *PersonalConfig
-}
+A `ConfigError` identifies the declaring file, field, and authored value. `PathValue` retains its origin, authored spelling, filesystem spelling, canonical identity, and any identity-resolution failure. An unavailable registration does not make the whole document invalid.
 
-type TargetPath struct {
-	File, Field string
-	Authored, Resolved, Canonical string
-	Failure *FieldError
-}
-```
+## Path semantics
 
-Exactly one profile is populated after a successful read. Project bindings contain records and allowed sources. Project registrations add a key, optional alias, and directory. Workspace declarations contain identity, title, and ordered members. Workspace registrations add a key, optional alias, and optional directory. Members carry their own records and source roots.
+Relative values use the encountered configuration filename's directory, even when that file is a symlink. Path processing preserves `..` until preceding symlinks have been followed. Cleaning the spelling first can redirect a valid declaration to a different record store.
 
-`internal/discoveryconfig/config.go` owns the public values and read operation. Private profile decoding and path interpretation remain within that package. `recordread.ParseDocument` owns Markdown framing and YAML decoding. No YAML AST crosses the configuration interface.
+Canonical identity can identify a missing target through its existing ancestors. It does not establish availability. The resolver must check the original selected path before opening a directory, so a spelling such as `missing/../records` cannot become a usable directory merely through normalization. Non-directory ancestors and symlink loops retain errors. Case-insensitive aliases use physical identity when the filesystem provides it.
 
-The reader preserves the full decoded metadata in one place and the original source as immutable strings. It does not duplicate unknown-field maps across typed values. A `FieldError` identifies the file and field, with an underlying error where available. Relative paths use the encountered filename's directory even when the configuration file is a symlink. Failed canonicalization stays on the affected target, leaving unrelated declarations usable. A canonical path establishes identity, not directory accessibility.
+Configuration reads check for a regular file before opening it, including when the configuration filename is a symlink. Tilde, environment-looking strings, commas, and percent escapes remain literal filesystem values.
 
-## Synthesis decision
+## Design choice
 
-The functional candidate is the base. One operation hides parsing, validation, duplicate detection, and path interpretation. The document-owned alternative required declaration snapshots, copying, path-handle ownership, and separate resolution calls for the same consumer outcome.
+A standalone functional reader and a document-owned reader with opaque path handles were compared. Both met the initial interface, preservation, path, testability, and scope criteria. The functional boundary remains the chosen shape. The completed implementation already supplies that boundary alongside the resolver and setup path rules, so these slices use its shared module.
 
-An independent cross-judge scored both candidates 2 out of 2 on each of the five criteria: interface depth, source retention and errors, path handling, testability, and ticket scope. The judge recommended the functional candidate for its smaller interface. The implementation follows that recommendation. The configured runner families unavailable in this session were replaced with the available Codex models.
-
-Adopt the alternative's emphasis on complete error provenance and immutable original text. Reuse project and workspace value types within registrations instead of duplicating their fields. Keep all raw metadata at the document level. Omit path-handle tables, public resolution stages, and an error-code taxonomy until a caller needs them.
-
-## Tradeoffs
-
-- Path identities are observations made during the read. Discovery must validate selected directories before invoking a reader. There is no atomic filesystem snapshot.
-- One fail-fast field error keeps malformed configurations unusable without introducing partial configuration results.
-- Optional string values retain absence separately from authored empty strings. Required identities and paths reject whitespace-only values. Optional aliases and member titles are strings when present; selection can only use an alias that matches the caller's explicit value.
-- Original source bytes preserve unknown YAML syntax that decoded metadata may normalize. A later writer must use the source when preserving such syntax.
+This keeps one configuration parser and one path identity implementation. It avoids a second conversion layer between independent configuration and resolver models. `ReadConfig` handles an existing file; `ParseConfig` validates proposed bytes for setup without writing them. Neither selects a scope.
 
 ## Verification
 
-External-package tests cover both profiles, strict types and duplicate identities, exact source retention, declaring-file path bases, target aliases, missing and looping targets, independent record locations, and read-only behavior. Run the complete Go tests, race tests, vet, and build before recording acceptance.
+External-package tests cover both profiles, field diagnostics, YAML and declaration duplicates, unknown metadata and Markdown preservation, independent record stores, symlinked configuration files, literal values, unavailable targets, symlink-before-parent traversal, non-directory ancestors, and physical identity.
 
-On 2026-09-17, the package tests, complete Go suite, race suite, vet, and CLI build passed. Implementation fit the selected interface without a redesign.
+The review correction adds regressions for nested mapping keys that alias an earlier scalar anchor. Duplicate keys are rejected after alias resolution; distinct alias keys and YAML merge overrides retain their meaning. Criterion evidence and the current Acceptance record retain the verified source revision.

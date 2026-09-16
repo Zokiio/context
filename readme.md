@@ -227,7 +227,7 @@ The reader uses current files on disk and does not write records. Digests identi
 - `internal/cli` owns urfave/cli v3 flags, text and JSON rendering, and exit statuses. It accepts an explicit `Operations` value.
 - `internal/taskcontext` exposes `Assemble(context.Context, Request) (Result, error)` and owns task-context selection.
 - `internal/orientation` exposes `Orient(context.Context, Request) (Result, error)` and owns discovery and project evaluation.
-- `internal/discoveryconfig` reads shared and personal ContextConfig documents, validates declarations, and retains path identities and unavailable-target diagnostics for later scope selection. Reader commands do not use it yet.
+- `internal/discovery` reads shared and personal ContextConfig documents, validates declarations, and retains filesystem identities and resolution errors for later scope selection. Reader commands do not use it yet.
 - `internal/recordread` shares Markdown and YAML parsing and authorized source reads between the application operations.
 
 The application operation does not depend on CLI types, print output, or exit. Dependencies are pinned in `go.mod`: urfave/cli v3.12.0, Goldmark v2.1.0, goccy/go-yaml v1.19.2, go-cmp v0.7.0, and go-internal v1.16.0. Application tests use real temporary directories; testscript covers the CLI contract.
