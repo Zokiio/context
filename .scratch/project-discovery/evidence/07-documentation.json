@@ -1,0 +1,401 @@
+{
+  "actor": "Codex coordinating agent /root",
+  "observedAt": "2026-09-16T22:27:59.775569+00:00",
+  "baseCommit": "ad66d9a993e44ee6c8e52cd014100975a7bba137",
+  "documentSources": {
+    "readme.md": "fd305dffd24eb4aba1fc2841830161c9c003168398c3e6ef5f4042b0e6c6900b",
+    "docs/connect-projects.md": "0db64162dea42dbe389144179a5be6b96290b2547f7dbee769114e4f854926bc",
+    "docs/discovery.md": "418372b4c6200cf364dde56bd47c00d7571c7ed28c4a9670bd7035616be0b1ff",
+    "docs/readers.md": "2d77cb22a87cc9db1b7651eafc8ef81126a640d07533a67aaf1deab2a315cbe5"
+  },
+  "shellSyntaxChecks": [
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "go build -o /tmp/ctx ./cmd/ctx\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --max-files 500 --max-bytes 8388608\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --json --max-files 500 --max-bytes 8388608\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --ticket project-discovery/issues/06-document-and-trial.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle /path/to/records --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "go test ./...\ngo test -race ./...\ngo vet ./...\ngo build ./...\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --records .scratch/records --allow-source docs --dry-run\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --records .scratch/records --allow-source docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --directory /work/widget --records /work/records/widget --allow-source /work/widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient\nctx context --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --personal --directory /work/widget --records /work/records/widget --allow-source /work/widget/docs --alias widget\nctx orient --project @widget\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --personal --directory /work/widget --records /work/new-records/widget --allow-source /work/widget/docs --replace --dry-run\nctx setup --personal --directory /work/widget --records /work/new-records/widget --allow-source /work/widget/docs --replace\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --workspace /work/team\nctx orient --workspace /work/team --json\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --bundle /work/team/.context/../widget/.scratch/records --allow-source /work/team/.context/../widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx context --bundle /work/team/widget/.scratch/records --allow-source /work/team/widget/docs --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --project /work/widget --json --explain-scope\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --bundle /work/records/widget --allow-source /work/widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --bundle /path/to/bundle\n/tmp/ctx orient --bundle /path/to/bundle --json\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle /path/to/bundle --ticket issues/example.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle .scratch/records \\\n\t--ticket context-reader/issues/05-bound-context-collection.md \\\n\t--allow-source .\n",
+      "exitCode": 0,
+      "stderr": ""
+    }
+  ],
+  "localLinks": [
+    {
+      "source": "readme.md",
+      "link": ".context/config.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/connect-projects.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/discovery.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/readers.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": ".scratch/project-discovery/evidence/07-trial.json",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": ".scratch/project-discovery/trial.py",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/vision.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "CONTEXT.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "link": "../readme.md#build-and-read-this-project",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "discovery.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/acceptance.md#reproduce-version-1-fingerprints",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../internal/orientation/testdata/fingerprints/",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/acceptance.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../.agents/skills/task-context/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../go.mod",
+      "exists": true
+    }
+  ],
+  "CLIExamples": [
+    {
+      "label": "shared example",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/checkout",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/checkout/.scratch/records/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"Read local records.\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/checkout/.scratch/records/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/checkout/.scratch/records/project.md\",\"sha256\":\"473560ef61cd69fd8445ef4b2f825b404156fc6feaf80e10c7980f073ffcfc60\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "personal project example",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--project",
+        "@widget",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/records/widget/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"Read local records.\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/records/widget/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/records/widget/project.md\",\"sha256\":\"473560ef61cd69fd8445ef4b2f825b404156fc6feaf80e10c7980f073ffcfc60\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "personal workspace example",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--workspace",
+        "@team",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"team-projects\",\"title\":\"Team projects\"},\"workStatus\":\"unevaluated\",\"members\":[],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "shared workspace example",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--workspace",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"team-projects\",\"title\":\"Team projects\"},\"workStatus\":\"unevaluated\",\"members\":[{\"key\":\"widget\",\"title\":\"Widget\",\"directory\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget\",\"records\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget/.scratch/records\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget/.scratch/records\",\"--allow-source\",\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget/docs\"]},{\"key\":\"research\",\"title\":\"Research\",\"records\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../research-records\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../research-records\"]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "member widget",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget/.scratch/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../widget/docs",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/widget/.scratch/records/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"Read local records.\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/widget/.scratch/records/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/widget/.scratch/records/project.md\",\"sha256\":\"473560ef61cd69fd8445ef4b2f825b404156fc6feaf80e10c7980f073ffcfc60\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "member research",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-reviewed",
+        "orient",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/.context/../research-records",
+        "--json"
+      ],
+      "cwd": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+      "HOME": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/home",
+      "exitCode": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/research-records/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"docs-example\",\"title\":\"Documentation example\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"Read local records.\",\"source\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/research-records/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l/work/team/research-records/project.md\",\"sha256\":\"473560ef61cd69fd8445ef4b2f825b404156fc6feaf80e10c7980f073ffcfc60\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    }
+  ],
+  "readerSHA256": "4cf212e1a8299b7ed65f76d4a8b209c34f5d1bd869cafa61496710e453b16595",
+  "criteria": [
+    {
+      "ticket": "06-document-and-trial",
+      "number": 1,
+      "result": "pass",
+      "observation": "All documentation hashes retained after the README trial link moved to the post-review rerun. All 20 shell blocks parse, 17 local links resolve, and root executed six configuration/member-selection examples with the verified final binary."
+    }
+  ]
+}

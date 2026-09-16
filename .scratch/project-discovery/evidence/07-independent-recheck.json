@@ -1,0 +1,111 @@
+{
+  "actor": "Codex independent specification reviewer /root/spec_review",
+  "retainedBy": "Codex coordinating agent /root",
+  "retainedAt": "2026-09-16T22:28:59.976521+00:00",
+  "originalResultSHA256": "1a2b5f7baffc70e51ba4c79bbdce072aab41973269b4b79c18aca856fa3a847f",
+  "binarySHA256": "4cf212e1a8299b7ed65f76d4a8b209c34f5d1bd869cafa61496710e453b16595",
+  "reviewedCommit": "ad66d9a993e44ee6c8e52cd014100975a7bba137",
+  "results": [
+    {
+      "case": "local-config-orient",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient/project"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient",
+      "home": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient/home",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "discover scope from \"/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient/project\" (cwd \"/private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient\"): read configuration /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient/project/.context/config.md: /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-orient/project/.context/config.md is not a regular file; repair the configuration before discovery\n",
+      "seconds": 0.08688804198754951,
+      "passed": true
+    },
+    {
+      "case": "personal-config-orient",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient/project"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient",
+      "home": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient/home",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "discover scope from \"/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient/project\" (cwd \"/private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient\"): read configuration /tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient/home/.context/config.md: /tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-orient/home/.context/config.md is not a regular file; repair the configuration before discovery\n",
+      "seconds": 0.004015166021417826,
+      "passed": true
+    },
+    {
+      "case": "local-config-setup",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "setup",
+        "--directory",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup/project",
+        "--records",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup/records",
+        "--dry-run"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup",
+      "home": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup/home",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "read setup destination /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup/project/.context/config.md: /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/local-config-setup/project/.context/config.md is not a regular file\n",
+      "seconds": 0.004362375009804964,
+      "passed": true
+    },
+    {
+      "case": "personal-config-setup",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "setup",
+        "--directory",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup/project",
+        "--records",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup/records",
+        "--dry-run",
+        "--personal"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup",
+      "home": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup/home",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "read setup destination /tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup/home/.context/config.md: /tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/personal-config-setup/home/.context/config.md is not a regular file\n",
+      "seconds": 0.0037594170426018536,
+      "passed": true
+    },
+    {
+      "case": "marker-orient",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "orient",
+        "--project",
+        "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient/project"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient",
+      "home": "/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient/home",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "discover scope from \"/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient/project\" (cwd \"/private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient\"): project marker /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient/project/project.md: /private/tmp/context-spec-review.VhVlrB/fifo-d9yn68fz/marker-orient/project/project.md is not a regular file; repair the reserved marker\n",
+      "seconds": 0.003560915996786207,
+      "passed": true
+    },
+    {
+      "case": "unrelated-ENOTDIR-binding",
+      "args": [
+        "/tmp/context-spec-review.VhVlrB/ctx-ad66d9a",
+        "orient",
+        "--json"
+      ],
+      "cwd": "/tmp/context-spec-review.VhVlrB/bindings-jk46gb59/project",
+      "home": "/tmp/context-spec-review.VhVlrB/bindings-jk46gb59/home",
+      "exit": 0,
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"test\",\"title\":\"Test\",\"source\":\"/private/tmp/context-spec-review.VhVlrB/bindings-jk46gb59/project/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"test\",\"title\":\"Test\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"None\",\"source\":\"/private/tmp/context-spec-review.VhVlrB/bindings-jk46gb59/project/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/context-spec-review.VhVlrB/bindings-jk46gb59/project/project.md\",\"sha256\":\"cbcaa0ffd833637856eb8f1672eec22191a41e99dd6ec693c4819c733206d333\",\"reasons\":[{\"kind\":\"project\"}]}],\"diagnostics\":[]}\n",
+      "stderr": "",
+      "passed": true
+    }
+  ]
+}

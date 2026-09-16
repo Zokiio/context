@@ -3,7 +3,7 @@ type: WorkItem
 id: 14cf4188-8cc0-451b-b5d4-758b32a0db52
 title: "Document migration and verify discovery end to end"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Document migration and verify discovery end to end
@@ -14,11 +14,11 @@ Implement this slice of the approved project-discovery specification. Keep chang
 
 ## Acceptance criteria
 
-- [ ] Document config profiles, selection precedence, setup, workspace authoring, source-root rules, diagnostics, and the manifestless --project to --bundle migration.
-- [ ] Run a real trial with this repository plus an independent non-Git project and a workspace; demonstrate routine orient without --project, alias selection, and explicit overrides.
-- [ ] Exercise missing scope, malformed configuration, broken selected mappings, moved shared checkout, direct recovery through --bundle, and workspace member selection.
-- [ ] Retain criterion-level evidence and actual tested revision under the repository acceptance procedure; complete Go test, race, vet, and build checks.
-- [ ] Verify readers do not write and setup changes only the intended registration; clearly separate member availability from work readiness in trial outputs.
+- [x] Document config profiles, selection precedence, setup, workspace authoring, source-root rules, diagnostics, and the manifestless --project to --bundle migration.
+- [x] Run a real trial with this repository plus an independent non-Git project and a workspace; demonstrate routine orient without --project, alias selection, and explicit overrides.
+- [x] Exercise missing scope, malformed configuration, broken selected mappings, moved shared checkout, direct recovery through --bundle, and workspace member selection.
+- [x] Retain criterion-level evidence and actual tested revision under the repository acceptance procedure; complete Go test, race, vet, and build checks.
+- [x] Verify readers do not write and setup changes only the intended registration; clearly separate member availability from work readiness in trial outputs.
 
 ## Blocked by
 
@@ -44,3 +44,7 @@ None
 ## Comments
 
 Implementation claimed by Codex coordinating agent `/root`, with documentation delegated to `/root/setup`, after tickets 03, 04, and 05 had valid, fresh acceptance and passing prerequisite checks.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/06-document-and-trial-final.md)

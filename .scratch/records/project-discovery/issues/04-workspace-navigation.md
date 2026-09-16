@@ -45,4 +45,10 @@ Implementation claimed by Codex subagent `/root/configuration`, coordinated by `
 
 ## Acceptance
 
+- [Current acceptance](../acceptances/04-workspace-navigation-final.md)
+
+## Comments
+
+Earlier workflow acceptance, retained with its original evidence:
+
 - [Current acceptance](../acceptances/04-workspace-navigation-implementation.md)

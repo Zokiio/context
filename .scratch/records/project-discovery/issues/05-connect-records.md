@@ -45,4 +45,10 @@ Implementation claimed by Codex subagent `/root/setup`, coordinated by `/root`, 
 
 ## Acceptance
 
+- [Current acceptance](../acceptances/05-connect-records-final.md)
+
+## Comments
+
+Earlier workflow acceptance, retained with its original evidence:
+
 - [Current acceptance](../acceptances/05-connect-records-implementation.md)

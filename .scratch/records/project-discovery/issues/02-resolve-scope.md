@@ -45,4 +45,10 @@ Implementation claimed by Codex subagent `/root/configuration`, coordinated by `
 
 ## Acceptance
 
+- [Current acceptance](../acceptances/02-resolve-scope-final.md)
+
+## Comments
+
+Earlier workflow acceptance, retained with its original evidence:
+
 - [Current acceptance](../acceptances/02-resolve-scope-implementation.md)

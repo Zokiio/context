@@ -59,6 +59,6 @@ go vet ./...
 go build ./...
 ```
 
-The [retained discovery trial](.scratch/project-discovery/evidence/06-trial.json) and [trial driver](.scratch/project-discovery/trial.py) record the end-to-end checks.
+The [retained discovery trial](.scratch/project-discovery/evidence/07-trial.json) and [trial driver](.scratch/project-discovery/trial.py) record the end-to-end checks.
 
 The [product vision](docs/vision.md), [domain glossary](CONTEXT.md), and [local issue tracker conventions](docs/agents/issue-tracker.md) describe the project's direction and contribution workflow.

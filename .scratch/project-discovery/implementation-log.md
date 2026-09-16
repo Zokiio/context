@@ -86,3 +86,15 @@ The README now starts with cwd discovery. Separate how-to and reference document
 Two new agents reviewed the implementation at `223dc1a` against the approved planning revision. The [initial reports](evidence/07-review-initial.md) retain both axes and reproduction observations. Standards found no documented-rule violation and one optional refactor for repeated directory-access checks. The checks retain different contracts: resolver validation opens a directory, while direct selection and member availability also check read access. Root leaves that advisory refactor for later rather than introducing another shared filesystem module in this change.
 
 Specification review found two defects. Configuration and Project marker FIFOs could block before file-type validation, and an unrelated binding with a non-directory ancestor could reject otherwise valid discovery. Root added failing regressions, then checks regular-file targets before opening reserved inputs and ignores only ENOTDIR when an unavailable binding cannot contain the starting directory. Permission-hidden binding identities still fail instead of disappearing. All 16 direct/symlink FIFO cases and the project/workspace binding regressions pass. Full verification, the trial, and independent rechecks will cover the corrected revision before final acceptance.
+
+## Review and verification complete
+
+Both reviewers rechecked `ad66d9a`. Standards reports no hard violations and retains its optional duplication advisory. Specification review confirms both defects are fixed, with no remaining findings. The [final reports](review.md) retain the two axes and the independently rebuilt binary's six reproduction results.
+
+The complete Go test, race, vet, and build checks passed again. All 37 trial scenarios passed on that build. The repository's existing shared registration is now a no-op, while the independent-project trial still exercises creation. The earlier trial retains the initial repository write. Final documentation evidence includes root's execution of the six configuration/member-selection examples. All new verification keeps its actual source manifest and tested revision; earlier results remain immutable.
+
+## Final acceptance
+
+Root refreshed all six task contexts with the verified reader, then reassessed tickets 01 through 06 in prerequisite order. Every criterion has retained evidence. New workflow Acceptance records use the actual post-review verification identity and preserve the earlier decisions under ticket history. Ticket 03's new record includes the test-name erratum.
+
+The [final orientation observation](evidence/06-document-and-trial-final-observation.json) reports all six tickets completed, ready, and accepted with valid fingerprints, matching requirement/evidence snapshots, and passing supported prerequisite checks. The project report and inventory are complete, with no diagnostics. No human approval is asserted. The implementation is ready for a follow-up PR; merging remains a separate user decision.

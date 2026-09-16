@@ -45,4 +45,10 @@ Implementation claimed by Codex subagent `/root/integration_design`, coordinated
 
 ## Acceptance
 
+- [Current acceptance](../acceptances/03-integrate-cli-final.md)
+
+## Comments
+
+Earlier workflow acceptance, retained with its original evidence:
+
 - [Current acceptance](../acceptances/03-integrate-cli-implementation.md)
