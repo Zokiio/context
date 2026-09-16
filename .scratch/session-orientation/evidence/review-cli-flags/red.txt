@@ -1,0 +1,20 @@
+--- FAIL: TestOrientationRejectsRepeatedSingleValueFlags (0.00s)
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/conflicting_project (0.00s)
+        orientation_cli_test.go:200: repeated --project: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/repeated_project (0.00s)
+        orientation_cli_test.go:200: repeated --project: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/conflicting_file_limit (0.00s)
+        orientation_cli_test.go:200: repeated --max-files: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/repeated_file_limit (0.00s)
+        orientation_cli_test.go:200: repeated --max-files: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/conflicting_byte_limit (0.00s)
+        orientation_cli_test.go:200: repeated --max-bytes: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/repeated_byte_limit (0.00s)
+        orientation_cli_test.go:200: repeated --max-bytes: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/conflicting_format (0.00s)
+        orientation_cli_test.go:200: repeated --json: status=0 called=true stdout bytes=293 stderr=""
+    --- FAIL: TestOrientationRejectsRepeatedSingleValueFlags/repeated_format (0.00s)
+        orientation_cli_test.go:200: repeated --json: status=0 called=true stdout bytes=234 stderr=""
+FAIL
+FAIL	github.com/Zokiio/context/internal/cli	0.244s
+FAIL

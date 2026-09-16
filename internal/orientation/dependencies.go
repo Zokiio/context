@@ -62,7 +62,7 @@ func (e *evaluator) prepareDependencies() {
 		if _, known := facts[target.source.Path]; !known {
 			facts[target.source.Path] = e.prerequisiteFacts(target)
 		}
-		combineDependencyChecks(&link.basis, facts[target.source.Path], link.target.declaration)
+		mergeChecks(&link.basis, facts[target.source.Path], link.target.declaration)
 		for index := range link.basis.Reasons {
 			reason := &link.basis.Reasons[index]
 			if reason.From == "" {
@@ -98,9 +98,9 @@ func (e *evaluator) prepareDependencies() {
 			continue
 		}
 		node.check = Check{Name: "dependencies", Status: "pass", Reasons: []Finding{}}
-		combineDependencyChecks(&node.check, node.declaration)
+		mergeChecks(&node.check, node.declaration)
 		for _, link := range node.closure {
-			combineDependencyChecks(&node.check, link.basis)
+			mergeChecks(&node.check, link.basis)
 		}
 		if len(node.check.Reasons) == 0 {
 			node.check.Reasons = append(node.check.Reasons, Finding{Code: "no_dependencies", Message: "Blocked by explicitly declares none", Path: r.source.Path})
@@ -110,9 +110,9 @@ func (e *evaluator) prepareDependencies() {
 		if node := e.dependencies[r.source.Path]; node != nil {
 			for _, link := range node.edges {
 				check := Check{Status: "pass", Reasons: []Finding{}}
-				combineDependencyChecks(&check, link.basis)
+				mergeChecks(&check, link.basis)
 				if link.target != nil {
-					combineDependencyChecks(&check, link.target.check)
+					mergeChecks(&check, link.target.check)
 				}
 				link.result.Status, link.result.Reasons = check.Status, check.Reasons
 			}
@@ -172,29 +172,13 @@ func (e *evaluator) prerequisiteFacts(r *record) Check {
 		check.Status, code, message = "fail", "cancelled_dependency", "cancelled prerequisite cannot satisfy an edge"
 	case "completed":
 		accepted := e.evaluateAcceptance(r)
-		combineDependencyChecks(&check, Check{Status: accepted.CheckStatus, Reasons: accepted.Reasons})
+		mergeChecks(&check, Check{Status: accepted.CheckStatus, Reasons: accepted.Reasons})
 	default:
 		check.Status, code, message = "unknown", "dependency_execution_unknown", "prerequisite execution state is unavailable"
 	}
 	check.Reasons = append(check.Reasons, Finding{Code: code, Message: message, Path: r.source.Path})
-	combineDependencyChecks(&check, e.blockingDecisionCheck(r))
+	mergeChecks(&check, e.criteriaCheck(r), e.blockingDecisionCheck(r))
 	return check
-}
-
-func combineDependencyChecks(result *Check, checks ...Check) {
-	seen := map[Finding]bool{}
-	for _, reason := range result.Reasons {
-		seen[reason] = true
-	}
-	for _, check := range checks {
-		result.Status = combineCheckStatus(result.Status, check.Status)
-		for _, reason := range check.Reasons {
-			if !seen[reason] {
-				result.Reasons = append(result.Reasons, reason)
-				seen[reason] = true
-			}
-		}
-	}
 }
 
 func (e *evaluator) dependencyCheck(r *record) Check { return e.dependencies[r.source.Path].check }

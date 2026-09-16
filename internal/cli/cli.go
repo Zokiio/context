@@ -73,6 +73,11 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer, operation
 			Writer: stderr, ErrWriter: stderr, ExitErrHandler: exitHandler, OnUsageError: usageError,
 			Flags: append(scopeFlags(), &urfave.BoolFlag{Name: "json", Usage: "Write the versioned JSON orientation report"}),
 			Action: func(ctx context.Context, cmd *urfave.Command) error {
+				for _, name := range []string{"project", "max-files", "max-bytes", "json"} {
+					if cmd.Count(name) > 1 {
+						return fmt.Errorf("--%s may only be specified once", name)
+					}
+				}
 				if cmd.NArg() != 0 {
 					return errors.New("orient does not accept positional arguments")
 				}

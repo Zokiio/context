@@ -60,6 +60,8 @@ Inspect one project bundle before choosing a ticket:
 
 `orient` requires `--project` and accepts no ticket or positional argument. It reads `project.md` first, then discovers Markdown records in the bundle. A project need not be a Git repository. Discovery includes untracked and ignored files and does not traverse directory symlink aliases.
 
+`--project`, `--max-files`, `--max-bytes`, and `--json` each accept at most one occurrence. Repeating one returns exit status `2`, including when its values agree. `--allow-source` remains repeatable.
+
 The default text report shows project identity, authored goals, current commitments, work in progress, backlog, decisions, and gaps. Each work item keeps execution, triage, commitment membership, readiness, and eligibility separate. Source paths, whole-file digests, and relationship reasons identify the records behind the report. No generated summary replaces authored goals.
 
 Use a selected work item's source path as `ctx context --ticket` to obtain its complete requirements. Reuse the project and allowed-source arguments. The [authoring profiles](docs/agents/issue-tracker.md) define the manifest sections and record fields.
@@ -106,7 +108,7 @@ The decision record's state overrides an outdated Open decisions index link. Res
 
 When a decision answer imposes implementation requirements, also link it through the ticket's Spec or Context section. `ctx context` retains its existing selection rules and does not automatically follow Blocked by decisions.
 
-Readiness checks acceptance criteria, selected context, work dependencies, and blocking decisions. A prerequisite passes only when its work is completed, its acceptance is valid and fresh, its blocking decisions are resolved, and all of its own prerequisites pass. Known failures make readiness blocked; otherwise, unknown information takes precedence over ready. Reasons retain unknown conditions even when another condition is a known blocker.
+Readiness checks acceptance criteria, selected context, work dependencies, and blocking decisions. A prerequisite passes only when its work is completed, it has nonempty criteria, its acceptance is valid and fresh, its blocking decisions are resolved, and all of its own prerequisites pass. Known failures make readiness blocked; otherwise, unknown information takes precedence over ready. Reasons retain unknown conditions even when another condition is a known blocker.
 
 Cycles block their members and work that depends on them. A fully observed cycle remains a complete evaluation. `ctx context` can still return complete source context for that cycle. Unrelated work remains inspectable, and a partial report can retain independently established eligible work. Incomplete inventory suppresses the shortlist because undiscovered identities may affect the result.
 

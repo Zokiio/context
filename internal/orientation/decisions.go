@@ -79,19 +79,7 @@ func (e *evaluator) evaluateDecision(r *record) Decision {
 func (e *evaluator) blockingDecisionCheck(r *record) Check {
 	check := Check{Name: "blocking_decisions", Status: "pass", Reasons: []Finding{}}
 	appendReasons := func(status string, reasons ...Finding) {
-		check.Status = combineCheckStatus(check.Status, status)
-		for _, reason := range reasons {
-			duplicate := false
-			for _, existing := range check.Reasons {
-				if existing == reason {
-					duplicate = true
-					break
-				}
-			}
-			if !duplicate {
-				check.Reasons = append(check.Reasons, reason)
-			}
-		}
+		mergeChecks(&check, Check{Status: status, Reasons: reasons})
 	}
 	if !e.declaration(r, "Blocked by decisions", true) {
 		appendReasons("unknown", Finding{Code: "incomplete_relationship_declaration", Message: "Blocked by decisions declaration is missing, malformed, or unavailable", Path: r.source.Path})
@@ -119,16 +107,6 @@ func (e *evaluator) blockingDecisionCheck(r *record) Check {
 		check.Reasons = append(check.Reasons, Finding{Code: "no_blocking_decisions", Message: "Blocked by decisions explicitly declares none", Path: r.source.Path})
 	}
 	return check
-}
-
-func combineCheckStatus(current, incoming string) string {
-	if current == "fail" || incoming == "fail" {
-		return "fail"
-	}
-	if current == "unknown" || incoming == "unknown" {
-		return "unknown"
-	}
-	return "pass"
 }
 
 func (e *evaluator) presentDecision(r *record) {

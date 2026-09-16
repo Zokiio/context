@@ -39,6 +39,36 @@ func TestRecursiveAcceptedPrerequisitesExposeSharedAuthoredEdges(t *testing.T) {
 	}
 }
 
+func TestFreshAcceptanceCannotReleaseWorkWithoutNonemptyCriteria(t *testing.T) {
+	for _, criteria := range []string{"", "- [ ]\n", "### To be defined\n"} {
+		t.Run(criteria, func(t *testing.T) {
+			leaf := strings.Replace(workItem("leaf", "completed", ""), "- A useful result.\n", criteria, 1)
+			project := writeProject(t, map[string]string{
+				"project.md":   committedManifest("dependent.md"),
+				"leaf.md":      leaf,
+				"middle.md":    blockedWork("middle", "completed", "leaf.md"),
+				"dependent.md": blockedWork("dependent", "unstarted", "middle.md"),
+			})
+			acceptWork(t, project, "leaf.md", "None\n")
+			acceptWork(t, project, "middle.md", "None\n")
+			got := orientProject(t, project)
+			accepted := findWork(t, got, "leaf.md").Acceptance
+			if !got.Complete || accepted == nil || accepted.Status != "valid" {
+				t.Fatalf("fresh snapshot facts should remain available: complete=%v acceptance=%+v", got.Complete, accepted)
+			}
+			for _, path := range []string{"middle.md", "dependent.md"} {
+				work := findWork(t, got, path)
+				if work.Readiness != "blocked" || work.Eligible || checkStatus(work, "dependencies") != "fail" || !hasCheckFinding(work, "dependencies", "empty_acceptance_criteria") {
+					t.Fatalf("%s: readiness=%s eligible=%v dependencies=%s; empty criteria must block even with fresh acceptance", path, work.Readiness, work.Eligible, checkStatus(work, "dependencies"))
+				}
+			}
+			if len(got.Shortlist) != 0 {
+				t.Fatalf("empty accepted criteria released work: %+v", got.Shortlist)
+			}
+		})
+	}
+}
+
 func TestDependencyCyclesRetainParticipantsAndUnrelatedEligibleWork(t *testing.T) {
 	project := writeProject(t, map[string]string{
 		"project.md":   committedManifest("dependent.md", "a.md", "b.md", "c.md", "ready.md"),

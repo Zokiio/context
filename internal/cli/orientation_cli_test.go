@@ -173,3 +173,32 @@ func TestOrientationReceivesExplicitScopeAndLimits(t *testing.T) {
 		})
 	}
 }
+
+func TestOrientationRejectsRepeatedSingleValueFlags(t *testing.T) {
+	for _, tc := range []struct {
+		name, flag string
+		args       []string
+	}{
+		{"conflicting project", "project", []string{"--project", "one", "--project=two"}},
+		{"repeated project", "project", []string{"--project=one", "--project", "one"}},
+		{"conflicting file limit", "max-files", []string{"--project", ".", "--max-files", "3", "--max-files=4"}},
+		{"repeated file limit", "max-files", []string{"--project", ".", "--max-files=3", "--max-files", "3"}},
+		{"conflicting byte limit", "max-bytes", []string{"--project", ".", "--max-bytes", "10", "--max-bytes=20"}},
+		{"repeated byte limit", "max-bytes", []string{"--project", ".", "--max-bytes=10", "--max-bytes", "10"}},
+		{"conflicting format", "json", []string{"--project", ".", "--json=true", "--json=false"}},
+		{"repeated format", "json", []string{"--project", ".", "--json", "--json"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var stdout, stderr bytes.Buffer
+			called := false
+			args := append([]string{"ctx", "orient"}, tc.args...)
+			status := cli.Run(context.Background(), args, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+				called = true
+				return orientation.Result{Complete: true}, nil
+			}})
+			if status != 2 || called || stdout.Len() != 0 || !strings.Contains(stderr.String(), "--"+tc.flag) {
+				t.Fatalf("repeated --%s: status=%d called=%v stdout bytes=%d stderr=%q", tc.flag, status, called, stdout.Len(), stderr.String())
+			}
+		})
+	}
+}
