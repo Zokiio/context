@@ -1,0 +1,139 @@
+{
+  "actor": "Codex /root/configuration_pr_review",
+  "observedAt": "2026-09-17T01:17:44+02:00",
+  "readerRevision": "5aee51f7fc0079c330907f9e4a62e447d6808b21",
+  "workingDirectory": "/Users/zoki/code/context/.cache/worktrees/discovery-setup",
+  "command": [
+    "/tmp/ctx-ticket05-review.IpDutn/ctx-setup",
+    "orient",
+    "--json",
+    "--bundle",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-setup/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-setup",
+    "--max-files",
+    "500",
+    "--max-bytes",
+    "8388608"
+  ],
+  "exitCode": 0,
+  "complete": true,
+  "inventoryComplete": true,
+  "sourceCount": 108,
+  "diagnostics": [],
+  "upstreamAcceptance": [
+    {
+      "path": "01-read-configuration.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    },
+    {
+      "path": "02-resolve-scope.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    },
+    {
+      "path": "03-integrate-cli.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    },
+    {
+      "path": "04-workspace-navigation.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    }
+  ],
+  "subject": {
+    "path": ".scratch/records/project-discovery/issues/05-connect-records.md",
+    "execution": "completed",
+    "readiness": "ready",
+    "eligible": false,
+    "checks": {
+      "acceptance_criteria": "pass",
+      "required_context": "pass",
+      "dependencies": "pass",
+      "blocking_decisions": "pass"
+    },
+    "acceptance": {
+      "status": "valid",
+      "checkStatus": "pass",
+      "record": ".scratch/records/project-discovery/acceptances/05-setup-20260917.md",
+      "ticketSHA256": "8dc4f9037e852d77428bfaafd993ad14e942418c4083965dae3dfb815da72d99",
+      "criteriaSHA256": "14e4c1188155985ed1a052a27ae440322d183c9ecf9ebeaa9937aecd0f6d5f3d",
+      "reasons": [
+        "acceptance_valid"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": ".scratch/records/project-discovery/issues/05-connect-records.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+        "status": "pass",
+        "cycle": false
+      }
+    ]
+  },
+  "downstream": {
+    "path": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+    "execution": "unstarted",
+    "readiness": "ready",
+    "eligible": true,
+    "checks": {
+      "acceptance_criteria": "pass",
+      "required_context": "pass",
+      "dependencies": "pass",
+      "blocking_decisions": "pass"
+    },
+    "acceptance": null,
+    "dependencies": [
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/05-connect-records.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/05-connect-records.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      }
+    ]
+  }
+}

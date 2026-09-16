@@ -3,7 +3,7 @@ type: WorkItem
 id: 18a3d758-2b28-48d7-a05c-e4ffc225fb8e
 title: "Connect existing records through setup"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Connect existing records through setup
@@ -14,11 +14,11 @@ Implement this slice of the approved project-discovery specification. Keep chang
 
 ## Acceptance criteria
 
-- [ ] Implement the specified setup flags and guided terminal flow, with deterministic noninteractive operation and no prompts from reader commands.
-- [ ] Validate records, binding directory, and authorized roots; resolve cwd inputs before generating shared relative or personal absolute paths.
-- [ ] Support dry-run, idempotent setup, explicit replacement, and preservation of unrelated entries, frontmatter metadata, Markdown body, and file permissions.
-- [ ] Use atomic writes with concurrent-change detection; failure leaves the previous usable file intact. Never create records or silently repair malformed configuration.
-- [ ] Tests cover shared and personal registration, aliases, path rebasing from a nested cwd, conflicts, dry-run, replacement, concurrent edits, and write failures.
+- [x] Implement the specified setup flags and guided terminal flow, with deterministic noninteractive operation and no prompts from reader commands.
+- [x] Validate records, binding directory, and authorized roots; resolve cwd inputs before generating shared relative or personal absolute paths.
+- [x] Support dry-run, idempotent setup, explicit replacement, and preservation of unrelated entries, frontmatter metadata, Markdown body, and file permissions.
+- [x] Use atomic writes with concurrent-change detection; failure leaves the previous usable file intact. Never create records or silently repair malformed configuration.
+- [x] Tests cover shared and personal registration, aliases, path rebasing from a nested cwd, conflicts, dry-run, replacement, concurrent edits, and write failures.
 
 ## Blocked by
 
@@ -39,6 +39,12 @@ None
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
 
+## Acceptance
+
+- [Setup acceptance](../acceptances/05-setup-20260917.md)
+
 ## Comments
 
 2026-09-17: Implementation claimed by Codex subagent `/root/configuration_pr_review`, coordinated by `/root`, on `feat/discovery-setup` after complete task context and passing readiness checks at `39483dd`. The setup core reuses the reviewed implementation from `baa1a3e` and corrects preservation of tagged metadata and unrelated YAML alias values before CLI integration.
+
+2026-09-17: All five criteria passed at `5aee51f`. The full Go tests, race checks, vet, and build passed. [Setup verification](../../../project-discovery/evidence/05-setup-verification.md) retains criterion results, the tested revision, and task-context source digests.
