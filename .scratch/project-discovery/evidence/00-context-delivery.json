@@ -1,0 +1,1632 @@
+{
+  "actor": "Codex coordinating agent /root",
+  "recordedAt": "2026-09-16T20:58:09.731181+00:00",
+  "readerRevision": "fc1741962ff95fc830e6fe836c6c79f002865c5a",
+  "readerSHA256": "2010ad5f34d9d8bddea73d8f56b8b6357a2eca1b3baa7bffc5a4d140260e1122",
+  "programSources": {
+    "cmd/ctx/main.go": "1abd2a3fb3b3374c07b72da7f004a2ff658e82dcd09847777d9079d56e8fdcdf",
+    "go.mod": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430",
+    "go.sum": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e",
+    "internal/cli/acceptance.go": "949d5912e870712227931aa3081fd4b66b535b3c2e2761e0d16066612c416009",
+    "internal/cli/acceptance_cli_test.go": "f82f525ac3b0dec1f73513fe6b44a38f2569f954d4597cf825c0f1908c936beb",
+    "internal/cli/cli.go": "eb268e11afc7aa483993277a7b7cd3b519b48e28eb5be6938f521d013b7dce81",
+    "internal/cli/cli_test.go": "345d781248c34176aa5f0f812d58908a10e6f39ca07d26c2813a7a37ccaf7016",
+    "internal/cli/dependencies_cli_test.go": "c3705b6409393eecacd275d01934cf314a441b2bca2fe2874f5317c0a794e710",
+    "internal/cli/orientation.go": "758ec5ee3756687083012810dffd9481aa4ddef95d536d96859bddf94c8f9f8e",
+    "internal/cli/orientation_cli_test.go": "84aa6576f2c7248d01db3123bf69dcff10f6ba64e0ba50745a27e905b2e68df9",
+    "internal/orientation/acceptance.go": "10f411ec16a73d70c90e5ff41b2a023b3268a5181d7a48a187e1e94f8f6ff375",
+    "internal/orientation/acceptance_snapshots.go": "474a44d7d3863cfa8318c0664ab3a69c7efa42b78755e793971f29ef01c5a847",
+    "internal/orientation/acceptance_test.go": "1929a547cc305a10fdc591173b2d6ba3c3502936cf0ddf093ce69455c8a2f09d",
+    "internal/orientation/checks.go": "f67876785e3cbfc9e347db628c571531039bac6aea56916acd31bf1208e98688",
+    "internal/orientation/decisions.go": "cb2ee48e4f4a1c3063e7242f34a871256c7c2f84081c730507b5e3ecac564f98",
+    "internal/orientation/decisions_test.go": "985d3d042ea24300453e17d97905c5b22d5b5b5675f0d406b3f2fc29c03952b6",
+    "internal/orientation/dependencies.go": "b0b13c3527bd16dea1eb4d35a450c91d0d655d7234855f731fc5c277924c3aa6",
+    "internal/orientation/dependencies_test.go": "92266e89c891bc7c2c2951240cad93236651d7aa106984cb2c266e3e11a0b3dc",
+    "internal/orientation/fingerprint.go": "8956e2d48b7023df852e152d400abd4a5847a98b13164cc38f912d5669c986ed",
+    "internal/orientation/fingerprint_test.go": "93bde08233ef7c9afb79502241702c90346168cc782edad067de6322933b1c37",
+    "internal/orientation/inventory.go": "62c02eaaf1e759949107388441ec8ef13188a007ced4af560acf4b71526f94b0",
+    "internal/orientation/limits_test.go": "60edcd80cd085bc8c6f4f27db90b9b4b28346fc96d665c3a2606bff275f2f2f6",
+    "internal/orientation/metadata.go": "1e07a3d2a30ee25603db998e606396cf0913e683e456e976af0c90aaa468745c",
+    "internal/orientation/orientation.go": "011cbc2e943225fd8fdd3925e0a0baa6e568edcadb0a376782bc793e7b331901",
+    "internal/orientation/orientation_test.go": "a04a11b9764f09f1c45fbd3c4aa5c0105ca50e72dbd42d89c7200c041d528753",
+    "internal/orientation/profiles.go": "938260d63d3d6c8175a93f4a9a4a5d8c6650f730edd7bfe6546f3ae662797fde",
+    "internal/orientation/readiness.go": "e27f7b4bece7271015f59e1fd95c7ae7077f0d198e32f1e869dace92256870c9",
+    "internal/orientation/readiness_test.go": "b3fe7e7b98f6dad2dab314d1f622cd00d61d5aae8d2b43879208716643c59e86",
+    "internal/orientation/sources_test.go": "e7a28851839b78a8337ed390ba3af0a96f21bf753b19a7c7af5bbe50b56c2a8e",
+    "internal/orientation/types.go": "2c9642c3ef98c1e79146ac3e3995dfbe9201019d52bb2b7cf0e681023f6efe3b",
+    "internal/recordread/document.go": "34e45d4754c74b685c2cc4f8699bc9043525717e1523eeb5d0095131b26418f4",
+    "internal/recordread/sections.go": "ea7980e8ba2252d9ea8d6e3dded8b637ce0df23e514271a4f5804a1e5becc621",
+    "internal/recordread/source.go": "9d744bd6ad6e70ab678fcf85beb691bf551cd0f94c15c1884371fee1182e0ab8",
+    "internal/recordread/types.go": "a0b4b97469fa25cf662e172202cfca9ecf6b55fb207c4ecb96610154466e7682",
+    "internal/taskcontext/context.go": "941fe6224fa61e262e6715476db1d802a100cec978c1988c87d5dcca35a252e7",
+    "internal/taskcontext/context_test.go": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4",
+    "internal/taskcontext/document.go": "ab086df322ce66472ac579ffebb5f35e46bc723b9605bb8ce79b80182fba0f8e",
+    "internal/taskcontext/external_test.go": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571",
+    "internal/taskcontext/limits_test.go": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5",
+    "internal/taskcontext/options.go": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2",
+    "internal/taskcontext/relationships.go": "697166dc52dbb47e575fcfd85e29965ec4149162b85f8c93951457a048879b3b",
+    "internal/taskcontext/relationships_test.go": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a",
+    "internal/taskcontext/source.go": "809bf450400cdc2c2d02975302fa556f56af5f63a4e1aa92d88e4695577b474f",
+    "internal/taskcontext/traversal_test.go": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580"
+  },
+  "deliveries": [
+    {
+      "ticket": "project-discovery/issues/01-read-configuration.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/01-read-configuration.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ticket": "project-discovery/issues/02-resolve-scope.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/02-resolve-scope.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "sha256": "f26400afdcf4ebe05705b7bdb32a84c2be920a35d39871a1288525c66fdbd83d",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "01-read-configuration.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ticket": "project-discovery/issues/03-integrate-cli.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/03-integrate-cli.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "sha256": "5f30678e38ea3e6a4860121da4623bcee6b3cbc4e0b232fe3cb1fe093b6cfb14",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "sha256": "f26400afdcf4ebe05705b7bdb32a84c2be920a35d39871a1288525c66fdbd83d",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "02-resolve-scope.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "01-read-configuration.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ticket": "project-discovery/issues/04-workspace-navigation.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/04-workspace-navigation.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+          "sha256": "fa7a7b4a08b6824253c75d4f162af705040d2ad3f660a43cef131aae7c75f7fd",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "sha256": "5f30678e38ea3e6a4860121da4623bcee6b3cbc4e0b232fe3cb1fe093b6cfb14",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "03-integrate-cli.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "sha256": "f26400afdcf4ebe05705b7bdb32a84c2be920a35d39871a1288525c66fdbd83d",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "02-resolve-scope.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "01-read-configuration.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ticket": "project-discovery/issues/05-connect-records.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/05-connect-records.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+          "sha256": "c0bc1cf74e86baa6dd0c83e2df63941eb9a96eef0fc74b90cae8ddfa8d142295",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "sha256": "f26400afdcf4ebe05705b7bdb32a84c2be920a35d39871a1288525c66fdbd83d",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "02-resolve-scope.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "01-read-configuration.md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ticket": "project-discovery/issues/06-document-and-trial.md",
+      "command": [
+        "/tmp/context-discovery.7upMTM/ctx-base",
+        "context",
+        "--project",
+        "/Users/zoki/.codex/worktrees/b888/context/.scratch/records",
+        "--ticket",
+        "project-discovery/issues/06-document-and-trial.md",
+        "--allow-source",
+        "/Users/zoki/.codex/worktrees/b888/context"
+      ],
+      "exitCode": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sources": [
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+          "sha256": "e9495042fa6007d3ded7a7a73e029c9afb4036b991b261a9e4ce13fd95378a87",
+          "reasons": [
+            {
+              "kind": "root"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/project-discovery/spec.md",
+          "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+          "reasons": [
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../project-discovery/spec.md"
+            },
+            {
+              "kind": "spec",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../project-discovery/spec.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/vision.md",
+          "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/vision.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/vision.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/CONTEXT.md",
+          "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../CONTEXT.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../CONTEXT.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/adr/0004-directory-specific-project-selection.md",
+          "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/docs/agents/acceptance.md",
+          "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+          "reasons": [
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            },
+            {
+              "kind": "context",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+              "link": "../../../../docs/agents/acceptance.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "sha256": "5f30678e38ea3e6a4860121da4623bcee6b3cbc4e0b232fe3cb1fe093b6cfb14",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "03-integrate-cli.md"
+            },
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+              "link": "03-integrate-cli.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+          "sha256": "fa7a7b4a08b6824253c75d4f162af705040d2ad3f660a43cef131aae7c75f7fd",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "04-workspace-navigation.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+          "sha256": "c0bc1cf74e86baa6dd0c83e2df63941eb9a96eef0fc74b90cae8ddfa8d142295",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+              "link": "05-connect-records.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "sha256": "f26400afdcf4ebe05705b7bdb32a84c2be920a35d39871a1288525c66fdbd83d",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+              "link": "02-resolve-scope.md"
+            },
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+              "link": "02-resolve-scope.md"
+            }
+          ]
+        },
+        {
+          "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+          "sha256": "77c7354a7697fbe4d854ae960adc74f7dad3a08ab70651992a839b152067ebaa",
+          "reasons": [
+            {
+              "kind": "blocked_by",
+              "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+              "link": "01-read-configuration.md"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "baselineOrientation": {
+    "complete": true,
+    "diagnostics": [],
+    "workItems": [
+      {
+        "id": "14cf4188-8cc0-451b-b5d4-758b32a0db52",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "execution": "unstarted",
+        "readiness": "blocked",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "fail",
+            "reasons": [
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "04-workspace-navigation.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "04-workspace-navigation.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "04-workspace-navigation.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "05-connect-records.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "05-connect-records.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+                "link": "05-connect-records.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/06-document-and-trial.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "18a3d758-2b28-48d7-a05c-e4ffc225fb8e",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+        "execution": "unstarted",
+        "readiness": "blocked",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "fail",
+            "reasons": [
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/05-connect-records.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "411b505a-db97-4a45-94df-71289bff5a21",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "execution": "unstarted",
+        "readiness": "blocked",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "fail",
+            "reasons": [
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+                "link": "03-integrate-cli.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/04-workspace-navigation.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "591c566c-1d96-4824-8cf0-aa775a69a35f",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+        "execution": "unstarted",
+        "readiness": "ready",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_dependencies",
+                "message": "Blocked by explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "execution": "unstarted",
+        "readiness": "blocked",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "fail",
+            "reasons": [
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cab6f066-8afe-43cb-be4d-8238740e183a",
+        "source": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "execution": "unstarted",
+        "readiness": "blocked",
+        "checks": [
+          {
+            "name": "acceptance_criteria",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md"
+              }
+            ]
+          },
+          {
+            "name": "required_context",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "required_context_available",
+                "message": "all explicitly selected requirement and context sources are available",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md"
+              }
+            ]
+          },
+          {
+            "name": "dependencies",
+            "status": "fail",
+            "reasons": [
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+                "link": "02-resolve-scope.md"
+              },
+              {
+                "code": "unfinished_dependency",
+                "message": "prerequisite is not completed",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "acceptance_criteria_present",
+                "message": "at least one nonempty acceptance criterion is authored",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              },
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/01-read-configuration.md",
+                "from": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+                "link": "01-read-configuration.md"
+              }
+            ]
+          },
+          {
+            "name": "blocking_decisions",
+            "status": "pass",
+            "reasons": [
+              {
+                "code": "no_blocking_decisions",
+                "message": "Blocked by decisions explicitly declares none",
+                "path": "/Users/zoki/.codex/worktrees/b888/context/.scratch/records/project-discovery/issues/03-integrate-cli.md"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

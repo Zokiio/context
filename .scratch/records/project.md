@@ -14,6 +14,8 @@ Make project understanding durable through local, Git-native records and a reusa
 
 Deliver [session orientation](../session-orientation/spec.md) so a fresh agent can inspect goals, current commitments, ready work, and unresolved decisions before requesting detailed task context. Show eligible work with reasons and retain useful known information with explicit gaps.
 
+Deliver [project discovery](../project-discovery/spec.md) so routine reader commands resolve project or workspace scope from the current directory. Connect existing records through explicit setup.
+
 ## Current commitments
 
 - [01: Show project orientation and work inventory](session-orientation/issues/01-show-project-orientation.md)
@@ -24,6 +26,12 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 - [06: Evaluate prerequisite chains and cycles](session-orientation/issues/06-evaluate-prerequisite-chains.md)
 - [07: Migrate project records and prepare the pickup trial](session-orientation/issues/07-migrate-records-and-prepare-trial.md)
 - [08: Verify fresh-session pickup on the real project](session-orientation/issues/08-verify-fresh-session-pickup.md)
+- [Read discovery configuration](project-discovery/issues/01-read-configuration.md)
+- [Resolve scope from directories and aliases](project-discovery/issues/02-resolve-scope.md)
+- [Use discovery in reader commands](project-discovery/issues/03-integrate-cli.md)
+- [Show workspace member navigation](project-discovery/issues/04-workspace-navigation.md)
+- [Connect existing records through setup](project-discovery/issues/05-connect-records.md)
+- [Document migration and verify discovery end to end](project-discovery/issues/06-document-and-trial.md)
 
 ## Open decisions
 
