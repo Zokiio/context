@@ -1,0 +1,313 @@
+{
+  "actor": "Codex coordinating agent /root",
+  "observedAt": "2026-09-16T22:15:18.019454+00:00",
+  "baseCommit": "e88523cc903d01978e0e603fbc799e469eb61937",
+  "documentSources": {
+    "readme.md": "022ecb535a5af3959f3cffa9190af323cddc57e18164774e3acffe857732d425",
+    "docs/connect-projects.md": "0db64162dea42dbe389144179a5be6b96290b2547f7dbee769114e4f854926bc",
+    "docs/discovery.md": "418372b4c6200cf364dde56bd47c00d7571c7ed28c4a9670bd7035616be0b1ff",
+    "docs/readers.md": "2d77cb22a87cc9db1b7651eafc8ef81126a640d07533a67aaf1deab2a315cbe5"
+  },
+  "shellSyntaxChecks": [
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "go build -o /tmp/ctx ./cmd/ctx\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --max-files 500 --max-bytes 8388608\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --json --max-files 500 --max-bytes 8388608\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --ticket project-discovery/issues/06-document-and-trial.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle /path/to/records --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "readme.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "go test ./...\ngo test -race ./...\ngo vet ./...\ngo build ./...\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --records .scratch/records --allow-source docs --dry-run\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --records .scratch/records --allow-source docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --directory /work/widget --records /work/records/widget --allow-source /work/widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient\nctx context --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --personal --directory /work/widget --records /work/records/widget --allow-source /work/widget/docs --alias widget\nctx orient --project @widget\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx setup --personal --directory /work/widget --records /work/new-records/widget --allow-source /work/widget/docs --replace --dry-run\nctx setup --personal --directory /work/widget --records /work/new-records/widget --allow-source /work/widget/docs --replace\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --workspace /work/team\nctx orient --workspace /work/team --json\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --bundle /work/team/.context/../widget/.scratch/records --allow-source /work/team/.context/../widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx context --bundle /work/team/widget/.scratch/records --allow-source /work/team/widget/docs --ticket issues/task.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --project /work/widget --json --explain-scope\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "ctx orient --bundle /work/records/widget --allow-source /work/widget/docs\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx orient --bundle /path/to/bundle\n/tmp/ctx orient --bundle /path/to/bundle --json\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle /path/to/bundle --ticket issues/example.md\n",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    {
+      "source": "docs/readers.md",
+      "command": [
+        "sh",
+        "-n"
+      ],
+      "input": "/tmp/ctx context --bundle .scratch/records \\\n\t--ticket context-reader/issues/05-bound-context-collection.md \\\n\t--allow-source .\n",
+      "exitCode": 0,
+      "stderr": ""
+    }
+  ],
+  "localLinks": [
+    {
+      "source": "readme.md",
+      "link": ".context/config.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/connect-projects.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/discovery.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/readers.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": ".scratch/project-discovery/evidence/06-trial.json",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": ".scratch/project-discovery/trial.py",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/vision.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "CONTEXT.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "link": "docs/agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "link": "../readme.md#build-and-read-this-project",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "discovery.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/acceptance.md#reproduce-version-1-fingerprints",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../internal/orientation/testdata/fingerprints/",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "agents/acceptance.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../.agents/skills/task-context/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "link": "../go.mod",
+      "exists": true
+    }
+  ],
+  "criteria": [
+    {
+      "ticket": "06-document-and-trial",
+      "number": 1,
+      "result": "pass",
+      "observation": "Root reviewed all four documents against the approved configuration, precedence, setup, workspace, source-root, diagnostics, and migration contract. Existing project-reader schemas/fingerprints/acceptance reference is preserved in docs/readers.md. All 20 shell blocks parse and all local links resolve."
+    }
+  ],
+  "implementationAgentValidation": {
+    "actor": "Codex subagent /root/setup",
+    "fixture": "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/context-doc-examples.7ldgb34l",
+    "reportedObservation": "Extracted shared/personal/workspace configuration examples were run through ctx-final with temporary home/cwd. Project alias and empty workspace alias completed, both workspace members were available, and both selectionArgs commands returned complete project JSON."
+  }
+}
