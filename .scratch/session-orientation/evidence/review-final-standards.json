@@ -1,0 +1,93 @@
+{
+  "startedAt": "2026-09-16T13:46:08.348028+00:00",
+  "finishedAt": "2026-09-16T13:47:28.836455+00:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex agent /root/orientation_standards_review"
+  },
+  "axis": "Standards",
+  "baselineCommit": "9485397082d1551524acba9616ebcbb354f96398",
+  "programCommit": "4ccb1f7171082fa97af7455b0d86f56c5228b71d",
+  "scope": "Final authored-record delta since baseline, focused on ticket 08 trial provenance and closeout; prior evidence corrections rechecked unchanged.",
+  "scopeFiles": [
+    {
+      "path": ".scratch/session-orientation/evidence/08-pickup-trial.md",
+      "sha256": "6bdd7d6f84c6ca46ea1d8aa067fdf1747964fa7bc4b7e7099b93ec9186f75ac6"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/08-pickup-trial.json",
+      "sha256": "1de7d962df23437119d716183b800c3820fa08a8fa411fadea93f12578a1b305"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/08-pickup-original-ticket.md",
+      "sha256": "9ace0290eb26a33072eb92cd58cf736607a1c68bdc087a3e93eed21b5fa894dc"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/08-closeout-observation.json",
+      "sha256": "911a9015e13c09864c02fcc57c0f8d7ae7a40180059ecc39287d86d579ea019f"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/08-pickup-trial-20260916.md",
+      "sha256": "8260ed44ceaecae7a9048046c4a4612b77b6cc1769485a36ec79b4fc42fa6f60"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/08-verify-fresh-session-pickup.md",
+      "sha256": "b057afe511db42c98ea9bb57ce8e16c27e0531c482fa5d55238d5b3015edaa2c"
+    },
+    {
+      "path": ".scratch/session-orientation/implementation-log.md",
+      "sha256": "bada2114f9d7e0a83d9658772284e856eb255de7734ef36bfc20af6fd8723381"
+    }
+  ],
+  "checks": {
+    "rawCommandsCompared": 22,
+    "rawArtifactsHashed": 9,
+    "pickupSourcesComparedWithBaseline": 82,
+    "contextTextsComparedWithBaseline": 26,
+    "originalTicketBytes": 4034,
+    "readOnlyProjectFiles": 239,
+    "readOnlyGitFiles": 709,
+    "currentAcceptanceSnapshotsChecked": 11,
+    "currentOrientation": {
+      "invocation": [
+        "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-orientation-kppqsre4/ctx-preflight",
+        "orient",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--json"
+      ],
+      "cwd": "/tmp",
+      "exitStatus": 0,
+      "stdoutSHA256": "46bb99f54b9e30116b6792320ad346ef44b5ed2bba33e5ba433d5c568d0128c0",
+      "complete": true,
+      "inventoryComplete": true,
+      "workItems": 13,
+      "sources": 89,
+      "sourceBytes": 930394,
+      "shortlist": []
+    },
+    "criteriaCounts": {
+      "session-orientation": {
+        "tickets": 8,
+        "checkedCriteria": 91,
+        "uncheckedCriteria": 0
+      },
+      "context-reader": {
+        "tickets": 5,
+        "checkedCriteria": 51,
+        "uncheckedCriteria": 0
+      }
+    },
+    "programTestSuitesRerun": false,
+    "compactInventoryWorkItemsCompared": 13,
+    "compactInventoryComparison": "Decoded path table and compared the retained projection: check reason-code sets, dependency endpoint paths/status/cycle, retained acceptance fields, and work-item facts all match the raw orientation capture."
+  },
+  "remainingFindings": [],
+  "remainingFindingCount": 0,
+  "limitations": [
+    "Artifact and record review does not authenticate actor identities or independently reconstruct the fresh session conversation.",
+    "Historical test suites were not rerun."
+  ]
+}

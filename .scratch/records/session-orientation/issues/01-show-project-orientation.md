@@ -61,6 +61,9 @@ None
 ## Comments
 
 Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/01-review-reassessment-20260916.md)
+
+Previous acceptance decision, preserved during reassessment:
 - [Current acceptance](../acceptances/01-authoring-reassessment-20260916.md)
 
 Previous acceptance decision, preserved during reassessment:
@@ -74,4 +77,4 @@ Previous acceptance decision, preserved during reassessment:
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/01-review-reassessment-20260916.md)
+- [Current acceptance](../acceptances/01-evidence-correction-20260916.md)

@@ -1,0 +1,84 @@
+{
+  "observedAt": "2026-09-16T13:34:29.394559+00:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex agent /root/orientation_standards_review"
+  },
+  "axis": "Standards",
+  "scope": "Focused review of corrected evidence, four replacement acceptance decisions, and subject-ticket current/history links. Ticket 08 and its trial evidence excluded.",
+  "baselineCommit": "9485397082d1551524acba9616ebcbb354f96398",
+  "scopeFiles": [
+    {
+      "path": ".scratch/session-orientation/evidence/07-migration-corrected.md",
+      "sha256": "12dd98a06ea3c14d062e7915494423d742949ead275cb944c5d4375f21572bc4"
+    },
+    {
+      "path": ".scratch/session-orientation/evidence/review-reassessment-corrected.md",
+      "sha256": "34c14226bd542968bda2b219d3abaca2355425a2dc3d8427d26b00cf22a95304"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/01-evidence-correction-20260916.md",
+      "sha256": "3450a94650c85f02f1ed6908d2096d05f131ed191fad86ed6a2d66d2f08b5c0d"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/05-evidence-correction-20260916.md",
+      "sha256": "3b1d7fc70a8324f28c631ba8cc2cd78348dde4a5992f0256afe6b34dfc6aab5c"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/06-evidence-correction-20260916.md",
+      "sha256": "3baed4ff299286ae4bb9e561207ddc43a0d0194260a7321e3af59e4a2a33f696"
+    },
+    {
+      "path": ".scratch/records/session-orientation/acceptances/07-evidence-correction-20260916.md",
+      "sha256": "2c5071a7f7ebbb1284549517f5fd58228c0b2885dd9b8c37796b8dcf37b443b4"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/01-show-project-orientation.md",
+      "sha256": "192dc06910488246ac580388727e3d776a37d6f3c5ee4ec2c0dd02c28ffa4f9e"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/05-verify-prerequisite-acceptance.md",
+      "sha256": "f2da6ff7db54afb83e6e517ab0d87164c51b3e5d9f2a91bc7159e38c0e14a5a3"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/06-evaluate-prerequisite-chains.md",
+      "sha256": "289765b7c8a1e26bbd06352915005e418a6e735694ed22bb9ae813030bca712e"
+    },
+    {
+      "path": ".scratch/records/session-orientation/issues/07-migrate-records-and-prepare-trial.md",
+      "sha256": "188cb00d4ddc541359cc00d3a410282e5a9d16625a67f4f88dd44e4f2f0f8fe6"
+    }
+  ],
+  "checks": {
+    "preservedOriginals": 6,
+    "replacementAcceptances": 4,
+    "snapshotDigestsChecked": 84,
+    "ticketAndCriteriaFingerprintsUnchanged": true,
+    "timeline": {
+      "programPreflightFinishedAt": "2026-09-16T13:10:46.704753+00:00",
+      "recordVerificationFinishedAt": "2026-09-16T13:20:35.071610+00:00",
+      "closeoutObservedAt": "2026-09-16T13:21:38.882630+00:00"
+    },
+    "sourceManifestCounts": {
+      "goFiles": 42,
+      "moduleFiles": 2,
+      "total": 44
+    },
+    "programTestsRerun": false
+  },
+  "resolvedFindings": [
+    {
+      "code": "migration_verification_chronology",
+      "priority": "P3"
+    },
+    {
+      "code": "reassessment_go_file_count",
+      "priority": "P3"
+    }
+  ],
+  "remainingFindings": [],
+  "remainingFindingCount": 0,
+  "limitations": [
+    "This review validates retained provenance and record consistency; it does not rerun historical tests or authenticate named actors."
+  ]
+}

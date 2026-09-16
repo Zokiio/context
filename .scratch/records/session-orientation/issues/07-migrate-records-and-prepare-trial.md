@@ -60,10 +60,13 @@ None
 
 ## Comments
 
+Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/07-migration-20260916.md)
+
 - [Retained reader and pickup handoff](../../../session-orientation/preflight-handoff.md). The actual fresh-session trial remains separate work.
 
 - Verified all 11 criteria. [Immutable verification evidence](../../../session-orientation/evidence/07-migration.md) retains the actual tested source identity and results.
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/07-migration-20260916.md)
+- [Current acceptance](../acceptances/07-evidence-correction-20260916.md)

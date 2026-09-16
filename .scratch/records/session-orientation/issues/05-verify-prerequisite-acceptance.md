@@ -56,10 +56,13 @@ None
 ## Comments
 
 Previous acceptance decision, preserved during reassessment:
+- [Current acceptance](../acceptances/05-review-reassessment-20260916.md)
+
+Previous acceptance decision, preserved during reassessment:
 - [Current acceptance](../acceptances/05-acceptance-20260916.md)
 
 - Verified all 12 criteria. [Immutable verification evidence](../../../session-orientation/evidence/05-acceptance.md) retains the actual tested source identity and results.
 
 ## Acceptance
 
-- [Current acceptance](../acceptances/05-review-reassessment-20260916.md)
+- [Current acceptance](../acceptances/05-evidence-correction-20260916.md)
