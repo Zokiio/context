@@ -1,0 +1,461 @@
+{
+  "baseCommit": "2fedff0f41bf59366f7f25104b5007983162aa08",
+  "readerState": "Uncommitted fix for unresolved blocker reference traversal status, before review evidence notes were added.",
+  "readerFiles": [
+    {
+      "path": ".agents/skills/task-context/SKILL.md",
+      "sha256": "8f05611b89ae1510eae2e499e3973075d1f03bc0d1bd47227ccfeb14dd9da32d"
+    },
+    {
+      "path": "cmd/ctx/main.go",
+      "sha256": "995d9230ee9c57861a4490d4eafe7d44cad0862aa10f7edb310cc0fb37c4ac2c"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "e5647064770acf766548cdf4ed478568e99d933d3e02741f0a63ac062db65430"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "c807352ac48af4ebb9e3dfc5619472566f10d5814d85b04508d006327670cf1e"
+    },
+    {
+      "path": "internal/cli/cli.go",
+      "sha256": "cf6d34c86a6f952adfd0f2a53f1fd3eb1e8057791c2e6e78b8e8ca7c17dfbc53"
+    },
+    {
+      "path": "internal/cli/cli_test.go",
+      "sha256": "757feb0ce8228aa28eefb2c9aa51475f219f1aa7a13bd579142c0ce56229f2ec"
+    },
+    {
+      "path": "internal/cli/testdata/blockers.txt",
+      "sha256": "d992d406f1bc1becf6a12f0d9bc2a91675b6b29201974597d73ffe88d459beb3"
+    },
+    {
+      "path": "internal/cli/testdata/context.txt",
+      "sha256": "12daccc57f1d02d513fbf201cad89ba2e30e929c56a953f65ce1f36dba5bde58"
+    },
+    {
+      "path": "internal/cli/testdata/external.txt",
+      "sha256": "78cbf763ac7a1d30c2c422a3879d8aedc5fceddab195cdf7272608716f30fb46"
+    },
+    {
+      "path": "internal/cli/testdata/limits.txt",
+      "sha256": "03e8dbd392d041885bf09e4b8bdef57644b4453ea617cf93d8a4e1d8cfd1337a"
+    },
+    {
+      "path": "internal/cli/testdata/linked.txt",
+      "sha256": "e5ef0618ae25860ed23cbacd6644b8d65f1a31e780b80e9b9691716fea4d943a"
+    },
+    {
+      "path": "internal/taskcontext/context.go",
+      "sha256": "31a849e7ba27b199b3c251c6c28e992d47091ee786d072dcb2f8727fe24a88d2"
+    },
+    {
+      "path": "internal/taskcontext/context_test.go",
+      "sha256": "cf6c74b0ec0f07ab6dff66591c4671dce837512edc9471a98bc1d99d721f78e4"
+    },
+    {
+      "path": "internal/taskcontext/document.go",
+      "sha256": "7706283cef978bed2ba2c202c19115a4bdb96c18fc8c91120101e213d0d13072"
+    },
+    {
+      "path": "internal/taskcontext/external_test.go",
+      "sha256": "c584db2bb525722b2544e1591b8c1533cf370fc395cd1c146fb4cf5296524571"
+    },
+    {
+      "path": "internal/taskcontext/limits_test.go",
+      "sha256": "adae438e4be3c1c08b74c00d6f525dd94de5c3cd1573ec5b2c15d6431a9167e5"
+    },
+    {
+      "path": "internal/taskcontext/options.go",
+      "sha256": "2ec4a57ab69d124e969beff34df154a4f98e4217df6257ba72525b66531bf0e2"
+    },
+    {
+      "path": "internal/taskcontext/relationships.go",
+      "sha256": "4ed5948e88f150f3161b9627ccfce6a6c57fe3e9d47c02a6f8cda17d52ae81b9"
+    },
+    {
+      "path": "internal/taskcontext/relationships_test.go",
+      "sha256": "4cd28de60010f7db4080b974efc2c3aa3832ce902508e3a6c4ed0541644a363a"
+    },
+    {
+      "path": "internal/taskcontext/source.go",
+      "sha256": "d2d300791c1b1338d86b5eade071faa7ab14b98611e35d5827df8467f28569f2"
+    },
+    {
+      "path": "internal/taskcontext/traversal_test.go",
+      "sha256": "f4bf4e26f0f7560510a88ac362681cd81c00853e84963355addf66e26a0a3580"
+    }
+  ],
+  "deliveredSources": [
+    {
+      "path": ".scratch/records/context-reader/issues/05-bound-context-collection.md",
+      "sha256": "08d4017b077f651a715c5cc50f871e2f68a00fafd30d4037f40ee8f4b210aa33",
+      "bytes": 6760
+    },
+    {
+      "path": ".scratch/context-reader/spec.md",
+      "sha256": "2faf878a2442bfa5fd521ae0511af6bb685dbeb93c0885323a37ae1a18a71f37",
+      "bytes": 27737
+    },
+    {
+      "path": "docs/vision.md",
+      "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+      "bytes": 18553
+    },
+    {
+      "path": "CONTEXT.md",
+      "sha256": "b8e1821d17b630ac91b5b95ca1b744b3d888006205d3ca5c5bdf21974eb94f7a",
+      "bytes": 3319
+    },
+    {
+      "path": "docs/adr/0001-one-okf-bundle-per-project.md",
+      "sha256": "44659df72bb86cf15968be3f8b9a838817b4e18d44e1dcfa5addb3793d9c92c5",
+      "bytes": 557
+    },
+    {
+      "path": "docs/adr/0002-work-relationships-in-markdown-sections.md",
+      "sha256": "4254ead8e1d55c05f27576151fd635f859a37ce2072022174fe09745440b152f",
+      "bytes": 337
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "sha256": "26c55b7b76e5b0617cfdcd4d12ae016f8ce01ef047255e4057e43a4714fdd87f",
+      "bytes": 4580
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/03-follow-blocker-tickets.md",
+      "sha256": "7fce1eea800658ef2cbe92417bb2a56a027ad872605b285fd2bc7b778cc78dde",
+      "bytes": 5084
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/04-allow-external-context.md",
+      "sha256": "427cbbfeb74cb59a7ed5491af4798a86c203387653c4b8af2d11d63bcafe405b",
+      "bytes": 5348
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/02-include-project-documents.md",
+      "sha256": "e0408409e592b89108ebe4cc3bec4549565038e448a44e2c25f0cf4a60aed423",
+      "bytes": 6252
+    },
+    {
+      "path": ".scratch/records/context-reader/issues/01-read-okf-ticket.md",
+      "sha256": "cbece8f9d9eed9ef71191604fa0ca6d61c5f7a4edf78a8a0070aea9733c4f17e",
+      "bytes": 6286
+    }
+  ],
+  "totalSourceBytes": 84813,
+  "checks": "All assertions passed: status, completeness, exact ordered prefixes, full bytes and digests, known omission lists, reason deduplication, unchanged source bytes.",
+  "runs": [
+    {
+      "case": "defaults",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context"
+      ],
+      "exitStatus": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sourceCount": 11,
+      "sourceBytes": 84813
+    },
+    {
+      "case": "exact-files",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "11"
+      ],
+      "exitStatus": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sourceCount": 11,
+      "sourceBytes": 84813
+    },
+    {
+      "case": "exact-bytes",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes",
+        "84813"
+      ],
+      "exitStatus": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sourceCount": 11,
+      "sourceBytes": 84813
+    },
+    {
+      "case": "both-exact",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "11",
+        "--max-bytes",
+        "84813"
+      ],
+      "exitStatus": 0,
+      "complete": true,
+      "traversalComplete": true,
+      "sourceCount": 11,
+      "sourceBytes": 84813
+    },
+    {
+      "case": "file-overflow",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "10"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 10,
+      "sourceBytes": 78527
+    },
+    {
+      "case": "byte-overflow",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes",
+        "84812"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 10,
+      "sourceBytes": 78527
+    },
+    {
+      "case": "early-file-overflow",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 1,
+      "sourceBytes": 6760
+    },
+    {
+      "case": "root-exact-bytes",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes",
+        "6760"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 1,
+      "sourceBytes": 6760
+    },
+    {
+      "case": "no-skip-large-spec",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes",
+        "7317"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 1,
+      "sourceBytes": 6760
+    },
+    {
+      "case": "root-overflow",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes",
+        "6759"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 0,
+      "sourceBytes": 0
+    },
+    {
+      "case": "first-blocker-overflow",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "7"
+      ],
+      "exitStatus": 1,
+      "complete": false,
+      "traversalComplete": false,
+      "sourceCount": 7,
+      "sourceBytes": 61843
+    },
+    {
+      "case": "--max-files=0",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files=0"
+      ],
+      "exitStatus": 2
+    },
+    {
+      "case": "--max-files=-1",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files=-1"
+      ],
+      "exitStatus": 2
+    },
+    {
+      "case": "--max-files=not-an-integer",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files=not-an-integer"
+      ],
+      "exitStatus": 2
+    },
+    {
+      "case": "--max-bytes=0",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes=0"
+      ],
+      "exitStatus": 2
+    },
+    {
+      "case": "--max-bytes=-1",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes=-1"
+      ],
+      "exitStatus": 2
+    },
+    {
+      "case": "--max-bytes=not-an-integer",
+      "argv": [
+        "/tmp/context-pr1-review-ctx",
+        "context",
+        "--project",
+        "/Users/zoki/code/context/.scratch/records",
+        "--ticket",
+        "context-reader/issues/05-bound-context-collection.md",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-bytes=not-an-integer"
+      ],
+      "exitStatus": 2
+    }
+  ]
+}
