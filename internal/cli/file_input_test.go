@@ -25,8 +25,11 @@ func TestDiscoveryFilesRejectFIFOsWithoutWaitingForAWriter(t *testing.T) {
 		{"shared config orient", "shared", []string{"orient"}},
 		{"shared config context", "shared", []string{"context", "--ticket", "ticket.md"}},
 		{"personal config orient", "personal", []string{"orient"}},
+		{"shared config setup", "shared", []string{"setup", "--records", "records", "--dry-run"}},
+		{"personal config setup", "personal", []string{"setup", "--personal", "--records", "records", "--dry-run"}},
 		{"project marker orient", "marker", []string{"orient", "--project", "records"}},
 		{"project marker context", "marker", []string{"context", "--project", "records", "--ticket", "ticket.md"}},
+		{"project marker setup", "marker", []string{"setup", "--records", "records", "--dry-run"}},
 	} {
 		for _, symlink := range []bool{false, true} {
 			name := scenario.name

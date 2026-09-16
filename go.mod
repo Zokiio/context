@@ -8,6 +8,7 @@ require (
 	github.com/rogpeppe/go-internal v1.16.0
 	github.com/urfave/cli/v3 v3.12.0
 	github.com/yuin/goldmark/v2 v2.1.0
+	golang.org/x/term v0.25.0
 )
 
 require (
