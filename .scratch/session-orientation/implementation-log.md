@@ -21,8 +21,9 @@ This is a working coordination log. Immutable slice evidence and Acceptance reco
 - Baseline `go test ./...` passed before implementation.
 - Ticket 01 implementation is verified and execution is completed. Agent orientation_core owns the application operation and shared reading; orientation_cli owns CLI output and its tests; the coordinating agent owns authoring conventions, ticket states, integration, and evidence.
 - The existing reader supplied ticket 01's full authored context. Both completeness fields were true.
-- Ticket 01 was committed as 9666b19 after integration verification. Tickets 02 and 04 are in progress in parallel. Each agent received complete task-context JSON from that retained reader build.
-- orientation_core owns eligibility and readiness for ticket 02. orientation_cli owns fingerprints for ticket 04. The coordinating agent added a CLI readiness fixture and is preparing immutable evidence and acceptance authoring. A separate reviewer is checking shared-reader compatibility against the first-reader contract.
+- Ticket 01 was committed as 9666b19 after integration verification. Tickets 02 and 04 then ran in parallel and were committed as c69d818 after shared integration verification. Each agent received complete task-context JSON from the retained reader build.
+- Ticket 03 is in progress. orientation_core owns decision semantics and operation tests; orientation_cli owns output and CLI tests. The coordinating agent owns integration, records, and evidence.
+- A separate compatibility review found no shared-reader regressions in 11 comparisons. A read-only preparation review is mapping historical reader evidence for the later migration; legacy records remain unchanged.
 
 ## Review during ticket 01
 
@@ -31,4 +32,4 @@ This is a working coordination log. Immutable slice evidence and Acceptance reco
 
 ## Completion
 
-Ticket 01 has [immutable verification evidence](evidence/01-overview.md). Structured acceptance is intentionally pending fingerprint authoring and validation in tickets 04 and 05. No unsupported check is reported as passed.
+Tickets [01](evidence/01-overview.md), [02](evidence/02-eligibility.md), and [04](evidence/04-fingerprints.md) have immutable evidence and current Acceptance records. Ticket 04 exercised authoring for ticket 01 before tickets 02 or 03 completed. Validation awaits ticket 05. No unsupported check is reported as passed.

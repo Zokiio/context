@@ -102,6 +102,9 @@ type Decision struct {
 	IdentityAmbiguous bool           `json:"identityAmbiguous"`
 	State             *string        `json:"state"`
 	Resolution        *string        `json:"resolution"`
+	CheckStatus       string         `json:"checkStatus"`
+	Reasons           []Finding      `json:"reasons"`
+	AffectedWork      []Reference    `json:"affectedWork"`
 	References        []Reference    `json:"references"`
 	Metadata          map[string]any `json:"metadata"`
 }

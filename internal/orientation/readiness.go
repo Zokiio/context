@@ -10,7 +10,7 @@ import (
 )
 
 func (e *evaluator) evaluateReadiness(r *record, work *WorkItem) {
-	work.Checks = []Check{e.criteriaCheck(r), e.contextCheck(r), e.emptyRelationshipCheck(r, "Blocked by", "dependencies", "no_dependencies"), e.emptyRelationshipCheck(r, "Blocked by decisions", "blocking_decisions", "no_blocking_decisions")}
+	work.Checks = []Check{e.criteriaCheck(r), e.contextCheck(r), e.emptyRelationshipCheck(r, "Blocked by", "dependencies", "no_dependencies"), e.blockingDecisionCheck(r)}
 	work.Readiness = "ready"
 	for _, check := range work.Checks {
 		if check.Status == "fail" {
@@ -27,7 +27,7 @@ func (e *evaluator) criteriaCheck(r *record) Check {
 	sections := recordread.Sections(r.doc.Body, r.source.Path, map[string]string{"Acceptance criteria": "acceptance_criteria"})
 	for _, section := range sections.Sections {
 		present = true
-		if hasCriterion([]byte(section.Content)) {
+		if hasAuthoredContent([]byte(section.Content)) {
 			nonempty = true
 		}
 	}
@@ -93,7 +93,7 @@ func (e *evaluator) contextCheck(r *record) Check {
 
 var emptyCheckbox = regexp.MustCompile(`\[[ xX]\]`)
 
-func hasCriterion(body []byte) bool {
+func hasAuthoredContent(body []byte) bool {
 	var content strings.Builder
 	codeContent := false
 	tree := parser.New().Parse(body)

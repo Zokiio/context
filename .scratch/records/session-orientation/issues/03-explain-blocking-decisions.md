@@ -3,7 +3,7 @@ type: WorkItem
 id: c810606f-6a64-460d-9223-8a8515fdcd65
 title: "Explain blocking decisions"
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # 03: Explain blocking decisions
@@ -18,16 +18,16 @@ Evaluate Decision records selected by the project index or explicit ticket block
 
 ## Acceptance criteria
 
-- [ ] Resolve Decision records from Open decisions and Blocked by decisions links within the selected bundle. Validate stable identity, title, and decisionState using the agreed open and resolved values. Reuse captured source bytes, ordering, limits, and provenance.
-- [ ] An open decision fails the decision check only for tickets that explicitly link it as blocking. A project-level open decision without that relationship does not block otherwise eligible work.
-- [ ] A resolved decision requires a nonempty authored Resolution section. A valid answer passes that decision's condition; missing state, invalid state, or a missing answer makes the effect unknown.
-- [ ] The decision record owns its state. An outdated Open decisions index link must not turn a resolved record into an open blocker. Preserve the reference without misrepresenting its authoritative state.
-- [ ] Missing, unreadable, ambiguous, wrong-type, or out-of-bundle decision targets produce identifying diagnostics and unknown affected checks. Allowed document roots do not authorize external Decision records.
-- [ ] Aggregate multiple decisions without discarding unknown conditions when another decision is a known blocker. Continue evaluating unrelated work. Known open decisions alone can produce a complete report and exit 0; unavailable required information produces exit 1.
-- [ ] Text and JSON show the authoritative decision state, affected ticket references, readiness effects, and sources. Resolving a blocking decision can add a ticket to the shortlist only when its other eligibility conditions pass.
-- [ ] Verify the authoring guidance requires implementation-relevant decision answers to be linked through Spec or Context as well. Do not silently extend the existing task-context traversal rules.
-- [ ] Public-operation tests cover open and resolved decisions, absent answers, repeated references, stale index entries, unlinked project decisions, mixed known and unknown blockers, duplicate IDs, and external targets. Small CLI assertions verify decisions and their effects in both formats.
-- [ ] Retain actual verification evidence and tested revision using the established completion procedure.
+- [x] Resolve Decision records from Open decisions and Blocked by decisions links within the selected bundle. Validate stable identity, title, and decisionState using the agreed open and resolved values. Reuse captured source bytes, ordering, limits, and provenance.
+- [x] An open decision fails the decision check only for tickets that explicitly link it as blocking. A project-level open decision without that relationship does not block otherwise eligible work.
+- [x] A resolved decision requires a nonempty authored Resolution section. A valid answer passes that decision's condition; missing state, invalid state, or a missing answer makes the effect unknown.
+- [x] The decision record owns its state. An outdated Open decisions index link must not turn a resolved record into an open blocker. Preserve the reference without misrepresenting its authoritative state.
+- [x] Missing, unreadable, ambiguous, wrong-type, or out-of-bundle decision targets produce identifying diagnostics and unknown affected checks. Allowed document roots do not authorize external Decision records.
+- [x] Aggregate multiple decisions without discarding unknown conditions when another decision is a known blocker. Continue evaluating unrelated work. Known open decisions alone can produce a complete report and exit 0; unavailable required information produces exit 1.
+- [x] Text and JSON show the authoritative decision state, affected ticket references, readiness effects, and sources. Resolving a blocking decision can add a ticket to the shortlist only when its other eligibility conditions pass.
+- [x] Verify the authoring guidance requires implementation-relevant decision answers to be linked through Spec or Context as well. Do not silently extend the existing task-context traversal rules.
+- [x] Public-operation tests cover open and resolved decisions, absent answers, repeated references, stale index entries, unlinked project decisions, mixed known and unknown blockers, duplicate IDs, and external targets. Small CLI assertions verify decisions and their effects in both formats.
+- [x] Retain actual verification evidence and tested revision using the established completion procedure.
 
 ## Blocked by
 
@@ -48,3 +48,11 @@ None
 - [Markdown relationship decision](../../../../docs/adr/0002-work-relationships-in-markdown-sections.md)
 - [Tracker authoring profile](../../../../docs/agents/issue-tracker.md)
 - [Acceptance authoring and fingerprint reference](../../../../docs/agents/acceptance.md)
+
+## Comments
+
+- Verified all 10 criteria. [Immutable verification evidence](../../../session-orientation/evidence/03-decisions.md) retains the actual tested source identity and results.
+
+## Acceptance
+
+- [Current acceptance](../acceptances/03-decisions-20260916.md)

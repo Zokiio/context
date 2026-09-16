@@ -98,7 +98,7 @@ func TestReadinessDistinguishesMissingEmptyAndUnsupportedConditions(t *testing.T
 		{"missing dependency declaration", strings.Replace(base, "## Blocked by\nNone\n", "", 1), "dependencies", "unknown", "unknown", false, nil},
 		{"malformed decisions declaration", strings.Replace(base, "## Blocked by decisions\nNone", "## Blocked by decisions\nAsk someone first.", 1), "blocking_decisions", "unknown", "unknown", false, nil},
 		{"unsupported dependency", strings.Replace(base, "## Blocked by\nNone", "## Blocked by\n[Previous](previous.md)", 1), "dependencies", "unknown", "unknown", false, map[string]string{"previous.md": workItem("previous", "completed", "")}},
-		{"unsupported decision", strings.Replace(base, "## Blocked by decisions\nNone", "## Blocked by decisions\n[Choice](decision.md)", 1), "blocking_decisions", "unknown", "unknown", false, map[string]string{"decision.md": "---\ntype: Decision\nid: choice\ntitle: Choice\ndecisionState: resolved\n---\n## Resolution\nAn answer.\n"}},
+		{"resolved decision", strings.Replace(base, "## Blocked by decisions\nNone", "## Blocked by decisions\n[Choice](decision.md)", 1), "blocking_decisions", "pass", "ready", true, map[string]string{"decision.md": "---\ntype: Decision\nid: choice\ntitle: Choice\ndecisionState: resolved\n---\n## Resolution\nAn answer.\n"}},
 		{"known failure with unknown", strings.Replace(base, "- A useful result.\n", "", 1) + "## Context\n[Required](missing.md)\n", "required_context", "unknown", "blocked", false, nil},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

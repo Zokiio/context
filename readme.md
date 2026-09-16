@@ -86,7 +86,7 @@ The command leaves records and Git state unchanged. Digests identify observed fi
 | `shortlist` | Eligible references in authored commitment order |
 | `inProgress` | References to work recorded as in progress |
 | `backlog` | References to unfinished work outside current commitments |
-| `decisions` | Decision identity, authored state and resolution, source, references, and metadata |
+| `decisions` | Decision identity, authoritative state and resolution, check status and reasons, affected work, source, references, and metadata |
 | `sources` | Resolved paths, whole-file SHA-256 digests, and distinct inclusion reasons |
 | `diagnostics` | Stable codes, severity, explanations, and affected source or relationship |
 
@@ -97,6 +97,12 @@ Work items and decisions expose `identityAmbiguous: true` when typed records sha
 Unknown metadata fields are retained in JSON. YAML values that JSON cannot represent use tagged objects. Non-finite floats use `{"yamlType":"float","value":".nan"}`, with `value` set to `.nan`, `.inf`, or `-.inf`. Mappings with non-string keys use entries such as `{"yamlType":"mapping","entries":[{"key":1,"value":"one"}]}`. Ordinary JSON-compatible metadata keeps its normal representation.
 
 A reference contains resolved `path`, nullable `id` and `title`, and optional referring `from` and authored `link`. Source reasons contain `kind` and optional `from` and `link`. Findings and diagnostics retain their source path and relationship when known. Source digests are separate from requirement fingerprints. Orientation does not return each source's full body.
+
+Each selected decision exposes `state`, `resolution`, `checkStatus`, `reasons`, and `affectedWork`. Check status is `fail` for an open decision, `pass` for a resolved decision with an authored answer, or `unknown` when required information is unavailable or invalid. `affectedWork` lists each ticket that explicitly names the decision as a blocker. An open project-level decision does not block unrelated work.
+
+The decision record's state overrides an outdated Open decisions index link. Resolved decisions keep their authored inbound `references` and answer without appearing in the text report's open list. Missing or invalid decisions leave affected checks unknown and the report partial. Known open decisions can produce a complete report with exit status `0`.
+
+When a decision answer imposes implementation requirements, also link it through the ticket's Spec or Context section. `ctx context` retains its existing selection rules and does not automatically follow Blocked by decisions.
 
 During staged implementation, unsupported checks are unknown, the report is partial, and affected tickets cannot enter the shortlist. Requirement fingerprints are available even without acceptance records. Acceptance validation remains unavailable until its implementation slice. An empty project with all required declarations can produce a complete report.
 

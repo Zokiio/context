@@ -1,0 +1,142 @@
+# A known open choice blocks only its linked work and still permits a complete report.
+exec ctx orient --project bundle
+! stderr .
+stdout 'Evaluation: complete; inventory: complete'
+stdout 'state: open'
+stdout 'state: resolved'
+stdout 'resolution: Use offline storage\.'
+stdout 'decision check: fail'
+stdout 'decision check: pass'
+stdout 'Affected work:'
+stdout 'blocked \[blocked\]'
+stdout 'blocking_decisions: fail'
+stdout 'blocking_decisions: pass'
+stdout 'readiness: blocked'
+stdout 'readiness: ready; eligible: true'
+stdout 'decision remains open'
+stdout 'blocked_by_decision.*blocked.md.*open.md'
+
+exec ctx orient --project bundle --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json true
+stdout '"state":"resolved","resolution":"Use offline storage\."'
+stdout '"checkStatus":"fail"'
+stdout '"checkStatus":"pass"'
+stdout '"affectedWork":\[\{[^}]*"id":"blocked"'
+stdout '"code":"open_decision"'
+stdout '"kind":"blocked_by_decision"'
+stdout '"shortlist":\[\{[^}]*"id":"unrelated"[^}]*\},\{[^}]*"id":"resolved-work"'
+
+# Invalid state makes the linked work unknown and retains useful unrelated facts.
+cp invalid-open.md bundle/open.md
+exit 1 ctx orient --project bundle
+! stderr .
+stdout 'Open decisions: unknown'
+stdout 'state: unknown'
+stdout 'decision check: unknown'
+stdout 'blocking_decisions: unknown'
+stdout 'readiness: unknown'
+exit 1 ctx orient --project bundle --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json false
+stdout '"state":null'
+stdout '"checkStatus":"unknown"'
+stdout '"shortlist":\[\{[^}]*"id":"unrelated"'
+
+# A missing decision is a partial report rather than an operation failure.
+rm bundle/open.md
+exit 1 ctx orient --project bundle
+! stderr .
+stdout 'Open decisions: unknown'
+stdout 'source_missing'
+stdout 'blocking_decisions: unknown'
+stdout 'readiness: ready; eligible: true'
+exit 1 ctx orient --project bundle --json
+! stderr .
+cp stdout result.json
+jsonorientation result.json false
+stdout 'source_missing'
+stdout '"readiness":"unknown"'
+
+-- bundle/project.md --
+---
+type: Project
+id: project
+title: Decision example
+---
+## Goals
+Make the scope of each decision visible.
+## Current commitments
+- [Blocked](blocked.md)
+- [Unrelated](unrelated.md)
+- [Resolved](resolved-work.md)
+## Open decisions
+- [Open choice](open.md)
+- [Stale index entry](resolved.md)
+-- bundle/blocked.md --
+---
+type: WorkItem
+id: blocked
+title: blocked
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- A useful result.
+## Blocked by
+None
+## Blocked by decisions
+- [Choice](open.md)
+-- bundle/unrelated.md --
+---
+type: WorkItem
+id: unrelated
+title: unrelated
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- A useful result.
+## Blocked by
+None
+## Blocked by decisions
+None
+-- bundle/resolved-work.md --
+---
+type: WorkItem
+id: resolved-work
+title: resolved-work
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- A useful result.
+## Blocked by
+None
+## Blocked by decisions
+- [Resolved choice](resolved.md)
+-- bundle/open.md --
+---
+type: Decision
+id: open-choice
+title: Open choice
+decisionState: open
+---
+-- invalid-open.md --
+---
+type: Decision
+id: open-choice
+title: Open choice
+decisionState: maybe
+---
+-- bundle/resolved.md --
+---
+type: Decision
+id: resolved-choice
+title: Answered choice
+decisionState: resolved
+---
+## Resolution
+Use offline storage.

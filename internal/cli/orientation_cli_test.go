@@ -67,6 +67,42 @@ func TestOrientationTextShowsAmbiguousIdentities(t *testing.T) {
 	}
 }
 
+func TestOrientationTextUsesAuthoritativeDecisionState(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	project := &orientation.Project{ID: "project", Title: "Project", Source: "/bundle/project.md", GoalsKnown: true, CommitmentsKnown: true, OpenDecisionsKnown: true}
+	result := orientation.Result{
+		SchemaVersion: 1, Complete: true, InventoryComplete: true, Project: project,
+		Decisions: []orientation.Decision{
+			{ID: str("resolved"), Title: str("Answered choice"), Source: "/bundle/resolved.md", State: str("resolved"), Resolution: str("Use the local format."), CheckStatus: "pass",
+				References: []orientation.Reference{{Path: "/bundle/resolved.md", ID: str("resolved"), Title: str("Answered choice"), From: project.Source, Link: "resolved.md"}}},
+			{ID: str("open"), Title: str("Open choice"), Source: "/bundle/open.md", State: str("open"), CheckStatus: "fail",
+				Reasons:      []orientation.Finding{{Code: "open_decision", Message: "The choice remains open."}},
+				AffectedWork: []orientation.Reference{{Path: "/bundle/blocked.md", ID: str("blocked"), Title: str("Blocked task")}},
+				References:   []orientation.Reference{{Path: "/bundle/open.md", ID: str("open"), Title: str("Open choice"), From: project.Source, Link: "open.md"}}},
+		},
+	}
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--project", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+		return result, nil
+	}})
+	text := stdout.String()
+	start, end := strings.Index(text, "Open decisions:"), strings.Index(text, "Decision inventory:")
+	if status != 0 || stderr.Len() != 0 || start < 0 || end <= start {
+		t.Fatalf("decision report: status=%d stderr=%q stdout=%q", status, stderr.String(), text)
+	}
+	if open := text[start:end]; !strings.Contains(open, "Open choice") || strings.Contains(open, "Answered choice") {
+		t.Fatalf("stale index must not override the resolved state: %s", open)
+	}
+	if !strings.Contains(text[end:], "state: resolved") || !strings.Contains(text[end:], "resolution: Use the local format.") ||
+		!strings.Contains(text[end:], "link \"resolved.md\"") {
+		t.Fatalf("resolved answer and authored index provenance must remain visible: %s", text[end:])
+	}
+	for _, fact := range []string{"decision check: pass", "decision check: fail", "The choice remains open.", "Affected work:", "Blocked task [blocked]", "/bundle/blocked.md"} {
+		if !strings.Contains(text[end:], fact) {
+			t.Errorf("missing decision effect %q in %s", fact, text[end:])
+		}
+	}
+}
+
 func TestOrientationExecutionFailures(t *testing.T) {
 	for _, format := range []string{"text", "json"} {
 		for _, failure := range []string{"operation", "writer", "cancellation"} {

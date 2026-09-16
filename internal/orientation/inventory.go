@@ -197,18 +197,6 @@ func (e *evaluator) presentWorkItem(r *record) {
 	e.result.WorkItems = append(e.result.WorkItems, work)
 }
 
-func (e *evaluator) presentDecision(r *record) {
-	decision := Decision{ID: r.id, Title: r.title, Source: r.source.Path, State: stringPointer(stringField(r.doc.Metadata, "decisionState")), References: []Reference{}, Metadata: metadataForOutput(r.doc.Metadata)}
-	decision.IdentityAmbiguous = r.ambiguous
-	for _, s := range e.selections {
-		if s.target == r && (s.link.Kind == "open_decision" || s.link.Kind == "blocked_by_decision") {
-			decision.References = append(decision.References, s.reference)
-		}
-	}
-	e.result.Decisions = append(e.result.Decisions, decision)
-	e.diagnose(Diagnostic{Code: "unsupported_check", Severity: "error", Message: "decision evaluation is not implemented yet", Path: r.source.Path})
-}
-
 func stringValue(value *string) string {
 	if value == nil {
 		return ""
