@@ -99,9 +99,15 @@ func TestSamePathComparesPhysicalIdentity(t *testing.T) {
 	if !discovery.SamePath(records, alias) || discovery.SamePath(root, records) || discovery.SamePath(records, filepath.Join(root, "missing")) {
 		t.Fatal("same-file comparison did not preserve identity")
 	}
+	if !discovery.SamePath(filepath.Join(records, "missing", "child"), filepath.Join(alias, "missing", "child")) {
+		t.Fatal("missing suffix lost the identity of its existing parent")
+	}
 	caseAlias := filepath.Join(root, "records")
 	if _, err := os.Stat(caseAlias); err == nil && !discovery.SamePath(records, caseAlias) {
 		t.Fatal("case-insensitive filesystem identity was lost")
+	}
+	if _, err := os.Stat(caseAlias); err == nil && !discovery.SamePath(filepath.Join(records, "missing", "child"), filepath.Join(caseAlias, "missing", "child")) {
+		t.Fatal("missing suffix lost case-insensitive parent identity")
 	}
 	missing := filepath.Join(root, "missing")
 	if !discovery.SamePath(missing, missing) {

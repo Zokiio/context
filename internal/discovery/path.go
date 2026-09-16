@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +55,10 @@ func CanonicalPath(path string) (string, error) {
 		if err != nil {
 			target := filepath.Join(append([]string{next}, pending...)...)
 			if os.IsNotExist(err) {
-				return target, nil
+				// A later .. can return to an existing ancestor, where remaining
+				// components may contain symlinks. Keep walking that inferred path.
+				canonical = next
+				continue
 			}
 			return target, err
 		}
@@ -69,7 +71,7 @@ func CanonicalPath(path string) (string, error) {
 		}
 		links++
 		if links > 255 {
-			return filepath.Join(append([]string{next}, pending...)...), fmt.Errorf("resolve %s: too many symbolic links", next)
+			return filepath.Join(append([]string{next}, pending...)...), &os.PathError{Op: "resolve", Path: next, Err: syscall.ELOOP}
 		}
 		target, err := os.Readlink(next)
 		if err != nil {
@@ -99,6 +101,12 @@ func SamePath(left, right string) bool {
 	}
 	leftInfo, leftErr := os.Stat(left)
 	rightInfo, rightErr := os.Stat(right)
+	if os.IsNotExist(leftErr) && os.IsNotExist(rightErr) && filepath.Base(left) == filepath.Base(right) {
+		leftParent, rightParent := filepath.Dir(left), filepath.Dir(right)
+		if leftParent != left && rightParent != right {
+			return SamePath(leftParent, rightParent)
+		}
+	}
 	return leftErr == nil && rightErr == nil && os.SameFile(leftInfo, rightInfo)
 }
 

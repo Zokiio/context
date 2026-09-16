@@ -32,3 +32,15 @@ The starting repository orientation inspects 97 files. Acceptance checks use exp
 ## Ticket 01 accepted
 
 The configuration slice adds strict shared/personal parsing and saved path identity helpers under `internal/discovery`. The final focused race suite passed 81 cases. Independent review found alternate-case filesystem identity and non-directory parent traversal issues; both were corrected and the independent probes passed. [Criterion evidence](evidence/01-configuration-after-review.json) records the tested source manifest. [Acceptance observation](evidence/01-read-configuration-implementation-observation.json) reports valid, fresh acceptance and passing prerequisite checks. Ticket 02 is now ready.
+
+## Ticket 02 in progress
+
+`/root/configuration` owns resolver implementation and temporary-filesystem tests. The agent received refreshed complete task context from a reader built at `389cc88`. The resolver returns scope and provenance without output or writes. Selected discovered record stores require the Project marker; direct bundle mode remains a CLI bypass. An internal replacement-config seam will let setup check proposed declarations through the same selection rules.
+
+`/root/setup` is preparing the persistence design without code changes. Its implementation waits for ticket 02 acceptance.
+
+Under ticket 02's implementation claim, `/root/integration_design` owns `resolve_conformance_test.go`. That independent test slice covers workspace declaration comparisons, physical ancestry, reserved personal configuration, and boundary/stopping behavior. `/root/configuration` owns production resolver code and the remaining resolver tests.
+
+## Ticket 02 accepted
+
+The resolver slice passed 147 discovery test cases under the race detector, with no skipped cases. The independently authored conformance slice passed. Review corrected a prefix heuristic that could discard an unreadable registration hiding a symlink into the start directory. The setup proposal seam validates future configuration without writing or cleaning away broken target components. [Criterion evidence](evidence/02-resolver-verification.json) retains the actual source identity. [Acceptance observation](evidence/02-resolve-scope-implementation-observation.json) reports valid, fresh acceptance and passing checks. Tickets 03 and 05 are now ready for parallel implementation.
