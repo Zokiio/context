@@ -3,7 +3,7 @@ type: WorkItem
 id: cab6f066-8afe-43cb-be4d-8238740e183a
 title: "Use discovery in reader commands"
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # Use discovery in reader commands
@@ -14,11 +14,11 @@ Implement this slice of the approved project-discovery specification. Keep chang
 
 ## Acceptance criteria
 
-- [ ] Make scope optional in context and orient, with cwd discovery and consistent --project/--workspace path or alias selection.
-- [ ] Add mutually exclusive --bundle direct access that bypasses configuration and preserves manifestless context reads and existing orientation validation.
-- [ ] Preserve ticket-relative semantics, existing project JSON, reader limits, source authorization, and exit statuses; add per-invocation source roots after scope resolution.
-- [ ] Provide actionable no-scope, ambiguity, and broken-selection errors plus --explain-scope on stderr; reject invalid/repeated selectors.
-- [ ] CLI tests demonstrate identical selection from cwd and explicit paths, no raw-directory fallback, manifestless migration, and unchanged files after reads.
+- [x] Make scope optional in context and orient, with cwd discovery and consistent --project/--workspace path or alias selection.
+- [x] Add mutually exclusive --bundle direct access that bypasses configuration and preserves manifestless context reads and existing orientation validation.
+- [x] Preserve ticket-relative semantics, existing project JSON, reader limits, source authorization, and exit statuses; add per-invocation source roots after scope resolution.
+- [x] Provide actionable no-scope, ambiguity, and broken-selection errors plus --explain-scope on stderr; reject invalid/repeated selectors.
+- [x] CLI tests demonstrate identical selection from cwd and explicit paths, no raw-directory fallback, manifestless migration, and unchanged files after reads.
 
 ## Blocked by
 
@@ -38,3 +38,13 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
+
+## Acceptance
+
+- [Reader CLI acceptance](../acceptances/03-reader-cli-20260917.md)
+
+## Comments
+
+2026-09-17: Codex started ticket 03 after complete task context and passing readiness checks on `39483dd`. This slice reuses the reader integration from `01791c2`, retains later input guards, and fixes personal alias selection when cwd lookup fails.
+
+2026-09-17: All five criteria passed at `72dd8d7`. Repository tests, race checks, vet, and build passed. [Reader CLI verification](../../../project-discovery/evidence/03-reader-cli-verification.md) retains criterion results and source identity.

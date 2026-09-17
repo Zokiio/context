@@ -1,5 +1,5 @@
 # A known open choice blocks only its linked work and still permits a complete report.
-exec ctx orient --project bundle
+exec ctx orient --bundle bundle
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'state: open'
@@ -16,7 +16,7 @@ stdout 'readiness: ready; eligible: true'
 stdout 'decision remains open'
 stdout 'blocked_by_decision.*blocked.md.*open.md'
 
-exec ctx orient --project bundle --json
+exec ctx orient --bundle bundle --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json true
@@ -30,14 +30,14 @@ stdout '"shortlist":\[\{[^}]*"id":"unrelated"[^}]*\},\{[^}]*"id":"resolved-work"
 
 # Invalid state makes the linked work unknown and retains useful unrelated facts.
 cp invalid-open.md bundle/open.md
-exit 1 ctx orient --project bundle
+exit 1 ctx orient --bundle bundle
 ! stderr .
 stdout 'Open decisions: unknown'
 stdout 'state: unknown'
 stdout 'decision check: unknown'
 stdout 'blocking_decisions: unknown'
 stdout 'readiness: unknown'
-exit 1 ctx orient --project bundle --json
+exit 1 ctx orient --bundle bundle --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json false
@@ -47,13 +47,13 @@ stdout '"shortlist":\[\{[^}]*"id":"unrelated"'
 
 # A missing decision is a partial report rather than an operation failure.
 rm bundle/open.md
-exit 1 ctx orient --project bundle
+exit 1 ctx orient --bundle bundle
 ! stderr .
 stdout 'Open decisions: unknown'
 stdout 'source_missing'
 stdout 'blocking_decisions: unknown'
 stdout 'readiness: ready; eligible: true'
-exit 1 ctx orient --project bundle --json
+exit 1 ctx orient --bundle bundle --json
 ! stderr .
 cp stdout result.json
 jsonorientation result.json false

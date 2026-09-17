@@ -1,5 +1,5 @@
 # Known blockers do not make an otherwise fully evaluated project partial.
-exec ctx orient --project bundle
+exec ctx orient --bundle bundle
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'Shortlist:'
@@ -10,7 +10,7 @@ stdout 'eligible: true'
 stdout 'Backlog:'
 stdout 'Later work \[later\]'
 
-exec ctx orient --project bundle --json
+exec ctx orient --bundle bundle --json
 ! stderr .
 cp stdout report.json
 jsonorientation report.json true
@@ -20,7 +20,7 @@ stdout '"readiness":"blocked"'
 
 # Required context that disappears makes the report partial and removes eligibility.
 rm bundle/context.md
-exit 1 ctx orient --project bundle --json
+exit 1 ctx orient --bundle bundle --json
 ! stderr .
 cp stdout partial.json
 jsonorientation partial.json false

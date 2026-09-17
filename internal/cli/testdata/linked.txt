@@ -1,4 +1,4 @@
-exec ctx context --project bundle --ticket ticket.md
+exec ctx context --bundle bundle --ticket ticket.md
 ! stderr .
 stdout 'linked source text'
 stdout '"kind":"spec"'
@@ -6,7 +6,7 @@ cp stdout complete.json
 jsonresult complete.json true
 
 rm bundle/spec.md
-exit 1 ctx context --project bundle --ticket ticket.md
+exit 1 ctx context --bundle bundle --ticket ticket.md
 ! stderr .
 stdout 'source_missing'
 stdout 'ticket source text'
