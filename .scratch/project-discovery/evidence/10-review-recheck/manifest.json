@@ -1,0 +1,20 @@
+{
+  "actor": "Codex /root",
+  "observedAt": "2026-09-17T12:03:27.876217+02:00",
+  "files": [
+    {
+      "source": "/Users/zoki/code/context/.cache/discovery-merge-review/standards-physical-lock-final.md",
+      "retained": "standards.md",
+      "sha256": "e3d959985713d8e299c74b7a26c2e3bcf93cc579b6e03229545ca519377f23e5"
+    },
+    {
+      "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-setup-recheck-c59d12e.md",
+      "retained": "spec.md",
+      "sha256": "8615f29d2b95d6b91acd018b5a7ef1a34a1f5d80a211b9bf585dd0f3714665bd"
+    },
+    {
+      "retained": "documentation-links.json",
+      "sha256": "ee8f76f69cf767d039205372a2179fee4279b1d74ba9aaf19fd364d0486d817f"
+    }
+  ]
+}

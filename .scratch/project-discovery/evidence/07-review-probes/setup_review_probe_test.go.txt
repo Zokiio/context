@@ -1,0 +1,53 @@
+package discovery
+
+import (
+  "context"
+  "os"
+  "strings"
+  "testing"
+  "time"
+)
+
+func TestReviewConcurrentSharedAndPersonalSetup(t *testing.T) {
+  sharedRequest, _ := setupWriteFixture(t, false)
+  sharedRequest.AllowSources = nil
+  personalRequest := sharedRequest
+  personalRequest.Personal = true
+  personalRequest.AllowSources = []string{sharedRequest.Cwd}
+  shared := setupWritePlan(t, sharedRequest)
+  personal := setupWritePlan(t, personalRequest)
+  ready := make(chan struct{}, 2)
+  release := make(chan struct{})
+  defer close(release)
+  errs := make(chan error, 2)
+  for _, plan := range []*SetupPlan{shared, personal} {
+    go func(p *SetupPlan) {
+      ops := defaultSetupWriteOps()
+      ops.rename = func(from, to string) error {
+        ready <- struct{}{}
+        <-release
+        return os.Rename(from, to)
+      }
+      errs <- p.apply(context.Background(), ops)
+    }(plan)
+  }
+  for range 2 {
+    select {
+    case <-ready:
+    case err := <-errs:
+      t.Fatalf("writer failed before commit barrier: %v", err)
+    case <-time.After(5*time.Second):
+      t.Fatal("writers share coordination or stalled")
+    }
+  }
+  // Let both already validated plans commit before performing discovery.
+  release <- struct{}{}
+  release <- struct{}{}
+  err1, err2 := <-errs, <-errs
+  t.Logf("shared/personal apply errors: %v / %v", err1, err2)
+  _, err := Resolve(context.Background(), Request{Cwd:sharedRequest.Cwd, Home:sharedRequest.Home})
+  t.Logf("post-write discovery: %v", err)
+  if err1 == nil && err2 == nil && err != nil && strings.Contains(err.Error(), "conflicting") {
+    t.Fatal("both cooperating setup writers succeeded but left conflicting effective declarations")
+  }
+}

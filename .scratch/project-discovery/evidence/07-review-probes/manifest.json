@@ -1,0 +1,72 @@
+[
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/standards.md",
+    "retained": "standards.md",
+    "sha256": "7fbb6ff949c7ab51390de3430ea2fd372dfde31840fdb85fc9bf677c5bd2aca2"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-readers.md",
+    "retained": "spec-readers.md",
+    "sha256": "840b7dfd9050be560b2206ed93821792c4bb926b61733921e9eb065d27ef54aa"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-setup.md",
+    "retained": "spec-setup.md",
+    "sha256": "9d9e7a09c41854db92f7d47a4c20cb2e0ba1abfd1d994a77d20305e266e21cba"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/standards-readme-recheck.md",
+    "retained": "standards-readme-recheck.md",
+    "sha256": "fa909aed0c75cd6138dfbc0d8f3a6eac9d0dc4d8d5c11dad04a8fea905362701"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/standards-readme-final.md",
+    "retained": "standards-readme-final.md",
+    "sha256": "caef8a17996006f689801cf9b8ddaf6591f195f54fae005c2bfeba01e6efac83"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-readers-probes.py",
+    "retained": "spec-readers-probes.py",
+    "sha256": "d19eaac5b198a0d6d11f0672bf218d5eac95352e482b728e6715765a49d7337a"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-readers-probes.json",
+    "retained": "spec-readers-probes.json",
+    "sha256": "439aa4745591ddec849c1ed58448bc1ed951dc1aec28919ca78d3a1d081374ea"
+  },
+  {
+    "source": "/Users/zoki/code/context/.cache/discovery-merge-review/spec-readers-slices.json",
+    "retained": "spec-readers-slices.json",
+    "sha256": "8dd5fa1313a20c98e957fc0c3a2bb3538ab630fbb8d843057ea549ce9367917d"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup-race-original-evidence.json",
+    "retained": "setup-race-original-evidence.json",
+    "sha256": "7eea88122fba9d07dd4a325e934bf682fbee562fb3e664b01e647fa1bb9786ca"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup-race-crossprocess-evidence.json",
+    "retained": "setup-race-crossprocess-evidence.json",
+    "sha256": "061a9fc403e5f27d8d38abe60f56111d08ef3a5940fc5bb104dfa826467dadbf"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup-acl-original-evidence.json",
+    "retained": "setup-acl-original-evidence.json",
+    "sha256": "ac2b5cfa7a67fecbc171d4acd6cfc7752244ffa70b0b79342c91b218f00802f8"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup-group-original-evidence.json",
+    "retained": "setup-group-original-evidence.json",
+    "sha256": "4598f4d15b295c5741ade4f018c20e417a5f2ce685c56bd232faaebdf3e2fcd8"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup_review_probe_test.go",
+    "retained": "setup_review_probe_test.go.txt",
+    "sha256": "1a8fcbb86418812c82e8d7ba23d5938c8f25301f5fa0c4265f1210ceb13b95d2"
+  },
+  {
+    "source": "/private/tmp/ctx-spec-setup.ipgPU4/setup_review_crossprocess_test.go",
+    "retained": "setup_review_crossprocess_test.go.txt",
+    "sha256": "ee55a0c2ef0b4cf6039c4f7bb6a6a8065622b443b17add2a095a59beaaf9c29e"
+  }
+]

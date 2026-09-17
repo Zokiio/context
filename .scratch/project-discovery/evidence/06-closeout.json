@@ -1,0 +1,576 @@
+{
+  "observedAt": "2026-09-17T01:27:51+02:00",
+  "actor": {
+    "kind": "workflow",
+    "identity": "Codex /root"
+  },
+  "readerRevision": "8c3c15f98f4ce8e465cfd7667a3a89034e41e128",
+  "command": [
+    "/private/tmp/ctx-discovery-stack-z6l8_y0p/ctx",
+    "orient",
+    "--bundle",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-docs/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-docs",
+    "--max-files",
+    "500",
+    "--max-bytes",
+    "8388608",
+    "--json"
+  ],
+  "exitCode": 0,
+  "complete": true,
+  "inventoryComplete": true,
+  "sourceCount": 112,
+  "diagnostics": [],
+  "workItems": [
+    {
+      "id": "591c566c-1d96-4824-8cf0-aa775a69a35f",
+      "source": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/01-configuration-reassessed-20260917.md",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "2f4e95a5f172d024aac100d14c56e8a6c02127db"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "ac734016ef5d59a7f84c0bde67cb715e03a8a2d5b60fb69c09f957c4c82a4dfa",
+        "criteriaSHA256": "58e1d5bd114cc919150cebfbe8bdbef37d338f2cf6a75f294b3f3105e4476653",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/01-configuration-reassessment.md",
+            "sha256": "a5529223c4b32a28fe46557c56a3e055fc06e3912fb59fb6a904dc3a5d7a3bbf",
+            "currentSHA256": "a5529223c4b32a28fe46557c56a3e055fc06e3912fb59fb6a904dc3a5d7a3bbf",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "9cb1ab9e-8d7c-4358-948f-1b928ab2472a",
+      "source": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/02-scope-20260917.md",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "fbfcacd0c6104ed4810c23973d5c75f3ad61f81b"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "3c0ea54f3258d2b08076f1a18521901cc0d9d61b27e73e0ab1d520ad2e6f1c0f",
+        "criteriaSHA256": "70ddce0d91de66fbe0628e01975a79e20a7c1f5e11a2100218ed7780065d8a5e",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/02-scope-verification.md",
+            "sha256": "931ea234d41ad51d4f11bf320500acda50a079e2485343c13ae3acdf3f1caac0",
+            "currentSHA256": "931ea234d41ad51d4f11bf320500acda50a079e2485343c13ae3acdf3f1caac0",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "cab6f066-8afe-43cb-be4d-8238740e183a",
+      "source": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/03-reader-cli-20260917.md",
+        "testedRevision": {
+          "origin": "local repository",
+          "revision": "72dd8d7c203dbc14a45dab0f7347771246c5cb29"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "ff8a80b951d64d5b02982aa1033b71f1277dcebc2c369d0fa3d694972dc91012",
+        "criteriaSHA256": "06e218ab5bc16f518af53fdf7e82643971fbd57db0cbeca544e29432103b1e7a",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/03-reader-cli-verification.md",
+            "sha256": "b330705c728565800e7701810f76dd04e298c5455f80b6ef1ecd428048797298",
+            "currentSHA256": "b330705c728565800e7701810f76dd04e298c5455f80b6ef1ecd428048797298",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "411b505a-db97-4a45-94df-71289bff5a21",
+      "source": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/04-workspace-20260917.md",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "659d9ac204b332f90c3f0f4cf891ca67e46358c3"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "3bafce93f2710fdd75299d41d729bfe3ace82c839c56006fa001534a42e91b75",
+        "criteriaSHA256": "c504b73373d25f3fbbfa6044889a7067bdad4de81d15f89097d4df4b1b9fe636",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/04-workspace-verification.md",
+            "sha256": "4b3a9d9b215bfa554506d75a4edaa331dadb4e3b80a429f283bae5dc2ac6fddf",
+            "currentSHA256": "4b3a9d9b215bfa554506d75a4edaa331dadb4e3b80a429f283bae5dc2ac6fddf",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+          "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "18a3d758-2b28-48d7-a05c-e4ffc225fb8e",
+      "source": ".scratch/records/project-discovery/issues/05-connect-records.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/05-setup-20260917.md",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "5aee51f7fc0079c330907f9e4a62e447d6808b21"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "8dc4f9037e852d77428bfaafd993ad14e942418c4083965dae3dfb815da72d99",
+        "criteriaSHA256": "14e4c1188155985ed1a052a27ae440322d183c9ecf9ebeaa9937aecd0f6d5f3d",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/05-setup-verification.md",
+            "sha256": "87485579cfe4e9d12a007776679c02b1f83e7b9a5dc2432d62ab1bba92074297",
+            "currentSHA256": "87485579cfe4e9d12a007776679c02b1f83e7b9a5dc2432d62ab1bba92074297",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": ".scratch/records/project-discovery/issues/05-connect-records.md",
+          "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "id": "14cf4188-8cc0-451b-b5d4-758b32a0db52",
+      "source": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+      "execution": "completed",
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/06-documentation-trial-20260917.md",
+        "testedRevision": {
+          "origin": "https://github.com/Zokiio/context",
+          "revision": "8c3c15f98f4ce8e465cfd7667a3a89034e41e128"
+        },
+        "fingerprintVersion": 1,
+        "ticketSHA256": "adc68970546818a411a251894efb034ba0de779242242298f4dd4192f774217e",
+        "criteriaSHA256": "1cf595bb5d0f9cec7b34bdd23cd6a1abaf151fce1d51f641741ad3e27306e9eb",
+        "requirements": [
+          {
+            "source": ".scratch/project-discovery/spec.md",
+            "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "currentSHA256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+            "status": "valid"
+          },
+          {
+            "source": "docs/vision.md",
+            "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "currentSHA256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+            "status": "valid"
+          },
+          {
+            "source": "CONTEXT.md",
+            "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "currentSHA256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+            "status": "valid"
+          },
+          {
+            "source": "docs/adr/0004-directory-specific-project-selection.md",
+            "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "currentSHA256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+            "status": "valid"
+          },
+          {
+            "source": "docs/agents/acceptance.md",
+            "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "currentSHA256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+            "status": "valid"
+          }
+        ],
+        "evidence": [
+          {
+            "source": ".scratch/project-discovery/evidence/06-verification.md",
+            "sha256": "1ba48b0791d09d2ade1d70873ff1a7dad10eb5e487f59050a44be66b19d883e4",
+            "currentSHA256": "1ba48b0791d09d2ade1d70873ff1a7dad10eb5e487f59050a44be66b19d883e4",
+            "status": "valid"
+          },
+          {
+            "source": ".scratch/project-discovery/evidence/06-build.json",
+            "sha256": "b122b9f5a4b6bc6d9edfc1557455cfadb5bd9eb6386e4cd5f1c60671c3fcfbb5",
+            "currentSHA256": "b122b9f5a4b6bc6d9edfc1557455cfadb5bd9eb6386e4cd5f1c60671c3fcfbb5",
+            "status": "valid"
+          },
+          {
+            "source": ".scratch/project-discovery/evidence/06-trial.json",
+            "sha256": "962db708a27f65fd1429dc6bdb5ffda05e9dd4f62a32d84ada3d3e4f375123c9",
+            "currentSHA256": "962db708a27f65fd1429dc6bdb5ffda05e9dd4f62a32d84ada3d3e4f375123c9",
+            "status": "valid"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "dependencies": [
+        {
+          "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+          "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+          "to": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+          "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+          "to": ".scratch/records/project-discovery/issues/05-connect-records.md",
+          "status": "pass"
+        },
+        {
+          "from": ".scratch/records/project-discovery/issues/05-connect-records.md",
+          "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "revision": "2777f087a5e320594e09c5cda1f35d62e66c5a80",
+  "cwd": "/Users/zoki/code/context/.cache/worktrees/discovery-docs",
+  "command": [
+    "go",
+    "test",
+    "-overlay",
+    "/private/tmp/ctx-spec-setup.ipgPU4/overlay.json",
+    "-run",
+    "^TestReview",
+    "-count=1",
+    "-v",
+    "./internal/discovery"
+  ],
+  "status": 1,
+  "stdout": "=== RUN   TestReviewConcurrentSharedAndPersonalSetup\n    setup_review_probe_test.go:47: shared/personal apply errors: <nil> / <nil>\n    setup_review_probe_test.go:49: post-write discovery: discover scope from \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout\" (cwd \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout\"): conflicting project declarations at \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout\": /private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/home/.context/config.md field projects[0] (records \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/records\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/records\", allowSources [\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout\"]) conflicts with /private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/checkout/.context/config.md field project (records \"../../records\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSharedAndPersonalSetup2228520975/001/records\", allowSources []); repair one declaration so their effective values agree\n    setup_review_probe_test.go:51: both cooperating setup writers succeeded but left conflicting effective declarations\n--- FAIL: TestReviewConcurrentSharedAndPersonalSetup (0.02s)\nFAIL\nFAIL\tgithub.com/Zokiio/context/internal/discovery\t0.119s\nFAIL\n",
+  "stderr": "",
+  "probeSHA256": "1a8fcbb86418812c82e8d7ba23d5938c8f25301f5fa0c4265f1210ceb13b95d2"
+}
