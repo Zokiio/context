@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -314,5 +315,91 @@ func TestSetupRegistryLockFailureLeavesDestinationUntouched(t *testing.T) {
 	}
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		t.Fatalf("failed registry lock wrote the destination: %v", err)
+	}
+}
+
+func TestSetupOrdersLocksAcrossCaseAliases(t *testing.T) {
+	request, _ := setupWriteFixture(t, false)
+	root := filepath.Dir(request.Home)
+	request.Home, request.Cwd = filepath.Join(root, "alpha"), filepath.Join(root, "Beta")
+	for _, path := range []string{request.Home, request.Cwd} {
+		if err := os.Mkdir(path, 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	alias := filepath.Join(root, "ALPHA")
+	if !SamePath(request.Home, alias) {
+		t.Skip("requires a case-insensitive filesystem")
+	}
+	var orders [][]string
+	for _, home := range []string{request.Home, alias} {
+		request.Home = home
+		plan := setupWritePlan(t, request)
+		stop := errors.New("stop before writing configuration")
+		ops := defaultSetupWriteOps()
+		lock := ops.lock
+		var order []string
+		ops.lock = func(path string) (func(), error) {
+			order = append(order, path)
+			return lock(path)
+		}
+		ops.createTemp = func(string, string) (setupTempFile, error) { return nil, stop }
+		if err := plan.apply(context.Background(), ops); !errors.Is(err, stop) {
+			t.Fatal(err)
+		}
+		orders = append(orders, order)
+	}
+	if len(orders[0]) != 2 || len(orders[1]) != 2 {
+		t.Fatalf("expected both configuration locks: %q", orders)
+	}
+	for i := range orders[0] {
+		if !SamePath(orders[0][i], orders[1][i]) {
+			t.Fatalf("case aliases invert the physical lock order: %q", orders)
+		}
+	}
+}
+
+func TestSetupDeduplicatesSidecarAliases(t *testing.T) {
+	for _, kind := range []string{"hard link", "symlink"} {
+		t.Run(kind, func(t *testing.T) {
+			request, destination := setupWriteFixture(t, false)
+			registryLock := filepath.Join(request.Home, ".context", "config.md.lock")
+			for _, path := range []string{registryLock, destination} {
+				if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := os.WriteFile(registryLock, nil, 0o644); err != nil {
+				t.Fatal(err)
+			}
+			link := os.Link
+			if kind == "symlink" {
+				link = os.Symlink
+			}
+			if err := link(registryLock, destination+".lock"); err != nil {
+				t.Fatal(err)
+			}
+			plan := setupWritePlan(t, request)
+			ops := defaultSetupWriteOps()
+			lock := ops.lock
+			var locks []string
+			// Fail before requesting a duplicate exclusive lock would hang.
+			ops.lock = func(path string) (func(), error) {
+				locks = append(locks, path)
+				if len(locks) > 1 {
+					return nil, fmt.Errorf("same physical sidecar locked twice: %q", locks)
+				}
+				return lock(path)
+			}
+			if err := plan.apply(context.Background(), ops); err != nil {
+				t.Fatal(err)
+			}
+			if len(locks) != 1 {
+				t.Fatalf("one physical sidecar was locked %d times: %q", len(locks), locks)
+			}
+			if !SamePath(registryLock, destination+".lock") {
+				t.Fatal("setup replaced or removed a retained sidecar")
+			}
+		})
 	}
 }

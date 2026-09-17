@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"testing"
 )
 
@@ -53,7 +55,7 @@ func TestPreserveSetupPermissionsCopiesAndRemovesDarwinACL(t *testing.T) {
 				setupAddDarwinACL(t, temporary)
 			}
 			want := setupDarwinACLText(t, path)
-			if err := preserveSetupPermissions(path, temporary, setupPermissionStat(t, path)); err != nil {
+			if err := preserveSetupPermissions(temporary, captureSetupPermissions(path, setupPermissionStat(t, path))); err != nil {
 				t.Fatal(err)
 			}
 			if got := setupDarwinACLText(t, temporary); got != want {
@@ -63,16 +65,77 @@ func TestPreserveSetupPermissionsCopiesAndRemovesDarwinACL(t *testing.T) {
 	}
 }
 
+func TestSetupPermissionSnapshotRetainsOriginalDarwinACL(t *testing.T) {
+	_, path := setupWriteFixture(t, true)
+	temporary := setupPermissionTemp(t, path)
+	setupAddDarwinACL(t, path)
+	want := setupDarwinACLText(t, path)
+	before := captureSetupPermissions(path, setupPermissionStat(t, path))
+	if output, err := exec.Command("chmod", "-a#", "0", path).CombinedOutput(); err != nil {
+		t.Fatalf("change source ACL: %v: %s", err, output)
+	}
+	if err := preserveSetupPermissions(temporary, before); err != nil {
+		t.Fatal(err)
+	}
+	if got := setupDarwinACLText(t, temporary); got != want {
+		t.Fatalf("temporary ACL = %q, want original %q", got, want)
+	}
+	if got := setupDarwinACLText(t, path); got != "" {
+		t.Fatalf("source ACL was modified: %q", got)
+	}
+}
+
 func TestSetupPermissionsDetectsDarwinACLEdit(t *testing.T) {
 	_, path := setupWriteFixture(t, true)
 	before := setupPermissionStat(t, path)
+	snapshot := captureSetupPermissions(path, before)
 	setupAddDarwinACL(t, path)
 	after := setupPermissionStat(t, path)
 	if before.Mode() != after.Mode() || !before.ModTime().Equal(after.ModTime()) {
 		t.Fatal("fixture changed mode or mtime")
 	}
-	if sameSetupPermissions(before, after) {
+	if sameSetupPermissionSnapshots(snapshot, captureSetupPermissions(path, after)) {
 		t.Fatal("ACL-only edit did not invalidate the snapshot")
+	}
+}
+
+func TestSetupRejectsDarwinACLRevocationWithinOneClockTick(t *testing.T) {
+	for _, duringWrite := range []bool{false, true} {
+		t.Run(map[bool]string{false: "before apply", true: "during write"}[duringWrite], func(t *testing.T) {
+			request, path := setupWriteFixture(t, true)
+			if output, err := exec.Command("chmod", "+a", "everyone allow read", path).CombinedOutput(); err != nil {
+				t.Fatalf("grant fixture ACL: %v: %s", err, output)
+			}
+			plan := setupWritePlan(t, request)
+			original := setupWriteRead(t, path)
+			revoke := func() {
+				if output, err := exec.Command("chmod", "-a#", "0", path).CombinedOutput(); err != nil {
+					t.Fatalf("revoke fixture ACL: %v: %s", err, output)
+				}
+				current := setupPermissionStat(t, path)
+				// Model a filesystem clock tick that contains both operations.
+				// Permission comparison must work when stat times are identical.
+				plan.before.info.Sys().(*syscall.Stat_t).Ctimespec = current.Sys().(*syscall.Stat_t).Ctimespec
+			}
+			ops := defaultSetupWriteOps()
+			if duringWrite {
+				ops.createTemp = func(directory, pattern string) (setupTempFile, error) {
+					file, err := os.CreateTemp(directory, pattern)
+					return &setupFaultFile{file: file, onSync: revoke}, err
+				}
+			} else {
+				revoke()
+			}
+			if err := plan.apply(context.Background(), ops); err == nil || !strings.Contains(err.Error(), "changed since setup read") {
+				t.Errorf("ACL revocation was not rejected: %v", err)
+			}
+			if acl := setupDarwinACLText(t, path); acl != "" {
+				t.Errorf("revoked ACL grant was restored: %q", acl)
+			}
+			if !bytes.Equal(original, setupWriteRead(t, path)) {
+				t.Error("stale plan replaced the original document")
+			}
+		})
 	}
 }
 

@@ -5,6 +5,7 @@ package discovery
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -89,7 +90,7 @@ func TestPreserveSetupPermissionsRetainsOwnershipAndSpecialMode(t *testing.T) {
 	}
 	before := setupPermissionStat(t, path)
 	data := setupWriteRead(t, path)
-	if err := preserveSetupPermissions(path, temporary, before); err != nil {
+	if err := preserveSetupPermissions(temporary, captureSetupPermissions(path, before)); err != nil {
 		t.Fatal(err)
 	}
 	after := setupPermissionStat(t, temporary)
@@ -111,7 +112,7 @@ func TestPreserveSetupPermissionsRetainsDifferentOwner(t *testing.T) {
 	if err := os.Chown(path, 1, -1); err != nil {
 		t.Fatal(err)
 	}
-	if err := preserveSetupPermissions(path, temporary, setupPermissionStat(t, path)); err != nil {
+	if err := preserveSetupPermissions(temporary, captureSetupPermissions(path, setupPermissionStat(t, path))); err != nil {
 		t.Fatal(err)
 	}
 	if got := setupPermissionStat(t, temporary).Sys().(*syscall.Stat_t).Uid; got != 1 {
@@ -119,13 +120,20 @@ func TestPreserveSetupPermissionsRetainsDifferentOwner(t *testing.T) {
 	}
 }
 
-func TestPreserveSetupPermissionsRejectsChangedGroup(t *testing.T) {
+func TestSetupPermissionSnapshotRetainsOriginalGroup(t *testing.T) {
 	_, path := setupWriteFixture(t, true)
 	temporary := setupPermissionTemp(t, path)
 	before := setupPermissionStat(t, path)
+	snapshot := captureSetupPermissions(path, before)
 	group := setupDifferentGroup(t, path)
-	if err := preserveSetupPermissions(path, temporary, before); err == nil || !strings.Contains(err.Error(), "changed since setup read") {
-		t.Fatalf("concurrent group change = %v", err)
+	if sameSetupPermissionSnapshots(snapshot, captureSetupPermissions(path, setupPermissionStat(t, path))) {
+		t.Fatal("snapshot comparison ignored a concurrent group change")
+	}
+	if err := preserveSetupPermissions(temporary, snapshot); err != nil {
+		t.Fatal(err)
+	}
+	if got, want := setupPermissionStat(t, temporary).Sys().(*syscall.Stat_t).Gid, before.Sys().(*syscall.Stat_t).Gid; got != want {
+		t.Fatalf("temporary group = %d, want original %d", got, want)
 	}
 	if got := setupPermissionStat(t, path).Sys().(*syscall.Stat_t).Gid; got != group {
 		t.Fatalf("concurrent group change was overwritten: %d, want %d", got, group)
@@ -146,17 +154,34 @@ func TestSetupPermissionsDetectsChangeTime(t *testing.T) {
 		t.Fatal("fixture changed mode or mtime")
 	}
 	if sameSetupPermissions(before, after) {
-		t.Fatal("permission changes that restore mode did not invalidate the snapshot")
+		t.Skip("filesystem change time did not advance; exact snapshot tests cover ACL changes within one clock tick")
 	}
 }
 
 func TestPreserveSetupPermissionsUsesDefaultForNewFile(t *testing.T) {
 	_, path := setupWriteFixture(t, true)
 	temporary := setupPermissionTemp(t, path)
-	if err := preserveSetupPermissions("", temporary, nil); err != nil {
+	if err := preserveSetupPermissions(temporary, setupPermissionSnapshot{}); err != nil {
 		t.Fatal(err)
 	}
 	if got := setupPermissionStat(t, temporary).Mode().Perm(); got != 0o644 {
 		t.Fatalf("new file mode = %v, want 0644", got)
+	}
+}
+
+func TestSetupPermissionSnapshotRefusesUnknownPermissions(t *testing.T) {
+	_, path := setupWriteFixture(t, true)
+	temporary := setupPermissionTemp(t, path)
+	before := captureSetupPermissions(path, setupPermissionStat(t, path))
+	unavailable := before
+	unavailable.inspectionErr = errors.New("ACL inspection denied")
+	if !sameSetupPermissionSnapshots(unavailable, unavailable) {
+		t.Fatal("unavailable permissions would prevent read-only no-op setup")
+	}
+	if sameSetupPermissionSnapshots(before, unavailable) {
+		t.Fatal("a failed observation matched known permissions")
+	}
+	if err := preserveSetupPermissions(temporary, unavailable); err == nil || !strings.Contains(err.Error(), "ACL inspection denied") {
+		t.Fatalf("unknown permissions were not rejected: %v", err)
 	}
 }

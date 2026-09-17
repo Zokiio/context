@@ -160,7 +160,7 @@ func TestSetupWriteFailuresKeepPreviousUsableFile(t *testing.T) {
 				ops.rename = func(string, string) error { return setupInjectedFailure }
 			}
 			if stage == "permissions" {
-				ops.preservePermissions = func(string, string, os.FileInfo) error { return setupInjectedFailure }
+				ops.preservePermissions = func(string, setupPermissionSnapshot) error { return setupInjectedFailure }
 			}
 			if err := plan.apply(context.Background(), ops); err == nil {
 				t.Fatal("injected failure was ignored")

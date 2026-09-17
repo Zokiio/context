@@ -7,14 +7,14 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 type setupSnapshot struct {
-	data []byte
-	info os.FileInfo
+	data        []byte
+	info        os.FileInfo
+	permissions setupPermissionSnapshot
 }
 
 func observeSetupFile(path string) (string, setupSnapshot, error) {
@@ -41,6 +41,7 @@ func observeSetupFile(path string) (string, setupSnapshot, error) {
 	if !info.Mode().IsRegular() {
 		return target, setupSnapshot{}, fmt.Errorf("setup destination %s is not a regular file", path)
 	}
+	permissions := captureSetupPermissions(path, info)
 	data, err := io.ReadAll(file)
 	if err != nil {
 		return target, setupSnapshot{}, fmt.Errorf("read setup destination %s: %w", path, err)
@@ -49,7 +50,10 @@ func observeSetupFile(path string) (string, setupSnapshot, error) {
 	if err != nil || !sameSetupFile(info, after) {
 		return target, setupSnapshot{}, setupChanged(path)
 	}
-	return target, setupSnapshot{data: data, info: info}, nil
+	if !sameSetupPermissionSnapshots(permissions, captureSetupPermissions(path, after)) {
+		return target, setupSnapshot{}, setupChanged(path)
+	}
+	return target, setupSnapshot{data: data, info: info, permissions: permissions}, nil
 }
 
 func sameSetupFile(left, right os.FileInfo) bool {
@@ -68,7 +72,7 @@ func (p *SetupPlan) checkUnchanged() error {
 	if err != nil {
 		return fmt.Errorf("check setup destination before writing: %w", err)
 	}
-	if target != p.target || !sameSetupFile(p.before.info, current.info) || !bytes.Equal(p.before.data, current.data) {
+	if target != p.target || !sameSetupFile(p.before.info, current.info) || !bytes.Equal(p.before.data, current.data) || !sameSetupPermissionSnapshots(p.before.permissions, current.permissions) {
 		return setupChanged(p.summary.Destination)
 	}
 	return nil
@@ -85,7 +89,7 @@ type setupWriteOps struct {
 	createTemp          func(string, string) (setupTempFile, error)
 	rename              func(string, string) error
 	lock                func(string) (func(), error)
-	preservePermissions func(string, string, os.FileInfo) error
+	preservePermissions func(string, setupPermissionSnapshot) error
 }
 
 func defaultSetupWriteOps() setupWriteOps {
@@ -129,13 +133,11 @@ func (p *SetupPlan) apply(ctx context.Context, ops setupWriteOps) error {
 	if !SamePath(p.target, registry) {
 		locks = append(locks, p.target+".lock")
 	}
-	// Use one order even when different homes have overlapping destinations.
-	// Otherwise each writer could hold the lock the other needs next.
-	slices.Sort(locks)
+	locks, err = orderSetupLocks(locks)
+	if err != nil {
+		return err
+	}
 	for _, path := range locks {
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-			return fmt.Errorf("create setup lock directory %s: %w", filepath.Dir(path), err)
-		}
 		unlock, err := ops.lock(path)
 		if err != nil {
 			return fmt.Errorf("lock setup configuration %s: %w", path, err)
@@ -163,7 +165,7 @@ func (p *SetupPlan) apply(ctx context.Context, ops setupWriteOps) error {
 		}
 		return fmt.Errorf("write setup temporary file: %w", err)
 	}
-	if err := ops.preservePermissions(p.target, temporary.Name(), p.before.info); err != nil {
+	if err := ops.preservePermissions(temporary.Name(), p.before.permissions); err != nil {
 		return fmt.Errorf("preserve setup file permissions: %w", err)
 	}
 	if err := temporary.Sync(); err != nil {

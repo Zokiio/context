@@ -14,29 +14,43 @@ import (
 func sameSetupPermissions(left, right os.FileInfo) bool {
 	l, lok := left.Sys().(*syscall.Stat_t)
 	r, rok := right.Sys().(*syscall.Stat_t)
-	// ACL edits change ctime even when mode and mtime stay the same.
+	// Change time supplements the exact ACL snapshot. Multiple ACL edits can
+	// share one filesystem clock tick, so ctime alone cannot detect them.
 	return lok && rok && l.Uid == r.Uid && l.Gid == r.Gid && l.Ctimespec == r.Ctimespec && l.Flags == r.Flags
 }
 
-func preserveSetupExtendedPermissions(sourcePath, tempPath string) error {
-	info, err := os.Stat(sourcePath)
-	if err != nil {
-		return err
+type setupExtendedPermissions struct {
+	acl   []byte
+	flags uint32
+}
+
+func captureSetupExtendedPermissions(path string, info os.FileInfo) (setupExtendedPermissions, error) {
+	stat, ok := info.Sys().(*syscall.Stat_t)
+	if !ok {
+		return setupExtendedPermissions{}, fmt.Errorf("cannot inspect macOS permission flags")
 	}
+	acl, err := readSetupACL(path)
+	if err != nil {
+		return setupExtendedPermissions{}, fmt.Errorf("read original ACL: %w", err)
+	}
+	return setupExtendedPermissions{acl: acl, flags: stat.Flags}, nil
+}
+
+func sameSetupExtendedPermissions(left, right setupExtendedPermissions) bool {
+	return left.flags == right.flags && bytes.Equal(left.acl, right.acl)
+}
+
+func preserveSetupExtendedPermissions(tempPath string, before setupExtendedPermissions) error {
 	const securityFlags = unix.UF_IMMUTABLE | unix.UF_APPEND | unix.UF_DATAVAULT | unix.SF_IMMUTABLE | unix.SF_APPEND | unix.SF_NOUNLINK | unix.SF_RESTRICTED
-	if info.Sys().(*syscall.Stat_t).Flags&securityFlags != 0 {
+	if before.flags&securityFlags != 0 {
 		return fmt.Errorf("cannot preserve macOS file protection flags during replacement")
-	}
-	acl, err := readSetupACL(sourcePath)
-	if err != nil {
-		return fmt.Errorf("read original ACL: %w", err)
 	}
 	current, err := readSetupACL(tempPath)
 	if err != nil {
 		return fmt.Errorf("read temporary ACL: %w", err)
 	}
-	if !bytes.Equal(acl, current) {
-		if err := writeSetupACL(tempPath, acl); err != nil {
+	if !bytes.Equal(before.acl, current) {
+		if err := writeSetupACL(tempPath, before.acl); err != nil {
 			return fmt.Errorf("preserve ACL: %w", err)
 		}
 	}
@@ -44,7 +58,7 @@ func preserveSetupExtendedPermissions(sourcePath, tempPath string) error {
 	if err != nil {
 		return fmt.Errorf("verify temporary ACL: %w", err)
 	}
-	if !bytes.Equal(acl, current) {
+	if !bytes.Equal(before.acl, current) {
 		return fmt.Errorf("temporary file did not retain the original ACL")
 	}
 	return nil

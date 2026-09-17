@@ -2,10 +2,12 @@ package discovery
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"errors"
 	"os"
 	"strings"
+	"syscall"
 	"testing"
 
 	"golang.org/x/sys/unix"
@@ -52,7 +54,7 @@ func TestPreserveSetupPermissionsCopiesAndRemovesLinuxACL(t *testing.T) {
 			} else {
 				setupLinuxACL(t, temporary)
 			}
-			if err := preserveSetupPermissions(path, temporary, setupPermissionStat(t, path)); err != nil {
+			if err := preserveSetupPermissions(temporary, captureSetupPermissions(path, setupPermissionStat(t, path))); err != nil {
 				t.Fatal(err)
 			}
 			buffer := make([]byte, 1024)
@@ -68,16 +70,78 @@ func TestPreserveSetupPermissionsCopiesAndRemovesLinuxACL(t *testing.T) {
 	}
 }
 
+func TestSetupPermissionSnapshotRetainsOriginalLinuxACL(t *testing.T) {
+	_, path := setupWriteFixture(t, true)
+	temporary := setupPermissionTemp(t, path)
+	want := setupLinuxACL(t, path)
+	before := captureSetupPermissions(path, setupPermissionStat(t, path))
+	changed := bytes.Clone(want)
+	binary.LittleEndian.PutUint16(changed[14:16], 0)
+	if err := unix.Setxattr(path, setupAccessACL, changed, 0); err != nil {
+		t.Fatal(err)
+	}
+	if err := preserveSetupPermissions(temporary, before); err != nil {
+		t.Fatal(err)
+	}
+	actual := make([]byte, len(want))
+	if n, err := unix.Getxattr(temporary, setupAccessACL, actual); err != nil || n != len(want) || !bytes.Equal(actual, want) {
+		t.Fatalf("temporary ACL = %x, %v; want original %x", actual, err, want)
+	}
+	if n, err := unix.Getxattr(path, setupAccessACL, actual); err != nil || n != len(changed) || !bytes.Equal(actual, changed) {
+		t.Fatalf("source ACL was modified: %x, %v", actual, err)
+	}
+}
+
 func TestSetupPermissionsDetectsLinuxACLEdit(t *testing.T) {
 	_, path := setupWriteFixture(t, true)
 	before := setupPermissionStat(t, path)
+	snapshot := captureSetupPermissions(path, before)
 	setupLinuxACL(t, path)
 	after := setupPermissionStat(t, path)
 	if before.Mode() != after.Mode() || !before.ModTime().Equal(after.ModTime()) {
 		t.Fatal("fixture changed mode or mtime")
 	}
-	if sameSetupPermissions(before, after) {
+	if sameSetupPermissionSnapshots(snapshot, captureSetupPermissions(path, after)) {
 		t.Fatal("ACL-only edit did not invalidate the snapshot")
+	}
+}
+
+func TestSetupRejectsLinuxACLRevocationWithinOneClockTick(t *testing.T) {
+	for _, duringWrite := range []bool{false, true} {
+		t.Run(map[bool]string{false: "before apply", true: "during write"}[duringWrite], func(t *testing.T) {
+			request, path := setupWriteFixture(t, true)
+			acl := setupLinuxACL(t, path)
+			plan := setupWritePlan(t, request)
+			original := setupWriteRead(t, path)
+			binary.LittleEndian.PutUint16(acl[14:16], 0) // Revoke the named user's read grant.
+			revoke := func() {
+				if err := unix.Setxattr(path, setupAccessACL, acl, 0); err != nil {
+					t.Fatal(err)
+				}
+				current := setupPermissionStat(t, path)
+				// Model a filesystem clock tick that contains both operations.
+				plan.before.info.Sys().(*syscall.Stat_t).Ctim = current.Sys().(*syscall.Stat_t).Ctim
+			}
+			ops := defaultSetupWriteOps()
+			if duringWrite {
+				ops.createTemp = func(directory, pattern string) (setupTempFile, error) {
+					file, err := os.CreateTemp(directory, pattern)
+					return &setupFaultFile{file: file, onSync: revoke}, err
+				}
+			} else {
+				revoke()
+			}
+			if err := plan.apply(context.Background(), ops); err == nil || !strings.Contains(err.Error(), "changed since setup read") {
+				t.Errorf("ACL revocation was not rejected: %v", err)
+			}
+			actual := make([]byte, len(acl))
+			if n, err := unix.Getxattr(path, setupAccessACL, actual); err != nil || n != len(acl) || !bytes.Equal(actual, acl) {
+				t.Errorf("revoked ACL grant was restored: %x, %v; want %x", actual, err, acl)
+			}
+			if !bytes.Equal(original, setupWriteRead(t, path)) {
+				t.Error("stale plan replaced the original document")
+			}
+		})
 	}
 }
 
@@ -96,7 +160,7 @@ func TestPreserveSetupPermissionsRefusesCapabilityLoss(t *testing.T) {
 		}
 		t.Fatal(err)
 	}
-	if err := preserveSetupPermissions(path, temporary, setupPermissionStat(t, path)); err == nil || !strings.Contains(err.Error(), "cannot preserve permission attribute") {
+	if err := preserveSetupPermissions(temporary, captureSetupPermissions(path, setupPermissionStat(t, path))); err == nil || !strings.Contains(err.Error(), "cannot preserve permission attribute") {
 		t.Fatalf("capability loss = %v", err)
 	}
 }

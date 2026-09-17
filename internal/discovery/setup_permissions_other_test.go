@@ -18,7 +18,7 @@ func TestUnsupportedSetupPermissionsFailBeforeReplacement(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := preserveSetupPermissions(path, path+".temp", before); err == nil || !strings.Contains(err.Error(), "unsupported") {
+	if err := preserveSetupPermissions(path+".temp", captureSetupPermissions(path, before)); err == nil || !strings.Contains(err.Error(), "unsupported") {
 		t.Fatalf("unsupported replacement = %v", err)
 	}
 	data, err := os.ReadFile(path)
@@ -29,7 +29,7 @@ func TestUnsupportedSetupPermissionsFailBeforeReplacement(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !sameSetupPermissions(before, after) {
+	if !sameSetupPermissionSnapshots(captureSetupPermissions(path, before), captureSetupPermissions(path, after)) {
 		t.Fatal("read-only access invalidated the permission snapshot")
 	}
 }

@@ -20,14 +20,20 @@ func sameSetupPermissions(left, right os.FileInfo) bool {
 
 const setupAccessACL = "system.posix_acl_access"
 
+type setupExtendedPermissions map[string][]byte
+
+func captureSetupExtendedPermissions(path string, _ os.FileInfo) (setupExtendedPermissions, error) {
+	return readSetupPermissionXattrs(path)
+}
+
+func sameSetupExtendedPermissions(left, right setupExtendedPermissions) bool {
+	return maps.EqualFunc(left, right, bytes.Equal)
+}
+
 // Copy POSIX access ACLs. Other security, system, or trusted attributes must
 // already match on the replacement, otherwise setup fails before replacement.
 // This avoids discarding capabilities, security labels, or other ACL formats.
-func preserveSetupExtendedPermissions(sourcePath, tempPath string) error {
-	want, err := readSetupPermissionXattrs(sourcePath)
-	if err != nil {
-		return fmt.Errorf("read original extended permissions: %w", err)
-	}
+func preserveSetupExtendedPermissions(tempPath string, want setupExtendedPermissions) error {
 	got, err := readSetupPermissionXattrs(tempPath)
 	if err != nil {
 		return fmt.Errorf("read temporary extended permissions: %w", err)
