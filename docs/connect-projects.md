@@ -67,7 +67,7 @@ Omit `--alias` to retain the existing personal alias. Supply a different alias t
 
 Identical setup is a no-op. Dry-run and no-op create no directories or lockfiles. Updates preserve unrelated entries, unknown metadata, Markdown body bytes, and existing file permissions. Malformed configuration requires an explicit repair outside setup.
 
-On macOS and Linux, replacement preserves owner, group, mode, and access-control lists. If setup cannot preserve or inspect those permissions, it leaves the configuration intact and reports the failure. Other operating systems support creation and identical setup, but reject replacement of an existing configuration.
+On macOS and Linux, replacement preserves owner, group, mode, and access-control lists. If setup cannot preserve or inspect those permissions, it leaves the configuration intact and reports the failure. Windows supports creation but rejects replacement of existing configuration. Other operating systems reject writes. Dry-run and identical setup remain available.
 
 Setup uses atomic replacement and checks for concurrent file changes. A changed document requires a new setup invocation. Write failures preserve the previous usable configuration.
 
