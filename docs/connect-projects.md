@@ -67,6 +67,8 @@ Omit `--alias` to retain the existing personal alias. Supply a different alias t
 
 Identical setup is a no-op. Dry-run and no-op create no directories or lockfiles. Updates preserve unrelated entries, unknown metadata, Markdown body bytes, and existing file permissions. Malformed configuration requires an explicit repair outside setup.
 
+On macOS and Linux, replacement preserves owner, group, mode, and access-control lists. If setup cannot preserve or inspect those permissions, it leaves the configuration intact and reports the failure. Other operating systems support creation and identical setup, but reject replacement of an existing configuration.
+
 Setup uses atomic replacement and checks for concurrent file changes. A changed document requires a new setup invocation. Write failures preserve the previous usable configuration.
 
 Changed setup operations retain a lock beside the personal registry, including shared setup. Shared writes also retain a lock beside their destination configuration. The lock name is `<physical configuration path>.lock`, usually `.context/config.md.lock`. These locks let shared and personal writers using the same home directory check conflicts before either writes. Both locations must be writable. Shared setup creates no personal configuration. Keep the lock files out of Git and leave them in place while setup processes may be active. For a symlinked configuration, setup updates the physical target and leaves the symlink in place.

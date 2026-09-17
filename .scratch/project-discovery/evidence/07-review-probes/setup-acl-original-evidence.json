@@ -1,0 +1,26 @@
+{
+  "revision": "2777f087a5e320594e09c5cda1f35d62e66c5a80",
+  "fixture": "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3",
+  "setupPermissionCommand": [
+    "chmod",
+    "+a",
+    "everyone deny write",
+    "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout/.context/config.md"
+  ],
+  "before": "-rw-r--r--@ 1 zoki  wheel  73 Sep 17 11:17 /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout/.context/config.md\n 0: group:everyone deny write\n",
+  "setupCommand": [
+    "/private/tmp/ctx-spec-setup.ipgPU4/ctx",
+    "setup",
+    "--records",
+    "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/records",
+    "--allow-source",
+    "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/docs",
+    "--replace"
+  ],
+  "setupCwd": "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout",
+  "injectedHome": "/private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/home",
+  "status": 0,
+  "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout\nRecords: /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/records\nDestination: /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout/.context/config.md\nAllowed sources:\n  /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/docs\n",
+  "stderr": "",
+  "after": "-rw-r--r--@ 1 zoki  wheel  101 Sep 17 11:17 /private/tmp/ctx-spec-setup.ipgPU4/acl-evidence-wittz_s3/checkout/.context/config.md\n"
+}

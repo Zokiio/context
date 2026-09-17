@@ -156,7 +156,9 @@ Personal entry identity is the canonical binding directory. Ambiguous matches fa
 
 Setup validates the proposed binding against other effective declarations. `--replace` cannot override a conflict that remains in another file. Atomic replacement and concurrent-change checks protect the previous usable file from failed writes.
 
-Changed shared and personal setup operations first acquire the personal registry's persistent `<physical personal configuration path>.lock`. Shared writes also hold the destination configuration's sidecar lock. This coordinates writers using the same home directory, including writers choosing different configuration files for one binding. Shared setup can create the personal lock and its containing directory, but does not create a personal configuration. Both lock locations must be writable. Dry-run and identical setup create neither lock. Relative saved values still use the encountered configuration path as their base.
+Changed shared and personal setup operations hold the personal registry's persistent `<physical personal configuration path>.lock`. Shared writes also hold the destination configuration's sidecar lock. This coordinates writers using the same home directory, including writers choosing different configuration files for one binding. Shared setup can create the personal lock and its containing directory, but does not create a personal configuration. Both lock locations must be writable. Dry-run and identical setup create neither lock. Relative saved values still use the encountered configuration path as their base.
+
+On macOS and Linux, replacement preserves owner, group, mode, and access-control lists. Setup also checks for permission changes after it reads the destination. If permission metadata cannot be inspected or reproduced, replacement fails with the previous file intact. Existing-file replacement is unsupported on other operating systems; creation and identical setup remain available.
 
 ## Reports, limits, and failures
 

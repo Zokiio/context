@@ -1,0 +1,419 @@
+{
+  "fixtures": "/private/tmp/ctx-independent-review-ixrirzbe",
+  "results": [
+    {
+      "label": "configured roots + separate records",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "explicit path matches cwd",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "bundle excludes configured roots",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "context",
+        "--bundle",
+        "/private/tmp/ctx-independent-review-ixrirzbe/records-a",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[{\"code\":\"source_outside_scope\",\"severity\":\"error\",\"message\":\"source resolves outside the permitted directories\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "byte budget remains partial",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "context",
+        "--ticket",
+        "ticket.md",
+        "--max-bytes",
+        "1"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":false,\"sources\":[],\"diagnostics\":[{\"code\":\"source_limit_exceeded\",\"severity\":\"error\",\"message\":\"source would exceed source byte limit of 1; collection stopped before including it\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "file budget whole source",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "context",
+        "--ticket",
+        "ticket.md",
+        "--max-files",
+        "1"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":false,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[{\"code\":\"source_limit_exceeded\",\"severity\":\"error\",\"message\":\"source would exceed file limit of 1; collection stopped before including it\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "repeated selector fails",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "",
+      "stderr": "--project may only be specified once\n"
+    },
+    {
+      "label": "no scope outside repo",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe\"): no scope found after searching physical ancestors of \"/private/tmp/ctx-independent-review-ixrirzbe\" through filesystem root \"/\"; run ctx setup or use --bundle PATH for direct records access\n"
+    },
+    {
+      "label": "manifestless direct context",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--bundle",
+        "/private/tmp/ctx-independent-review-ixrirzbe/manifestless",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/manifestless/ticket.md\",\"text\":\"# Old ticket\\n\",\"sha256\":\"48232c684ee233917b7255bd43083aecc9e926d51db276f7ee98508fc249253f\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "manifestless orientation partial",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "orient",
+        "--bundle",
+        "/private/tmp/ctx-independent-review-ixrirzbe/manifestless",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"inventoryComplete\":true,\"project\":null,\"goals\":[],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/manifestless/ticket.md\",\"sha256\":\"48232c684ee233917b7255bd43083aecc9e926d51db276f7ee98508fc249253f\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"ticket.md\"}]}],\"diagnostics\":[{\"code\":\"source_missing\",\"severity\":\"error\",\"message\":\"lstat /private/tmp/ctx-independent-review-ixrirzbe/manifestless/project.md: no such file or directory\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/manifestless/project.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "manifestless project no fallback",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/manifestless",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe/manifestless\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe\"): no project scope found after searching physical ancestors of \"/private/tmp/ctx-independent-review-ixrirzbe/manifestless\" through filesystem root \"/\"; run ctx setup or use --bundle PATH for direct records access\n"
+    },
+    {
+      "label": "nearer workspace stops context",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "context",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+      "stdout": "",
+      "stderr": "context requires project scope; selected workspace \"Workspace A\" [workspace-a] at \"/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested\"; select a project with --project PATH or --project @alias, or use --bundle PATH for direct records access\n"
+    },
+    {
+      "label": "explicit project passes workspace",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "empty workspace navigation",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"workspace-a\",\"title\":\"Workspace A\"},\"workStatus\":\"unevaluated\",\"members\":[],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "malformed marker no fallback",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested\"): project marker /private/tmp/ctx-independent-review-ixrirzbe/checkout/nested/project.md field type (<nil>): requires Project type, nonempty id, and nonempty title; repair the reserved marker\n"
+    },
+    {
+      "label": "workspace ignores malformed marker",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--workspace",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout/nested",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"workspace-a\",\"title\":\"Workspace A\"},\"workStatus\":\"unevaluated\",\"members\":[],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "equal-depth roots conflict",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe/checkout\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe/checkout\"): conflicting project declarations at \"/private/tmp/ctx-independent-review-ixrirzbe/checkout\": /private/tmp/ctx-independent-review-ixrirzbe/home/.context/config.md field projects[0] (records \"/private/tmp/ctx-independent-review-ixrirzbe/records-a\" resolves to \"/private/tmp/ctx-independent-review-ixrirzbe/records-a\", allowSources []) conflicts with /private/tmp/ctx-independent-review-ixrirzbe/checkout/.context/config.md field project (records \"/private/tmp/ctx-independent-review-ixrirzbe/records-a\" resolves to \"/private/tmp/ctx-independent-review-ixrirzbe/records-a\", allowSources [\"/private/tmp/ctx-independent-review-ixrirzbe/docs\" resolves to \"/private/tmp/ctx-independent-review-ixrirzbe/docs\"]); repair one declaration so their effective values agree\n"
+    },
+    {
+      "label": "alias concrete entry independent of local",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "context",
+        "--project",
+        "@saved",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[{\"code\":\"source_outside_scope\",\"severity\":\"error\",\"message\":\"source resolves outside the permitted directories\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "alias missing checkout + unrelated missing records",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--project",
+        "@saved",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "malformed registry blocks discovery",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe/checkout\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe\"): configuration /private/tmp/ctx-independent-review-ixrirzbe/home/.context/config.md field frontmatter (<nil>): requires YAML frontmatter; correct this field in the configuration; repair the configuration before discovery\n"
+    },
+    {
+      "label": "bundle bypasses malformed registry",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--bundle",
+        "/private/tmp/ctx-independent-review-ixrirzbe/records-a",
+        "--allow-source",
+        "/private/tmp/ctx-independent-review-ixrirzbe/docs",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "symlink parent selects physical ancestry",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/lexical/jump/..",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"project-a\",\"title\":\"project-a\",\"source\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"project-a\",\"title\":\"project-a\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"None\",\"source\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/project.md\",\"sha256\":\"d9a5ed6cd577a601af0487a999cfca8cb3b1264753ef6cab28da82441112d433\",\"reasons\":[{\"kind\":\"project\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"ticket.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "symlinked config keeps encountered base",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/linked-config",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"inventoryComplete\":true,\"project\":{\"id\":\"encountered-base\",\"title\":\"encountered-base\",\"source\":\"/private/tmp/ctx-independent-review-ixrirzbe/linked-config/records/project.md\",\"goalsKnown\":true,\"commitmentsKnown\":true,\"openDecisionsKnown\":true,\"metadata\":{\"id\":\"encountered-base\",\"title\":\"encountered-base\",\"type\":\"Project\"}},\"goals\":[{\"text\":\"None\",\"source\":\"/private/tmp/ctx-independent-review-ixrirzbe/linked-config/records/project.md\",\"references\":[]}],\"currentCommitments\":[],\"workItems\":[],\"shortlist\":[],\"inProgress\":[],\"backlog\":[],\"decisions\":[],\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/linked-config/records/project.md\",\"sha256\":\"5e5ab16e2b6009ae3cdd573b12a1ab5b920ffa6b4931848902ea9cc91eb86767\",\"reasons\":[{\"kind\":\"project\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/linked-config/records/ticket.md\",\"sha256\":\"c67cae6a3d6c083465cd5b8ce90594cea8e67b43092472b78f4bbb023485d4f2\",\"reasons\":[{\"kind\":\"inventory\",\"link\":\"ticket.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "workspace ordered shallow availability",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/navigation",
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"nav\",\"title\":\"Navigation\"},\"workStatus\":\"unevaluated\",\"members\":[{\"key\":\"odd\",\"directory\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-checkout\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline\",\"--allow-source\",\"/private/tmp/ctx-independent-review-ixrirzbe/docs\"]},{\"key\":\"missing\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\",\"availability\":\"unavailable\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\"]},{\"key\":\"shallow\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/shallow\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/shallow\"]}],\"diagnostics\":[{\"code\":\"member_records_unavailable\",\"severity\":\"warning\",\"memberKey\":\"missing\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/navigation/.context/config.md\",\"field\":\"workspace.members[1].records\",\"message\":\"records directory access is unavailable: stat /private/tmp/ctx-independent-review-ixrirzbe/absent-records: no such file or directory; check this member's records declaration\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "member array command preserves roots",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--bundle",
+        "/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\nline",
+        "--allow-source",
+        "/private/tmp/ctx-independent-review-ixrirzbe/docs",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "workspace human output",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/navigation",
+      "stdout": "Workspace: Navigation [nav]\nWork status was not evaluated.\nMembers: 3\n  odd [available]\n    records: \"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline\"\n    checkout: /private/tmp/ctx-independent-review-ixrirzbe/absent-checkout\n    select: ctx orient --bundle '/private/tmp/ctx-independent-review-ixrirzbe/member '\"'\"'quotes'\"'\"', spaced\nline' --allow-source /private/tmp/ctx-independent-review-ixrirzbe/docs\n  missing [unavailable]\n    records: /private/tmp/ctx-independent-review-ixrirzbe/absent-records\n    select: ctx orient --bundle /private/tmp/ctx-independent-review-ixrirzbe/absent-records\n  shallow [available]\n    records: /private/tmp/ctx-independent-review-ixrirzbe/shallow\n    select: ctx orient --bundle /private/tmp/ctx-independent-review-ixrirzbe/shallow\n  warning member_records_unavailable [missing]: records directory access is unavailable: stat /private/tmp/ctx-independent-review-ixrirzbe/absent-records: no such file or directory; check this member's records declaration\n    source: /private/tmp/ctx-independent-review-ixrirzbe/navigation/.context/config.md field workspace.members[1].records\n",
+      "stderr": ""
+    },
+    {
+      "label": "human member POSIX quoted roundtrip",
+      "ok": true
+    },
+    {
+      "label": "selected missing records no fallback",
+      "ok": true,
+      "exit": 2,
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe/checkout/broken",
+      "stdout": "",
+      "stderr": "discover scope from \"/private/tmp/ctx-independent-review-ixrirzbe/checkout/broken\" (cwd \"/private/tmp/ctx-independent-review-ixrirzbe/checkout/broken\"): /private/tmp/ctx-independent-review-ixrirzbe/checkout/broken/.context/config.md field project.records value \"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\" resolves to \"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\": selected directory is unavailable: stat /private/tmp/ctx-independent-review-ixrirzbe/absent-records: no such file or directory; repair the directory or its declaration\n"
+    },
+    {
+      "label": "marker + mapping supplies roots",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/records-a",
+        "--ticket",
+        "ticket.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":true,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"text\":\"# Ticket\\n\\n## Acceptance criteria\\n\\nWorks.\\n\\n## Context\\n\\n[Doc](../docs/guide.md)\\n\",\"sha256\":\"2550a0da5f7aeae504055bd314cb4143a0f4049ec058d9d43b5d2aa0bd64cd2a\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/docs/guide.md\",\"text\":\"Supporting document\\n\",\"sha256\":\"0332526550e4a6ddade753b52681b25d759ff8bdef321f8ea033ef4f02579262\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/ticket.md\",\"link\":\"../docs/guide.md\"}]}],\"diagnostics\":[]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "source symlink escape rejected",
+      "ok": true,
+      "exit": 1,
+      "args": [
+        "context",
+        "--project",
+        "/private/tmp/ctx-independent-review-ixrirzbe/checkout",
+        "--ticket",
+        "escape.md"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/escape.md\",\"text\":\"# Escape\\n\\n## Context\\n\\n[Hidden](../docs/escape.md)\\n\",\"sha256\":\"d7b3e9f1ba76fc11042477e07a791a1bdafe240a47f9603ca3b4200eece60f4d\",\"reasons\":[{\"kind\":\"root\"}]}],\"diagnostics\":[{\"code\":\"source_outside_scope\",\"severity\":\"error\",\"message\":\"source resolves outside the permitted directories\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/outside/hidden.md\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/records-a/escape.md\",\"link\":\"../docs/escape.md\"}]}\n",
+      "stderr": ""
+    },
+    {
+      "label": "read only verification",
+      "ok": true,
+      "exit": 0,
+      "args": [
+        "orient",
+        "--workspace",
+        "/private/tmp/ctx-independent-review-ixrirzbe/navigation",
+        "--json"
+      ],
+      "cwd": "/private/tmp/ctx-independent-review-ixrirzbe",
+      "stdout": "{\"schemaVersion\":1,\"kind\":\"workspace-navigation\",\"complete\":true,\"workspace\":{\"id\":\"nav\",\"title\":\"Navigation\"},\"workStatus\":\"unevaluated\",\"members\":[{\"key\":\"odd\",\"directory\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-checkout\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/member 'quotes', spaced\\nline\",\"--allow-source\",\"/private/tmp/ctx-independent-review-ixrirzbe/docs\"]},{\"key\":\"missing\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\",\"availability\":\"unavailable\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\"]},{\"key\":\"shallow\",\"records\":\"/private/tmp/ctx-independent-review-ixrirzbe/shallow\",\"availability\":\"available\",\"selectionArgs\":[\"ctx\",\"orient\",\"--bundle\",\"/private/tmp/ctx-independent-review-ixrirzbe/shallow\"]}],\"diagnostics\":[{\"code\":\"member_records_unavailable\",\"severity\":\"warning\",\"memberKey\":\"missing\",\"path\":\"/private/tmp/ctx-independent-review-ixrirzbe/absent-records\",\"from\":\"/private/tmp/ctx-independent-review-ixrirzbe/navigation/.context/config.md\",\"field\":\"workspace.members[1].records\",\"message\":\"records directory access is unavailable: stat /private/tmp/ctx-independent-review-ixrirzbe/absent-records: no such file or directory; check this member's records declaration\"}]}\n",
+      "stderr": ""
+    }
+  ]
+}

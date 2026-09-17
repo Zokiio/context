@@ -1,0 +1,28 @@
+{
+  "revision": "2777f087a5e320594e09c5cda1f35d62e66c5a80",
+  "fixture": "/private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w",
+  "before": {
+    "uid": 501,
+    "gid": 20,
+    "mode": "0o640",
+    "inode": 126583584
+  },
+  "command": [
+    "/private/tmp/ctx-spec-setup.ipgPU4/ctx",
+    "setup",
+    "--records",
+    "/private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/records",
+    "--allow-source",
+    "/private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/docs",
+    "--replace"
+  ],
+  "status": 0,
+  "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/checkout\nRecords: /private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/records\nDestination: /private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/checkout/.context/config.md\nAllowed sources:\n  /private/tmp/ctx-spec-setup.ipgPU4/group-evidence-vftun51w/docs\n",
+  "stderr": "",
+  "after": {
+    "uid": 501,
+    "gid": 0,
+    "mode": "0o640",
+    "inode": 126583586
+  }
+}

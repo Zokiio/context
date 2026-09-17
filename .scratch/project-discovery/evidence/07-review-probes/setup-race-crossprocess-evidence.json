@@ -1,0 +1,18 @@
+{
+  "revision": "2777f087a5e320594e09c5cda1f35d62e66c5a80",
+  "command": [
+    "go",
+    "test",
+    "-overlay",
+    "/private/tmp/ctx-spec-setup.ipgPU4/crossprocess-overlay.json",
+    "-run",
+    "^TestReviewConcurrentSetupProcesses$",
+    "-count=1",
+    "-v",
+    "./internal/discovery"
+  ],
+  "status": 1,
+  "stdout": "=== RUN   TestReviewConcurrentSetupProcesses\n    setup_review_crossprocess_test.go:51: personal writer exit=<nil>\n        === RUN   TestReviewProcessWriter\n            setup_review_crossprocess_test.go:34: setup successfully committed personal\n        --- PASS: TestReviewProcessWriter (0.02s)\n        PASS\n    setup_review_crossprocess_test.go:51: shared writer exit=<nil>\n        === RUN   TestReviewProcessWriter\n            setup_review_crossprocess_test.go:34: setup successfully committed shared\n        --- PASS: TestReviewProcessWriter (0.02s)\n        PASS\n    setup_review_crossprocess_test.go:55: after both processes committed: discover scope from \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout\" (cwd \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout\"): conflicting project declarations at \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout\": /private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/home/.context/config.md field projects[0] (records \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/records\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/records\", allowSources [\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout\"]) conflicts with /private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/checkout/.context/config.md field project (records \"../../records\" resolves to \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestReviewConcurrentSetupProcesses2343061430/001/records\", allowSources []); repair one declaration so their effective values agree\n    setup_review_crossprocess_test.go:56: both local processes succeeded and left conflicting declarations\n--- FAIL: TestReviewConcurrentSetupProcesses (0.03s)\nFAIL\nFAIL\tgithub.com/Zokiio/context/internal/discovery\t0.309s\nFAIL\n",
+  "stderr": "",
+  "probeSHA256": "ee55a0c2ef0b4cf6039c4f7bb6a6a8065622b443b17add2a095a59beaaf9c29e"
+}
