@@ -16,14 +16,12 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Current commitments
 
-- [01: Show project orientation and work inventory](session-orientation/issues/01-show-project-orientation.md)
-- [02: List eligible work with reasons](session-orientation/issues/02-list-eligible-work.md)
-- [03: Explain blocking decisions](session-orientation/issues/03-explain-blocking-decisions.md)
-- [04: Expose reproducible requirement fingerprints](session-orientation/issues/04-expose-requirement-fingerprints.md)
-- [05: Satisfy direct prerequisites using recorded acceptance](session-orientation/issues/05-verify-prerequisite-acceptance.md)
-- [06: Evaluate prerequisite chains and cycles](session-orientation/issues/06-evaluate-prerequisite-chains.md)
-- [07: Migrate project records and prepare the pickup trial](session-orientation/issues/07-migrate-records-and-prepare-trial.md)
-- [08: Verify fresh-session pickup on the real project](session-orientation/issues/08-verify-fresh-session-pickup.md)
+- [01: Read discovery configuration](project-discovery/issues/01-read-configuration.md)
+- [02: Resolve scope from directories and aliases](project-discovery/issues/02-resolve-scope.md)
+- [03: Use discovery in reader commands](project-discovery/issues/03-integrate-cli.md)
+- [04: Show workspace member navigation](project-discovery/issues/04-workspace-navigation.md)
+- [05: Connect existing records through setup](project-discovery/issues/05-connect-records.md)
+- [06: Document migration and verify discovery end to end](project-discovery/issues/06-document-and-trial.md)
 
 ## Open decisions
 
