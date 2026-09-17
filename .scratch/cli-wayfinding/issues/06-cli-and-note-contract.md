@@ -2,7 +2,7 @@
 
 Type: grilling
 Labels: wayfinder:grilling
-Status: resolved
+Status: open
 Blocked by: 02, 03, 04
 Parent: [Direct and resume agent work with the local CLI](../map.md)
 
@@ -37,3 +37,9 @@ The final review tightened three correctness boundaries: supersede only observat
 Review used the current `internal/cli/scope.go`, `internal/discovery/resolve.go`, `internal/taskcontext/context.go`, `internal/orientation/orientation.go`, public report types, and their documentation. Shared captured reads and a shared resumption budget require implementation work; they do not already exist merely because they are specified. Local links and whitespace were checked. No implementation tests or real-task acceptance trial ran in this planning session.
 
 The wayfinding destination is reached: no known decision remains before implementation planning. Create implementation tickets from the specification in the normal tracker workflow; do not treat the discovery tickets as implementation commitments.
+
+## Review reassessment
+
+Reopened after the user-requested [independent review](../independent-review.md) of commit `e1c5a344f6afe913ae16f27f701cd0dfbc9f6589`. The earlier readiness conclusion above is superseded. Three concrete contract corrections are required before recovery implementation: reconcile bounded enumeration with deterministic ordering, define deliberate recovery from unfinished checkpoint publication, and specify nested JSON shapes and absent-baseline representation.
+
+The parent agent's separate reference audit found that the map and research point to the pre-existing untracked `.scratch/workflow-improvements/discovery.md`, and the research cites ignored `.cache` notes. These links resolve locally but do not form a portable Git handoff. Preserve necessary supporting context or label optional local-only sources before declaring the handoff self-contained. Neither the independent review nor the parent audit changed product code or ran implementation tests.

@@ -1,7 +1,7 @@
 # Direct and resume agent work with the local CLI
 
 Labels: wayfinder:map
-Status: resolved
+Status: open
 
 ## Destination
 
@@ -25,11 +25,10 @@ An implementation-ready specification for a usable local CLI that explains where
 - [What belongs in the shortest useful intervention view?](issues/02-intervention-view.md): broader orientation with needs attention inside it, compact text by default, expanded detail on request, and full JSON using the same facts and checks.
 - [What does a handoff retain, and how does a session select it?](issues/03-handoff-contract.md): ticket-based lookup of checkout-local working notes and retained requirement text, with reconstruction when absent and explicit conflicts when notes disagree.
 - [What should resumption show when requirements or readiness changed?](issues/04-resume-behavior.md): refreshed facts and explicit differences guide continuation, with conflicts, missing sources, blockers, and verification limits kept visible.
-- [What command and note-format contract implements the agreed local loop?](issues/06-cli-and-note-contract.md): the specification defines command/output contracts, checkout-local recovery observations, bounded comparison, and the implementation acceptance scenario.
 
 ## Not yet specified
 
-None identified. The [implementation specification](spec.md) is ready for ticket breakdown and implementation. New discoveries that change product commitments must be surfaced during that work.
+No additional unformulated questions are identified. The concrete corrections from the [independent review](independent-review.md) reopened the command and note-format contract ticket. The specification remains under review until that ticket is resolved again.
 
 ## Out of scope
 

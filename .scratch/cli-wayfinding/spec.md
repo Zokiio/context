@@ -1,6 +1,6 @@
 # Local orientation and resumption
 
-Status: specified for implementation. The user accepted the command/view direction and authorized continuation of contract review; the [contract decision](issues/06-cli-and-note-contract.md#answer) records the technical completion and review limits. No implementation or acceptance trial has run.
+Status: contract review fixes required. The [independent review](independent-review.md) identified gaps in bounded discovery, interrupted-publication recovery, and nested JSON shapes. The agreed product behavior remains intact, but the recovery contract is not ready for implementation until these gaps are addressed. No implementation or acceptance trial has run.
 
 ## Outcome and decision owners
 
