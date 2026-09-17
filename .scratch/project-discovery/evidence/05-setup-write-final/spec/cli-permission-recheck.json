@@ -1,0 +1,92 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "fixture": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw",
+  "before": {
+    "uid": 501,
+    "gid": 20,
+    "mode": "0o640",
+    "acl": " 0: group:everyone deny write\n"
+  },
+  "after": {
+    "uid": 501,
+    "gid": 20,
+    "mode": "0o640",
+    "acl": " 0: group:everyone deny write\n"
+  },
+  "results": [
+    {
+      "label": "invalid flags",
+      "command": [
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+        "setup",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs",
+        "--replace",
+        "--alias",
+        "invalid"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "--alias requires --personal\n",
+      "changed": []
+    },
+    {
+      "label": "dry-run",
+      "command": [
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+        "setup",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs",
+        "--replace",
+        "--dry-run"
+      ],
+      "status": 0,
+      "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout/.context/config.md\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs\n\nProposed configuration:\n---\ntype: ContextConfig\nversion: 1\nproject: {allowSources: [../../docs], records: ../../records}\n---\nRetained **body**.\n",
+      "stderr": "",
+      "changed": []
+    },
+    {
+      "label": "apply",
+      "command": [
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+        "setup",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs",
+        "--replace"
+      ],
+      "status": 0,
+      "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout/.context/config.md\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs\n",
+      "stderr": "",
+      "changed": [
+        "checkout/.context",
+        "checkout/.context/config.md",
+        "checkout/.context/config.md.lock",
+        "home",
+        "home/.context",
+        "home/.context/config.md.lock"
+      ]
+    },
+    {
+      "label": "no-op",
+      "command": [
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+        "setup",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs",
+        "--replace"
+      ],
+      "status": 0,
+      "stdout": "Project binding: unchanged\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/checkout/.context/config.md\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-permissions-rrk2vyvw/docs\n",
+      "stderr": "",
+      "changed": []
+    }
+  ]
+}

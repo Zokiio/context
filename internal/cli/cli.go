@@ -39,7 +39,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 		Name: "ctx", Usage: "Read project orientation and ticket context", Writer: stderr, ErrWriter: stderr,
 		ExitErrHandler: exitHandler, OnUsageError: usageError,
 		Action: func(context.Context, *urfave.Command) error {
-			return errors.New("expected context or orient subcommand")
+			return errors.New("expected context, orient, or setup subcommand")
 		},
 		Commands: []*urfave.Command{{
 			DisableSliceFlagSeparator: true,
@@ -129,6 +129,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 			},
 		}},
 	}
+	command.Commands = append(command.Commands, setupCommand(stdout, stderr, environment))
 	if err := command.Run(ctx, args); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 2

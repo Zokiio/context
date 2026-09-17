@@ -1,0 +1,461 @@
+[
+  {
+    "ticket": "05-connect-records",
+    "command": [
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+      "context",
+      "--bundle",
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records",
+      "--ticket",
+      "project-discovery/issues/05-connect-records.md",
+      "--allow-source",
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source",
+      "--max-files",
+      "500",
+      "--max-bytes",
+      "8388608"
+    ],
+    "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc",
+    "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+    "status": 0,
+    "complete": true,
+    "traversalComplete": true,
+    "diagnostics": [],
+    "delivered": [
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+        "reasons": [
+          {
+            "kind": "root"
+          }
+        ],
+        "sha256": "43fcdf1f9ed915ba15939d1f3a1d308d1f27c15da57965481649a8a3b4f5629d",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/project-discovery/spec.md",
+        "reasons": [
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../project-discovery/spec.md"
+          }
+        ],
+        "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/vision.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/vision.md"
+          }
+        ],
+        "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/CONTEXT.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../CONTEXT.md"
+          }
+        ],
+        "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/adr/0004-directory-specific-project-selection.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          }
+        ],
+        "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/agents/acceptance.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          }
+        ],
+        "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "02-resolve-scope.md"
+          }
+        ],
+        "sha256": "384ade6bcb331613f540a4207b5369fe51e0c3bae202827fc74a5a459cb97ed3",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "01-read-configuration.md"
+          }
+        ],
+        "sha256": "abf93aecb0627c77cb82664c7b5c4e2cf53c077f5632b917406feed5fdb02578",
+        "identicalToPreviouslyDeliveredFullText": true
+      }
+    ]
+  },
+  {
+    "ticket": "06-document-and-trial",
+    "command": [
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+      "context",
+      "--bundle",
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records",
+      "--ticket",
+      "project-discovery/issues/06-document-and-trial.md",
+      "--allow-source",
+      "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source",
+      "--max-files",
+      "500",
+      "--max-bytes",
+      "8388608"
+    ],
+    "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc",
+    "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+    "status": 0,
+    "complete": true,
+    "traversalComplete": true,
+    "diagnostics": [],
+    "delivered": [
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "reasons": [
+          {
+            "kind": "root"
+          }
+        ],
+        "sha256": "e9495042fa6007d3ded7a7a73e029c9afb4036b991b261a9e4ce13fd95378a87",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/project-discovery/spec.md",
+        "reasons": [
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../project-discovery/spec.md"
+          },
+          {
+            "kind": "spec",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../project-discovery/spec.md"
+          }
+        ],
+        "sha256": "d54c182412a9ee711e1b7a91e2a5ea6c4174dbd8567304ff44fa109a65c41d67",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/vision.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/vision.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/vision.md"
+          }
+        ],
+        "sha256": "d8d7fb88699c3310cd5f489d6d44dbf342fe813c372c54485400f6765f5aa2e9",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/CONTEXT.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../CONTEXT.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../CONTEXT.md"
+          }
+        ],
+        "sha256": "a003af0f4845f28fe14191dec210c7ceeabf6a5422fb51e7e0ee7e957d366a55",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/adr/0004-directory-specific-project-selection.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/adr/0004-directory-specific-project-selection.md"
+          }
+        ],
+        "sha256": "efd4654de6c787345c341c26a0076fb605214b3d9aeecc3a1ec01f93752cefbf",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/docs/agents/acceptance.md",
+        "reasons": [
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          },
+          {
+            "kind": "context",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+            "link": "../../../../docs/agents/acceptance.md"
+          }
+        ],
+        "sha256": "fbde78ab62733d1bbe091fba6a867f30f50076c819ee3b0783ac4dcd2d7bf654",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "03-integrate-cli.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+            "link": "03-integrate-cli.md"
+          }
+        ],
+        "sha256": "6edb6fb0022ec99ea4b737881dfd23727b475b689609e089cbda9e76fc928075",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "04-workspace-navigation.md"
+          }
+        ],
+        "sha256": "53e4c106efbbc79f30a62414bc8c8d4d85439224b2a217f03989b728be0c0776",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/06-document-and-trial.md",
+            "link": "05-connect-records.md"
+          }
+        ],
+        "sha256": "43fcdf1f9ed915ba15939d1f3a1d308d1f27c15da57965481649a8a3b4f5629d",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/03-integrate-cli.md",
+            "link": "02-resolve-scope.md"
+          },
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/05-connect-records.md",
+            "link": "02-resolve-scope.md"
+          }
+        ],
+        "sha256": "384ade6bcb331613f540a4207b5369fe51e0c3bae202827fc74a5a459cb97ed3",
+        "identicalToPreviouslyDeliveredFullText": true
+      },
+      {
+        "path": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/01-read-configuration.md",
+        "reasons": [
+          {
+            "kind": "blocked_by",
+            "from": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/.scratch/records/project-discovery/issues/02-resolve-scope.md",
+            "link": "01-read-configuration.md"
+          }
+        ],
+        "sha256": "abf93aecb0627c77cb82664c7b5c4e2cf53c077f5632b917406feed5fdb02578",
+        "identicalToPreviouslyDeliveredFullText": true
+      }
+    ]
+  }
+]

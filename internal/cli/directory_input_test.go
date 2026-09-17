@@ -33,6 +33,9 @@ func TestDirectoryInputsRejectFIFOsWithoutWaitingForAWriter(t *testing.T) {
 		{"direct bundle", []string{"orient", "--bundle", fifo}},
 		{"invocation root", []string{"orient", "--bundle", records, "--allow-source", fifo}},
 		{"project start", []string{"orient", "--project", fifo}},
+		{"setup records", []string{"setup", "--records", fifo}},
+		{"setup directory", []string{"setup", "--records", records, "--directory", fifo}},
+		{"setup root", []string{"setup", "--records", records, "--allow-source", fifo}},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
 			type result struct {

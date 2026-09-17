@@ -1,0 +1,41 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "sourceFileCount": 321,
+  "sourceUnchanged": true,
+  "changes": [],
+  "probeSHA256": {
+    "probes/cli-permission-recheck.py": "b8e0988608310c4a34585dd2f5be2fb3441f86b3dcea1d18f8266e3127161d8f",
+    "probes/preservation-probe.py": "6811399cba04f39b4605c1ece29f1c4685ad353005a226d8cd2152ce6cdc6693",
+    "probes/setup_recheck_linux_clock_test.go": "60681e3421263a1ee417e2c6884767f704b21d726419152617572c6a53701421",
+    "probes/setup_recheck_linux_revocation_test.go": "937172027c2be4cdc0e481768ca68eac37e5c6b17e236228dbe1bc100286c846",
+    "probes/setup_recheck_linux_test.go": "d01796ff1677c14cd4651b13eeca81d09704f6bc4eb165f5c15af90a9090f689",
+    "probes/setup_recheck_probe_test.go": "c4f1dd946825cd519e413546e656047187711d1ea31a521721871cb0852fc829",
+    "probes/setup_recheck_process_test.go": "74846c619a2fa5f5c00f60a91fd66ceaffa489a24953811a12d70491a3bfc2a7"
+  },
+  "results": {
+    "native-macos-runtime.json": {
+      "status": 0,
+      "passedTestNodes": 135,
+      "skipped": [
+        "    setup_concurrency_test.go:31: subprocess helper\n--- SKIP: TestSetupConcurrentProcessWriter (0.00s)",
+        "    setup_permissions_unix_test.go:108: changing a fixture's owner requires root\n--- SKIP: TestPreserveSetupPermissionsRetainsDifferentOwner (0.00s)",
+        "    setup_recheck_process_test.go:23: subprocess helper\n--- SKIP: TestReviewRecheckProcessHelper (0.00s)"
+      ]
+    },
+    "native-linux-runtime.json": {
+      "status": 0,
+      "passedTestNodes": 105,
+      "skipped": [
+        "    setup_concurrency_test.go:31: subprocess helper\n--- SKIP: TestSetupConcurrentProcessWriter (0.00s)",
+        "    setup_concurrency_test.go:332: requires a case-insensitive filesystem\n--- SKIP: TestSetupOrdersLocksAcrossCaseAliases (0.00s)",
+        "    setup_permissions_unix_test.go:157: filesystem change time did not advance; exact snapshot tests cover ACL changes within one clock tick\n--- SKIP: TestSetupPermissionsDetectsChangeTime (0.00s)",
+        "    setup_recheck_process_test.go:23: subprocess helper\n--- SKIP: TestReviewRecheckProcessHelper (0.00s)"
+      ]
+    },
+    "native-linux-cli-runtime.json": {
+      "status": 0,
+      "passedTestNodes": 19,
+      "skipped": []
+    }
+  }
+}

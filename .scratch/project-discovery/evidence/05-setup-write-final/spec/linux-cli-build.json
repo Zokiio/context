@@ -1,0 +1,22 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "command": [
+    "go",
+    "test",
+    "-c",
+    "-o",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/cli-linux.test",
+    "./internal/cli"
+  ],
+  "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source",
+  "env": {
+    "GOOS": "linux",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0"
+  },
+  "status": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsedSeconds": 0.9946408271789551,
+  "binarySHA256": "fc1e25e16e982477ea44c85bc9db3c93687474456ecbcc5ce7e7695f3f349e2a"
+}
