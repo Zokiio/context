@@ -154,7 +154,9 @@ The summary precedes every write. Identical setup preserves the original file an
 
 Personal entry identity is the canonical binding directory. Ambiguous matches fail. A new entry receives a UUID key. Replacement retains that key and retains the alias when `--alias` is omitted. A supplied alias cannot collide with another project entry. Records and the supplied roots replace those fields under `--replace`. Omitted roots mean an empty list.
 
-Setup validates the proposed binding against other effective declarations. `--replace` cannot override a conflict that remains in another file. Atomic replacement and concurrent-change checks protect the previous usable file from failed writes. Local writers coordinate through the persistent `<physical configuration path>.lock` file. Relative saved values still use the encountered configuration path as their base.
+Setup validates the proposed binding against other effective declarations. `--replace` cannot override a conflict that remains in another file. Atomic replacement and concurrent-change checks protect the previous usable file from failed writes.
+
+Changed shared and personal setup operations first acquire the personal registry's persistent `<physical personal configuration path>.lock`. Shared writes also hold the destination configuration's sidecar lock. This coordinates writers using the same home directory, including writers choosing different configuration files for one binding. Shared setup can create the personal lock and its containing directory, but does not create a personal configuration. Both lock locations must be writable. Dry-run and identical setup create neither lock. Relative saved values still use the encountered configuration path as their base.
 
 ## Reports, limits, and failures
 

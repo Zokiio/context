@@ -53,7 +53,8 @@ def snapshot(roots):
             links = [Path(directory) / name for name in folders if (Path(directory) / name).is_symlink()]
             for path in [Path(directory), *links, *[Path(directory) / name for name in files if name != ".git"]]:
                 info = path.lstat()
-                item = {"mode": info.st_mode, "mtimeNS": info.st_mtime_ns, "inode": info.st_ino}
+                item = {"mode": info.st_mode, "uid": info.st_uid, "gid": info.st_gid,
+                        "mtimeNS": info.st_mtime_ns, "inode": info.st_ino}
                 if stat.S_ISLNK(info.st_mode):
                     item["link"] = os.readlink(path)
                 elif stat.S_ISREG(info.st_mode):
@@ -109,7 +110,7 @@ def run(label, args, cwd, expected=0, *, writes=(), watch=None, command=None):
         assert set(changed) <= allowed_paths, (label, "unexpected setup directory changes", changed)
     else:
         assert before == after, (label, "reader or dry-run changed the filesystem", changed)
-    item["filesystemCheck"] = "only intended registration and sidecar changed" if writes else "unchanged paths, contents, modes, inodes, and mtimes"
+    item["filesystemCheck"] = "only intended registration and coordination sidecars changed" if writes else "unchanged paths, contents, modes, ownership, inodes, and mtimes"
     item["passed"] = True
     print(label, "PASS", flush=True)
     return result.stdout, result.stderr, parsed
@@ -129,7 +130,9 @@ def setup(label, cwd, records, directory, roots, personal=False, alias=None, dry
         args += ["--replace"]
     destination = (PERSONAL_HOME if personal else Path(cwd) / directory) / ".context/config.md"
     destination = destination.resolve()
-    return run(label, args, cwd, writes=() if dry else [destination, Path(str(destination) + ".lock")], watch=[FIXTURE, REPO] if destination.is_relative_to(REPO) else None)
+    personal_lock = (PERSONAL_HOME / ".context/config.md.lock").resolve()
+    writes = () if dry else [destination, Path(str(destination) + ".lock"), personal_lock]
+    return run(label, args, cwd, writes=writes, watch=[FIXTURE, REPO] if destination.is_relative_to(REPO) else None)
 
 
 def exercise():
