@@ -1,0 +1,176 @@
+{
+  "actor": "Codex /root/discovery_scope",
+  "observedAt": "2026-09-17T00:51:56+02:00",
+  "readerRevision": "fbfcacd0c6104ed4810c23973d5c75f3ad61f81b",
+  "workingDirectory": "/Users/zoki/code/context/.cache/worktrees/discovery-scope",
+  "command": [
+    ".cache/ctx",
+    "orient",
+    "--project",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-scope/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-scope",
+    "--max-files",
+    "500",
+    "--max-bytes",
+    "8388608",
+    "--json"
+  ],
+  "exitCode": 0,
+  "complete": true,
+  "inventoryComplete": true,
+  "sourceCount": 102,
+  "diagnostics": [],
+  "workItems": [
+    {
+      "path": ".scratch/records/project-discovery/issues/05-connect-records.md",
+      "execution": "unstarted",
+      "readiness": "ready",
+      "eligible": true,
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptance": null,
+      "dependencies": [
+        {
+          "path": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "path": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "path": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/01-configuration-reassessed-20260917.md",
+        "ticketSHA256": "ac734016ef5d59a7f84c0bde67cb715e03a8a2d5b60fb69c09f957c4c82a4dfa",
+        "criteriaSHA256": "58e1d5bd114cc919150cebfbe8bdbef37d338f2cf6a75f294b3f3105e4476653",
+        "reasons": [
+          "acceptance_valid"
+        ]
+      },
+      "dependencies": []
+    },
+    {
+      "path": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+      "execution": "completed",
+      "readiness": "ready",
+      "eligible": false,
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptance": {
+        "status": "valid",
+        "checkStatus": "pass",
+        "record": ".scratch/records/project-discovery/acceptances/02-scope-20260917.md",
+        "ticketSHA256": "3c0ea54f3258d2b08076f1a18521901cc0d9d61b27e73e0ab1d520ad2e6f1c0f",
+        "criteriaSHA256": "70ddce0d91de66fbe0628e01975a79e20a7c1f5e11a2100218ed7780065d8a5e",
+        "reasons": [
+          "acceptance_valid"
+        ]
+      },
+      "dependencies": [
+        {
+          "path": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    },
+    {
+      "path": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+      "execution": "unstarted",
+      "readiness": "ready",
+      "eligible": true,
+      "checks": [
+        {
+          "name": "acceptance_criteria",
+          "status": "pass"
+        },
+        {
+          "name": "required_context",
+          "status": "pass"
+        },
+        {
+          "name": "dependencies",
+          "status": "pass"
+        },
+        {
+          "name": "blocking_decisions",
+          "status": "pass"
+        }
+      ],
+      "acceptance": null,
+      "dependencies": [
+        {
+          "path": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+          "status": "pass",
+          "cycle": false
+        },
+        {
+          "path": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+          "status": "pass",
+          "cycle": false
+        }
+      ]
+    }
+  ]
+}
