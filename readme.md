@@ -54,13 +54,15 @@ go vet ./...
 Inspect one project bundle before choosing a ticket:
 
 ```sh
-/tmp/ctx orient --project /path/to/bundle
-/tmp/ctx orient --project /path/to/bundle --json
+/tmp/ctx orient --bundle /path/to/bundle
+/tmp/ctx orient --bundle /path/to/bundle --json
 ```
 
-`orient` requires `--project` and accepts no ticket or positional argument. It reads `project.md` first, then discovers Markdown records in the bundle. A project need not be a Git repository. Discovery includes untracked and ignored files and does not traverse directory symlink aliases.
+`orient` accepts no ticket or positional argument. With no selector, it discovers scope from the working directory. `--project PATH` discovers a project from that directory and its ancestors; `--project @NAME` selects a personal alias. `--bundle PATH` reads a records directory directly and bypasses discovery configuration.
 
-`--project`, `--max-files`, `--max-bytes`, and `--json` each accept at most one occurrence. Repeating one returns exit status `2`, including when its values agree. `--allow-source` remains repeatable.
+Project orientation reads `project.md` first, then discovers Markdown records in the bundle. A project need not be a Git repository. Record discovery includes untracked and ignored files and does not traverse directory symlink aliases.
+
+Choose at most one of `--project`, `--workspace`, and `--bundle`. Each selector, `--max-files`, `--max-bytes`, and `--json` accepts at most one occurrence. Repeating one returns exit status `2`, including when its values agree. `--allow-source` remains repeatable. `--explain-scope` writes selection details to stderr.
 
 The default text report shows project identity, authored goals, current commitments, work in progress, backlog, decisions, and gaps. Each work item keeps execution, triage, commitment membership, readiness, and eligibility separate. Source paths, whole-file digests, and relationship reasons identify the records behind the report. No generated summary replaces authored goals.
 
@@ -147,10 +149,12 @@ Tested revisions retain their original origin and revision value. A later Git HE
 Read a self-contained ticket from an explicit bundle directory:
 
 ```sh
-/tmp/ctx context --project /path/to/bundle --ticket issues/example.md
+/tmp/ctx context --bundle /path/to/bundle --ticket issues/example.md
 ```
 
-`--project` is the OKF bundle root, such as this repository's `.scratch/records/`, and need not be a Git root. Relative project paths resolve against your working directory. Relative ticket paths resolve against the project directory. Both flags are required and have no environment or configuration fallback. Absolute ticket paths must resolve inside the selected bundle. The reader neither requires nor includes `project.md` automatically.
+`--bundle` selects the records directory directly, such as this repository's `.scratch/records/`, and bypasses configuration. Relative bundle paths resolve against your working directory. `--ticket` is required, and its relative path resolves against the selected bundle. Absolute ticket paths must resolve inside that bundle. Direct context reads neither require nor automatically include `project.md`.
+
+With no selector, `context` discovers scope from the working directory. `--project PATH` uses directory discovery, and `--project @NAME` selects a personal project alias. A workspace alone cannot select a ticket's project. For old commands that used `--project` to read manifestless records directly, change that flag to `--bundle`.
 
 The reader includes the ticket, then its Spec documents, then its Context documents. It follows blockers breadth-first, including each blocker's Spec and Context documents before advancing to the next blocker. It recognizes level-two `Spec`, `Blocked by`, and `Context` headings, including repeated sections and nested subsections. A level-one or level-two heading ends a section.
 
@@ -163,7 +167,7 @@ Authorize external Spec and Context directories with repeatable `--allow-source`
 For this repository, run from the repository root:
 
 ```sh
-/tmp/ctx context --project .scratch/records \
+/tmp/ctx context --bundle .scratch/records \
 	--ticket context-reader/issues/05-bound-context-collection.md \
 	--allow-source .
 ```
@@ -226,8 +230,8 @@ The reader uses current files on disk and does not write records. Digests identi
 - `cmd/ctx` wires both application operations into the CLI and exits with its status.
 - `internal/cli` owns urfave/cli v3 flags, text and JSON rendering, and exit statuses. It accepts an explicit `Operations` value.
 - `internal/taskcontext` exposes `Assemble(context.Context, Request) (Result, error)` and owns task-context selection.
-- `internal/orientation` exposes `Orient(context.Context, Request) (Result, error)` and owns discovery and project evaluation.
-- `internal/discovery` reads shared and personal ContextConfig documents, validates declarations, and retains filesystem identities and resolution errors for later scope selection. Reader commands do not use it yet.
+- `internal/orientation` exposes `Orient(context.Context, Request) (Result, error)` and owns record inventory and project evaluation.
+- `internal/discovery` reads shared and personal ContextConfig documents and resolves project or workspace scope from directories and aliases. Both reader commands use it before calling application operations, except when `--bundle` selects records directly.
 - `internal/recordread` shares Markdown and YAML parsing and authorized source reads between the application operations.
 
 The application operation does not depend on CLI types, print output, or exit. Dependencies are pinned in `go.mod`: urfave/cli v3.12.0, Goldmark v2.1.0, goccy/go-yaml v1.19.2, go-cmp v0.7.0, and go-internal v1.16.0. Application tests use real temporary directories; testscript covers the CLI contract.
