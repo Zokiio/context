@@ -3,7 +3,7 @@ type: WorkItem
 id: 14cf4188-8cc0-451b-b5d4-758b32a0db52
 title: "Document migration and verify discovery end to end"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Document migration and verify discovery end to end
@@ -43,6 +43,8 @@ None
 
 ## Acceptance
 
+- [Reassessed documentation and trial acceptance](../acceptances/06-documentation-reassessed-20260917.md)
+
 ## Comments
 
 2026-09-17: Codex /root claimed the final documentation and trial slice after complete task context and passing prerequisite checks at `933d9c7`. The docs and trial driver reuse `baa1a3e`; verification will run against this stack with a disposable personal registry and fixtures outside the repository.
@@ -50,3 +52,5 @@ None
 2026-09-17: All five criteria passed at `8c3c15f`. The Go checks and all 37 end-to-end scenarios passed; [verification evidence](../../../project-discovery/evidence/06-verification.md) retains the criterion results and actual source revision.
 
 2026-09-17: Codex /root reopened verification after independent review found concurrent shared/personal setup conflicts and permission loss during replacement. The updated trial will check the coordinated lock footprint and retain ownership in filesystem snapshots. The [previous acceptance](../acceptances/06-documentation-trial-20260917.md) and its original evidence remain historical. New source checks, independent re-review, and trial results will precede reassessment.
+
+2026-09-17: Codex /root reassessed all five criteria after the setup correction at `c59d12e`. Both independent rechecks and all 37 trial scenarios passed. [Fresh verification](../../../project-discovery/evidence/06-reassessment-verification.md) retains source/binary provenance and the platform limits. The original acceptance and review failures remain historical evidence. Final orientation confirms valid, fresh acceptance and passing prerequisite checks for all six discovery tickets.
