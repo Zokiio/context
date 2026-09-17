@@ -1,0 +1,145 @@
+{
+  "actor": "Codex /root/discovery_scope",
+  "observedAt": "2026-09-17T01:07:17+02:00",
+  "readerRevision": "659d9ac204b332f90c3f0f4cf891ca67e46358c3",
+  "workingDirectory": "/Users/zoki/code/context/.cache/worktrees/discovery-workspace",
+  "command": [
+    ".cache/ctx",
+    "orient",
+    "--bundle",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-workspace/.scratch/records",
+    "--allow-source",
+    "/Users/zoki/code/context/.cache/worktrees/discovery-workspace",
+    "--max-files",
+    "500",
+    "--max-bytes",
+    "8388608",
+    "--json"
+  ],
+  "exitCode": 0,
+  "complete": true,
+  "inventoryComplete": true,
+  "sourceCount": 106,
+  "diagnostics": [],
+  "upstreamAcceptance": [
+    {
+      "path": "01-read-configuration.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    },
+    {
+      "path": "02-resolve-scope.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    },
+    {
+      "path": "03-integrate-cli.md",
+      "status": "valid",
+      "checkStatus": "pass"
+    }
+  ],
+  "subject": {
+    "path": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+    "execution": "completed",
+    "readiness": "ready",
+    "eligible": false,
+    "checks": {
+      "acceptance_criteria": "pass",
+      "required_context": "pass",
+      "dependencies": "pass",
+      "blocking_decisions": "pass"
+    },
+    "acceptance": {
+      "status": "valid",
+      "checkStatus": "pass",
+      "record": ".scratch/records/project-discovery/acceptances/04-workspace-20260917.md",
+      "ticketSHA256": "3bafce93f2710fdd75299d41d729bfe3ace82c839c56006fa001534a42e91b75",
+      "criteriaSHA256": "c504b73373d25f3fbbfa6044889a7067bdad4de81d15f89097d4df4b1b9fe636",
+      "reasons": [
+        "acceptance_valid"
+      ]
+    },
+    "dependencies": [
+      {
+        "from": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+        "status": "pass",
+        "cycle": false
+      }
+    ]
+  },
+  "remainingSetup": {
+    "path": "05-connect-records.md",
+    "readiness": "ready",
+    "eligible": true
+  },
+  "downstream": {
+    "path": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+    "execution": "unstarted",
+    "readiness": "blocked",
+    "eligible": false,
+    "checks": {
+      "acceptance_criteria": "pass",
+      "required_context": "pass",
+      "dependencies": "fail",
+      "blocking_decisions": "pass"
+    },
+    "acceptance": null,
+    "dependencies": [
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "to": ".scratch/records/project-discovery/issues/01-read-configuration.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/04-workspace-navigation.md",
+        "to": ".scratch/records/project-discovery/issues/03-integrate-cli.md",
+        "status": "pass",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/06-document-and-trial.md",
+        "to": ".scratch/records/project-discovery/issues/05-connect-records.md",
+        "status": "fail",
+        "cycle": false
+      },
+      {
+        "from": ".scratch/records/project-discovery/issues/05-connect-records.md",
+        "to": ".scratch/records/project-discovery/issues/02-resolve-scope.md",
+        "status": "pass",
+        "cycle": false
+      }
+    ]
+  }
+}
