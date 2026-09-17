@@ -128,6 +128,9 @@ func TestSetupIdenticalBindingKeepsOriginalBytesAndCreatesNoLock(t *testing.T) {
 	if _, err := os.Stat(path + ".lock"); !os.IsNotExist(err) {
 		t.Fatalf("no-op created lock: %v", err)
 	}
+	if _, err := os.Stat(filepath.Join(request.Home, ".context")); !os.IsNotExist(err) {
+		t.Fatalf("no-op changed personal configuration directory: %v", err)
+	}
 }
 
 func TestSetupPersonalIdentityAliasesAndRootRemoval(t *testing.T) {

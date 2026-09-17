@@ -62,6 +62,9 @@ func TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(cwd, ".context")); !os.IsNotExist(err) {
 		t.Fatalf("dry-run changed configuration directory: %v", err)
 	}
+	if _, err := os.Stat(filepath.Join(home, ".context")); !os.IsNotExist(err) {
+		t.Fatalf("dry-run changed personal configuration directory: %v", err)
+	}
 }
 
 type setupOutputWriter struct {

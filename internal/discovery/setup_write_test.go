@@ -57,7 +57,7 @@ func setupWriteRead(t *testing.T, path string) []byte {
 }
 
 func TestSetupApplyDetectsConcurrentDestinationChanges(t *testing.T) {
-	for _, change := range []string{"content", "mode", "replacement", "creation", "symlink"} {
+	for _, change := range []string{"content", "mode", "permissions-round-trip", "replacement", "creation", "symlink"} {
 		t.Run(change, func(t *testing.T) {
 			request, path := setupWriteFixture(t, change != "creation")
 			plan := setupWritePlan(t, request)
@@ -72,6 +72,12 @@ func TestSetupApplyDetectsConcurrentDestinationChanges(t *testing.T) {
 			case "mode":
 				if err := os.Chmod(path, 0o600); err != nil {
 					t.Fatal(err)
+				}
+			case "permissions-round-trip":
+				for _, mode := range []os.FileMode{0o600, 0o640} {
+					if err := os.Chmod(path, mode); err != nil {
+						t.Fatal(err)
+					}
 				}
 			case "replacement":
 				data := setupWriteRead(t, path)
@@ -119,12 +125,6 @@ func (f *setupFaultFile) Write(data []byte) (int, error) {
 	}
 	return f.file.Write(data)
 }
-func (f *setupFaultFile) Chmod(mode os.FileMode) error {
-	if f.stage == "chmod" {
-		return setupInjectedFailure
-	}
-	return f.file.Chmod(mode)
-}
 func (f *setupFaultFile) Sync() error {
 	if f.onSync != nil {
 		f.onSync()
@@ -143,7 +143,7 @@ func (f *setupFaultFile) Close() error {
 }
 
 func TestSetupWriteFailuresKeepPreviousUsableFile(t *testing.T) {
-	for _, stage := range []string{"create", "write", "short-write", "chmod", "sync", "close", "rename"} {
+	for _, stage := range []string{"create", "write", "short-write", "permissions", "sync", "close", "rename"} {
 		t.Run(stage, func(t *testing.T) {
 			request, path := setupWriteFixture(t, true)
 			plan := setupWritePlan(t, request)
@@ -158,6 +158,9 @@ func TestSetupWriteFailuresKeepPreviousUsableFile(t *testing.T) {
 			}
 			if stage == "rename" {
 				ops.rename = func(string, string) error { return setupInjectedFailure }
+			}
+			if stage == "permissions" {
+				ops.preservePermissions = func(string, setupPermissionSnapshot) error { return setupInjectedFailure }
 			}
 			if err := plan.apply(context.Background(), ops); err == nil {
 				t.Fatal("injected failure was ignored")
