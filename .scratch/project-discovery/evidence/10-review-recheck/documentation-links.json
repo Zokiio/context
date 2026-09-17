@@ -1,0 +1,98 @@
+{
+  "actor": "Codex /root",
+  "observedAt": "2026-09-17T12:03:27.866759+02:00",
+  "revision": "646e31fc740b97374327fdfdd282094286790808",
+  "sourceSHA256": {
+    "readme.md": "d4856e7dae6d1f656fcf2e39184956425d09344af9c915525104d6d67e6adb0e",
+    "docs/discovery.md": "65993249cdbb6a2e9cea2fc410d7822e535e2ba136b96d4911dbbdd40a3758fe",
+    "docs/connect-projects.md": "12c16bf91dd0b610e342d2fd5042a9ae31b8f70e69e987b35d85a95da3c18027",
+    "docs/readers.md": "2d77cb22a87cc9db1b7651eafc8ef81126a640d07533a67aaf1deab2a315cbe5"
+  },
+  "links": [
+    {
+      "source": "readme.md",
+      "target": ".context/config.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "docs/connect-projects.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "docs/discovery.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "docs/readers.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": ".scratch/project-discovery/evidence/06-reassessment-trial.json",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": ".scratch/project-discovery/trial.py",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "docs/vision.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "CONTEXT.md",
+      "exists": true
+    },
+    {
+      "source": "readme.md",
+      "target": "docs/agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/connect-projects.md",
+      "target": "../readme.md#build-and-read-this-project",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "discovery.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "agents/issue-tracker.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "agents/acceptance.md#reproduce-version-1-fingerprints",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "../internal/orientation/testdata/fingerprints/",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "agents/acceptance.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "../.agents/skills/task-context/SKILL.md",
+      "exists": true
+    },
+    {
+      "source": "docs/readers.md",
+      "target": "../go.mod",
+      "exists": true
+    }
+  ]
+}
