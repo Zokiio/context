@@ -14,7 +14,7 @@ Work within the [agreed finish line](01-usable-local-loop.md#answer). It establi
 
 Account for multiple handoffs, moved records, and uncommitted source observations. Choose what must be retained to explain changes, since a digest alone cannot recover old content. Keep mutable continuation material separate from authoritative requirements and immutable accepted evidence. Decide whether context-delivery reporting means assembled output or needs any host-reported loading evidence; never imply model comprehension.
 
-Inputs: [research findings](../research.md), [handoff proposal](../../workflow-improvements/discovery.md#make-interrupted-work-cheap-to-resume), [glossary](../../../CONTEXT.md).
+Inputs: [research findings](../research.md), [handoff proposal](../supporting/workflow-improvements.md#make-interrupted-work-cheap-to-resume), [glossary](../../../CONTEXT.md).
 
 ## Comments
 

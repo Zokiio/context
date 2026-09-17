@@ -12,7 +12,7 @@ What observable end-to-end scenario and success criteria finish the local milest
 
 Determine whether evidence presentation belongs in the first usable loop or remains a later refinement. Preserve the selected boundary: skills author records and handoffs, humans direct pickup, and the CLI reports facts and assists resumption. Decide how to evaluate usefulness and authoring effort without inventing quantitative targets.
 
-Inputs: [research findings](../research.md), [existing proposed trial](../../workflow-improvements/discovery.md#a-small-sequence-to-evaluate).
+Inputs: [research findings](../research.md), [existing proposed trial](../supporting/workflow-improvements.md#a-small-sequence-to-evaluate).
 
 ## Comments
 

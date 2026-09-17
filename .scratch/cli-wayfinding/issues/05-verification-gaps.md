@@ -12,7 +12,7 @@ What minimum evidence presentation does the agreed local loop need? Prototype th
 
 Choose an initial representation that skills can author, distinguishing explicit evidence relationships from agent-inferred coverage. Decide whether criterion identities are needed now or whether source path, text, and hash suffice. Preserve the existing whole-work-item Acceptance semantics, historical tested revision, and the difference between parent outcome and child contribution. If the agreed usable-loop boundary excludes this capability, close this ticket as out of scope and index that boundary in the map.
 
-Inputs: [research findings](../research.md), [verification proposal](../../workflow-improvements/discovery.md#explain-what-the-evidence-establishes), [acceptance procedure](../../../docs/agents/acceptance.md).
+Inputs: [research findings](../research.md), [verification proposal](../supporting/workflow-improvements.md#explain-what-the-evidence-establishes), [acceptance procedure](../../../docs/agents/acceptance.md).
 
 ## Answer
 

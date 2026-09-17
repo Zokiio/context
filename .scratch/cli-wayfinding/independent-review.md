@@ -37,3 +37,23 @@ Document the cost of append-only checkpoint history and the supported reset or l
 ## Review limits
 
 This is a design review, not acceptance of a working implementation. It does not establish CLI performance, correct filesystem race handling, or successful recovery in the real-task trial. Source-link integrity was checked separately by the parent agent.
+
+## Reassessment on 2026-09-17
+
+Reviewed the revised working tree against base revision `e1c5a344f6afe913ae16f27f701cd0dfbc9f6589`. The reviewed specification had SHA-256 `7b2158885c3b88808b0500434aa2f6c0358d30e0671eae2573e63aaf87527c11`; the new example file had SHA-256 `b41864e5b3389b70abbc354b17f411135620d10d94049357f9a9fc3ce6c30a83`. This was a bounded review of the corrections and five JSON projections, not a repeat of the entire initial audit.
+
+All three original P2 findings are addressed:
+
+- Discovery now uses bounded enumeration and sorts only observed names. Partial discovery explicitly disclaims a global lexical prefix and candidate selection.
+- Skills now have explicit quarantine and whole-task reset procedures, with stopped-writer preconditions, retained archives, and no automatic reader mutation. The history-limit guidance also addresses the optional operational finding.
+- The nested JSON contract now defines concrete objects, nullability, snapshot validity, candidate selection, and aggregate completeness. The examples distinguish absent, available, conflicting, invalid-snapshot, and incomplete-inventory states.
+
+Two small corrections remain in this reviewed working-tree version. At specification line 226, qualify the guarantee that predecessor IDs resolve into `observations`: that guarantee applies to a valid graph. A parsed note with a dangling predecessor must retain that ID when the graph is invalid, so it cannot obey an unconditional referential-integrity rule. Candidate IDs always resolve. At line 238, the example description should list five projections, including incomplete inventory, rather than four. These need wording changes, not a new product decision.
+
+No other material contradiction was found in the corrections. This reassessment does not establish implementation correctness or replace the planned real-task acceptance trial.
+
+### Closure on 2026-09-17
+
+Verified both remaining corrections in specification lines 226 and 238. Candidate IDs always resolve, while predecessor referential integrity is guaranteed only for a valid graph. The examples description now lists all five cases. The specification SHA-256 at this check is `4e6e7091c901dca8c5796071eb2fb3ed074b6b4cb354daf2b169dfed9955f0d8`.
+
+All findings from this independent review are closed. This final check covered only those two corrections. Implementation and real-task acceptance remain unverified.

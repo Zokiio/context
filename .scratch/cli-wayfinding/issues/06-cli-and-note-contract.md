@@ -2,7 +2,7 @@
 
 Type: grilling
 Labels: wayfinder:grilling
-Status: open
+Status: resolved
 Blocked by: 02, 03, 04
 Parent: [Direct and resume agent work with the local CLI](../map.md)
 
@@ -43,3 +43,13 @@ The wayfinding destination is reached: no known decision remains before implemen
 Reopened after the user-requested [independent review](../independent-review.md) of commit `e1c5a344f6afe913ae16f27f701cd0dfbc9f6589`. The earlier readiness conclusion above is superseded. Three concrete contract corrections are required before recovery implementation: reconcile bounded enumeration with deterministic ordering, define deliberate recovery from unfinished checkpoint publication, and specify nested JSON shapes and absent-baseline representation.
 
 The parent agent's separate reference audit found that the map and research point to the pre-existing untracked `.scratch/workflow-improvements/discovery.md`, and the research cites ignored `.cache` notes. These links resolve locally but do not form a portable Git handoff. Preserve necessary supporting context or label optional local-only sources before declaring the handoff self-contained. Neither the independent review nor the parent audit changed product code or ran implementation tests.
+
+## Review correction and closure
+
+Resolved again after the user requested the review findings be addressed. The [reassessment](../independent-review.md#reassessment-on-2026-09-17) confirms that all three original P2 findings are fixed. Bounded enumeration precedes sorting; partial enumeration makes no globally sorted-prefix claim. Skills have explicit stopped-writer quarantine and whole-task reset procedures, preserving archives and finalized competing notes. JSON now has concrete nested field types, separate graph/snapshot status, stable comparison shape, and five example projections.
+
+Two narrow reassessment corrections were also applied: predecessor references are guaranteed to resolve only for valid graphs, and the example description lists all five cases. The optional history-growth guidance is covered by limit overrides and explicit reset without automatic pruning.
+
+The earlier workflow proposals are retained as a [supporting snapshot](../supporting/workflow-improvements.md); necessary planning links now target that tracked handoff file. Cached historical research is explicitly labeled optional local history rather than linked as a required artifact. The original pre-existing untracked files remain untouched.
+
+Validation checked local Markdown link portability, JSON field sets, candidate references, aggregate baseline/completeness rules in all five projections, and whitespace. These checks validate the documents and examples only. Implementation tests and the real-task trial remain future work.

@@ -1,7 +1,7 @@
 # Direct and resume agent work with the local CLI
 
 Labels: wayfinder:map
-Status: open
+Status: resolved
 
 ## Destination
 
@@ -12,7 +12,7 @@ An implementation-ready specification for a usable local CLI that explains where
 - Planning only. Finish when the specification has no unresolved decisions needed to implement this milestone; implementation is a separate handoff.
 - The user chose this scope on 2026-09-17: skills author records and handoffs; the CLI shows needed actions and helps resume; the human directs pickup.
 - Consult `grilling` and `domain-modeling` for decisions, `prototype` for concrete behavior trials, and `technical-writing` for the resulting specification. Use `research` for external facts that cannot be resolved from the repository.
-- Start from the [research findings](research.md), [existing workflow proposals](../workflow-improvements/discovery.md), [vision](../../docs/vision.md), and [glossary](../../CONTEXT.md). Research suggestions are not accepted requirements.
+- Start from the [research findings](research.md), [existing workflow proposals](supporting/workflow-improvements.md), [vision](../../docs/vision.md), and [glossary](../../CONTEXT.md). Research suggestions are not accepted requirements.
 - Current context, orientation, acceptance checks, discovery, and setup already exist. Extend them rather than planning them again. The research records the source revision inspected.
 - Keep execution, readiness, context completeness, acceptance, and human authorization distinct. Skill-produced advice and mutable handoffs do not automatically become authoritative requirements.
 - Preserve one authoritative record per decision and requirement. Child tickets hold their eventual answers; this map only indexes them.
@@ -25,10 +25,11 @@ An implementation-ready specification for a usable local CLI that explains where
 - [What belongs in the shortest useful intervention view?](issues/02-intervention-view.md): broader orientation with needs attention inside it, compact text by default, expanded detail on request, and full JSON using the same facts and checks.
 - [What does a handoff retain, and how does a session select it?](issues/03-handoff-contract.md): ticket-based lookup of checkout-local working notes and retained requirement text, with reconstruction when absent and explicit conflicts when notes disagree.
 - [What should resumption show when requirements or readiness changed?](issues/04-resume-behavior.md): refreshed facts and explicit differences guide continuation, with conflicts, missing sources, blockers, and verification limits kept visible.
+- [What command and note-format contract implements the agreed local loop?](issues/06-cli-and-note-contract.md): the independently reviewed specification fixes command/output contracts, bounded cache discovery, deliberate recovery, and source comparison.
 
 ## Not yet specified
 
-No additional unformulated questions are identified. The concrete corrections from the [independent review](independent-review.md) reopened the command and note-format contract ticket. The specification remains under review until that ticket is resolved again.
+None identified. The [implementation specification](spec.md) incorporates the independent review corrections and is ready for implementation ticket breakdown. New discoveries affecting product commitments must be surfaced during that work.
 
 ## Out of scope
 

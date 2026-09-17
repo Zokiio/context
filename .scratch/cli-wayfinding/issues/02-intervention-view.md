@@ -12,7 +12,7 @@ What should the CLI show first so a human can identify the needed intervention a
 
 Decide how the brief relates to full text and JSON output and which behavior should remain in the existing orientation operation. Preserve authored commitment order and source attribution. Avoid automatic prioritization by blocker count or readiness claims unsupported by current checks.
 
-Inputs: [research findings](../research.md), [existing intervention proposal](../../workflow-improvements/discovery.md#make-the-next-intervention-visible), [reader reference](../../../docs/readers.md).
+Inputs: [research findings](../research.md), [existing intervention proposal](../supporting/workflow-improvements.md#make-the-next-intervention-visible), [reader reference](../../../docs/readers.md).
 
 ## Prototype
 

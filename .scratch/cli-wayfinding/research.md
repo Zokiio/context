@@ -10,14 +10,14 @@ The user also selected skill-authored records and handoffs, CLI assistance for i
 
 Build on the existing readers. The next useful increment is a short explanation of work needing intervention, followed by a durable way to resume interrupted work with current context and explicit verification gaps. General record editing, implementation claims, and remote integration need separate decisions. A custom agent runtime is unnecessary for this destination. This recommendation combines the observed baseline below with the product's [bootstrap model](../../docs/vision.md#bootstrap-workflow).
 
-The product already separates execution state, work readiness, context completeness, and recorded acceptance. Keep those distinctions. The missing product experience is helping a person or agent act on the facts without reconstructing them from a full inventory. [Domain glossary](../../CONTEXT.md), [reader reference](../../docs/readers.md), [existing workflow proposals](../workflow-improvements/discovery.md).
+The product already separates execution state, work readiness, context completeness, and recorded acceptance. Keep those distinctions. The missing product experience is helping a person or agent act on the facts without reconstructing them from a full inventory. [Domain glossary](../../CONTEXT.md), [reader reference](../../docs/readers.md), [existing workflow proposals](supporting/workflow-improvements.md).
 
 ## Evidence and its limits
 
 - Current source and authored ADRs establish implemented behavior and accepted boundaries. Inspection covered CLI commands, readiness checks, setup preparation and writing, and reader documentation. No fresh build, test suite, or acceptance trial was run for this research.
 - [WoW with A](chatgpt-conversation://6aab1283-e634-83ed-9d50-361973232ead) was read across both available pages. The user explicitly described the company's Jira/Scrum environment and later clarified that Confluence is optional. Assistant-generated lifecycle diagrams are proposals, not proof that the user approved every gate. Image content was not used as evidence; textual exchanges were sufficient for these findings.
-- [Cached repository studies](../../.cache/research/ideas-from-repositories.md) supply earlier proposals and pointers, not current product guarantees. This research does not revalidate all six competing products. Relevant conclusions already have a durable home in [Help people direct and resume project work](../workflow-improvements/discovery.md).
-- [Earlier product conversation](../../.cache/removethis/start02.md) contains proposed layouts, a placeholder product name, and a CLI-library suggestion. Current source supersedes those details. The adjacent `start01.md` and `jira.md` files are empty.
+- Cached repository studies (optional local history: `../../.cache/research/ideas-from-repositories.md`) supply earlier proposals and pointers, not current product guarantees. This research does not revalidate all six competing products. Relevant conclusions already have a durable home in [Help people direct and resume project work](supporting/workflow-improvements.md).
+- Earlier product conversation (optional local history: `../../.cache/removethis/start02.md`) contains proposed layouts, a placeholder product name, and a CLI-library suggestion. Current source supersedes those details. The adjacent `start01.md` and `jira.md` files are empty.
 - Cached build outputs and worktrees were treated as disposable history, not the authority for current capabilities. New research belongs outside `.cache` under the [tracker conventions](../../docs/agents/issue-tracker.md).
 
 ## What the external sources establish
@@ -67,7 +67,7 @@ Inference: a successful CLI context response proves what the CLI assembled. A ho
 
 Sources: [CLI command definitions](../../internal/cli/cli.go), [task-context assembly](../../internal/taskcontext/context.go), [readiness checks](../../internal/orientation/readiness.go), [reader contracts](../../docs/readers.md), [setup preparation](../../internal/discovery/setup.go), [setup writing](../../internal/discovery/setup_write.go), [discovery reference](../../docs/discovery.md).
 
-The vision's opening statement that the product is not implemented is stale. The cached local baseline also predates discovery integration. Preserve their product direction but use source and current records for implementation status. The discovery closeout records completed trials and subsequent reassessment; this research does not independently certify those results. [Vision](../../docs/vision.md), [cached baseline](../../.cache/research/repository-studies/local-baseline.md), [Document migration and verify discovery end to end](../records/project-discovery/issues/06-document-and-trial.md).
+The vision's opening statement that the product is not implemented is stale. The cached local baseline also predates discovery integration. Preserve their product direction but use source and current records for implementation status. The discovery closeout records completed trials and subsequent reassessment; this research does not independently certify those results. [Vision](../../docs/vision.md), cached baseline (optional local history: `../../.cache/research/repository-studies/local-baseline.md`), [Document migration and verify discovery end to end](../records/project-discovery/issues/06-document-and-trial.md).
 
 ## Translate the lifecycle into responsibilities
 
@@ -93,21 +93,21 @@ For a Jira-backed project, Jira can own specified work fields while the reposito
 
 Derive a concise view from existing orientation checks. Group repeated causes, link affected commitments, keep work in progress separate from new pickup candidates, and display incomplete inventory and unknown facts prominently. Preserve authored commitment order rather than invent a priority score.
 
-The decision is what a user needs on the first screen and what belongs in expanded detail. The implementation seam already exists between orientation results and CLI rendering. This is the lowest-cost product increment identified in both current workflow proposals and the earlier repository studies. [Workflow proposals](../workflow-improvements/discovery.md#make-the-next-intervention-visible), [orientation renderer](../../internal/cli/orientation.go).
+The decision is what a user needs on the first screen and what belongs in expanded detail. The implementation seam already exists between orientation results and CLI rendering. This is the lowest-cost product increment identified in both current workflow proposals and the earlier repository studies. [Workflow proposals](supporting/workflow-improvements.md#make-the-next-intervention-visible), [orientation renderer](../../internal/cli/orientation.go).
 
 ### Make one interrupted task resumable
 
 Trial a handoff containing the work-item identity, requirement sources and observed digests, code checkout/revision, completed and unfinished steps, failed attempts worth retaining, evidence, and unresolved questions. Refresh current context before presenting a continuation.
 
-Decide how handoffs are found, whether several may coexist, and what baseline is retained. A hash detects changed content but cannot reconstruct old text, especially for uncommitted files. Start with a supplied handoff path and explicit source observations if automatic discovery and historical comparison are not needed yet. This is a recommendation to test, not an agreed command contract. [Handoff proposals](../workflow-improvements/discovery.md#make-interrupted-work-cheap-to-resume), [reader source semantics](../../docs/readers.md).
+Decide how handoffs are found, whether several may coexist, and what baseline is retained. A hash detects changed content but cannot reconstruct old text, especially for uncommitted files. Start with a supplied handoff path and explicit source observations if automatic discovery and historical comparison are not needed yet. This is a recommendation to test, not an agreed command contract. [Handoff proposals](supporting/workflow-improvements.md#make-interrupted-work-cheap-to-resume), [reader source semantics](../../docs/readers.md).
 
-Keep mutable handoffs outside authoritative Spec and Context relationships by default. Otherwise routine progress updates can change acceptance inputs. Promote durable conclusions deliberately and retain accepted evidence separately. [Record acceptance](../../docs/agents/acceptance.md), [observations and commitments](../workflow-improvements/discovery.md#keep-observations-and-commitments-distinct).
+Keep mutable handoffs outside authoritative Spec and Context relationships by default. Otherwise routine progress updates can change acceptance inputs. Promote durable conclusions deliberately and retain accepted evidence separately. [Record acceptance](../../docs/agents/acceptance.md), [observations and commitments](supporting/workflow-improvements.md#keep-observations-and-commitments-distinct).
 
 ### Show what verification establishes
 
 Trial a criterion-by-criterion view with explicit evidence, tested revision, environment, and missing observations. Distinguish authored coverage from agent-inferred matches. A passing backend test must not imply that configuration reached a device, and partial child coverage must not complete the parent outcome.
 
-Choose the minimum useful evidence representation before introducing stable criterion IDs or coverage percentages. The existing acceptance model remains authoritative. [Evidence proposal](../workflow-improvements/discovery.md#explain-what-the-evidence-establishes), [acceptance ADR](../../docs/adr/0003-recorded-acceptance-for-readiness.md).
+Choose the minimum useful evidence representation before introducing stable criterion IDs or coverage percentages. The existing acceptance model remains authoritative. [Evidence proposal](supporting/workflow-improvements.md#explain-what-the-evidence-establishes), [acceptance ADR](../../docs/adr/0003-recorded-acceptance-for-readiness.md).
 
 ### Add focused writes and claims only where the milestone needs them
 
@@ -139,4 +139,4 @@ Further fog includes the right long-term retention policy for source baselines a
 
 Use the vision's backend/device scenario. A backend contribution depends on an unresolved success-response decision. After that decision is recorded, an agent implements and records local evidence, then leaves a handoff before device verification. Change an observed requirement and ask a fresh session to resume.
 
-Observe whether the person identifies the required intervention, the agent notices the source change, and missing device evidence remains visible. Record repeated investigation and record-maintenance effort rather than inventing a performance target. Require at least one independent non-Git project to retain the product's location independence. This proposed trial combines the [vision scenarios](../../docs/vision.md) and [existing workflow trial](../workflow-improvements/discovery.md#a-small-sequence-to-evaluate).
+Observe whether the person identifies the required intervention, the agent notices the source change, and missing device evidence remains visible. Record repeated investigation and record-maintenance effort rather than inventing a performance target. Require at least one independent non-Git project to retain the product's location independence. This proposed trial combines the [vision scenarios](../../docs/vision.md) and [existing workflow trial](supporting/workflow-improvements.md#a-small-sequence-to-evaluate).
