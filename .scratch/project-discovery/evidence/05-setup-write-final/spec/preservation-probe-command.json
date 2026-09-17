@@ -1,0 +1,11 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "command": [
+    "python3",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/probes/preservation-probe.py"
+  ],
+  "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc",
+  "status": 0,
+  "stdout": "Five independent preservation/source-authorization probes passed /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1\n",
+  "stderr": ""
+}
