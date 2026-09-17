@@ -75,6 +75,9 @@ _Avoid_: Task context
 **Handoff**:
 A durable account of completed and unfinished work, relevant code revisions, verification results, and unresolved questions for a successor continuing the work.
 
+**Working notes**:
+Temporary observations, progress, attempted approaches, and undecided questions that help an agent continue interrupted work. Working notes are not authoritative requirements, recorded decisions, or accepted completion evidence.
+
 **Context completeness**:
 Whether every source selected for a task context is present in the result. A dependency cycle can exist even when the context is complete.
 _Avoid_: Work readiness, document validity
