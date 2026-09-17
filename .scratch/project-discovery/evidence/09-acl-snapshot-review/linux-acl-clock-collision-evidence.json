@@ -1,0 +1,40 @@
+{
+  "testedRevision": "a0ecc4cf143886e687c072ceffc9c8d1a0963a86",
+  "buildCommand": [
+    "go",
+    "test",
+    "-c",
+    "-overlay",
+    "/private/tmp/ctx-spec-setup-recheck/linux-clock-overlay.json",
+    "-o",
+    "/private/tmp/ctx-spec-setup-recheck/discovery-linux-clock.test",
+    "./internal/discovery"
+  ],
+  "buildCwd": "/private/tmp/ctx-spec-setup-recheck/a0ecc4c-source",
+  "buildStatus": 0,
+  "runCommand": [
+    "docker",
+    "run",
+    "--rm",
+    "--pull",
+    "never",
+    "--network",
+    "none",
+    "--read-only",
+    "--tmpfs",
+    "/tmp:rw,exec,nosuid,size=128m",
+    "-i",
+    "sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea",
+    "sh",
+    "-c",
+    "set -e\ncat > /tmp/review.test\nchmod 755 /tmp/review.test\nuname -srm\n/tmp/review.test -test.run=^TestReviewLinuxACLClockCollision$ -test.v\n"
+  ],
+  "binarySHA256": "98de9e547b8ad263f51aa53c698e9a6fcf89f7bed57d9e1dde1f3649af3ffa57",
+  "status": 1,
+  "stdout": "Linux 6.8.0-64-generic aarch64\n=== RUN   TestReviewLinuxACLClockCollision\n    setup_recheck_linux_clock_test.go:39: attempt=0 beforeCtim={Sec:1789638250 Nsec:404658587} changedCtim={Sec:1789638250 Nsec:404658587} beforeMode=640 changedMode=640 applyErr=<nil> initialNamedPerm=4 revokedNamedPerm=0 finalNamedPerm=4\n    setup_recheck_linux_clock_test.go:40: same-tick ACL revocation was overwritten by replacement\n--- FAIL: TestReviewLinuxACLClockCollision (0.00s)\nFAIL\n",
+  "stderr": "",
+  "probesSHA256": {
+    "setup_recheck_linux_test.go": "d01796ff1677c14cd4651b13eeca81d09704f6bc4eb165f5c15af90a9090f689",
+    "setup_recheck_linux_clock_test.go": "60681e3421263a1ee417e2c6884767f704b21d726419152617572c6a53701421"
+  }
+}

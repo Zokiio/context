@@ -1,0 +1,17 @@
+{
+  "revision": "a0ecc4cf143886e687c072ceffc9c8d1a0963a86",
+  "export": "/private/tmp/ctx-standards-lock-order-0a589dg2",
+  "command": [
+    "go",
+    "test",
+    "./internal/discovery",
+    "-run",
+    "^TestStandardsReviewCaseAliasLockOrder$",
+    "-count=1",
+    "-v"
+  ],
+  "exitCode": 1,
+  "stdout": "=== RUN   TestStandardsReviewCaseAliasLockOrder\n    standards_lock_order_review_test.go:36: home=\"/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/alpha\" locks=[\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/Beta/.context/config.md.lock\" \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/alpha/.context/config.md.lock\"]\n    standards_lock_order_review_test.go:36: home=\"/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/ALPHA\" locks=[\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/ALPHA/.context/config.md.lock\" \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder685374129/001/Beta/.context/config.md.lock\"]\n    standards_lock_order_review_test.go:40: same physical lock pair acquired in opposite order through case aliases\n--- FAIL: TestStandardsReviewCaseAliasLockOrder (0.01s)\nFAIL\nFAIL\tgithub.com/Zokiio/context/internal/discovery\t0.294s\nFAIL\n",
+  "stderr": "",
+  "probeSHA256": "0ee270f7a03b7c98ca5892753cad01800f111ad8e58adaed69251d7cc9eda4b3"
+}

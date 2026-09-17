@@ -1,0 +1,42 @@
+package discovery
+
+import (
+    "context"
+    "errors"
+    "os"
+    "path/filepath"
+    "testing"
+)
+
+func TestStandardsReviewCaseAliasLockOrder(t *testing.T) {
+    root := t.TempDir()
+    home := filepath.Join(root, "alpha")
+    homeAlias := filepath.Join(root, "ALPHA")
+    checkout := filepath.Join(root, "Beta")
+    records := filepath.Join(root, "records")
+    for _, dir := range []string{home, checkout, records} {
+        if err := os.MkdirAll(dir, 0755); err != nil { t.Fatal(err) }
+    }
+    if !SamePath(home, homeAlias) { t.Skip("requires case-insensitive filesystem") }
+    manifest := "---\ntype: Project\nid: probe\ntitle: Probe\n---\n"
+    if err := os.WriteFile(filepath.Join(records, "project.md"), []byte(manifest), 0644); err != nil { t.Fatal(err) }
+    plans := make([]*SetupPlan, 2)
+    for i, selectedHome := range []string{home, homeAlias} {
+        plan, err := PrepareSetup(context.Background(), SetupRequest{Cwd: checkout, Home: selectedHome, Records: records})
+        if err != nil { t.Fatal(err) }
+        plans[i] = plan
+    }
+    stop := errors.New("bounded review probe: stop before document write")
+    orders := make([][]string, 2)
+    for i, plan := range plans {
+        ops := defaultSetupWriteOps()
+        ops.lock = func(path string) (func(), error) { orders[i] = append(orders[i], path); return func(){}, nil }
+        ops.createTemp = func(string, string) (setupTempFile, error) { return nil, stop }
+        if err := plan.apply(context.Background(), ops); !errors.Is(err, stop) { t.Fatal(err) }
+        t.Logf("home=%q locks=%q", []string{home, homeAlias}[i], orders[i])
+    }
+    if len(orders[0]) != 2 || len(orders[1]) != 2 { t.Fatalf("unexpected lock orders: %q", orders) }
+    if !SamePath(orders[0][0], orders[1][0]) && SamePath(orders[0][0], orders[1][1]) && SamePath(orders[0][1], orders[1][0]) {
+        t.Fatal("same physical lock pair acquired in opposite order through case aliases")
+    }
+}
