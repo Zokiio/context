@@ -1,0 +1,6 @@
+{
+  "Replace": {
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/internal/discovery/setup_recheck_probe_test.go": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/probes/setup_recheck_probe_test.go",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source/internal/discovery/setup_recheck_process_test.go": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/probes/setup_recheck_process_test.go"
+  }
+}

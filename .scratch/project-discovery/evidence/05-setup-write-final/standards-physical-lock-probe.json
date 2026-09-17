@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-09-17T09:57:40.559068+00:00",
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "export": "/private/tmp/ctx-standards-physical-lock-ly3bn8e7",
+  "command": [
+    "go",
+    "test",
+    "./internal/discovery",
+    "-run",
+    "^(TestStandardsReview.*|TestSetupOrdersLocksAcrossDifferentHomes|TestSetupSerializesSharedAndPersonalProcesses|TestSetupOrdersLocksAcrossCaseAliases|TestSetupDeduplicatesSidecarAliases)$",
+    "-count=1",
+    "-timeout=30s",
+    "-v"
+  ],
+  "exitCode": 0,
+  "stdout": "=== RUN   TestSetupOrdersLocksAcrossDifferentHomes\n--- PASS: TestSetupOrdersLocksAcrossDifferentHomes (0.04s)\n=== RUN   TestSetupSerializesSharedAndPersonalProcesses\n=== RUN   TestSetupSerializesSharedAndPersonalProcesses/shared_first\n=== RUN   TestSetupSerializesSharedAndPersonalProcesses/personal_first\n--- PASS: TestSetupSerializesSharedAndPersonalProcesses (0.03s)\n    --- PASS: TestSetupSerializesSharedAndPersonalProcesses/shared_first (0.02s)\n    --- PASS: TestSetupSerializesSharedAndPersonalProcesses/personal_first (0.02s)\n=== RUN   TestSetupOrdersLocksAcrossCaseAliases\n--- PASS: TestSetupOrdersLocksAcrossCaseAliases (0.00s)\n=== RUN   TestSetupDeduplicatesSidecarAliases\n=== RUN   TestSetupDeduplicatesSidecarAliases/hard_link\n=== RUN   TestSetupDeduplicatesSidecarAliases/symlink\n--- PASS: TestSetupDeduplicatesSidecarAliases (0.02s)\n    --- PASS: TestSetupDeduplicatesSidecarAliases/hard_link (0.01s)\n    --- PASS: TestSetupDeduplicatesSidecarAliases/symlink (0.01s)\n=== RUN   TestStandardsReviewCaseAliasLockOrder\n    standards_original_lock_order_review_test.go:36: home=\"/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/alpha\" locks=[\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/alpha/.context/config.md.lock\" \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/Beta/.context/config.md.lock\"]\n    standards_original_lock_order_review_test.go:36: home=\"/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/ALPHA\" locks=[\"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/ALPHA/.context/config.md.lock\" \"/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/TestStandardsReviewCaseAliasLockOrder3176595746/001/Beta/.context/config.md.lock\"]\n--- PASS: TestStandardsReviewCaseAliasLockOrder (0.00s)\n=== RUN   TestStandardsReviewPhysicalAliasOrdering\n--- PASS: TestStandardsReviewPhysicalAliasOrdering (0.00s)\n=== RUN   TestStandardsReviewRejectsNonregularSidecars\n--- PASS: TestStandardsReviewRejectsNonregularSidecars (0.00s)\n=== RUN   TestStandardsReviewReleasesFirstLockOnSecondFailure\n--- PASS: TestStandardsReviewReleasesFirstLockOnSecondFailure (0.00s)\n=== RUN   TestStandardsReviewRenameFailureCleanup\n--- PASS: TestStandardsReviewRenameFailureCleanup (0.01s)\nPASS\nok  \tgithub.com/Zokiio/context/internal/discovery\t0.332s\n",
+  "stderr": "",
+  "originalProbeSHA256": "0ee270f7a03b7c98ca5892753cad01800f111ad8e58adaed69251d7cc9eda4b3",
+  "physicalProbeSHA256": "8723351474acd602370306f32553894fea8682830aca1bb52cc1230609b27166"
+}

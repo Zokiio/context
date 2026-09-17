@@ -1,0 +1,10 @@
+{
+  "observedAt": "2026-09-17T09:55:16.307470+00:00",
+  "sources": {
+    "internal/discovery/setup_lock_identity_other.go": "e1a014ceca0d6cb64f1e9168b848a420c7d4aedf34df03de4d08228fd8c7b0a0",
+    "internal/discovery/setup_lock_identity_unix.go": "d04ab596cebd13897cbe91e063196f825220b836c1f53dc395b6e980590e75d4",
+    "internal/discovery/setup_lock_identity_windows.go": "0f33584ccc28f9688bd3965b5feab8bf0edfbccf81c0294428a4df48883322f0",
+    "internal/discovery/setup_locks.go": "cc8b84aa20ea6617355829cd035b06671859240812219ee518d79e7b4ccca090",
+    "internal/discovery/setup_write.go": "d3cccdc1051f0417a14ea31ce6aca88e3101741297c975ff32cd5baf24cb2f3c"
+  }
+}

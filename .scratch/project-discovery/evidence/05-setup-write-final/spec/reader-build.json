@@ -1,0 +1,16 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "command": [
+    "go",
+    "build",
+    "-o",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/ctx",
+    "./cmd/ctx"
+  ],
+  "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source",
+  "status": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsedSeconds": 0.38020777702331543,
+  "binarySHA256": "6941c05e8ab11d138349baa90c38c6fd3b5f340f9051e884bc877760f0e59d7d"
+}

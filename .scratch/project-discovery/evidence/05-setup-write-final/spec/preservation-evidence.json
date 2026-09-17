@@ -1,0 +1,91 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "root": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1",
+  "results": [
+    {
+      "label": "dry run preserves all paths",
+      "args": [
+        "setup",
+        "--personal",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records",
+        "--replace",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b",
+        "--dry-run"
+      ],
+      "status": 0,
+      "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/home/.context/config.md\nPersonal alias: keep\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b\nReplaces records: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/old-records\nRemoves allowed source: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-a\n\nProposed configuration:\n---\ntype: ContextConfig\nversion: 1\nprojects:\n  - custom: !!timestamp 2026-09-17T12:00:00Z\n    alias: keep\n    allowSources: [/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b]\n    directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/checkout\n    key: stable-key\n    records: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records\n  - key: other-key\n    alias: occupied\n    directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/unavailable-checkout\n    records: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/unavailable-records\nunrelated:\n        key: stable-key\n        alias: keep\n        directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/checkout\n        records: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/old-records\n        allowSources: [/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-a, /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b]\n        custom: !!timestamp 2026-09-17T12:00:00Z\nworkspaces: [{key: workspace-key, alias: team, id: team, title: Team, members: []}]\nencoding: !!binary SGVsbG8=\n---\n\n# Personal registry notes\n\nPreserve **these bytes**.\n",
+      "stderr": "",
+      "changed": []
+    },
+    {
+      "label": "alias collision rejected without writes",
+      "args": [
+        "setup",
+        "--personal",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records",
+        "--replace",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b",
+        "--alias",
+        "occupied"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "personal alias \"occupied\" already belongs to /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/home/.context/config.md field projects[1]; choose another alias without retargeting that entry\n",
+      "changed": []
+    },
+    {
+      "label": "replacement preserves alias key tagged metadata prose and modes",
+      "args": [
+        "setup",
+        "--personal",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records",
+        "--replace",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b"
+      ],
+      "status": 0,
+      "stdout": "Project binding: update\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/home/.context/config.md\nPersonal alias: keep\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b\nReplaces records: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/old-records\nRemoves allowed source: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-a\n",
+      "stderr": "",
+      "changed": [
+        "home/.context",
+        "home/.context/config.md",
+        "home/.context/config.md.lock"
+      ]
+    },
+    {
+      "label": "identical binding no-op",
+      "args": [
+        "setup",
+        "--personal",
+        "--records",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records",
+        "--replace",
+        "--allow-source",
+        "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b"
+      ],
+      "status": 0,
+      "stdout": "Project binding: unchanged\nBinding directory: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/checkout\nRecords: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records\nDestination: /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/home/.context/config.md\nPersonal alias: keep\nAllowed sources:\n  /private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b\n",
+      "stderr": "",
+      "changed": []
+    },
+    {
+      "label": "retained alias selects new records with reduced sources",
+      "args": [
+        "context",
+        "--project",
+        "@keep",
+        "--ticket",
+        "task.md"
+      ],
+      "status": 1,
+      "stdout": "{\"schemaVersion\":1,\"complete\":false,\"traversalComplete\":true,\"sources\":[{\"path\":\"/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records/task.md\",\"text\":\"# Task\\n\\n## Context\\n- [A](../docs-a/guide.md)\\n- [B](../docs-b/guide.md)\\n\",\"sha256\":\"29838c952c6123b59ba33ac425ec5e27fb0268a4440778cee3cbd6739c0c7c14\",\"reasons\":[{\"kind\":\"root\"}]},{\"path\":\"/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-b/guide.md\",\"text\":\"# Guide b\\n\",\"sha256\":\"4edd9aa009703ba0195620ea0c504599e21a4381401ed1f8bf37cda9d7c115a9\",\"reasons\":[{\"kind\":\"context\",\"from\":\"/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records/task.md\",\"link\":\"../docs-b/guide.md\"}]}],\"diagnostics\":[{\"code\":\"source_outside_scope\",\"severity\":\"error\",\"message\":\"source resolves outside the permitted directories\",\"path\":\"/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/docs-a/guide.md\",\"from\":\"/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/preservation-al718of1/new-records/task.md\",\"link\":\"../docs-a/guide.md\"}]}\n",
+      "stderr": "",
+      "changed": []
+    }
+  ]
+}

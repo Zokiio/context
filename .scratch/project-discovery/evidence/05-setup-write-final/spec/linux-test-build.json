@@ -1,0 +1,31 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "command": [
+    "go",
+    "test",
+    "-c",
+    "-overlay",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/linux-overlay.json",
+    "-o",
+    "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/discovery-linux.test",
+    "./internal/discovery"
+  ],
+  "cwd": "/private/tmp/ctx-spec-setup-c59d12e-e3jqn0tc/source",
+  "buildEnv": {
+    "GOOS": "linux",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0"
+  },
+  "status": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsedSeconds": 0.5255610942840576,
+  "probeSHA256": {
+    "setup_recheck_linux_revocation_test.go": "937172027c2be4cdc0e481768ca68eac37e5c6b17e236228dbe1bc100286c846",
+    "setup_recheck_probe_test.go": "c4f1dd946825cd519e413546e656047187711d1ea31a521721871cb0852fc829",
+    "setup_recheck_linux_clock_test.go": "60681e3421263a1ee417e2c6884767f704b21d726419152617572c6a53701421",
+    "setup_recheck_process_test.go": "74846c619a2fa5f5c00f60a91fd66ceaffa489a24953811a12d70491a3bfc2a7",
+    "setup_recheck_linux_test.go": "d01796ff1677c14cd4651b13eeca81d09704f6bc4eb165f5c15af90a9090f689"
+  },
+  "binarySHA256": "60c0bc40252cac3d679680dda3d632adf47b270c9e3c71c61d7ad1c37f20b40c"
+}

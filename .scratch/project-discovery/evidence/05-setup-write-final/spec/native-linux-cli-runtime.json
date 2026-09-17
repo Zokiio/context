@@ -1,0 +1,26 @@
+{
+  "revision": "c59d12e6886874a00d42b821be24615a93c95ef6",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--pull",
+    "never",
+    "--network",
+    "none",
+    "--read-only",
+    "--tmpfs",
+    "/tmp:rw,exec,nosuid,size=128m",
+    "-i",
+    "sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea",
+    "sh",
+    "-c",
+    "set -e\ncat > /tmp/review.test\nchmod 755 /tmp/review.test\nuname -srm\n/tmp/review.test -test.run=\"^TestSetup\" -test.v\n"
+  ],
+  "image": "sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea",
+  "binarySHA256": "fc1e25e16e982477ea44c85bc9db3c93687474456ecbcc5ce7e7695f3f349e2a",
+  "status": 0,
+  "stdout": "Linux 6.8.0-64-generic aarch64\n=== RUN   TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration\n--- PASS: TestSetupCLIPrintsExactDryRunWithoutCreatingConfiguration (0.00s)\n=== RUN   TestSetupCLIPrintsSummaryBeforeWritingWithoutPrompting\n--- PASS: TestSetupCLIPrintsSummaryBeforeWritingWithoutPrompting (0.00s)\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites/error\n=== RUN   TestSetupCLIOutputFailurePreventsAllWrites/short\n--- PASS: TestSetupCLIOutputFailurePreventsAllWrites (0.00s)\n    --- PASS: TestSetupCLIOutputFailurePreventsAllWrites/error (0.00s)\n    --- PASS: TestSetupCLIOutputFailurePreventsAllWrites/short (0.00s)\n=== RUN   TestSetupCLIGuidesOnlyTerminalInput\n--- PASS: TestSetupCLIGuidesOnlyTerminalInput (0.00s)\n=== RUN   TestSetupCLIGuidedEOFAndInvalidAnswerNeverWrite\n--- PASS: TestSetupCLIGuidedEOFAndInvalidAnswerNeverWrite (0.00s)\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias=\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records_a_--records_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory_a_--directory_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--personal_--alias_a_--alias_b\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias_mine\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/--replace_--replace\n=== RUN   TestSetupCLIRejectsInvalidFlagsBeforePrompts/extra\n--- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias= (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--records_a_--records_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--directory_a_--directory_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--personal_--alias_a_--alias_b (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--alias_mine (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/--replace_--replace (0.00s)\n    --- PASS: TestSetupCLIRejectsInvalidFlagsBeforePrompts/extra (0.00s)\n=== RUN   TestSetupCLIReplacementReportsRemovedRootsAndRetainsAlias\n--- PASS: TestSetupCLIReplacementReportsRemovedRootsAndRetainsAlias (0.00s)\n=== RUN   TestSetupCommandConnectsSubsequentReaderInvocation\n--- PASS: TestSetupCommandConnectsSubsequentReaderInvocation (0.00s)\nPASS\n",
+  "stderr": "",
+  "elapsedSeconds": 0.19696378707885742
+}
