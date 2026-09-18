@@ -3,7 +3,7 @@ type: WorkItem
 id: 0ddb768d-f1eb-470f-abbb-6eea7e791b94
 title: "Resume from a retained checkpoint"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Resume from a retained checkpoint
