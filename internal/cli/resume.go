@@ -119,6 +119,29 @@ func renderResumption(output io.Writer, result resumption.Result) error {
 	} else {
 		fmt.Fprintln(&text, "Baseline: unavailable; no claim is made that current sources are unchanged.")
 	}
+	for _, observation := range result.Recovery.Observations {
+		fmt.Fprintf(&text, "Historical observation %s by %s at %s\n  note: %s\n  retained context: %s [%s]\n", observation.ID, observation.Actor, observation.ObservedAt, observation.Source.Path, observation.Snapshot.Path, observation.Snapshot.Status)
+		fmt.Fprintln(&text, "Reported progress and checks; completion not established by this note:")
+		text.WriteString(observation.Body)
+		if !strings.HasSuffix(observation.Body, "\n") {
+			text.WriteByte('\n')
+		}
+	}
+	for _, comparison := range result.Comparison.Candidates {
+		fmt.Fprintf(&text, "Source text comparison for %s: %s\n", comparison.ObservationID, completeness(comparison.Complete))
+		for _, source := range comparison.Sources {
+			fmt.Fprintf(&text, "  %s\n", source.Status)
+			if source.Previous != nil {
+				fmt.Fprintf(&text, "    previous: %s [%s]\n", source.Previous.Path, source.Previous.Availability)
+			}
+			if source.Current != nil {
+				fmt.Fprintf(&text, "    current: %s [%s]\n", source.Current.Path, source.Current.Availability)
+			}
+		}
+		if !comparison.Complete {
+			fmt.Fprintln(&text, "  Comparison is incomplete; inspect diagnostics and current context.")
+		}
+	}
 	if task := selectedTask(result); task != nil {
 		fmt.Fprintf(&text, "Current task: %s [%s]\n  source: %s\n  execution: %s; readiness: %s\n", knownString(task.Title), knownString(task.ID), task.Source, knownString(task.Execution), task.Readiness)
 		fmt.Fprintln(&text, "  Current checks:")

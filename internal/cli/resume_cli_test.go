@@ -246,7 +246,7 @@ func TestResumeRejectsRepeatedScalarFlagsAndInvalidArguments(t *testing.T) {
 	}
 }
 
-func TestResumeRejectsWorkspaceAndNonemptyStoreAsOperationFailures(t *testing.T) {
+func TestResumeRejectsWorkspaceAndHistoryStoreAsOperationFailures(t *testing.T) {
 	root := scopeTempDir(t)
 	home, checkout, records := filepath.Join(root, "home"), filepath.Join(root, "checkout"), filepath.Join(root, "records")
 	for _, directory := range []string{home, checkout} {
@@ -264,6 +264,9 @@ func TestResumeRejectsWorkspaceAndNonemptyStoreAsOperationFailures(t *testing.T)
 
 	observations := filepath.Join(checkout, ".context-cache", "resume-v1", shaKey("project"), shaKey("task"), "observations", "entry")
 	if err := os.MkdirAll(observations, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(filepath.Dir(observations), "second"), 0700); err != nil {
 		t.Fatal(err)
 	}
 	stdout.Reset()

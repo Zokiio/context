@@ -15,9 +15,7 @@ import (
 	"github.com/Zokiio/context/internal/taskcontext"
 )
 
-// Resume returns current project and task facts with recovery state. This slice
-// supports absent or empty observation stores. A nonempty store is an explicit
-// operation error until recovery-note parsing is implemented.
+// Resume refreshes current facts and compares one retained root checkpoint.
 func Resume(ctx context.Context, request Request) (Result, error) {
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
@@ -84,20 +82,8 @@ func Resume(ctx context.Context, request Request) (Result, error) {
 	result.Scope.ProjectID = projectIdentity(currentOrientation)
 	result.Scope.TaskID = taskIdentity(currentContext, currentOrientation)
 	if result.Scope.ProjectID != nil && result.Scope.TaskID != nil {
-		observations := filepath.Join(cacheRoot, namespaceKey(*result.Scope.ProjectID), namespaceKey(*result.Scope.TaskID), "observations")
-		inspection, err := inspectEmptyObservations(ctx, working, observations, request.MaxCacheFiles)
-		if err != nil {
+		if err := inspectRecovery(ctx, &result, request); err != nil {
 			return Result{}, err
-		}
-		if inspection.diagnostic != nil {
-			result.Diagnostics = append(result.Diagnostics, *inspection.diagnostic)
-			result.Recovery.GraphStatus = "incomplete"
-		}
-		if inspection.absent {
-			result.Recovery.Status = "absent"
-			result.Recovery.InventoryComplete = true
-			result.Recovery.GraphStatus = "valid"
-			result.Comparison.Complete = currentContext.Complete
 		}
 	}
 	result.Complete = currentOrientation.Complete && currentContext.Complete && result.Comparison.Complete && result.Recovery.InventoryComplete && result.Recovery.GraphStatus == "valid"

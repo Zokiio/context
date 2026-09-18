@@ -49,7 +49,7 @@ func (e *evaluator) evaluateAcceptance(subject *record) *AcceptanceSummary {
 		unknown("acceptance_unavailable", "current Acceptance must resolve to an available Acceptance record")
 		return result
 	}
-	result.Metadata = metadataForOutput(r.doc.Metadata)
+	result.Metadata = MetadataForOutput(r.doc.Metadata)
 	if r.id == nil || r.title == nil || r.ambiguous || subject.id == nil || subject.ambiguous || e.result.Project == nil {
 		unknown("invalid_acceptance_identity", "Acceptance and its project and work identities must be present and unambiguous")
 	}

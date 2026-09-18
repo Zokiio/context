@@ -55,7 +55,7 @@ func TestResumeTreatsEmptyObservationDirectoryAsAbsent(t *testing.T) {
 	}
 }
 
-func TestResumeRejectsNonemptyObservationStoreWithoutScanningIt(t *testing.T) {
+func TestResumeBoundsNonemptyObservationEnumeration(t *testing.T) {
 	records, working := resumeFixture(t, true, "task")
 	observations := observationsPath(working, "project", "task")
 	for index := 0; index < 1000; index++ {
@@ -64,9 +64,9 @@ func TestResumeRejectsNonemptyObservationStoreWithoutScanningIt(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	_, err := Resume(context.Background(), Request{RecordsDirectory: records, WorkingDirectory: working, TicketPath: "task.md", MaxCacheFiles: 1, MaxCacheBytes: 1})
-	if err == nil || !contains(err.Error(), "not supported by this implementation slice") {
-		t.Fatalf("nonempty store: %v", err)
+	result, err := Resume(context.Background(), Request{RecordsDirectory: records, WorkingDirectory: working, TicketPath: "task.md", MaxCacheFiles: 1, MaxCacheBytes: 1})
+	if err != nil || result.Complete || result.Recovery.InventoryComplete || len(result.Recovery.Candidates) != 0 {
+		t.Fatalf("bounded store: %+v, %v", result.Recovery, err)
 	}
 }
 
