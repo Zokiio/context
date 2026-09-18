@@ -3,7 +3,7 @@ type: WorkItem
 id: 275621c7-0090-4d6b-95ab-04b343e9141e
 title: "Resume a task without recovery notes"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Resume a task without recovery notes
