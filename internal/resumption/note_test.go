@@ -106,6 +106,8 @@ func TestParseNoteRejectsMissingNullAndWrongTypedFields(t *testing.T) {
 		{"numeric observed at", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: 7"},
 		{"invalid observed at", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: yesterday"},
 		{"comma fractional seconds", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: '2026-09-17T17:00:00,5Z'"},
+		{"out of range positive offset minute", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: '2026-09-17T17:00:00+00:60'"},
+		{"out of range negative offset minute", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: '2026-09-17T17:00:00-23:60'"},
 		{"out of range offset", "observedAt: '2026-09-17T17:00:00Z'", "observedAt: '2026-09-17T17:00:00+24:00'"},
 		{"missing actor", "actor: coding-session\n", ""},
 		{"null actor", "actor: coding-session", "actor: null"},

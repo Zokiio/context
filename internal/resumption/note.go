@@ -160,7 +160,8 @@ func validNoteTimestamp(value string) bool {
 	}
 	offset := value[len(value)-6:]
 	hour := int(offset[1]-'0')*10 + int(offset[2]-'0')
-	return hour <= 23
+	minute := int(offset[4]-'0')*10 + int(offset[5]-'0')
+	return hour <= 23 && minute <= 59
 }
 
 func requiredNoteString(metadata map[string]any, name string, trim bool) (string, error) {
