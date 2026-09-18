@@ -46,7 +46,7 @@ func TestCompactOrientationGroupsEquivalentCausesInCommitmentOrder(t *testing.T)
 	for _, fact := range []string{
 		"Keep this exact authored goal.\n\nAnd its second paragraph.", "source: /bundle/project.md",
 		"execution: unstarted; readiness: blocked", "Needs attention:", "In progress:", "Active work [active]",
-		"New pickup shortlist:", "Next work [next]", "/docs/goal.md", "ctx resume --ticket <work-item-source> is forthcoming",
+		"New pickup shortlist:", "Next work [next]", "/docs/goal.md", "ctx resume --ticket <work-item-source> with the same scope",
 	} {
 		if !strings.Contains(text, fact) {
 			t.Errorf("compact output missing %q:\n%s", fact, text)

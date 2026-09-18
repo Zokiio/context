@@ -39,7 +39,7 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 	}
 	writeCompactSources(&text, result)
 	fmt.Fprintln(&text, "Task context: run ctx context with a work item's source as --ticket, using the same scope and --allow-source arguments.")
-	fmt.Fprintln(&text, "Continuation: ctx resume --ticket <work-item-source> is forthcoming.")
+	fmt.Fprintln(&text, "Continuation: run ctx resume --ticket <work-item-source> with the same scope and --allow-source arguments; direct --bundle access also requires --checkout <working-directory>.")
 	fmt.Fprintln(&text, "Expanded detail: rerun ctx orient with the same scope and --detail.")
 	_, err := io.WriteString(output, text.String())
 	return err

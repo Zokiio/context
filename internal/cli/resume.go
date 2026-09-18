@@ -112,8 +112,8 @@ func renderResumption(output io.Writer, result resumption.Result) error {
 	fmt.Fprintln(&text, "Task resumption")
 	fmt.Fprintf(&text, "  records: %s\n  working directory: %s\n  cache: %s\n", result.Scope.RecordsDirectory, result.Scope.WorkingDirectory, result.Scope.CacheRoot)
 	fmt.Fprintf(&text, "  project: %s\n  task: %s\n", knownString(result.Scope.ProjectID), knownString(result.Scope.TaskID))
-	fmt.Fprintf(&text, "  evaluation: %s; task context: %s; project inventory: %s\n", completionWord(result.Complete), completionWord(result.Context.Complete), completionWord(result.Orientation.InventoryComplete))
-	fmt.Fprintf(&text, "Recovery: %s; graph: %s; inventory: %s\n", result.Recovery.Status, result.Recovery.GraphStatus, completionWord(result.Recovery.InventoryComplete))
+	fmt.Fprintf(&text, "  evaluation: %s; task context: %s; project inventory: %s\n", completeness(result.Complete), completeness(result.Context.Complete), completeness(result.Orientation.InventoryComplete))
+	fmt.Fprintf(&text, "Recovery: %s; graph: %s; inventory: %s\n", result.Recovery.Status, result.Recovery.GraphStatus, completeness(result.Recovery.InventoryComplete))
 	if result.Comparison.BaselineAvailable {
 		fmt.Fprintln(&text, "Baseline: available")
 	} else {
@@ -166,11 +166,4 @@ func selectedTask(result resumption.Result) *orientation.WorkItem {
 		}
 	}
 	return nil
-}
-
-func completionWord(complete bool) string {
-	if complete {
-		return "complete"
-	}
-	return "partial"
 }
