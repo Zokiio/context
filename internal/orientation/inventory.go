@@ -13,6 +13,7 @@ import (
 func (e *evaluator) inventory() {
 	if e.stopped {
 		e.result.InventoryComplete = false
+		e.diagnose(Diagnostic{Code: "source_omitted", Severity: "error", Message: "project inventory was not processed after the shared source limit breach; undiscovered records and relationships are not listed", Path: e.reader.Project()})
 		return
 	}
 	paths := []string{}

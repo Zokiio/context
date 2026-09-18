@@ -3,7 +3,6 @@ package orientation
 import (
 	"context"
 	"errors"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -19,21 +18,29 @@ func Orient(ctx context.Context, request Request) (Result, error) {
 	if request.ProjectDir == "" {
 		return Result{}, errors.New("project is required")
 	}
-	if request.MaxFiles < 0 || request.MaxBytes < 0 {
-		return Result{}, errors.New("source limits must be positive")
-	}
-	if request.MaxFiles == 0 {
-		request.MaxFiles = DefaultMaxFiles
-	}
-	if request.MaxBytes == 0 {
-		request.MaxBytes = DefaultMaxBytes
-	}
-	reader, err := recordread.NewReader(request.ProjectDir, request.AllowedSourceDirs)
+	reader, err := recordread.NewCapture(request.ProjectDir, request.AllowedSourceDirs, recordread.Limits{MaxFiles: request.MaxFiles, MaxBytes: request.MaxBytes})
 	if err != nil {
 		return Result{}, err
 	}
 	defer reader.Close()
-	e := evaluator{ctx: ctx, request: request, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, omitted: map[string]bool{}, inspected: map[string]bool{}, decisionResults: map[string]Decision{}, acceptanceSources: map[string]acceptanceSources{}, acceptanceResults: map[string]*AcceptanceSummary{}}
+	return orientWithCapture(ctx, reader)
+}
+
+// OrientWithCapture evaluates a project using source bytes and budget shared
+// with other readers in the same caller operation. The caller owns the capture
+// and must close it.
+func OrientWithCapture(ctx context.Context, capture *recordread.Capture) (Result, error) {
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
+	if capture == nil {
+		return Result{}, errors.New("capture is required")
+	}
+	return orientWithCapture(ctx, capture)
+}
+
+func orientWithCapture(ctx context.Context, reader *recordread.Capture) (Result, error) {
+	e := evaluator{ctx: ctx, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, stopped: reader.Exhausted(), omitted: map[string]bool{}, decisionResults: map[string]Decision{}, acceptanceSources: map[string]acceptanceSources{}, acceptanceResults: map[string]*AcceptanceSummary{}}
 	manifest := e.read(filepath.Join(reader.Project(), "project.md"), recordread.RecordSource, Reason{Kind: "project"})
 	if manifest != nil {
 		e.manifest = e.parse(*manifest)
@@ -56,18 +63,15 @@ func emptyResult() Result {
 
 type evaluator struct {
 	ctx               context.Context
-	request           Request
-	reader            *recordread.Reader
+	reader            *recordread.Capture
 	result            Result
 	captured          map[string]int
 	records           map[string]*record
 	recordOrder       []*record
 	manifest          *record
 	selections        []*selection
-	totalBytes        int64
 	stopped           bool
 	omitted           map[string]bool
-	inspected         map[string]bool
 	decisionResults   map[string]Decision
 	acceptanceSources map[string]acceptanceSources
 	acceptanceResults map[string]*AcceptanceSummary
@@ -125,7 +129,7 @@ func (e *evaluator) read(path string, role recordread.Role, reason Reason) *reco
 		if canonical, err := filepath.EvalSymlinks(path); err == nil {
 			resolved = canonical
 		}
-		if _, captured := e.captured[resolved]; !captured {
+		if !e.reader.Admitted(path, role) {
 			if !e.omitted[resolved] {
 				e.omitted[resolved] = true
 				e.diagnose(Diagnostic{Code: "source_omitted", Severity: "error", Message: "known pending source was not processed after the limit breach; undiscovered records and relationships are not listed", Path: resolved, From: reason.From, Link: reason.Link})
@@ -134,22 +138,13 @@ func (e *evaluator) read(path string, role recordread.Role, reason Reason) *reco
 		}
 	}
 	source, diagnostic := e.reader.Read(path, role)
-	if source.Path != "" && !e.inspected[source.Path] {
-		limit := ""
-		if len(e.inspected) >= e.request.MaxFiles {
-			limit = fmt.Sprintf("file limit of %d", e.request.MaxFiles)
-		}
-		if int64(len(source.Text)) > e.request.MaxBytes-e.totalBytes {
-			limit = fmt.Sprintf("source byte limit of %d", e.request.MaxBytes)
-		}
-		if limit != "" {
+	if source.Path != "" {
+		if limit := e.reader.Admit(source); limit != nil {
 			e.stopped = true
 			e.omitted[source.Path] = true
-			e.diagnose(Diagnostic{Code: "source_limit_exceeded", Severity: "error", Message: "source would exceed " + limit + "; collection stopped before including it", Path: source.Path, From: reason.From, Link: reason.Link})
+			e.diagnose(Diagnostic{Code: "source_limit_exceeded", Severity: "error", Message: "source would exceed " + limit.Error() + "; collection stopped before including it", Path: source.Path, From: reason.From, Link: reason.Link})
 			return nil
 		}
-		e.inspected[source.Path] = true
-		e.totalBytes += int64(len(source.Text))
 	}
 	if diagnostic != nil {
 		d := Diagnostic(*diagnostic)

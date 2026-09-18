@@ -4,7 +4,6 @@ package taskcontext
 import (
 	"context"
 	"errors"
-	"fmt"
 	"path/filepath"
 
 	"github.com/Zokiio/context/internal/recordread"
@@ -25,34 +24,41 @@ type Diagnostic = recordread.Diagnostic
 // Assemble returns incomplete data for unavailable sources and invalid frontmatter.
 // Errors mean the operation could not run. It does not print, exit, or write files.
 func Assemble(ctx context.Context, request Request) (Result, error) {
-	result := Result{SchemaVersion: 1, Complete: true, TraversalComplete: true, Sources: []Source{}, Diagnostics: []Diagnostic{}}
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
 	if request.ProjectDir == "" || request.TicketPath == "" {
 		return Result{}, errors.New("project and ticket are required")
 	}
-	if request.MaxFiles < 0 || request.MaxBytes < 0 {
-		return Result{}, errors.New("source limits must be positive")
-	}
-	if request.MaxFiles == 0 {
-		request.MaxFiles = DefaultMaxFiles
-	}
-	if request.MaxBytes == 0 {
-		request.MaxBytes = DefaultMaxBytes
-	}
 	reader, err := newSourceReader(request)
 	if err != nil {
 		return Result{}, err
 	}
-	defer reader.close()
-	path := request.TicketPath
+	defer reader.Close()
+	return assembleWithReader(ctx, request.TicketPath, reader)
+}
+
+// AssembleWithCapture assembles task context using source bytes and budget
+// shared with other readers in the same caller operation. The caller owns the
+// capture and must close it.
+func AssembleWithCapture(ctx context.Context, ticketPath string, capture *recordread.Capture) (Result, error) {
+	if err := ctx.Err(); err != nil {
+		return Result{}, err
+	}
+	if ticketPath == "" || capture == nil {
+		return Result{}, errors.New("ticket and capture are required")
+	}
+	return assembleWithReader(ctx, ticketPath, capturedSourceReader(capture))
+}
+
+func assembleWithReader(ctx context.Context, ticketPath string, reader *sourceReader) (Result, error) {
+	result := Result{SchemaVersion: 1, Complete: true, TraversalComplete: true, Sources: []Source{}, Diagnostics: []Diagnostic{}}
+	path := ticketPath
 	if !filepath.IsAbs(path) {
 		path = filepath.Join(reader.project, path)
 	}
 
 	indices := map[string]int{}
-	var totalBytes int64
 	include := func(source Source, reason Reason) int {
 		if index, exists := indices[source.Path]; exists {
 			for _, existing := range result.Sources[index].Reasons {
@@ -63,19 +69,11 @@ func Assemble(ctx context.Context, request Request) (Result, error) {
 			result.Sources[index].Reasons = append(result.Sources[index].Reasons, reason)
 			return index
 		}
-		limit := ""
-		if len(result.Sources) >= request.MaxFiles {
-			limit = fmt.Sprintf("file limit of %d", request.MaxFiles)
-		}
-		if int64(len(source.Text)) > request.MaxBytes-totalBytes {
-			limit = fmt.Sprintf("source byte limit of %d", request.MaxBytes)
-		}
-		if limit != "" {
+		if limit := reader.Admit(source); limit != nil {
 			result.Complete, result.TraversalComplete = false, false
-			result.Diagnostics = append(result.Diagnostics, Diagnostic{Code: "source_limit_exceeded", Severity: "error", Message: "source would exceed " + limit + "; collection stopped before including it", Path: source.Path, From: reason.From, Link: reason.Link})
+			result.Diagnostics = append(result.Diagnostics, Diagnostic{Code: "source_limit_exceeded", Severity: "error", Message: "source would exceed " + limit.Error() + "; collection stopped before including it", Path: source.Path, From: reason.From, Link: reason.Link})
 			return -1
 		}
-		totalBytes += int64(len(source.Text))
 		source.Reasons = []Reason{reason}
 		index := len(result.Sources)
 		indices[source.Path] = index
