@@ -29,7 +29,8 @@ type Limit struct {
 func (l *Limit) Error() string { return l.description }
 
 // Capture holds immutable source bytes and one collection budget for a caller
-// operation. Read always reapplies role authorization. Admit counts a canonical
+// operation. Read always reapplies role authorization and, after a limit
+// breach, returns only sources already captured. Admit counts a canonical
 // physical source at most once.
 type Capture struct {
 	reader    *Reader
@@ -61,6 +62,22 @@ func (c *Capture) Close() { c.reader.Close() }
 func (c *Capture) Project() string { return c.reader.Project() }
 
 func (c *Capture) Read(path string, role Role) (Source, *Diagnostic) {
+	resolved, diagnostic := c.reader.resolve(path, role)
+	if diagnostic != nil {
+		return Source{}, diagnostic
+	}
+	if failure, exists := c.reader.failures[resolved]; exists {
+		return c.reader.snapshots[resolved], &failure
+	}
+	if source, exists := c.reader.snapshots[resolved]; exists {
+		return source, nil
+	}
+	if c.exhausted != nil {
+		return Source{}, &Diagnostic{
+			Code: "source_omitted", Severity: "error",
+			Message: "source was not read after the shared collection limit was exceeded", Path: resolved,
+		}
+	}
 	return c.reader.Read(path, role)
 }
 

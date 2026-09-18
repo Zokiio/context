@@ -21,6 +21,7 @@ type OrientFunc func(context.Context, orientation.Request) (orientation.Result, 
 type Operations struct {
 	Assemble AssembleFunc
 	Orient   OrientFunc
+	Resume   ResumeFunc
 }
 
 // Run renders one report, or an invocation/execution error on stderr.
@@ -139,6 +140,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 			},
 		}},
 	}
+	command.Commands = append(command.Commands, resumeCommand(stdout, stderr, operations.Resume, environment, &status))
 	command.Commands = append(command.Commands, setupCommand(stdout, stderr, environment))
 	if err := command.Run(ctx, args); err != nil {
 		fmt.Fprintln(stderr, err)

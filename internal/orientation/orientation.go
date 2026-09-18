@@ -124,19 +124,6 @@ func (e *evaluator) read(path string, role recordread.Role, reason Reason) *reco
 	if e.ctx.Err() != nil {
 		return nil
 	}
-	if e.stopped {
-		resolved := path
-		if canonical, err := filepath.EvalSymlinks(path); err == nil {
-			resolved = canonical
-		}
-		if !e.reader.Admitted(path, role) {
-			if !e.omitted[resolved] {
-				e.omitted[resolved] = true
-				e.diagnose(Diagnostic{Code: "source_omitted", Severity: "error", Message: "known pending source was not processed after the limit breach; undiscovered records and relationships are not listed", Path: resolved, From: reason.From, Link: reason.Link})
-			}
-			return nil
-		}
-	}
 	source, diagnostic := e.reader.Read(path, role)
 	if source.Path != "" {
 		if limit := e.reader.Admit(source); limit != nil {
@@ -149,6 +136,13 @@ func (e *evaluator) read(path string, role recordread.Role, reason Reason) *reco
 	if diagnostic != nil {
 		d := Diagnostic(*diagnostic)
 		d.From, d.Link = reason.From, reason.Link
+		if d.Code == "source_omitted" {
+			if e.omitted[d.Path] {
+				return nil
+			}
+			e.omitted[d.Path] = true
+			d.Message = "known pending source was not processed after the limit breach; undiscovered records and relationships are not listed"
+		}
 		e.diagnose(d)
 		return nil
 	}

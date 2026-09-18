@@ -71,3 +71,32 @@ func TestCaptureSharesOneWholeSourceBudget(t *testing.T) {
 		t.Fatalf("unexpected usage: %+v", usage)
 	}
 }
+
+func TestCaptureStopsUncapturedReadsButRetainsFirstBreachedSource(t *testing.T) {
+	project := t.TempDir()
+	for name, content := range map[string]string{"first.md": "too large", "later.md": "small"} {
+		if err := os.WriteFile(filepath.Join(project, name), []byte(content), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	capture, err := recordread.NewCapture(project, nil, recordread.Limits{MaxFiles: 2, MaxBytes: 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer capture.Close()
+
+	first, diagnostic := capture.Read(filepath.Join(project, "first.md"), recordread.RecordSource)
+	if diagnostic != nil || first.Text != "too large" {
+		t.Fatalf("first read: source=%+v diagnostic=%+v", first, diagnostic)
+	}
+	if limit := capture.Admit(first); limit == nil || limit.Error() != "source byte limit of 3" {
+		t.Fatalf("first breach: %v", limit)
+	}
+	repeated, diagnostic := capture.Read(filepath.Join(project, "first.md"), recordread.RecordSource)
+	if diagnostic != nil || repeated.Text != first.Text || repeated.SHA256 != first.SHA256 {
+		t.Fatalf("breached source was not retained: source=%+v diagnostic=%+v", repeated, diagnostic)
+	}
+	if _, diagnostic := capture.Read(filepath.Join(project, "later.md"), recordread.RecordSource); diagnostic == nil || diagnostic.Code != "source_omitted" {
+		t.Fatalf("later source was read after breach: %+v", diagnostic)
+	}
+}
