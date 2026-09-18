@@ -32,7 +32,7 @@ func TestOrientationTextAttributesRecordedAcceptance(t *testing.T) {
 			},
 		}},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", ".", "--detail"}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 0 || stderr.Len() != 0 {
@@ -65,7 +65,7 @@ func TestOrientationTextAttributesRecordedAcceptance(t *testing.T) {
 
 func TestOrientationTextShowsNoAcceptanceForUnfinishedWork(t *testing.T) {
 	var stdout, stderr bytes.Buffer
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", ".", "--detail"}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return orientation.Result{Complete: true, WorkItems: []orientation.WorkItem{{ID: str("work"), Execution: str("unstarted")}}}, nil
 	}})
 	if status != 0 || stderr.Len() != 0 || !strings.Contains(stdout.String(), "acceptance: none recorded") {

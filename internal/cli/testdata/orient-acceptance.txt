@@ -1,6 +1,6 @@
 # Two accepted prerequisite levels release their dependent.
 # Literal digests were independently checked with Python hashlib and OpenSSL.
-exec ctx orient --bundle bundle --allow-source docs
+exec ctx orient --bundle bundle --allow-source docs --detail
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'acceptance: valid'
@@ -38,7 +38,7 @@ stdout '"shortlist":\[\{[^}]*"id":"dependent"'
 
 # A stale leaf blocks the dependent even though the middle's acceptance stays valid.
 cp changed-evidence.md docs/evidence.md
-exec ctx orient --bundle bundle --allow-source docs
+exec ctx orient --bundle bundle --allow-source docs --detail
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'acceptance: stale'
@@ -60,7 +60,7 @@ stdout '"testedRevision":\{"origin":"local-artifact","revision":"leaf-build-123"
 
 # Missing leaf evidence propagates unknown through the accepted middle.
 rm docs/evidence.md
-exit 1 ctx orient --bundle bundle --allow-source docs
+exit 1 ctx orient --bundle bundle --allow-source docs --detail
 ! stderr .
 stdout 'Evaluation: partial; inventory: complete'
 stdout 'acceptance: unknown'

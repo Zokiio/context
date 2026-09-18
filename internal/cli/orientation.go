@@ -8,7 +8,7 @@ import (
 	"github.com/Zokiio/context/internal/orientation"
 )
 
-func renderOrientation(output io.Writer, result orientation.Result) error {
+func renderDetailedOrientation(output io.Writer, result orientation.Result) error {
 	var text strings.Builder
 	if result.Project == nil {
 		fmt.Fprintln(&text, "Project: unknown")
