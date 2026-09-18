@@ -51,7 +51,10 @@ None
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
 
+Earlier acceptance, retained after the independent review found a decision-row ordering defect:
+- [Acceptance](../acceptances/02-compact-orientation-20260919.md)
+
 ## Acceptance
 
-- [Acceptance](../acceptances/02-compact-orientation-20260919.md)
+- [Acceptance](../acceptances/02-compact-orientation-order-20260919.md)
 

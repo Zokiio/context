@@ -1,0 +1,1 @@
+ok  	github.com/Zokiio/context/internal/cli	0.585s
