@@ -50,9 +50,13 @@ None
 
 ## Acceptance
 
-- [Acceptance](../acceptances/04-retained-checkpoint-20260919.md)
+- [Acceptance](../acceptances/04-retained-checkpoint-review-20260919.md)
+
+
 
 
 ## Comments
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
+
+2026-09-19: Reassessed timestamp and effective-type corrections after independent review. Prior decision: [Initial acceptance](../acceptances/04-retained-checkpoint-20260919.md).
