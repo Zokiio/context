@@ -3,7 +3,7 @@ type: WorkItem
 id: 94acbf45-cc6b-4957-b3fe-3218e955ef3f
 title: "Handle competing and interrupted checkpoints"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Handle competing and interrupted checkpoints
