@@ -10,33 +10,8 @@ import (
 
 func renderDetailedOrientation(output io.Writer, result orientation.Result) error {
 	var text strings.Builder
-	if result.Project == nil {
-		fmt.Fprintln(&text, "Project: unknown")
-	} else {
-		fmt.Fprintf(&text, "Project: %s [%s]\n", result.Project.Title, result.Project.ID)
-		fmt.Fprintf(&text, "  source: %s\n", result.Project.Source)
-	}
-	completion := func(complete bool) string {
-		if complete {
-			return "complete"
-		}
-		return "partial"
-	}
-	fmt.Fprintf(&text, "Evaluation: %s; inventory: %s\n", completion(result.Complete), completion(result.InventoryComplete))
-	fmt.Fprintln(&text)
-	switch {
-	case result.Project == nil || !result.Project.GoalsKnown:
-		fmt.Fprintln(&text, "Goals: unknown")
-	case len(result.Goals) == 0:
-		fmt.Fprintln(&text, "Goals: none")
-	default:
-		fmt.Fprintln(&text, "Goals:")
-	}
-	for _, goal := range result.Goals {
-		fmt.Fprintln(&text, strings.TrimSpace(goal.Text))
-		fmt.Fprintf(&text, "  source: %s\n", goal.Source)
-		writeReferences(&text, "  References", goal.References)
-	}
+	writeOrientationProject(&text, result)
+	writeOrientationGoals(&text, result)
 	fmt.Fprintln(&text)
 	writeProjectReferences(&text, "Current commitments", result.CurrentCommitments, result.Project != nil && result.Project.CommitmentsKnown)
 	writeReferences(&text, "Shortlist", result.Shortlist)
@@ -197,5 +172,38 @@ func relationshipDetails(from, link string) string {
 		return fmt.Sprintf(" (from %s)", from)
 	default:
 		return fmt.Sprintf(" (from %s; link %q)", from, link)
+	}
+}
+
+func writeOrientationProject(output *strings.Builder, result orientation.Result) {
+	if result.Project == nil {
+		fmt.Fprintln(output, "Project: unknown")
+	} else {
+		fmt.Fprintf(output, "Project: %s [%s]\n  source: %s\n", result.Project.Title, result.Project.ID, result.Project.Source)
+	}
+	fmt.Fprintf(output, "Evaluation: %s; inventory: %s\n", completeness(result.Complete), completeness(result.InventoryComplete))
+}
+
+func completeness(complete bool) string {
+	if complete {
+		return "complete"
+	}
+	return "partial"
+}
+
+func writeOrientationGoals(output *strings.Builder, result orientation.Result) {
+	fmt.Fprintln(output)
+	switch {
+	case result.Project == nil || !result.Project.GoalsKnown:
+		fmt.Fprintln(output, "Goals: unknown")
+	case len(result.Goals) == 0:
+		fmt.Fprintln(output, "Goals: none")
+	default:
+		fmt.Fprintln(output, "Goals:")
+	}
+	for _, goal := range result.Goals {
+		fmt.Fprintln(output, strings.TrimSpace(goal.Text))
+		fmt.Fprintf(output, "  source: %s\n", goal.Source)
+		writeReferences(output, "  References", goal.References)
 	}
 }

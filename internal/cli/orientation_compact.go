@@ -27,8 +27,8 @@ type attentionSource struct {
 
 func renderOrientation(output io.Writer, result orientation.Result) error {
 	var text strings.Builder
-	writeCompactProject(&text, result)
-	writeCompactGoals(&text, result)
+	writeOrientationProject(&text, result)
+	writeOrientationGoals(&text, result)
 	writeCompactCommitments(&text, result)
 	writeCompactAttention(&text, result)
 	writeCompactWork(&text, "In progress", result.InProgress)
@@ -43,39 +43,6 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 	fmt.Fprintln(&text, "Expanded detail: rerun ctx orient with the same scope and --detail.")
 	_, err := io.WriteString(output, text.String())
 	return err
-}
-
-func writeCompactProject(output *strings.Builder, result orientation.Result) {
-	if result.Project == nil {
-		fmt.Fprintln(output, "Project: unknown")
-	} else {
-		fmt.Fprintf(output, "Project: %s [%s]\n  source: %s\n", result.Project.Title, result.Project.ID, result.Project.Source)
-	}
-	fmt.Fprintf(output, "Evaluation: %s; inventory: %s\n", completeness(result.Complete), completeness(result.InventoryComplete))
-}
-
-func completeness(complete bool) string {
-	if complete {
-		return "complete"
-	}
-	return "partial"
-}
-
-func writeCompactGoals(output *strings.Builder, result orientation.Result) {
-	fmt.Fprintln(output)
-	switch {
-	case result.Project == nil || !result.Project.GoalsKnown:
-		fmt.Fprintln(output, "Goals: unknown")
-	case len(result.Goals) == 0:
-		fmt.Fprintln(output, "Goals: none")
-	default:
-		fmt.Fprintln(output, "Goals:")
-	}
-	for _, goal := range result.Goals {
-		fmt.Fprintln(output, strings.TrimSpace(goal.Text))
-		fmt.Fprintf(output, "  source: %s\n", goal.Source)
-		writeReferences(output, "  References", goal.References)
-	}
 }
 
 func writeCompactCommitments(output *strings.Builder, result orientation.Result) {
