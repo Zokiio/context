@@ -219,10 +219,7 @@ func compactAttentionCauses(result orientation.Result) []*attentionCause {
 }
 
 func addAttentionCause(causes *[]*attentionCause, byKey map[string]*attentionCause, kind, check, severity string, finding orientation.Finding, affected *orientation.Reference) {
-	identity := finding.Path
-	if identity == "" {
-		identity = finding.From + "\x00" + finding.Link
-	}
+	identity := attentionIdentity(kind, finding)
 	key := strings.Join([]string{kind, check, severity, finding.Code, identity}, "\x00")
 	cause := byKey[key]
 	if cause == nil {
@@ -246,6 +243,22 @@ func addAttentionCause(causes *[]*attentionCause, byKey map[string]*attentionCau
 		}
 		cause.sources = append(cause.sources, source)
 	}
+}
+
+func attentionIdentity(kind string, finding orientation.Finding) string {
+	// Some relationship diagnostics use the referring record as Path because no
+	// target can be resolved. In that case the authored relationship is the only
+	// stable cause identity. Resolved targets continue to group by their path.
+	if kind == "diagnostic" && finding.Path == finding.From && finding.Link != "" {
+		switch finding.Code {
+		case "unsupported_source", "unresolved_reference":
+			return "relationship\x00" + finding.From + "\x00" + finding.Link
+		}
+	}
+	if finding.Path != "" {
+		return "source\x00" + finding.Path
+	}
+	return "relationship\x00" + finding.From + "\x00" + finding.Link
 }
 
 func writeCauseSource(output *strings.Builder, cause *attentionCause) {
