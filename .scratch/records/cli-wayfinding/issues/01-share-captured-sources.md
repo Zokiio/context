@@ -3,7 +3,7 @@ type: WorkItem
 id: 0ab38e7a-c417-4f5d-a1e6-3d012b785952
 title: "Share captured sources between readers"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Share captured sources between readers
@@ -18,11 +18,11 @@ This is the prerequisite refactor approved in the breakdown. It adds no user-fac
 
 ## Acceptance criteria
 
-- [ ] Existing standalone context and orientation commands retain their selection order, authorization, output schemas, diagnostics, limits, and exit behavior. Workspace navigation and setup remain unaffected.
-- [ ] A caller can compose Project-manifest capture, task-context collection in its existing traversal order, and remaining orientation collection in its existing order using one source capture and one shared file/byte budget.
-- [ ] Each physical current source is captured and counted once within the composed operation; all parsing, digests, context text, readiness, and acceptance checks use those captured bytes. Role-specific source authorization still applies even to already captured bytes.
-- [ ] Shared-limit exhaustion preserves available task context and orientation with separate completeness flags, explicit omissions, and no false complete project evaluation. Cancellation and source failures retain the specified error behavior.
-- [ ] Focused filesystem/integration checks demonstrate reuse despite a source changing between the two reader phases, correct counting of shared and distinct sources, unchanged standalone results, and no writes. The capture is not presented as an atomic filesystem snapshot.
+- [x] Existing standalone context and orientation commands retain their selection order, authorization, output schemas, diagnostics, limits, and exit behavior. Workspace navigation and setup remain unaffected.
+- [x] A caller can compose Project-manifest capture, task-context collection in its existing traversal order, and remaining orientation collection in its existing order using one source capture and one shared file/byte budget.
+- [x] Each physical current source is captured and counted once within the composed operation; all parsing, digests, context text, readiness, and acceptance checks use those captured bytes. Role-specific source authorization still applies even to already captured bytes.
+- [x] Shared-limit exhaustion preserves available task context and orientation with separate completeness flags, explicit omissions, and no false complete project evaluation. Cancellation and source failures retain the specified error behavior.
+- [x] Focused filesystem/integration checks demonstrate reuse despite a source changing between the two reader phases, correct counting of shared and distinct sources, unchanged standalone results, and no writes. The capture is not presented as an atomic filesystem snapshot.
 
 ## Blocked by
 
@@ -49,3 +49,8 @@ None
 ## Comments
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
+
+## Acceptance
+
+- [Acceptance](../acceptances/01-share-captured-sources-20260919.md)
+
