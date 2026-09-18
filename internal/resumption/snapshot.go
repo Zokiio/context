@@ -107,7 +107,7 @@ func validateSnapshot(data []byte, observation *Observation) (taskcontext.Result
 				}
 				typ, _ := doc.Metadata["type"].(string)
 				id, _ := doc.Metadata["id"].(string)
-				if typ != "WorkItem" || strings.TrimSpace(id) != observation.TaskID {
+				if strings.TrimSpace(typ) != "WorkItem" || strings.TrimSpace(id) != observation.TaskID {
 					return fail("retained root WorkItem identity does not match the selected task")
 				}
 			case "spec", "context", "blocked_by":

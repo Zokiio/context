@@ -375,3 +375,17 @@ func TestRetainedRootAuthorizationDoesNotGuessAnOldCheckout(t *testing.T) {
 		}
 	}
 }
+
+func TestRetainedRootUsesCurrentEffectiveType(t *testing.T) {
+	request, directory, _ := checkpointFixture(t)
+	writeResumeFile(t, filepath.Join(request.RecordsDirectory, "task.md"), strings.Replace(workItemDocument("task", true), "type: WorkItem", `type: " WorkItem "`, 1))
+	retained, err := taskcontext.Assemble(context.Background(), taskcontext.Request{ProjectDir: request.RecordsDirectory, TicketPath: "task.md"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	publishCheckpoint(t, directory, retained)
+	result := resumeCheckpoint(t, request)
+	if !result.Complete || result.Recovery.Observations[0].Snapshot.Status != "valid" {
+		t.Fatalf("effective root type: %+v", result)
+	}
+}
