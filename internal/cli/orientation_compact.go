@@ -132,9 +132,7 @@ func compactAttentionCauses(result orientation.Result) []*attentionCause {
 	byKey := map[string]*attentionCause{}
 	items := workItemsBySource(result.WorkItems)
 	orderedWork := make([]orientation.WorkItem, 0, len(result.CurrentCommitments))
-	commitmentPaths := map[string]bool{}
 	for _, commitment := range result.CurrentCommitments {
-		commitmentPaths[commitment.Path] = true
 		if item, ok := items[commitment.Path]; ok {
 			orderedWork = append(orderedWork, item)
 		}
@@ -185,8 +183,12 @@ func compactAttentionCauses(result orientation.Result) []*attentionCause {
 			}
 		}
 		affected := make([]orientation.Reference, 0, len(decision.AffectedWork))
+		decisionWork := make(map[string]orientation.Reference, len(decision.AffectedWork))
 		for _, ref := range decision.AffectedWork {
-			if commitmentPaths[ref.Path] {
+			decisionWork[ref.Path] = ref
+		}
+		for _, commitment := range result.CurrentCommitments {
+			if ref, found := decisionWork[commitment.Path]; found {
 				affected = append(affected, ref)
 			}
 		}

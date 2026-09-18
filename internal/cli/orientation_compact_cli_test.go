@@ -100,6 +100,33 @@ func TestCompactOrientationKeepsUnknownAndPartialFacts(t *testing.T) {
 	}
 }
 
+func TestCompactDecisionAffectedWorkUsesCommitmentOrder(t *testing.T) {
+	first := orientation.Reference{Path: "/bundle/z.md", ID: str("z"), Title: str("First commitment")}
+	second := orientation.Reference{Path: "/bundle/a.md", ID: str("a"), Title: str("Second commitment")}
+	result := orientation.Result{
+		SchemaVersion: 1, Complete: true, InventoryComplete: true,
+		Project:            &orientation.Project{ID: "project", Title: "Project", Source: "/bundle/project.md", GoalsKnown: true, CommitmentsKnown: true, OpenDecisionsKnown: true},
+		CurrentCommitments: []orientation.Reference{first, second},
+		Decisions: []orientation.Decision{{
+			ID: str("choice"), Title: str("Shared choice"), Source: "/bundle/choice.md", State: str("open"), CheckStatus: "fail",
+			AffectedWork: []orientation.Reference{second, first},
+			Reasons:      []orientation.Finding{{Code: "open_decision", Message: "Decision is open", Path: "/bundle/choice.md"}},
+		}},
+	}
+	var stdout, stderr bytes.Buffer
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) { return result, nil }})
+	text := stdout.String()
+	start := strings.Index(text, "decision/open_decision:")
+	if status != 0 || stderr.Len() != 0 || start < 0 {
+		t.Fatalf("status=%d stderr=%q output=%s", status, stderr.String(), text)
+	}
+	row := text[start:]
+	firstIndex, secondIndex := strings.Index(row, "First commitment [z]"), strings.Index(row, "Second commitment [a]")
+	if firstIndex < 0 || secondIndex < firstIndex {
+		t.Fatalf("decision row lost authored commitment order: %s", row)
+	}
+}
+
 func TestOrientationJSONIsUnchangedAndDetailConflicts(t *testing.T) {
 	result := orientation.Result{SchemaVersion: 1, Complete: true, InventoryComplete: true, Goals: []orientation.Goal{}, CurrentCommitments: []orientation.Reference{}, WorkItems: []orientation.WorkItem{}, Shortlist: []orientation.Reference{}, InProgress: []orientation.Reference{}, Backlog: []orientation.Reference{}, Decisions: []orientation.Decision{}, Sources: []orientation.Source{}, Diagnostics: []orientation.Diagnostic{}}
 	operation := func(context.Context, orientation.Request) (orientation.Result, error) { return result, nil }
