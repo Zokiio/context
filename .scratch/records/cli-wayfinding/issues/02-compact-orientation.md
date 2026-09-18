@@ -54,7 +54,10 @@ Created from the user-approved seven-ticket breakdown. Acceptance requires retai
 Earlier acceptance, retained after the independent review found a decision-row ordering defect:
 - [Acceptance](../acceptances/02-compact-orientation-20260919.md)
 
+Earlier acceptance, retained during resumption integration reassessment:
+- [Acceptance](../acceptances/02-compact-orientation-order-20260919.md)
+
 ## Acceptance
 
-- [Acceptance](../acceptances/02-compact-orientation-order-20260919.md)
+- [Acceptance](../acceptances/02-compact-orientation-resume-20260919.md)
 
