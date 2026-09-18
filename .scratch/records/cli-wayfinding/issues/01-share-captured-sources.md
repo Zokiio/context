@@ -3,7 +3,7 @@ type: WorkItem
 id: 0ab38e7a-c417-4f5d-a1e6-3d012b785952
 title: "Share captured sources between readers"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Share captured sources between readers

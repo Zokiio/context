@@ -3,7 +3,7 @@ type: WorkItem
 id: 8dc99b87-b5b6-4cba-82be-dbd1dec85bfc
 title: "Show compact project orientation"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Show compact project orientation

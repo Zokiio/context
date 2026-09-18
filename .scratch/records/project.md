@@ -16,12 +16,13 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Current commitments
 
-- [01: Read discovery configuration](project-discovery/issues/01-read-configuration.md)
-- [02: Resolve scope from directories and aliases](project-discovery/issues/02-resolve-scope.md)
-- [03: Use discovery in reader commands](project-discovery/issues/03-integrate-cli.md)
-- [04: Show workspace member navigation](project-discovery/issues/04-workspace-navigation.md)
-- [05: Connect existing records through setup](project-discovery/issues/05-connect-records.md)
-- [06: Document migration and verify discovery end to end](project-discovery/issues/06-document-and-trial.md)
+- [Share captured sources between readers](cli-wayfinding/issues/01-share-captured-sources.md)
+- [Show compact project orientation](cli-wayfinding/issues/02-compact-orientation.md)
+- [Resume a task without recovery notes](cli-wayfinding/issues/03-resume-without-notes.md)
+- [Resume from a retained checkpoint](cli-wayfinding/issues/04-retained-checkpoint.md)
+- [Handle competing and interrupted checkpoints](cli-wayfinding/issues/05-competing-checkpoints.md)
+- [Teach skills to maintain and recover working notes](cli-wayfinding/issues/06-recovery-skills.md)
+- [Verify the complete interrupted-task workflow](cli-wayfinding/issues/07-verify-workflow.md)
 
 ## Open decisions
 
