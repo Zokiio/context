@@ -12,7 +12,7 @@ stdout 'Needs attention:'
 stdout 'In progress: none'
 stdout 'New pickup shortlist: none'
 stdout 'Project references:'
-stdout 'ctx resume --ticket <work-item-source> is forthcoming'
+stdout 'ctx resume --ticket <work-item-source> with the same scope'
 stdout 'rerun ctx orient with the same scope and --detail'
 cmp ../empty/project.md ../original.md
 
