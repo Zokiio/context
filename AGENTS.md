@@ -8,6 +8,8 @@ Before planning product changes, read `docs/vision.md` for the product direction
 
 Specs and tickets live in local Markdown files under `.scratch/` and belong in Git. Before reading or changing them, read `docs/agents/issue-tracker.md`.
 
+Keep verification output and generated acceptance records out of Git. Commit reusable tests and fixtures, and summarize checks in the PR description. The issue-tracker guidance defines local storage and fresh-checkout behavior.
+
 ### Triage labels
 
 This repo uses the five default triage roles. Before assigning a triage role, read `docs/agents/triage-labels.md`.

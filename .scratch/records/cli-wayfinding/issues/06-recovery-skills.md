@@ -50,12 +50,8 @@ None
 
 ## Acceptance
 
-- [Acceptance](../acceptances/06-recovery-skills-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/06-recovery-skills-compact-paths-20260919.md)
 
 ## Comments
 
-2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/06-recovery-skills-final-20260919.md).
-
-2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/06-recovery-skills-20260919.md).
-
-Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
+Created from the user-approved implementation plan. Verification output and acceptance history are local files excluded from Git. The current Acceptance link requires those local records; see the [storage guidance](../../../../docs/agents/issue-tracker.md#local-verification-records).

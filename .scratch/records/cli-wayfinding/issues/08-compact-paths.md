@@ -47,8 +47,8 @@ None
 
 ## Comments
 
-2026-09-19: User feedback after the live demo identified repeated full paths as operator-view clutter and asked to continue the refinement. The core milestone's historical acceptance remains preserved; this record owns the presentation follow-up.
+The user requested shorter actionable paths after the live operator-view demonstration. This ticket owns that presentation refinement. Verification output and acceptance history are local files excluded from Git, as described in the [storage guidance](../../../../docs/agents/issue-tracker.md#local-verification-records).
 
 ## Acceptance
 
-- [Acceptance](../acceptances/08-compact-paths-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/08-compact-paths-compact-paths-20260919.md)

@@ -1,8 +1,0 @@
-?   	github.com/Zokiio/context/cmd/ctx	[no test files]
-ok  	github.com/Zokiio/context/internal/cli	0.751s
-ok  	github.com/Zokiio/context/internal/discovery	(cached)
-ok  	github.com/Zokiio/context/internal/orientation	0.633s
-ok  	github.com/Zokiio/context/internal/recordread	(cached)
-ok  	github.com/Zokiio/context/internal/resumption	0.547s
-ok  	github.com/Zokiio/context/internal/taskcontext	(cached)
-ok  	github.com/Zokiio/context/internal/workspace	(cached)

@@ -1,7 +1,0 @@
-?   	github.com/Zokiio/context/cmd/ctx	[no test files]
-ok  	github.com/Zokiio/context/internal/cli	0.827s
-ok  	github.com/Zokiio/context/internal/discovery	1.134s
-ok  	github.com/Zokiio/context/internal/orientation	0.793s
-ok  	github.com/Zokiio/context/internal/recordread	0.206s
-ok  	github.com/Zokiio/context/internal/taskcontext	0.564s
-ok  	github.com/Zokiio/context/internal/workspace	0.408s

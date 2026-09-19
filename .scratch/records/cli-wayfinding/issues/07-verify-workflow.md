@@ -51,12 +51,8 @@ None
 
 ## Comments
 
-2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/07-verify-workflow-final-20260919.md).
-
-Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
-
-2026-09-19: For the deliberate fresh-session trial, the documentation session owns user documentation. The root coordinator owns controlled verification fixtures, final repository checks, and acceptance records. The initial documentation session stops after useful unfinished work and a checkpoint. Its successor continues from this ticket and repository guidance.
+Created from the user-approved implementation plan. Verification output and acceptance history are local files excluded from Git. The current Acceptance link requires those local records; see the [storage guidance](../../../../docs/agents/issue-tracker.md#local-verification-records).
 
 ## Acceptance
 
-- [Acceptance](../acceptances/07-verify-workflow-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/07-verify-workflow-compact-paths-20260919.md)

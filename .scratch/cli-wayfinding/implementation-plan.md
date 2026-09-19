@@ -28,13 +28,11 @@ The first two tickets have no work blockers. The recovery chain uses explicit in
 
 Use the repository's task-context and recorded-acceptance procedures when implementing. The illustrative JSON projections require real source fixtures and computed digests before serving as implementation checks. No implementation is claimed by publication of these tickets.
 
-## Publication verification
+## Verification
 
-Built the current reader from revision `4459638` and read all seven tickets through `context` with the repository authorized for supporting sources. Every result was complete with complete traversal. Orientation recognized all seven unambiguous WorkItems with unstarted execution and ready-for-agent triage. The two dependency-free tickets have ready checks; the remaining five are blocked by their declared prerequisites. All seven remain outside current commitments, so they are not yet pickup-shortlist entries. This verifies record publication, not implementation acceptance.
+Run `go test ./...`, `go test -race ./...`, `go vet ./...`, and `go build ./...` to check the implementation. The reusable tests and fixtures live alongside the Go packages.
 
-## Implementation verification
-
-All seven tickets are implemented and completed. The [combined evidence](evidence/07-workflow-verification.md) records final source checks, independent reviews, a real fresh-agent continuation and controlled recovery cases. The [final dependency observation](evidence/07-final-dependency-graph.json) verifies all seven current acceptances as valid and all supported checks as passing. Earlier publication and slice evidence retain their original tested identities.
+Verification output and generated acceptance records are local files excluded from Git. Follow the [local verification record guidance](../../docs/agents/issue-tracker.md#local-verification-records) to restore or recreate them. Ticket execution records completed work; a fresh checkout cannot verify its historical acceptance without those local records.
 
 ## Operator feedback
 

@@ -1,2 +1,0 @@
-pid=16261 state=live
-pid=16261 state=confirmed-stopped

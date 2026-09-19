@@ -1,1 +1,0 @@
-refused: live fixture writer pid 16261 is still running; no cache mutation performed

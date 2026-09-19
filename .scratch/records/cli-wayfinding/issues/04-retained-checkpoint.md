@@ -50,14 +50,8 @@ None
 
 ## Acceptance
 
-- [Acceptance](../acceptances/04-retained-checkpoint-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/04-retained-checkpoint-compact-paths-20260919.md)
 
 ## Comments
 
-2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/04-retained-checkpoint-final-20260919.md).
-
-2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/04-retained-checkpoint-review-20260919.md).
-
-Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
-
-2026-09-19: Reassessed timestamp and effective-type corrections after independent review. Prior decision: [Initial acceptance](../acceptances/04-retained-checkpoint-20260919.md).
+Created from the user-approved implementation plan. Verification output and acceptance history are local files excluded from Git. The current Acceptance link requires those local records; see the [storage guidance](../../../../docs/agents/issue-tracker.md#local-verification-records).

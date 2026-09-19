@@ -2,5 +2,9 @@
 /.cache/
 /.context-cache/
 
+# Local verification output and generated acceptance records.
+/.scratch/*/evidence/
+/.scratch/records/*/acceptances/
+
 # Coordination lock retained by local setup writers.
 /.context/config.md.lock
