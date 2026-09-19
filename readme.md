@@ -22,9 +22,10 @@ The committed [.context/config.md](.context/config.md) selects `.scratch/records
 
 This repository's accumulated acceptance evidence exceeds the reader defaults of 100 files and 1 MiB. The example raises those limits for this invocation. Defaults remain unchanged.
 
-For structured orientation, add `--json`:
+Use `--detail` for the full text report, or `--json` for structured orientation:
 
 ```sh
+/tmp/ctx orient --detail --max-files 500 --max-bytes 8388608
 /tmp/ctx orient --json --max-files 500 --max-bytes 8388608
 ```
 
@@ -34,7 +35,16 @@ Read one ticket and its linked requirements:
 /tmp/ctx context --ticket project-discovery/issues/06-document-and-trial.md
 ```
 
-Ticket paths are relative to the selected records directory. `context` always writes JSON. Both reader commands leave files unchanged and never prompt.
+Ticket paths are relative to the selected records directory. `context` always writes JSON. All three reader commands leave files unchanged and never prompt.
+
+Continue an interrupted task from its current requirements and local recovery notes:
+
+```sh
+/tmp/ctx resume --ticket cli-wayfinding/issues/07-verify-workflow.md \
+	--max-files 500 --max-bytes 8388608
+```
+
+Add `--json` for the full resumption report. Follow [Continue an interrupted task](docs/resuming-work.md) to inspect changes, preserve checkpoint provenance, and handle conflicting or unfinished notes.
 
 ## Connect other projects
 

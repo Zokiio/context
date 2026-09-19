@@ -8,14 +8,17 @@ Inspect one project bundle before choosing a ticket:
 
 ```sh
 /tmp/ctx orient --bundle /path/to/bundle
+/tmp/ctx orient --bundle /path/to/bundle --detail
 /tmp/ctx orient --bundle /path/to/bundle --json
 ```
 
 `orient` discovers scope from cwd by default. These direct-reader examples use `--bundle`. The command accepts no ticket or positional argument. It reads `project.md` first, then discovers Markdown records in the bundle. A project need not be a Git repository. Discovery includes untracked and ignored files and does not traverse directory symlink aliases.
 
-`--bundle`, `--max-files`, `--max-bytes`, and `--json` each accept at most one occurrence. Repeating one returns exit status `2`, including when its values agree. `--allow-source` remains repeatable.
+`--bundle`, `--max-files`, `--max-bytes`, `--json`, and `--detail` each accept at most one occurrence. Repeating one returns exit status `2`, including when its values agree. `--allow-source` remains repeatable.
 
-The default text report shows project identity, authored goals, current commitments, work in progress, backlog, decisions, and gaps. Each work item keeps execution, triage, commitment membership, readiness, and eligibility separate. Source paths, whole-file digests, and relationship reasons identify the records behind the report. No generated summary replaces authored goals.
+The default compact text report shows project identity, authored goals, completeness, current commitments, needed intervention, work in progress, and the new-pickup shortlist. Equivalent causes are grouped by diagnostic or check code and source or relationship identity, with affected commitments retained. Unknown conditions and warnings remain visible.
+
+`--detail` shows the full presentation, including every evaluated work item and backlog. `--detail --json` is invalid and returns exit status `2`. JSON always preserves the full report. Workspace `--detail` remains navigation without evaluating member projects. `orient` does not inspect recovery notes. Its continuation pointers select `resume`. Each work item keeps execution, triage, commitment membership, readiness, and eligibility separate. Source paths, whole-file digests, and relationship reasons identify the records behind the report. No generated summary replaces authored goals.
 
 Use a selected work item's source path as `ctx context --ticket` to obtain its complete requirements. Reuse the project and allowed-source arguments. The [authoring profiles](agents/issue-tracker.md) define the manifest sections and record fields.
 
@@ -174,14 +177,85 @@ Exit status is `0` for complete JSON, `1` for incomplete JSON, and `2` for inval
 
 The reader uses current files on disk and does not write records. Digests identify each file's bytes; they do not claim an atomic snapshot across files.
 
+## Resume a task
+
+`resume` combines current task context, project orientation, and the selected checkout's recovery notes. It defaults to readable text and returns the full structured report with `--json`. The [continuation guide](resuming-work.md) covers checkpoint publication and deliberate recovery.
+
+```sh
+/tmp/ctx resume --ticket feature/issues/task.md
+/tmp/ctx resume --ticket feature/issues/task.md --json
+/tmp/ctx resume --bundle /work/records --checkout /work/application \
+	--ticket feature/issues/task.md --allow-source /work/application/docs
+```
+
+`--ticket` is required. Its path follows the context reader rules. The command accepts no positional arguments or `--detail`. Every scalar flag accepts at most one occurrence. `--allow-source` remains repeatable. The project, workspace, and bundle selectors are mutually exclusive. A selected workspace requires explicit project selection.
+
+`--checkout` chooses the cache's working directory. Direct `--bundle` requires it. Discovery otherwise supplies the project binding or marker directory. A relative override resolves from invocation cwd. The working directory must be accessible, but need not use Git. Changing it does not change project selection or source authorization. See [Resume checkout selection](discovery.md#resume-checkout-selection).
+
+The selected Project and WorkItem need nonempty, unambiguous stable IDs. When identity is unknown, current facts remain available, but cache lookup is skipped. Notes live under `<working-directory>/.context-cache/resume-v1/<project-key>/<task-key>/observations/`. Each key is the lowercase SHA-256 of the effective trimmed ID's UTF-8 bytes, without a newline. The reader never searches other checkouts or namespaces.
+
+### Collection and provenance
+
+Current sources share the default budget of 100 files and 1,048,576 bytes. `--max-files` and `--max-bytes` override those limits. The command captures the Project manifest, task context, and remaining orientation sources in that order. Each physical source is counted once and reused for parsing, hashes, and evaluation. This capture is not an atomic filesystem snapshot.
+
+Cache inspection has separate defaults of 200 entries and 4,194,304 file-content bytes. `--max-cache-files` and `--max-cache-bytes` accept positive overrides. The entry budget counts observation directories and attempted fixed file paths, not just note bodies. Enumeration uses at most one lookahead entry to detect a limit breach. File reads use at most one lookahead byte. Partial enumeration has no guaranteed global lexical prefix and cannot establish current candidates.
+
+Each finalized `note.md` records its author, predecessors, checkout provenance, and the SHA-256 of its retained `context.json`. That snapshot contains exact output bytes from the task-context collection used by the earlier session. The reader validates the file digest, schema, source digests, and root task identity before returning retained text. Only current candidates load snapshot bodies. Earlier snapshots remain `not_loaded`.
+
+Historical paths grant no source access. Current bundle and allowed-source roots govern retained text too. Unauthorized text is withheld. Invalid snapshots return no source text. Git revision provenance does not identify uncommitted changes, and a note's reported checks do not establish acceptance. Structured acceptance remains in `orientation` with its original actor, tested revision, and evidence.
+
+The reader neither writes files nor follows arbitrary links in note prose. Skills publish notes and perform deliberate quarantine or reset. The [RecoveryNote profile](../.agents/skills/recovery-notes/PROFILE.md) defines the authoring format.
+
+### Resumption JSON
+
+The version-1 envelope has `kind: "task-resumption"`. Its `context` and `orientation` preserve their existing schemas.
+
+| Field | Meaning |
+| --- | --- |
+| `schemaVersion`, `kind` | `1`, `task-resumption` |
+| `complete` | All selected current facts and recovery comparisons were evaluated |
+| `scope` | Canonical `recordsDirectory`, `workingDirectory`, `cacheRoot`, and nullable `projectId` and `taskId` |
+| `context`, `orientation` | Full current reader reports with separate completeness fields |
+| `recovery` | `status`, `inventoryComplete`, `graphStatus`, parsed `observations`, and candidate IDs |
+| `comparison` | `baselineAvailable`, `complete`, and one comparison per candidate |
+| `diagnostics` | Code, severity, message, and nullable path, referring source, link, and observation ID |
+
+Lists are arrays, including when empty. Unavailable scalar values are `null`. Observation metadata and exact Markdown bodies retain authored claims. `source` identifies the note path and SHA-256. `snapshot` reports its path, recorded and observed digests, status, and source count. The [nested field contract](../.scratch/cli-wayfinding/spec.md#nested-json-field-contract) defines every object and nullability rule.
+
+| Recovery status | Meaning |
+| --- | --- |
+| `absent` | A complete inspection found no observations |
+| `available` | A complete valid graph has one leaf candidate |
+| `conflicting` | A complete valid graph has several leaf candidates |
+| `unknown` | Identity, inspection, or graph validity prevents candidate selection |
+
+Candidates are graph leaves in lexical ID order, never chosen by timestamp. Invalid or incomplete graphs have no selected candidate IDs. Parsed notes remain inspectable with diagnostics. `graphStatus` is `valid`, `incomplete`, `invalid`, or `not_evaluated`.
+
+Graph validity and snapshot validity are separate. An available note can have an invalid snapshot, which makes comparison partial. Snapshot status is `not_loaded`, `valid`, `incomplete`, `invalid`, `unavailable`, or `withheld`. An older snapshot marked `not_loaded` does not make the report partial.
+
+Each candidate comparison identifies its `observationId`, baseline availability, completeness, and source differences. A difference contains nullable `previous` and `current` sources with path, digest, text, and availability. Its status is `unchanged`, `changed`, `added`, `removed`, or `unknown`. Text changes include uncommitted edits and metadata edits. They do not necessarily change requirement fingerprints.
+
+Sources match by selected authorized path, except that stable task identity supports a moved root ticket. Added and removed statuses require complete source sets on both sides. Removed means no longer selected, not necessarily deleted from disk. Unknown or null information in an incomplete comparison does not establish deletion. Differences follow current context order, then unmatched retained-source order.
+
+Missing notes give `baselineAvailable: false`, without asserting that files are unchanged. A known conflict can be complete. Top-level completeness requires complete context, orientation, comparison, and recovery inventory, plus a valid graph. These fields do not establish work readiness or accepted completion.
+
+| Exit status | Meaning |
+| --- | --- |
+| `0` | Complete report, including known blockers, missing notes, or fully inspected conflicts |
+| `1` | Partial current facts, identity, recovery inspection, or comparison |
+| `2` | Invalid invocation or scope, unavailable working directory, cancellation, or operation/output failure |
+
+Reports and data diagnostics go to stdout. Invocation and operation errors go to stderr. A fully observed conflict produces `recovery_conflict` as a warning. Invalid notes, unfinished publications, missing predecessors, cycles, invalid or unauthorized snapshots, and exhausted budgets remain attributed diagnostics. Missing cache is an ordinary status, not an error.
+
 ## Go package responsibilities
 
-- `cmd/ctx` wires both application operations into the CLI and exits with its status.
+- `cmd/ctx` wires application operations into the CLI and exits with its status.
 - `internal/cli` owns urfave/cli v3 flags, text and JSON rendering, and exit statuses. It accepts an explicit `Operations` value.
 - `internal/discovery` parses configuration, resolves project and workspace scope, and prepares and applies setup writes.
 - `internal/workspace` enumerates selected members and checks records-directory access without evaluating project work.
 - `internal/taskcontext` exposes `Assemble(context.Context, Request) (Result, error)` and owns task-context selection.
 - `internal/orientation` exposes `Orient(context.Context, Request) (Result, error)` and owns record inventory and project evaluation.
+- `internal/resumption` exposes `Resume(context.Context, Request) (Result, error)` and owns recovery inspection, graph evaluation, and source comparison over refreshed reader results.
 - `internal/recordread` shares Markdown and YAML parsing and authorized source reads between the application operations.
 
 The application operations do not depend on CLI types, print output, or exit. Dependencies are pinned in [go.mod](../go.mod). Application tests use real temporary directories. Testscript covers the CLI contract.

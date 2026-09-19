@@ -1,6 +1,6 @@
 # Discovery reference
 
-`ctx orient` and `ctx context` share one discovery operation. The selected record store and authorized source directories are inputs to the existing readers. Discovery does not change cwd, prompt, or write configuration.
+`ctx orient`, `ctx context`, and `ctx resume` share one discovery operation. The selected record store and authorized source directories are inputs to the existing readers. Discovery does not change cwd, prompt, or write configuration.
 
 ## Selectors and paths
 
@@ -17,11 +17,19 @@ The three selector flags are mutually exclusive. Empty or repeated selectors fai
 
 Command paths resolve from cwd. Saved relative paths resolve from the encountered configuration file's directory, including when the configuration file is a symlink. Absolute saved paths remain absolute. Saved values have no tilde expansion, environment-variable interpolation, or executable expressions.
 
-`--bundle` receives only explicit `--allow-source` roots. It bypasses malformed personal or shared configuration. Direct `context` does not require a Project manifest. Direct `orient` retains its existing manifest validation and partial-report behavior.
+`--bundle` receives only explicit `--allow-source` roots. It bypasses malformed personal or shared configuration. Direct `context` does not require a Project manifest. Direct `orient` retains its existing manifest validation and partial-report behavior. Direct `resume` also requires `--checkout` and validates project and task identity before reading notes.
 
 The old direct-directory meaning of `--project` has changed. A manifestless records directory now requires `--bundle` for direct task-context access. Failed project discovery never falls back to treating the selector as a raw records directory.
 
 Ticket paths remain relative to the selected records directory. Bare `ctx` displays command guidance instead of performing discovery.
+
+## Resume checkout selection
+
+`resume` reads notes from one working directory. A discovered project binding supplies its binding directory. A bare Project marker supplies the marker directory. `--checkout PATH` overrides either location, and direct `--bundle` access requires it. Relative checkout paths resolve from invocation cwd. An alias invocation with unavailable cwd requires an absolute path for an explicit checkout.
+
+The selected working directory must exist and be accessible, but need not use Git. The cache stays under that directory, including when records live elsewhere. The command never searches another checkout or the shared Git common directory. An unavailable checkout fails without falling back to the record store.
+
+`--checkout` changes neither the selected project nor source authorization. The selected Project and WorkItem need unambiguous stable IDs for cache lookup. Missing or ambiguous identity leaves recovery unknown and the report partial. A workspace requires explicit project selection even if it has one member. See [Task resumption](readers.md#resume-a-task) for the report and [Continue an interrupted task](resuming-work.md) for examples.
 
 ## Configuration documents
 
@@ -97,7 +105,7 @@ workspaces:
 Local registrations for this machine.
 ```
 
-Project aliases select their saved entries independently of cwd. If cwd lookup fails, aliases still work; additional `--allow-source` paths must then be absolute. Alias selection requires available records and allowed roots, but an unavailable checkout does not prevent selection. Unrelated missing registered targets do not invalidate the registry's structure.
+Project aliases select their saved entries independently of cwd. If cwd lookup fails, aliases still work; additional `--allow-source` paths must then be absolute. Alias selection requires available records and allowed roots. `context` and `orient` do not require an available checkout. `resume` also requires an available working directory for its cache. Unrelated missing registered targets do not invalidate the registry's structure.
 
 ### Workspace declaration
 
@@ -122,7 +130,7 @@ The personal registry is loaded and structurally validated once. Missing persona
 
 At each directory depth, discovery compares applicable personal bindings, the local shared configuration, and a Project marker. The nearest applicable depth wins across storage locations. A narrower personal binding can therefore override a broader shared binding.
 
-At equal depth, implicit selection prefers a project to a workspace. Explicit selectors filter candidates by kind. A nearer workspace stops implicit selection from reaching a broader project. `context` then reports that project selection is required, even when the workspace has one member.
+At equal depth, implicit selection prefers a project to a workspace. Explicit selectors filter candidates by kind. A nearer workspace stops implicit selection from reaching a broader project. `context` and `resume` then report that project selection is required, even when the workspace has one member.
 
 Conflicting candidates of the selected kind at equal depth fail with their origins. Project mappings coalesce only when canonical records and effective allowed-source sets agree. An agreeing mapping can supply roots alongside a bare Project marker. Two authored mappings with different roots conflict. Canonically identical workspace declarations can coalesce.
 
@@ -164,7 +172,7 @@ Writes require stable filesystem identities for the coordination locks. macOS an
 
 ## Reports, limits, and failures
 
-`context` writes project task-context JSON. `orient` writes project orientation text by default and JSON with `--json`. Discovery preserves the existing project report schemas.
+`context` writes project task-context JSON. `orient` writes compact project orientation text by default, full text with `--detail`, and JSON with `--json`. `resume` writes task resumption text by default and JSON with `--json`. Discovery preserves the existing project report schemas.
 
 `--explain-scope` writes the winning kind, binding directory, records or workspace identity, and declaration origins to stderr. Reports remain on stdout. Discovery failures produce an error on stderr without a successful report.
 
