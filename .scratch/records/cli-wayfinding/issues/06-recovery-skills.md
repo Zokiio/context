@@ -3,7 +3,7 @@ type: WorkItem
 id: 7ce25cb8-22e4-4012-9ba4-dee5095a5c6f
 title: "Teach skills to maintain and recover working notes"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Teach skills to maintain and recover working notes
