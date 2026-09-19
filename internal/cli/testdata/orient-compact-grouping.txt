@@ -10,15 +10,16 @@ stdout 'link "https://two.example/requirements"'
 exit 1 ctx orient --bundle shared
 ! stderr .
 stdout -count=1 '^  error source_missing:$'
-stdout 'link "missing.md"'
-stdout 'link "./missing.md"'
+stdout 'source: missing.md'
+! stdout 'link "missing.md"'
+! stdout 'link "./missing.md"'
 
 # Unknown state on uncommitted work remains visible through reader diagnostics.
 exit 1 ctx orient --bundle uncommitted
 ! stderr .
 stdout 'error invalid_profile:'
 stdout 'WorkItem requires a valid execution'
-stdout 'uncommitted/work.md'
+stdout 'source: work.md'
 
 -- bundle/project.md --
 ---

@@ -23,6 +23,7 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 - [Handle competing and interrupted checkpoints](cli-wayfinding/issues/05-competing-checkpoints.md)
 - [Teach skills to maintain and recover working notes](cli-wayfinding/issues/06-recovery-skills.md)
 - [Verify the complete interrupted-task workflow](cli-wayfinding/issues/07-verify-workflow.md)
+- [Keep compact orientation focused on work](cli-wayfinding/issues/08-compact-paths.md)
 
 ## Open decisions
 

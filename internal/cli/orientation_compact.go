@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"io"
+	"path/filepath"
 	"strings"
 
 	"github.com/Zokiio/context/internal/orientation"
@@ -25,19 +26,25 @@ type attentionSource struct {
 	link string
 }
 
+type compactOrientationView struct {
+	recordsRoot   string
+	rootKnown     bool
+	ambiguousWork map[string]bool
+}
+
 func renderOrientation(output io.Writer, result orientation.Result) error {
 	var text strings.Builder
-	writeOrientationProject(&text, result)
-	writeOrientationGoals(&text, result)
-	writeCompactCommitments(&text, result)
-	writeCompactAttention(&text, result)
-	writeCompactWork(&text, "In progress", result.InProgress)
+	view := newCompactOrientationView(result)
+	writeCompactProject(&text, result, view)
+	writeCompactGoals(&text, result)
+	writeCompactCommitments(&text, result, view)
+	writeCompactAttention(&text, result, view)
+	writeCompactWork(&text, "In progress", result.InProgress, view)
 	if result.InventoryComplete {
-		writeCompactWork(&text, "New pickup shortlist", result.Shortlist)
+		writeCompactWork(&text, "New pickup shortlist", result.Shortlist, view)
 	} else {
 		fmt.Fprintln(&text, "\nNew pickup shortlist: suppressed because inventory is partial")
 	}
-	writeCompactSources(&text, result)
 	fmt.Fprintln(&text, "Task context: run ctx context with a work item's source as --ticket, using the same scope and --allow-source arguments.")
 	fmt.Fprintln(&text, "Continuation: run ctx resume --ticket <work-item-source> with the same scope and --allow-source arguments; direct --bundle access also requires --checkout <working-directory>.")
 	fmt.Fprintln(&text, "Expanded detail: rerun ctx orient with the same scope and --detail.")
@@ -45,7 +52,52 @@ func renderOrientation(output io.Writer, result orientation.Result) error {
 	return err
 }
 
-func writeCompactCommitments(output *strings.Builder, result orientation.Result) {
+func newCompactOrientationView(result orientation.Result) compactOrientationView {
+	view := compactOrientationView{ambiguousWork: make(map[string]bool, len(result.WorkItems))}
+	for _, item := range result.WorkItems {
+		view.ambiguousWork[item.Source] = item.IdentityAmbiguous
+	}
+	if result.Project == nil || !filepath.IsAbs(result.Project.Source) || filepath.Base(result.Project.Source) != "project.md" {
+		return view
+	}
+	view.recordsRoot = filepath.Dir(filepath.Clean(result.Project.Source))
+	view.rootKnown = true
+	return view
+}
+
+func writeCompactProject(output *strings.Builder, result orientation.Result, view compactOrientationView) {
+	if result.Project == nil {
+		fmt.Fprintln(output, "Project: unknown")
+	} else {
+		fmt.Fprintf(output, "Project: %s [%s]\n", result.Project.Title, result.Project.ID)
+	}
+	if view.rootKnown {
+		fmt.Fprintf(output, "Record store: %s\n", view.recordsRoot)
+	} else {
+		fmt.Fprintln(output, "Record store: unknown")
+	}
+	fmt.Fprintf(output, "Evaluation: %s; inventory: %s\n", completeness(result.Complete), completeness(result.InventoryComplete))
+}
+
+func writeCompactGoals(output *strings.Builder, result orientation.Result) {
+	fmt.Fprintln(output)
+	switch {
+	case result.Project == nil || !result.Project.GoalsKnown:
+		fmt.Fprintln(output, "Goals: unknown")
+	case len(result.Goals) == 0:
+		fmt.Fprintln(output, "Goals: none")
+	default:
+		fmt.Fprintln(output, "Goals:")
+	}
+	for _, goal := range result.Goals {
+		fmt.Fprint(output, goal.Text)
+		if !strings.HasSuffix(goal.Text, "\n") {
+			fmt.Fprintln(output)
+		}
+	}
+}
+
+func writeCompactCommitments(output *strings.Builder, result orientation.Result, view compactOrientationView) {
 	fmt.Fprintln(output)
 	known := result.Project != nil && result.Project.CommitmentsKnown
 	if !known {
@@ -61,7 +113,7 @@ func writeCompactCommitments(output *strings.Builder, result orientation.Result)
 	}
 	items := workItemsBySource(result.WorkItems)
 	for _, ref := range result.CurrentCommitments {
-		fmt.Fprintf(output, "  %s [%s]\n    source: %s%s\n", knownString(ref.Title), knownString(ref.ID), ref.Path, relationshipDetails(ref.From, ref.Link))
+		fmt.Fprintf(output, "  %s\n", view.workReference(ref, true))
 		item, found := items[ref.Path]
 		if !found {
 			fmt.Fprintln(output, "    execution: unknown; readiness: unknown")
@@ -71,7 +123,7 @@ func writeCompactCommitments(output *strings.Builder, result orientation.Result)
 	}
 }
 
-func writeCompactAttention(output *strings.Builder, result orientation.Result) {
+func writeCompactAttention(output *strings.Builder, result orientation.Result, view compactOrientationView) {
 	fmt.Fprintln(output, "\nNeeds attention:")
 	causes := compactAttentionCauses(result)
 	if len(causes) == 0 {
@@ -89,8 +141,8 @@ func writeCompactAttention(output *strings.Builder, result orientation.Result) {
 		for _, message := range cause.messages {
 			fmt.Fprintf(output, "    %s\n", message)
 		}
-		writeCauseSource(output, cause)
-		writeReferences(output, "    Affected work", cause.affected)
+		writeCauseSource(output, cause, view)
+		writeCompactReferences(output, "    Affected work", cause.affected, view, false)
 	}
 }
 
@@ -230,61 +282,63 @@ func attentionIdentity(kind string, finding orientation.Finding) string {
 	return "relationship\x00" + finding.From + "\x00" + finding.Link
 }
 
-func writeCauseSource(output *strings.Builder, cause *attentionCause) {
+func writeCauseSource(output *strings.Builder, cause *attentionCause, view compactOrientationView) {
+	written := map[string]bool{}
 	for _, source := range cause.sources {
+		line := ""
 		if source.path != "" {
-			fmt.Fprintf(output, "    source: %s", source.path)
-			fmt.Fprintln(output, relationshipDetails(source.from, source.link))
-		} else {
-			fmt.Fprintf(output, "    relationship%s\n", relationshipDetails(source.from, source.link))
-		}
-	}
-}
-
-func writeCompactWork(output *strings.Builder, heading string, refs []orientation.Reference) {
-	fmt.Fprintln(output)
-	writeReferences(output, heading, refs)
-}
-
-func writeCompactSources(output *strings.Builder, result orientation.Result) {
-	fmt.Fprintln(output, "\nProject references:")
-	wrote := false
-	commitmentPaths := map[string]bool{}
-	for _, commitment := range result.CurrentCommitments {
-		commitmentPaths[commitment.Path] = true
-	}
-	projectPath := ""
-	if result.Project != nil {
-		projectPath = result.Project.Source
-	}
-	for _, source := range result.Sources {
-		reasons := []orientation.Reason{}
-		for _, reason := range source.Reasons {
-			switch reason.Kind {
-			case "goal", "open_decision":
-				if reason.From != projectPath {
-					continue
-				}
-				reasons = append(reasons, reason)
-			case "spec", "context", "blocked_by", "blocked_by_decision", "acceptance":
-				if !commitmentPaths[reason.From] {
-					continue
-				}
-				reasons = append(reasons, reason)
+			line = "    source: " + view.path(source.path)
+			if source.path == source.from && source.link != "" {
+				line += relationshipDetails(view.path(source.from), source.link)
 			}
+		} else {
+			line = "    relationship" + relationshipDetails(view.path(source.from), source.link)
 		}
-		if len(reasons) == 0 {
-			continue
-		}
-		wrote = true
-		fmt.Fprintf(output, "  %s\n", source.Path)
-		for _, reason := range reasons {
-			fmt.Fprintf(output, "    %s%s\n", reason.Kind, relationshipDetails(reason.From, reason.Link))
+		if !written[line] {
+			fmt.Fprintln(output, line)
+			written[line] = true
 		}
 	}
-	if !wrote {
-		fmt.Fprintln(output, "  none")
+}
+
+func writeCompactWork(output *strings.Builder, heading string, refs []orientation.Reference, view compactOrientationView) {
+	fmt.Fprintln(output)
+	writeCompactReferences(output, heading, refs, view, true)
+}
+
+func writeCompactReferences(output *strings.Builder, heading string, refs []orientation.Reference, view compactOrientationView, includePath bool) {
+	if len(refs) == 0 {
+		fmt.Fprintf(output, "%s: none\n", heading)
+		return
 	}
+	fmt.Fprintf(output, "%s:\n", heading)
+	indent := strings.Repeat(" ", len(heading)-len(strings.TrimLeft(heading, " "))+2)
+	for _, ref := range refs {
+		fmt.Fprintf(output, "%s%s\n", indent, view.workReference(ref, includePath))
+	}
+}
+
+func (view compactOrientationView) workReference(ref orientation.Reference, includePath bool) string {
+	value := fmt.Sprintf("%s [%s]", knownString(ref.Title), knownString(ref.ID))
+	if ref.Path != "" && (includePath || missingReferenceIdentity(ref) || view.ambiguousWork[ref.Path]) {
+		value += " " + view.path(ref.Path)
+	}
+	return value
+}
+
+func missingReferenceIdentity(ref orientation.Reference) bool {
+	return ref.ID == nil || strings.TrimSpace(*ref.ID) == "" || ref.Title == nil || strings.TrimSpace(*ref.Title) == ""
+}
+
+func (view compactOrientationView) path(path string) string {
+	if path == "" || !view.rootKnown || !filepath.IsAbs(path) {
+		return path
+	}
+	relative, err := filepath.Rel(view.recordsRoot, filepath.Clean(path))
+	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return path
+	}
+	return relative
 }
 
 func workItemsBySource(items []orientation.WorkItem) map[string]orientation.WorkItem {

@@ -4,6 +4,7 @@ cd caller
 exec ctx orient --bundle ../empty
 ! stderr .
 stdout 'Project: Empty project \[empty-project\]'
+stdout 'Record store: .*/empty'
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'Goals:'
 stdout 'No current delivery goals\.'
@@ -11,7 +12,7 @@ stdout 'Current commitments: none'
 stdout 'Needs attention:'
 stdout 'In progress: none'
 stdout 'New pickup shortlist: none'
-stdout 'Project references:'
+! stdout 'Project references:'
 stdout 'ctx resume --ticket <work-item-source> with the same scope'
 stdout 'rerun ctx orient with the same scope and --detail'
 cmp ../empty/project.md ../original.md

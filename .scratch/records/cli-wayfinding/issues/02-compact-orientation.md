@@ -18,8 +18,8 @@ This can proceed independently of the source-sharing and recovery work. Until th
 
 ## Acceptance criteria
 
-- [x] Default text includes authored goal text and source location, evaluation/inventory completeness, current commitments in authored order, needed intervention, in-progress work, the existing new-pickup shortlist, and relevant source/detail pointers.
-- [x] Equivalent blocking causes are grouped by check/diagnostic code and resolved source or relationship identity, with all affected commitments and source references retained. Equal prose does not merge distinct causes, and grouping does not invent priority or assignment.
+- [x] Default text includes authored goal text and the declared record-store root, evaluation/inventory completeness, current commitments in authored order, needed intervention, in-progress work, the existing new-pickup shortlist, and relevant source/detail pointers.
+- [x] Equivalent blocking causes are grouped by check/diagnostic code and resolved source or relationship identity, with all affected commitments and actionable source locations retained. Compact paths are relative to the declared record-store root where possible; full relationship provenance remains in detail and JSON. Equal prose does not merge distinct causes, and grouping does not invent priority or assignment.
 - [x] All warnings/errors and unknown conditions remain visible without silent truncation. Incomplete inventory suppresses the pickup shortlist while preserving independently known facts. In-progress work is not described as new pickup eligibility.
 - [x] The detail option selects the full presentation; combining it with JSON or repeating it fails with exit status 2. Full orientation JSON keeps its version-1 fields and evaluation semantics. Workspace detail remains navigation rather than recursive evaluation.
 - [x] Orientation performs no cache traversal and makes no claim that a recovery note was found. Continuation guidance identifies the proposed resume operation without changing record state.
@@ -48,6 +48,8 @@ None
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
 
 ## Comments
+
+2026-09-19: The user refined path presentation after the live demo. [Compact path follow-up](08-compact-paths.md) owns verification of shorter paths and reduced routine provenance. Earlier evidence retains the original presentation.
 
 2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/02-compact-orientation-resume-20260919.md).
 

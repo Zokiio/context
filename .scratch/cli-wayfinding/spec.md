@@ -28,11 +28,13 @@ Default project text becomes the compact overview. `--detail` selects the existi
 
 The compact project presentation contains:
 
-1. Project title, source location, authored goals, and evaluation/inventory completeness. Do not generate a prose summary of authored goals; preserve their text.
+1. Project title, the selected record-store root, authored goals, and evaluation/inventory completeness. Do not generate a prose summary of authored goals; preserve their text. The root establishes the base for displayed record paths.
 2. Current commitments in authored order, with execution and readiness shown separately.
 3. Needs attention: shared blocking decisions, prerequisite failures, missing required sources, and unknown checks, with affected commitments and source references.
 4. In-progress work and the existing shortlist for new pickup, explicitly distinguished.
-5. Project references selected by existing goal/record relationships, and guidance to obtain task context, resumption, or expanded detail.
+5. Guidance to obtain task context, resumption, or expanded detail. Full project-reference listings and routine source/relationship provenance belong in detail and JSON, not the compact overview.
+
+The user refined the operator presentation after the live CLI demonstration on 2026-09-19. Show the record-store root once. Use root-relative paths for actionable records and findings inside that store, preserving directories and same-filename distinctions. Keep external paths explicit and preserve original paths when a reliable root is unavailable. Do not guess a Git root or use cwd as a substitute. Omit repeated generated project.md source lines, routine from/link annotations, and path repetition in affected-work lists when title and ID identify the work. Preserve enough referring-path/link detail to locate unresolved or ambiguous relationships. These are display rules only; full detail and JSON retain exact paths, provenance, and values.
 
 Group causes only when they have the same check or diagnostic code and resolved source/relationship identity. Equal message text is insufficient. Preserve first affected commitment order; within one commitment preserve existing check order. Keep distinct causes distinct. Do not infer assignees, priorities, delivery estimates, or whether a human must answer a question from prose.
 

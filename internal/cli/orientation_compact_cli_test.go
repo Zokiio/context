@@ -44,9 +44,9 @@ func TestCompactOrientationGroupsEquivalentCausesInCommitmentOrder(t *testing.T)
 	}
 	text := stdout.String()
 	for _, fact := range []string{
-		"Keep this exact authored goal.\n\nAnd its second paragraph.", "source: /bundle/project.md",
+		"Record store: /bundle", "Keep this exact authored goal.\n\nAnd its second paragraph.",
 		"execution: unstarted; readiness: blocked", "Needs attention:", "In progress:", "Active work [active]",
-		"New pickup shortlist:", "Next work [next]", "/docs/goal.md", "ctx resume --ticket <work-item-source> with the same scope",
+		"New pickup shortlist:", "Next work [next]", "ctx resume --ticket <work-item-source> with the same scope",
 	} {
 		if !strings.Contains(text, fact) {
 			t.Errorf("compact output missing %q:\n%s", fact, text)
@@ -63,9 +63,13 @@ func TestCompactOrientationGroupsEquivalentCausesInCommitmentOrder(t *testing.T)
 	sharedEnd := strings.Index(text[sharedStart:], "warning same_words:") + sharedStart
 	shared := text[sharedStart:sharedEnd]
 	if strings.Index(shared, "First authored [z]") > strings.Index(shared, "Second authored [a]") ||
-		!strings.Contains(shared, "from /bundle/z.md; link \"./decision.md\"") ||
-		!strings.Contains(shared, "from /bundle/a.md; link \"decision.md\"") {
-		t.Fatalf("group lost affected order or relationships: %s", shared)
+		strings.Count(shared, "source: decision.md") != 1 || strings.Contains(shared, "link ") || strings.Contains(shared, "from ") {
+		t.Fatalf("group lost affected order or repeated routine provenance: %s", shared)
+	}
+	for _, clutter := range []string{"source: /bundle/project.md", "/docs/goal.md", "Project references:", "source: /bundle/z.md", "source: /bundle/a.md"} {
+		if strings.Contains(text, clutter) {
+			t.Fatalf("compact output retained routine provenance %q: %s", clutter, text)
+		}
 	}
 	if strings.Count(text, "warning same_words:") != 2 {
 		t.Fatalf("equal prose merged distinct diagnostic identities: %s", text)
@@ -127,6 +131,114 @@ func TestCompactDecisionAffectedWorkUsesCommitmentOrder(t *testing.T) {
 	}
 }
 
+func TestCompactOrientationShortensOnlyPathsInsideTheRecordStore(t *testing.T) {
+	missingID := orientation.Reference{Path: "/records/alpha/task.md", Title: str("Same filename")}
+	missingTitle := orientation.Reference{Path: "/records/beta/task.md", ID: str("beta")}
+	ambiguous := orientation.Reference{Path: "/records/gamma/task.md", ID: str("duplicate"), Title: str("Ambiguous task")}
+	normal := orientation.Reference{Path: "/records/work/normal.md", ID: str("normal"), Title: str("Normal task"), From: "/records/project.md", Link: "work/normal.md"}
+	result := orientation.Result{
+		SchemaVersion: 1, Complete: true, InventoryComplete: true,
+		Project: &orientation.Project{ID: "paths", Title: "Path project", Source: "/records/project.md", GoalsKnown: true, CommitmentsKnown: true, OpenDecisionsKnown: true},
+		Goals: []orientation.Goal{{
+			Text:       "  Preserve these authored spaces.\nAnd this line.\n",
+			Source:     "/records/project.md",
+			References: []orientation.Reference{{Path: "/external/goal.md", From: "/records/project.md", Link: "../external/goal.md"}},
+		}},
+		CurrentCommitments: []orientation.Reference{missingID, missingTitle, ambiguous, normal},
+		WorkItems: []orientation.WorkItem{
+			{Title: missingID.Title, Source: missingID.Path, Execution: str("unstarted"), Readiness: "unknown"},
+			{ID: missingTitle.ID, Source: missingTitle.Path, Execution: str("unstarted"), Readiness: "unknown"},
+			{ID: ambiguous.ID, Title: ambiguous.Title, Source: ambiguous.Path, IdentityAmbiguous: true, Execution: str("unstarted"), Readiness: "unknown"},
+			{ID: normal.ID, Title: normal.Title, Source: normal.Path, Execution: str("unstarted"), Readiness: "blocked"},
+		},
+		InProgress: []orientation.Reference{normal},
+		Shortlist:  []orientation.Reference{normal},
+		Sources: []orientation.Source{{Path: "/records/project.md", Reasons: []orientation.Reason{{Kind: "project"}}}, {
+			Path: "/external/goal.md", Reasons: []orientation.Reason{{Kind: "goal", From: "/records/project.md", Link: "../external/goal.md"}},
+		}},
+		Diagnostics: []orientation.Diagnostic{
+			{Code: "internal_problem", Severity: "warning", Message: "Internal problem.", Path: "/records/findings/problem.md", From: normal.Path, Link: "../findings/problem.md"},
+			{Code: "ambiguous_problem", Severity: "warning", Message: "Ambiguous work problem.", Path: "/records/findings/ambiguous.md", From: ambiguous.Path, Link: "../findings/ambiguous.md"},
+			{Code: "sibling_problem", Severity: "warning", Message: "Sibling problem.", Path: "/records-copy/problem.md"},
+			{Code: "external_problem", Severity: "warning", Message: "External problem.", Path: "/external/problem.md"},
+			{Code: "unresolved_reference", Severity: "error", Message: "Relationship is unresolved.", Path: normal.Path, From: normal.Path, Link: "[missing]"},
+		},
+	}
+	original, err := json.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	compact := runOrientationResult(t, result)
+	for _, wanted := range []string{
+		"Record store: /records", "  Preserve these authored spaces.\nAnd this line.\n",
+		"Same filename [unknown] alpha/task.md", "unknown [beta] beta/task.md", "Ambiguous task [duplicate] gamma/task.md",
+		"source: findings/problem.md", "source: /records-copy/problem.md", "source: /external/problem.md",
+		"source: work/normal.md (from work/normal.md; link \"[missing]\")",
+	} {
+		if !strings.Contains(compact, wanted) {
+			t.Errorf("compact output missing %q:\n%s", wanted, compact)
+		}
+	}
+	if strings.Count(compact, "Record store: /records") != 1 {
+		t.Errorf("compact output did not declare the record store exactly once:\n%s", compact)
+	}
+	for _, unwanted := range []string{
+		"Normal task [normal] /records/work/normal.md", "source: /records/project.md", "/external/goal.md",
+		"link \"../findings/problem.md\"", "Project references:",
+	} {
+		if strings.Contains(compact, unwanted) {
+			t.Errorf("compact output retained %q:\n%s", unwanted, compact)
+		}
+	}
+	normalStart := strings.Index(compact, "warning internal_problem:")
+	ambiguousStart := strings.Index(compact, "warning ambiguous_problem:")
+	siblingStart := strings.Index(compact, "warning sibling_problem:")
+	if normalStart < 0 || ambiguousStart <= normalStart || siblingStart <= ambiguousStart {
+		t.Fatalf("attention causes are missing or out of order:\n%s", compact)
+	}
+	normalCause := compact[normalStart:ambiguousStart]
+	if !strings.Contains(normalCause, "      Normal task [normal]\n") || strings.Contains(normalCause, "Normal task [normal] work/normal.md") {
+		t.Errorf("affected work repeated an unambiguous task path:\n%s", normalCause)
+	}
+	ambiguousCause := compact[ambiguousStart:siblingStart]
+	if !strings.Contains(ambiguousCause, "      Ambiguous task [duplicate] gamma/task.md\n") {
+		t.Errorf("affected work omitted the path needed for ambiguous identity:\n%s", ambiguousCause)
+	}
+
+	detail := runOrientationResult(t, result, "--detail")
+	for _, retained := range []string{"source: /records/project.md", "/records/alpha/task.md", "/external/goal.md", "from /records/project.md; link \"../external/goal.md\""} {
+		if !strings.Contains(detail, retained) {
+			t.Errorf("detail output lost %q:\n%s", retained, detail)
+		}
+	}
+	jsonOutput := runOrientationResult(t, result, "--json")
+	if jsonOutput != string(original)+"\n" {
+		t.Fatalf("JSON changed:\n got %s\nwant %s", jsonOutput, original)
+	}
+	after, err := json.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(after, original) {
+		t.Fatalf("compact rendering mutated the result:\n before %s\n after %s", original, after)
+	}
+}
+
+func TestCompactOrientationPreservesPathsWhenProjectRootIsUnknown(t *testing.T) {
+	result := orientation.Result{
+		SchemaVersion: 1, Complete: false, InventoryComplete: false,
+		CurrentCommitments: []orientation.Reference{{Path: "/records/one/task.md", Title: str("Unknown identity")}},
+		Diagnostics:        []orientation.Diagnostic{{Code: "missing_project", Severity: "error", Message: "Project identity is unavailable.", Path: "/records/project.md"}},
+	}
+	text := runOrientationResult(t, result)
+	for _, wanted := range []string{"Project: unknown", "Record store: unknown", "Unknown identity [unknown] /records/one/task.md", "source: /records/project.md"} {
+		if !strings.Contains(text, wanted) {
+			t.Errorf("unknown-root output missing %q:\n%s", wanted, text)
+		}
+	}
+}
+
 func TestOrientationJSONIsUnchangedAndDetailConflicts(t *testing.T) {
 	result := orientation.Result{SchemaVersion: 1, Complete: true, InventoryComplete: true, Goals: []orientation.Goal{}, CurrentCommitments: []orientation.Reference{}, WorkItems: []orientation.WorkItem{}, Shortlist: []orientation.Reference{}, InProgress: []orientation.Reference{}, Backlog: []orientation.Reference{}, Decisions: []orientation.Decision{}, Sources: []orientation.Source{}, Diagnostics: []orientation.Diagnostic{}}
 	operation := func(context.Context, orientation.Request) (orientation.Result, error) { return result, nil }
@@ -161,4 +273,21 @@ func compactWork(id, title, path, causePath, from, link string) orientation.Work
 			{Code: "open_decision", Message: "The same words can describe different causes.", Path: causePath, From: from, Link: link},
 		}}},
 	}
+}
+
+func runOrientationResult(t *testing.T, result orientation.Result, flags ...string) string {
+	t.Helper()
+	args := append([]string{"ctx", "orient", "--bundle", "."}, flags...)
+	var stdout, stderr bytes.Buffer
+	status := cli.Run(context.Background(), args, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+		return result, nil
+	}})
+	wantStatus := 0
+	if !result.Complete {
+		wantStatus = 1
+	}
+	if status != wantStatus || stderr.Len() != 0 {
+		t.Fatalf("status=%d want=%d stderr=%q stdout=%q", status, wantStatus, stderr.String(), stdout.String())
+	}
+	return stdout.String()
 }

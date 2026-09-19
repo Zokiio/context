@@ -14,7 +14,9 @@ go build -o /tmp/ctx ./cmd/ctx
 
 Start by orienting yourself. The default report is the compact project view.
 Use `--detail` for every evaluated work item and `--json` when an agent or a
-script needs the structured report.
+script needs the structured report. The compact view shows its record-store
+root once. Paths beneath that root are relative; full provenance is available
+in the detailed and JSON reports.
 
 ```sh
 /tmp/ctx orient --max-files 500 --max-bytes 8388608

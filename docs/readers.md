@@ -18,6 +18,8 @@ Inspect one project bundle before choosing a ticket:
 
 The default compact text report shows project identity, authored goals, completeness, current commitments, needed intervention, work in progress, and the new-pickup shortlist. Equivalent causes are grouped by diagnostic or check code and source or relationship identity, with affected commitments retained. Unknown conditions and warnings remain visible.
 
+Compact output declares the record-store root once and uses relative paths for records and findings inside it. External paths remain explicit. When the root is unknown, paths remain unchanged. The overview omits routine source inventories and repeated from/link annotations. Relationship failures retain enough referring-path and link detail to locate the problem. Use `--detail` or `--json` for full paths and provenance.
+
 `--detail` shows the full presentation, including every evaluated work item and backlog. `--detail --json` is invalid and returns exit status `2`. JSON always preserves the full report. Workspace `--detail` remains navigation without evaluating member projects. `orient` does not inspect recovery notes. Its continuation pointers select `resume`. Each work item keeps execution, triage, commitment membership, readiness, and eligibility separate. Source paths, whole-file digests, and relationship reasons identify the records behind the report. No generated summary replaces authored goals.
 
 Use a selected work item's source path as `ctx context --ticket` to obtain its complete requirements. Reuse the project and allowed-source arguments. The [authoring profiles](agents/issue-tracker.md) define the manifest sections and record fields.

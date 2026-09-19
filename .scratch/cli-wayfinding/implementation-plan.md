@@ -35,3 +35,7 @@ Built the current reader from revision `4459638` and read all seven tickets thro
 ## Implementation verification
 
 All seven tickets are implemented and completed. The [combined evidence](evidence/07-workflow-verification.md) records final source checks, independent reviews, a real fresh-agent continuation and controlled recovery cases. The [final dependency observation](evidence/07-final-dependency-graph.json) verifies all seven current acceptances as valid and all supported checks as passing. Earlier publication and slice evidence retain their original tested identities.
+
+## Operator feedback
+
+[Keep compact orientation focused on work](../records/cli-wayfinding/issues/08-compact-paths.md) follows the live demonstration. It shortens actionable paths and moves repeated provenance to detail and JSON. The original seven-ticket milestone retains its historical verification.
