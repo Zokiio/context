@@ -35,8 +35,9 @@ Do not retire a note automatically. Age, an absent heartbeat, and a missing `not
      --allow-source <authorized-directory> --json
    ```
 
-   The direct `--bundle` form always needs `--checkout`. Read current context and orientation, recovery status, candidates, comparisons, and diagnostics. The checkpoint is historical; refresh requirements and current files before continuing.
+   The direct `--bundle` form always needs `--checkout`. Read current context and orientation, recovery status, candidates, comparisons, and diagnostics. Compare its current source paths and digests with the retained context from step 2. If they differ, inspect the change and collect and read a new exact task-context JSON before acting. Keep the collection that governed the work; never publish the older collection after following newer requirements.
 4. If recovery is absent, reconstruct from the current ticket context, current checkout, and verification results. If it is conflicting, inspect every candidate's reported work, the current code, requirements, and evidence before choosing a next action. Never choose by timestamp or treat a reported check as current evidence. If recovery is unknown or partial, keep the uncertainty visible and continue only work supported by current facts.
+5. State the completed, remaining, and changed work; unresolved blockers and verification gaps; and the next action. Continue within the agreed scope. Ask only for a decision that remains unresolved and is needed to continue soundly.
 
 Keep exploratory questions in the note. For a blocking unresolved question, use the [issue-tracker profile](../../../docs/agents/issue-tracker.md): create an open Decision record, link it from the affected WorkItem's `Blocked by decisions` section, and select it through Spec or Context when its answer imposes requirements. This keeps the blocker visible after cache disposal. Move settled decisions to that record. Retain accepted evidence as an immutable document outside the cache, then link it from an Acceptance record using [Record acceptance](../../../docs/agents/acceptance.md); link those records from the next note.
 
@@ -55,7 +56,7 @@ Read the [RecoveryNote profile](PROFILE.md) before creating a note. It defines t
 
 Generate another UUID when directory creation reports that it already exists. Copy the exact `temporary-context-used.json` bytes to `context.json`, calculate its lowercase SHA-256, and verify the copied bytes before publishing the note.
 
-Write a version-1 `RecoveryNote` with the exact required fields from the selected task context: `type`, `version`, `id`, `projectId`, `taskId`, `observedAt`, `actor`, `predecessors`, `ticketPath`, `checkoutRevision`, `contextFile`, and `contextSHA256`. Use the required body sections exactly once: `Approach`, `Completed`, `Remaining`, `Checks`, `Questions`, `Failed approaches`, and `Next step`.
+Write a version-1 `RecoveryNote` with the exact required fields from the [RecoveryNote profile](PROFILE.md): `type`, `version`, `id`, `projectId`, `taskId`, `observedAt`, `actor`, `predecessors`, `ticketPath`, `checkoutRevision`, `contextFile`, and `contextSHA256`. Use the required body sections exactly once: `Approach`, `Completed`, `Remaining`, `Checks`, `Questions`, `Failed approaches`, and `Next step`.
 
 State what happened and what remains. Under `Checks`, record the command or procedure, result, tested code identity, environment, and evidence reference when available. Keep failed approaches and unanswered questions concrete. Put only candidate IDs whose accounts this session actually read and incorporated in `predecessors`; discovery alone does not incorporate a candidate.
 
