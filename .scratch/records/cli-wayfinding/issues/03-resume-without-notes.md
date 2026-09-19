@@ -57,4 +57,3 @@ Created from the user-approved seven-ticket breakdown. Acceptance requires retai
 ## Acceptance
 
 - [Acceptance](../acceptances/03-resume-without-notes-final-20260919.md)
-

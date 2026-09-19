@@ -62,4 +62,3 @@ Earlier acceptance, retained during resumption integration reassessment:
 ## Acceptance
 
 - [Acceptance](../acceptances/02-compact-orientation-final-20260919.md)
-

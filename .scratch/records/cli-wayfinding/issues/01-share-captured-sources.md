@@ -60,4 +60,3 @@ Earlier acceptance, retained during resumption integration reassessment:
 ## Acceptance
 
 - [Acceptance](../acceptances/01-share-captured-sources-final-20260919.md)
-
