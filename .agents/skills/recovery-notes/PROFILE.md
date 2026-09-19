@@ -4,7 +4,7 @@ Use this reference when publishing a checkpoint. It is the local template for th
 
 ## Namespace
 
-Read `scope.projectId`, `scope.taskId`, and `scope.workingDirectory` from a successful current `ctx resume` report. Publish only when the selected Project and WorkItem identities are known and unambiguous. Do not guess an unknown ID. For each ID, apply the reader's effective identity rule: trim surrounding whitespace and preserve the remaining case. Encode that effective value as UTF-8 with no newline. SHA-256 each byte sequence as lowercase hexadecimal.
+Read `scope.projectId`, `scope.taskId`, and `scope.workingDirectory` from a current `ctx resume` JSON report. Publish only when the selected Project and WorkItem identities are known and unambiguous. Do not guess an unknown ID. For each ID, apply the reader's effective identity rule: trim surrounding whitespace and preserve the remaining case. Encode that effective value as UTF-8 with no newline. SHA-256 each byte sequence as lowercase hexadecimal.
 
 Store the new observation here:
 
