@@ -40,7 +40,8 @@ func OrientWithCapture(ctx context.Context, capture *recordread.Capture) (Result
 }
 
 func orientWithCapture(ctx context.Context, reader *recordread.Capture) (Result, error) {
-	e := evaluator{ctx: ctx, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, stopped: reader.Exhausted(), omitted: map[string]bool{}, decisionResults: map[string]Decision{}, acceptanceSources: map[string]acceptanceSources{}, acceptanceResults: map[string]*AcceptanceSummary{}}
+	exhausted := reader.Exhausted()
+	e := evaluator{ctx: ctx, reader: reader, result: emptyResult(), captured: map[string]int{}, records: map[string]*record{}, stopped: exhausted, exhaustedBeforeOrientation: exhausted, omitted: map[string]bool{}, decisionResults: map[string]Decision{}, acceptanceSources: map[string]acceptanceSources{}, acceptanceResults: map[string]*AcceptanceSummary{}}
 	manifest := e.read(filepath.Join(reader.Project(), "project.md"), recordread.RecordSource, Reason{Kind: "project"})
 	if manifest != nil {
 		e.manifest = e.parse(*manifest)
@@ -62,20 +63,21 @@ func emptyResult() Result {
 }
 
 type evaluator struct {
-	ctx               context.Context
-	reader            *recordread.Capture
-	result            Result
-	captured          map[string]int
-	records           map[string]*record
-	recordOrder       []*record
-	manifest          *record
-	selections        []*selection
-	stopped           bool
-	omitted           map[string]bool
-	decisionResults   map[string]Decision
-	acceptanceSources map[string]acceptanceSources
-	acceptanceResults map[string]*AcceptanceSummary
-	dependencies      map[string]*dependencyNode
+	ctx                        context.Context
+	reader                     *recordread.Capture
+	result                     Result
+	captured                   map[string]int
+	records                    map[string]*record
+	recordOrder                []*record
+	manifest                   *record
+	selections                 []*selection
+	stopped                    bool
+	exhaustedBeforeOrientation bool
+	omitted                    map[string]bool
+	decisionResults            map[string]Decision
+	acceptanceSources          map[string]acceptanceSources
+	acceptanceResults          map[string]*AcceptanceSummary
+	dependencies               map[string]*dependencyNode
 }
 
 type record struct {
@@ -128,6 +130,9 @@ func (e *evaluator) read(path string, role recordread.Role, reason Reason) *reco
 	if source.Path != "" {
 		if limit := e.reader.Admit(source); limit != nil {
 			e.stopped = true
+			if e.omitted[source.Path] {
+				return nil
+			}
 			e.omitted[source.Path] = true
 			e.diagnose(Diagnostic{Code: "source_limit_exceeded", Severity: "error", Message: "source would exceed " + limit.Error() + "; collection stopped before including it", Path: source.Path, From: reason.From, Link: reason.Link})
 			return nil
