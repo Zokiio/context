@@ -3,7 +3,7 @@ type: WorkItem
 id: a1a394f4-7286-4fd4-8a70-b5558d8e157a
 title: "Keep compact orientation focused on work"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Keep compact orientation focused on work
@@ -16,11 +16,11 @@ This follow-up revises only the compact presentation rules in the earlier specif
 
 ## Acceptance criteria
 
-- [ ] The compact header identifies the record-store root once. Authored goals remain verbatim; do not add repeated project.md source/relationship lines or an inventory of routine project references below them.
-- [ ] Task selectors and actionable finding paths inside the record store are relative to that declared root, retaining directories so equal filenames remain distinct. Keep paths outside the record store explicit rather than suggesting they are inside it. If a reliable root is unavailable, preserve the original path. Do not infer a Git root or use cwd as a substitute.
-- [ ] Routine commitment, in-progress, shortlist and affected-work rows omit repeated from/link provenance. Findings retain the path needed to locate a problem; unresolved or ambiguous relationships retain enough referring-path/link detail to distinguish and repair them. Do not alter cause grouping, order, warnings, unknown states, readiness or pickup semantics.
-- [ ] Full detail and JSON retain their existing exact source paths and provenance. Preserve the existing result; compact formatting must not mutate it. Workspace output and resume output remain unchanged.
-- [ ] Verify internal/external paths, sibling-prefix boundaries, same-filename records, unknown project identity, relationship failures and retained detail/JSON using meaningful existing or focused checks. Rebuild and inspect the live demo, update the reference and existing PR, and retain evidence/acceptance with affected prerequisite decisions reassessed.
+- [x] The compact header identifies the record-store root once. Authored goals remain verbatim; do not add repeated project.md source/relationship lines or an inventory of routine project references below them.
+- [x] Task selectors and actionable finding paths inside the record store are relative to that declared root, retaining directories so equal filenames remain distinct. Keep paths outside the record store explicit rather than suggesting they are inside it. If a reliable root is unavailable, preserve the original path. Do not infer a Git root or use cwd as a substitute.
+- [x] Routine commitment, in-progress, shortlist and affected-work rows omit repeated from/link provenance. Findings retain the path needed to locate a problem; unresolved or ambiguous relationships retain enough referring-path/link detail to distinguish and repair them. Do not alter cause grouping, order, warnings, unknown states, readiness or pickup semantics.
+- [x] Full detail and JSON retain their existing exact source paths and provenance. Preserve the existing result; compact formatting must not mutate it. Workspace output and resume output remain unchanged.
+- [x] Verify internal/external paths, sibling-prefix boundaries, same-filename records, unknown project identity, relationship failures and retained detail/JSON using meaningful existing or focused checks. Rebuild and inspect the live demo, update the reference and existing PR, and retain evidence/acceptance with affected prerequisite decisions reassessed.
 
 ## Blocked by
 
@@ -48,3 +48,7 @@ None
 ## Comments
 
 2026-09-19: User feedback after the live demo identified repeated full paths as operator-view clutter and asked to continue the refinement. The core milestone's historical acceptance remains preserved; this record owns the presentation follow-up.
+
+## Acceptance
+
+- [Acceptance](../acceptances/08-compact-paths-compact-paths-20260919.md)

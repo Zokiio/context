@@ -1,0 +1,8 @@
+?   	github.com/Zokiio/context/cmd/ctx	[no test files]
+ok  	github.com/Zokiio/context/internal/cli	(cached)
+ok  	github.com/Zokiio/context/internal/discovery	(cached)
+ok  	github.com/Zokiio/context/internal/orientation	(cached)
+ok  	github.com/Zokiio/context/internal/recordread	(cached)
+ok  	github.com/Zokiio/context/internal/resumption	(cached)
+ok  	github.com/Zokiio/context/internal/taskcontext	(cached)
+ok  	github.com/Zokiio/context/internal/workspace	(cached)

@@ -1,0 +1,258 @@
+{
+  "baselineRevision": "4f480b9f1f013bd09c17e18f5a7264fcef47a8ef",
+  "cases": [
+    {
+      "case": "demo-detail",
+      "cwd": "/Users/zoki/code/context/.cache/live-cli-demo/demo",
+      "args": [
+        "orient",
+        "--detail"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 10263,
+      "stdoutSHA256": "92848e329332058e8639c0e74bf7104a2ef405af2d195af8d429034df7b7fef1",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "demo-json",
+      "cwd": "/Users/zoki/code/context/.cache/live-cli-demo/demo",
+      "args": [
+        "orient",
+        "--json"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 11847,
+      "stdoutSHA256": "78e0db308eb6daec07dd3fecabc0d04d7ac84057a17eb2c67dc3dcf144f001c5",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "demo-context",
+      "cwd": "/Users/zoki/code/context/.cache/live-cli-demo/demo",
+      "args": [
+        "context",
+        "--ticket",
+        "resume.md"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 1140,
+      "stdoutSHA256": "93c5e0b95f2272f4dc0a7c5780ef7b3aa98917b50f7c01a0ed261ea3ae4a17e3",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "demo-resume",
+      "cwd": "/Users/zoki/code/context/.cache/live-cli-demo/demo",
+      "args": [
+        "resume",
+        "--ticket",
+        "resume.md"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 3721,
+      "stdoutSHA256": "988b331ba4d7405e5f69ca149a5e635ed0d490399c5c661237a23b6984dc1a77",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "demo-resume-json",
+      "cwd": "/Users/zoki/code/context/.cache/live-cli-demo/demo",
+      "args": [
+        "resume",
+        "--ticket",
+        "resume.md",
+        "--json"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 17825,
+      "stdoutSHA256": "fb61e54b35088d1897d892bba3b342d49792b82ebaf8b83aab187ff8346012bd",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "repo-detail",
+      "cwd": "/Users/zoki/code/context",
+      "args": [
+        "orient",
+        "--bundle",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864",
+        "--detail"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 789802,
+      "stdoutSHA256": "fec3ee679c045d28fbe112c31a8891e065e70fb188a90d078d81b456a828bd96",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "repo-json",
+      "cwd": "/Users/zoki/code/context",
+      "args": [
+        "orient",
+        "--bundle",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864",
+        "--json"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 860465,
+      "stdoutSHA256": "ccde3d2db306a2ca057cb904d22696ddad87a06d3dd8854228c5a480af7f6746",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "repo-context",
+      "cwd": "/Users/zoki/code/context",
+      "args": [
+        "context",
+        "--bundle",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864",
+        "--ticket",
+        "cli-wayfinding/issues/08-compact-paths.md"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 131224,
+      "stdoutSHA256": "c8afe1a582268b9d00406cc5454bea49019acdf9a4892729090f02a8a0d892cf",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "repo-resume",
+      "cwd": "/Users/zoki/code/context",
+      "args": [
+        "resume",
+        "--bundle",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864",
+        "--checkout",
+        "/Users/zoki/code/context",
+        "--ticket",
+        "cli-wayfinding/issues/08-compact-paths.md"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 7459,
+      "stdoutSHA256": "1217c2d27e144874ebac6b299d15d3b598210ad525aab9f6b121fcac188ca228",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "repo-resume-json",
+      "cwd": "/Users/zoki/code/context",
+      "args": [
+        "resume",
+        "--bundle",
+        "/Users/zoki/code/context/.scratch/records",
+        "--allow-source",
+        "/Users/zoki/code/context",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864",
+        "--checkout",
+        "/Users/zoki/code/context",
+        "--ticket",
+        "cli-wayfinding/issues/08-compact-paths.md",
+        "--json"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 992258,
+      "stdoutSHA256": "7052adb91b283c4e83ba69e0f530dd884a6c253f993a1127cd82f3dd4439fc7c",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "workspace-text",
+      "cwd": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg",
+      "args": [
+        "orient",
+        "--workspace",
+        "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 413,
+      "stdoutSHA256": "86c0e72743f7428c5bfaedbad730b79a8de80a58b616939f8d939d82d2e2718c",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "workspace-detail",
+      "cwd": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg",
+      "args": [
+        "orient",
+        "--workspace",
+        "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg",
+        "--detail"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 413,
+      "stdoutSHA256": "86c0e72743f7428c5bfaedbad730b79a8de80a58b616939f8d939d82d2e2718c",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "workspace-json",
+      "cwd": "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg",
+      "args": [
+        "orient",
+        "--workspace",
+        "/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx08-workspace-kwln0xwg",
+        "--json"
+      ],
+      "identical": true,
+      "exit": 0,
+      "stdoutBytes": 551,
+      "stdoutSHA256": "9fdf316f5afd81051800af0069da8644007f58cb71848e895648fcb7d706ef92",
+      "stderrBytes": 0,
+      "stderrSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "compactDemo": [
+    {
+      "version": "before",
+      "bytes": 3653,
+      "lines": 49,
+      "exit": 0
+    },
+    {
+      "version": "after",
+      "bytes": 1458,
+      "lines": 35,
+      "exit": 0
+    }
+  ]
+}

@@ -49,6 +49,8 @@ None
 
 ## Comments
 
+2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/02-compact-orientation-final-20260919.md).
+
 2026-09-19: The user refined path presentation after the live demo. [Compact path follow-up](08-compact-paths.md) owns verification of shorter paths and reduced routine provenance. Earlier evidence retains the original presentation.
 
 2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/02-compact-orientation-resume-20260919.md).
@@ -63,4 +65,4 @@ Earlier acceptance, retained during resumption integration reassessment:
 
 ## Acceptance
 
-- [Acceptance](../acceptances/02-compact-orientation-final-20260919.md)
+- [Acceptance](../acceptances/02-compact-orientation-compact-paths-20260919.md)

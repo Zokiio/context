@@ -50,9 +50,11 @@ None
 
 ## Acceptance
 
-- [Acceptance](../acceptances/05-competing-checkpoints-final-20260919.md)
+- [Acceptance](../acceptances/05-competing-checkpoints-compact-paths-20260919.md)
 
 ## Comments
+
+2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/05-competing-checkpoints-final-20260919.md).
 
 2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/05-competing-checkpoints-20260919.md).
 
