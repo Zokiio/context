@@ -1,0 +1,119 @@
+{
+  "initialProductRevision": "c3d37e4",
+  "currentProductRevision": "3f96692",
+  "cases": [
+    {
+      "case": "context",
+      "exit": 0,
+      "identical": true,
+      "stdoutSHA256": "c3b8b27c62e47c9205cd36f460011dd0edc1e42d31992c19a225dde09dfd3a61",
+      "arguments": [
+        "context",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--ticket",
+        "cli-wayfinding/issues/05-competing-checkpoints.md"
+      ]
+    },
+    {
+      "case": "context-files",
+      "exit": 1,
+      "identical": true,
+      "stdoutSHA256": "34082fd8e85afe22fcc3d3acc5e1233393c2544195ce012a36b4004f343ba85b",
+      "arguments": [
+        "context",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--ticket",
+        "cli-wayfinding/issues/05-competing-checkpoints.md",
+        "--max-files",
+        "1"
+      ]
+    },
+    {
+      "case": "context-bytes",
+      "exit": 1,
+      "identical": true,
+      "stdoutSHA256": "856de672370118e4c77c0608b8a28a0bfccc8fec3113dd21eb7cd24585c22161",
+      "arguments": [
+        "context",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--ticket",
+        "cli-wayfinding/issues/05-competing-checkpoints.md",
+        "--max-bytes",
+        "1"
+      ]
+    },
+    {
+      "case": "orientation-default-limits",
+      "exit": 1,
+      "identical": true,
+      "stdoutSHA256": "a1de6003b7790b8f7145bb5d2d096d2b6f9a071adee194059b44e02c79a0f743",
+      "arguments": [
+        "orient",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--json"
+      ]
+    },
+    {
+      "case": "orientation-full",
+      "exit": 0,
+      "identical": true,
+      "stdoutSHA256": "1c34ae61889d4200ee3af43cbdd491df0c65d1e9463bcf7ec5c1c9738edd5206",
+      "arguments": [
+        "orient",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--json",
+        "--max-files",
+        "1000",
+        "--max-bytes",
+        "67108864"
+      ]
+    },
+    {
+      "case": "orientation-files",
+      "exit": 1,
+      "identical": true,
+      "stdoutSHA256": "b884a877e082ad5bb3a3208e627b63a2a4e3d3362ad133695fed16eb4c8d8296",
+      "arguments": [
+        "orient",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--json",
+        "--max-files",
+        "1"
+      ]
+    },
+    {
+      "case": "orientation-bytes",
+      "exit": 1,
+      "identical": true,
+      "stdoutSHA256": "7c3106721a3e9b44c7e44db9688178ddb44078c3784763fc857e966f99379f0e",
+      "arguments": [
+        "orient",
+        "--bundle",
+        ".scratch/records",
+        "--allow-source",
+        ".",
+        "--json",
+        "--max-bytes",
+        "1"
+      ]
+    }
+  ]
+}
