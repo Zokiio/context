@@ -13,7 +13,11 @@ func compareSnapshot(current, retained taskcontext.Result, observation *Observat
 	setsComplete := result.Complete
 	roots := []string{records}
 	for _, root := range allowed {
-		if physical, err := filepath.EvalSymlinks(root); err == nil {
+		absolute, err := filepath.Abs(root)
+		if err != nil {
+			continue
+		}
+		if physical, err := filepath.EvalSymlinks(absolute); err == nil {
 			roots = append(roots, physical)
 		}
 	}

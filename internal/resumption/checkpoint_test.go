@@ -165,7 +165,7 @@ func TestRetainedPartialSnapshotKeepsUsableSources(t *testing.T) {
 	}
 }
 func TestRetainedAuthorizationAndNonRootRename(t *testing.T) {
-	for _, mode := range []string{"withheld", "missing", "renamed", "removed"} {
+	for _, mode := range []string{"withheld", "missing", "renamed", "removed", "removed with relative allowed root"} {
 		t.Run(mode, func(t *testing.T) {
 			request, directory, prior := checkpointFixture(t)
 			docs := canonical(t, t.TempDir())
@@ -176,6 +176,10 @@ func TestRetainedAuthorizationAndNonRootRename(t *testing.T) {
 			publishCheckpoint(t, directory, prior)
 			if mode != "withheld" {
 				request.AllowedSourceDirs = []string{docs}
+			}
+			if mode == "removed with relative allowed root" {
+				t.Chdir(filepath.Dir(docs))
+				request.AllowedSourceDirs = []string{filepath.Base(docs)}
 			}
 			if mode == "missing" {
 				os.Remove(oldPath)
@@ -189,8 +193,8 @@ func TestRetainedAuthorizationAndNonRootRename(t *testing.T) {
 			result := resumeCheckpoint(t, request)
 			sources := result.Comparison.Candidates[0].Sources
 			last := sources[len(sources)-1]
-			if mode == "removed" {
-				if !result.Complete || last.Status != "removed" {
+			if strings.HasPrefix(mode, "removed") {
+				if !result.Complete || last.Status != "removed" || last.Previous.Text == nil || *last.Previous.Text != text {
 					t.Fatalf("removed: %+v", result)
 				}
 				return
