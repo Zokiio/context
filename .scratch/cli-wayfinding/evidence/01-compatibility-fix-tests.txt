@@ -1,0 +1,4 @@
+ok  	github.com/Zokiio/context/internal/orientation	0.613s
+ok  	github.com/Zokiio/context/internal/recordread	(cached)
+ok  	github.com/Zokiio/context/internal/resumption	0.640s
+ok  	github.com/Zokiio/context/internal/cli	0.649s

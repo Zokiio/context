@@ -10,18 +10,20 @@ const (
 )
 
 type sourceReader struct {
-	*recordread.Reader
+	*recordread.Capture
 	project string
 }
 
 func newSourceReader(request Request) (*sourceReader, error) {
-	reader, err := recordread.NewReader(request.ProjectDir, request.AllowedSourceDirs)
+	reader, err := recordread.NewCapture(request.ProjectDir, request.AllowedSourceDirs, recordread.Limits{MaxFiles: request.MaxFiles, MaxBytes: request.MaxBytes})
 	if err != nil {
 		return nil, err
 	}
-	return &sourceReader{Reader: reader, project: reader.Project()}, nil
+	return capturedSourceReader(reader), nil
 }
-func (r *sourceReader) close() { r.Close() }
+func capturedSourceReader(capture *recordread.Capture) *sourceReader {
+	return &sourceReader{Capture: capture, project: capture.Project()}
+}
 func (r *sourceReader) read(path string, role sourceRole) (Source, *Diagnostic) {
 	return r.Read(path, role)
 }

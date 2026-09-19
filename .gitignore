@@ -1,5 +1,6 @@
 # Local temporary files and uncommitted working material.
 /.cache/
+/.context-cache/
 
 # Coordination lock retained by local setup writers.
 /.context/config.md.lock

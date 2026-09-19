@@ -4,12 +4,27 @@ cd caller
 exec ctx orient --bundle ../empty
 ! stderr .
 stdout 'Project: Empty project \[empty-project\]'
+stdout 'Record store: .*/empty'
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'Goals:'
 stdout 'No current delivery goals\.'
 stdout 'Current commitments: none'
+stdout 'Needs attention:'
+stdout 'In progress: none'
+stdout 'New pickup shortlist: none'
+! stdout 'Project references:'
+stdout 'ctx resume --ticket <work-item-source> with the same scope'
+stdout 'rerun ctx orient with the same scope and --detail'
+cmp ../empty/project.md ../original.md
+
+# Detail retains the previous complete presentation.
+exec ctx orient --bundle ../empty --detail
+! stderr .
+stdout 'Work inventory:'
 stdout 'Shortlist: none'
+stdout 'Open decisions: none'
 stdout 'Sources:'
+stdout 'Diagnostics:'
 cmp ../empty/project.md ../original.md
 
 # The machine-readable form contains one versioned report with array fields.

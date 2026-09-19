@@ -114,12 +114,14 @@ func TestWorkspaceCLIEmptyEnumerationSucceeds(t *testing.T) {
 	root := scopeTempDir(t)
 	home, checkout := filepath.Join(root, "home"), filepath.Join(root, "checkout")
 	writeScopeFile(t, filepath.Join(checkout, ".context", "config.md"), "---\ntype: ContextConfig\nversion: 1\nworkspace: {id: empty, title: Empty workspace, members: []}\n---\n")
-	for _, format := range []string{"text", "json"} {
+	for _, format := range []string{"text", "detail", "json"} {
 		t.Run(format, func(t *testing.T) {
 			var stdout, stderr bytes.Buffer
 			args := []string{"ctx", "orient"}
 			if format == "json" {
 				args = append(args, "--json")
+			} else if format == "detail" {
+				args = append(args, "--detail")
 			}
 			status := cli.RunWithEnvironment(context.Background(), args, &stdout, &stderr, cli.Operations{}, scopeEnvironment(checkout, home))
 			if status != 0 || stderr.Len() != 0 {
@@ -132,6 +134,16 @@ func TestWorkspaceCLIEmptyEnumerationSucceeds(t *testing.T) {
 				t.Fatalf("empty JSON = %s", stdout.String())
 			}
 		})
+	}
+	for _, args := range [][]string{
+		{"ctx", "orient", "--detail", "--detail"},
+		{"ctx", "orient", "--detail", "--json"},
+	} {
+		var stdout, stderr bytes.Buffer
+		status := cli.RunWithEnvironment(context.Background(), args, &stdout, &stderr, cli.Operations{}, scopeEnvironment(checkout, home))
+		if status != 2 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "--detail") {
+			t.Fatalf("workspace accepted invalid detail flags %v: status=%d stdout=%q stderr=%q", args, status, stdout.String(), stderr.String())
+		}
 	}
 }
 

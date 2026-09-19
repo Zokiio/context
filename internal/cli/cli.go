@@ -21,6 +21,7 @@ type OrientFunc func(context.Context, orientation.Request) (orientation.Result, 
 type Operations struct {
 	Assemble AssembleFunc
 	Orient   OrientFunc
+	Resume   ResumeFunc
 }
 
 // Run renders one report, or an invocation/execution error on stderr.
@@ -86,12 +87,18 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 			DisableSliceFlagSeparator: true,
 			Name:                      "orient", Usage: "Inspect the selected project or workspace",
 			Writer: stderr, ErrWriter: stderr, ExitErrHandler: exitHandler, OnUsageError: usageError,
-			Flags: append(scopeFlags(), &urfave.BoolFlag{Name: "json", Usage: "Write the versioned JSON orientation report"}),
+			Flags: append(scopeFlags(),
+				&urfave.BoolFlag{Name: "json", Usage: "Write the versioned JSON orientation report"},
+				&urfave.BoolFlag{Name: "detail", Usage: "Write the full text orientation report"},
+			),
 			Action: func(ctx context.Context, cmd *urfave.Command) error {
-				for _, name := range []string{"max-files", "max-bytes", "json"} {
+				for _, name := range []string{"max-files", "max-bytes", "json", "detail"} {
 					if cmd.Count(name) > 1 {
 						return fmt.Errorf("--%s may only be specified once", name)
 					}
+				}
+				if cmd.Bool("detail") && cmd.Bool("json") {
+					return errors.New("--detail and --json cannot be used together")
 				}
 				if cmd.NArg() != 0 {
 					return errors.New("orient does not accept positional arguments")
@@ -119,6 +126,10 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 					if err := json.NewEncoder(stdout).Encode(result); err != nil {
 						return fmt.Errorf("write orientation JSON: %w", err)
 					}
+				} else if cmd.Bool("detail") {
+					if err := renderDetailedOrientation(stdout, result); err != nil {
+						return fmt.Errorf("write detailed orientation text: %w", err)
+					}
 				} else if err := renderOrientation(stdout, result); err != nil {
 					return fmt.Errorf("write orientation text: %w", err)
 				}
@@ -129,6 +140,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 			},
 		}},
 	}
+	command.Commands = append(command.Commands, resumeCommand(stdout, stderr, operations.Resume, environment, &status))
 	command.Commands = append(command.Commands, setupCommand(stdout, stderr, environment))
 	if err := command.Run(ctx, args); err != nil {
 		fmt.Fprintln(stderr, err)

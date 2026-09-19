@@ -1,0 +1,461 @@
+{
+  "description": "Synthetic JSON shape examples. Full orientation/context payloads and physical note/snapshot files are not supplied; digest strings illustrate field encoding, not executable cryptographic fixtures.",
+  "examples": [
+    {
+      "case": "absent",
+      "omittedCurrentResults": {
+        "orientationComplete": true,
+        "contextComplete": true
+      },
+      "reportProjection": {
+        "schemaVersion": 1,
+        "kind": "task-resumption",
+        "complete": true,
+        "scope": {
+          "recordsDirectory": "/work/device-api/records",
+          "workingDirectory": "/work/device-api",
+          "cacheRoot": "/work/device-api/.context-cache/resume-v1",
+          "projectId": "device-api",
+          "taskId": "configuration"
+        },
+        "recovery": {
+          "status": "absent",
+          "inventoryComplete": true,
+          "graphStatus": "valid",
+          "observations": [],
+          "candidates": []
+        },
+        "comparison": {
+          "baselineAvailable": false,
+          "complete": true,
+          "candidates": []
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "case": "available",
+      "omittedCurrentResults": {
+        "orientationComplete": true,
+        "contextComplete": true
+      },
+      "reportProjection": {
+        "schemaVersion": 1,
+        "kind": "task-resumption",
+        "complete": true,
+        "scope": {
+          "recordsDirectory": "/work/device-api/records",
+          "workingDirectory": "/work/device-api",
+          "cacheRoot": "/work/device-api/.context-cache/resume-v1",
+          "projectId": "device-api",
+          "taskId": "configuration"
+        },
+        "recovery": {
+          "status": "available",
+          "inventoryComplete": true,
+          "graphStatus": "valid",
+          "observations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "projectId": "device-api",
+              "taskId": "configuration",
+              "observedAt": "2026-09-17T17:00:00Z",
+              "actor": "session-1",
+              "predecessors": [],
+              "ticketPath": "task.md",
+              "checkoutRevision": null,
+              "source": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/note.md",
+                "sha256": "8f9188f3c1ca337b3a1758f3807266dce16ebdc0be8c867f51c9158c8c5b1131"
+              },
+              "body": "## Approach\nInspect current delivery behavior.\n\n## Completed\nNone\n\n## Remaining\nDevice verification.\n\n## Checks\nNone\n\n## Questions\nNone\n\n## Failed approaches\nNone\n\n## Next step\nInspect current code.\n",
+              "metadata": {
+                "type": "RecoveryNote",
+                "version": 1,
+                "id": "00000000-0000-4000-8000-000000000001",
+                "projectId": "device-api",
+                "taskId": "configuration",
+                "observedAt": "2026-09-17T17:00:00Z",
+                "actor": "session-1",
+                "predecessors": [],
+                "ticketPath": "task.md",
+                "checkoutRevision": null,
+                "contextFile": "context.json",
+                "contextSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09"
+              },
+              "snapshot": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/context.json",
+                "recordedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "observedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "status": "valid",
+                "sourceCount": 1
+              }
+            }
+          ],
+          "candidates": [
+            "00000000-0000-4000-8000-000000000001"
+          ]
+        },
+        "comparison": {
+          "baselineAvailable": true,
+          "complete": true,
+          "candidates": [
+            {
+              "observationId": "00000000-0000-4000-8000-000000000001",
+              "baselineAvailable": true,
+              "complete": true,
+              "sources": [
+                {
+                  "status": "unchanged",
+                  "previous": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  },
+                  "current": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "case": "conflicting",
+      "omittedCurrentResults": {
+        "orientationComplete": true,
+        "contextComplete": true
+      },
+      "reportProjection": {
+        "schemaVersion": 1,
+        "kind": "task-resumption",
+        "complete": true,
+        "scope": {
+          "recordsDirectory": "/work/device-api/records",
+          "workingDirectory": "/work/device-api",
+          "cacheRoot": "/work/device-api/.context-cache/resume-v1",
+          "projectId": "device-api",
+          "taskId": "configuration"
+        },
+        "recovery": {
+          "status": "conflicting",
+          "inventoryComplete": true,
+          "graphStatus": "valid",
+          "observations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "projectId": "device-api",
+              "taskId": "configuration",
+              "observedAt": "2026-09-17T17:00:00Z",
+              "actor": "session-1",
+              "predecessors": [],
+              "ticketPath": "task.md",
+              "checkoutRevision": null,
+              "source": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/note.md",
+                "sha256": "8f9188f3c1ca337b3a1758f3807266dce16ebdc0be8c867f51c9158c8c5b1131"
+              },
+              "body": "## Approach\nInspect current delivery behavior.\n\n## Completed\nNone\n\n## Remaining\nDevice verification.\n\n## Checks\nNone\n\n## Questions\nNone\n\n## Failed approaches\nNone\n\n## Next step\nInspect current code.\n",
+              "metadata": {
+                "type": "RecoveryNote",
+                "version": 1,
+                "id": "00000000-0000-4000-8000-000000000001",
+                "projectId": "device-api",
+                "taskId": "configuration",
+                "observedAt": "2026-09-17T17:00:00Z",
+                "actor": "session-1",
+                "predecessors": [],
+                "ticketPath": "task.md",
+                "checkoutRevision": null,
+                "contextFile": "context.json",
+                "contextSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09"
+              },
+              "snapshot": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/context.json",
+                "recordedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "observedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "status": "valid",
+                "sourceCount": 1
+              }
+            },
+            {
+              "id": "00000000-0000-4000-8000-000000000002",
+              "projectId": "device-api",
+              "taskId": "configuration",
+              "observedAt": "2026-09-17T17:00:00Z",
+              "actor": "session-2",
+              "predecessors": [],
+              "ticketPath": "task.md",
+              "checkoutRevision": null,
+              "source": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000002/note.md",
+                "sha256": "77e083db035e7ffe5e84ebbd757ba236b7dfe23b36790aa24df4978ef9421e6a"
+              },
+              "body": "## Approach\nInspect current delivery behavior.\n\n## Completed\nNone\n\n## Remaining\nDevice verification.\n\n## Checks\nNone\n\n## Questions\nNone\n\n## Failed approaches\nNone\n\n## Next step\nInspect current code.\n",
+              "metadata": {
+                "type": "RecoveryNote",
+                "version": 1,
+                "id": "00000000-0000-4000-8000-000000000002",
+                "projectId": "device-api",
+                "taskId": "configuration",
+                "observedAt": "2026-09-17T17:00:00Z",
+                "actor": "session-2",
+                "predecessors": [],
+                "ticketPath": "task.md",
+                "checkoutRevision": null,
+                "contextFile": "context.json",
+                "contextSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09"
+              },
+              "snapshot": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000002/context.json",
+                "recordedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "observedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "status": "valid",
+                "sourceCount": 1
+              }
+            }
+          ],
+          "candidates": [
+            "00000000-0000-4000-8000-000000000001",
+            "00000000-0000-4000-8000-000000000002"
+          ]
+        },
+        "comparison": {
+          "baselineAvailable": true,
+          "complete": true,
+          "candidates": [
+            {
+              "observationId": "00000000-0000-4000-8000-000000000001",
+              "baselineAvailable": true,
+              "complete": true,
+              "sources": [
+                {
+                  "status": "unchanged",
+                  "previous": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  },
+                  "current": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  }
+                }
+              ]
+            },
+            {
+              "observationId": "00000000-0000-4000-8000-000000000002",
+              "baselineAvailable": true,
+              "complete": true,
+              "sources": [
+                {
+                  "status": "unchanged",
+                  "previous": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  },
+                  "current": {
+                    "path": "/work/device-api/records/task.md",
+                    "sha256": "8434970f2f9e86df74952faf74b91a5aed865c6a7b902b4efb8922cf41745d43",
+                    "text": "Deliver configuration to a device.\n",
+                    "availability": "available"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "code": "recovery_conflict",
+            "severity": "warning",
+            "message": "recovery conflict",
+            "path": null,
+            "from": null,
+            "link": null,
+            "observationId": null
+          }
+        ]
+      }
+    },
+    {
+      "case": "invalid snapshot",
+      "omittedCurrentResults": {
+        "orientationComplete": true,
+        "contextComplete": true
+      },
+      "reportProjection": {
+        "schemaVersion": 1,
+        "kind": "task-resumption",
+        "complete": false,
+        "scope": {
+          "recordsDirectory": "/work/device-api/records",
+          "workingDirectory": "/work/device-api",
+          "cacheRoot": "/work/device-api/.context-cache/resume-v1",
+          "projectId": "device-api",
+          "taskId": "configuration"
+        },
+        "recovery": {
+          "status": "available",
+          "inventoryComplete": true,
+          "graphStatus": "valid",
+          "observations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "projectId": "device-api",
+              "taskId": "configuration",
+              "observedAt": "2026-09-17T17:00:00Z",
+              "actor": "session-1",
+              "predecessors": [],
+              "ticketPath": "task.md",
+              "checkoutRevision": null,
+              "source": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/note.md",
+                "sha256": "8f9188f3c1ca337b3a1758f3807266dce16ebdc0be8c867f51c9158c8c5b1131"
+              },
+              "body": "## Approach\nInspect current delivery behavior.\n\n## Completed\nNone\n\n## Remaining\nDevice verification.\n\n## Checks\nNone\n\n## Questions\nNone\n\n## Failed approaches\nNone\n\n## Next step\nInspect current code.\n",
+              "metadata": {
+                "type": "RecoveryNote",
+                "version": 1,
+                "id": "00000000-0000-4000-8000-000000000001",
+                "projectId": "device-api",
+                "taskId": "configuration",
+                "observedAt": "2026-09-17T17:00:00Z",
+                "actor": "session-1",
+                "predecessors": [],
+                "ticketPath": "task.md",
+                "checkoutRevision": null,
+                "contextFile": "context.json",
+                "contextSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09"
+              },
+              "snapshot": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/context.json",
+                "recordedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "observedSHA256": "11d510e067d2cdcd7559bd86d27a2f4c20babd43670346b97af99b522c1f0075",
+                "status": "invalid",
+                "sourceCount": null
+              }
+            }
+          ],
+          "candidates": [
+            "00000000-0000-4000-8000-000000000001"
+          ]
+        },
+        "comparison": {
+          "baselineAvailable": false,
+          "complete": false,
+          "candidates": [
+            {
+              "observationId": "00000000-0000-4000-8000-000000000001",
+              "baselineAvailable": false,
+              "complete": false,
+              "sources": []
+            }
+          ]
+        },
+        "diagnostics": [
+          {
+            "code": "recovery_snapshot_invalid",
+            "severity": "error",
+            "message": "recovery snapshot invalid",
+            "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/context.json",
+            "from": null,
+            "link": null,
+            "observationId": "00000000-0000-4000-8000-000000000001"
+          }
+        ]
+      }
+    },
+    {
+      "case": "incomplete inventory",
+      "omittedCurrentResults": {
+        "orientationComplete": true,
+        "contextComplete": true
+      },
+      "reportProjection": {
+        "schemaVersion": 1,
+        "kind": "task-resumption",
+        "complete": false,
+        "scope": {
+          "recordsDirectory": "/work/device-api/records",
+          "workingDirectory": "/work/device-api",
+          "cacheRoot": "/work/device-api/.context-cache/resume-v1",
+          "projectId": "device-api",
+          "taskId": "configuration"
+        },
+        "recovery": {
+          "status": "unknown",
+          "inventoryComplete": false,
+          "graphStatus": "incomplete",
+          "observations": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "projectId": "device-api",
+              "taskId": "configuration",
+              "observedAt": "2026-09-17T17:00:00Z",
+              "actor": "session-1",
+              "predecessors": [],
+              "ticketPath": "task.md",
+              "checkoutRevision": null,
+              "source": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/note.md",
+                "sha256": "8f9188f3c1ca337b3a1758f3807266dce16ebdc0be8c867f51c9158c8c5b1131"
+              },
+              "body": "## Approach\nInspect current delivery behavior.\n\n## Completed\nNone\n\n## Remaining\nDevice verification.\n\n## Checks\nNone\n\n## Questions\nNone\n\n## Failed approaches\nNone\n\n## Next step\nInspect current code.\n",
+              "metadata": {
+                "type": "RecoveryNote",
+                "version": 1,
+                "id": "00000000-0000-4000-8000-000000000001",
+                "projectId": "device-api",
+                "taskId": "configuration",
+                "observedAt": "2026-09-17T17:00:00Z",
+                "actor": "session-1",
+                "predecessors": [],
+                "ticketPath": "task.md",
+                "checkoutRevision": null,
+                "contextFile": "context.json",
+                "contextSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09"
+              },
+              "snapshot": {
+                "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations/00000000-0000-4000-8000-000000000001/context.json",
+                "recordedSHA256": "7549e8b09b1ef04e20064531d4882d691b6fb9feda9a261128ba5ba7cfae1e09",
+                "observedSHA256": null,
+                "status": "not_loaded",
+                "sourceCount": null
+              }
+            }
+          ],
+          "candidates": []
+        },
+        "comparison": {
+          "baselineAvailable": false,
+          "complete": false,
+          "candidates": []
+        },
+        "diagnostics": [
+          {
+            "code": "recovery_limit_exceeded",
+            "severity": "error",
+            "message": "recovery limit exceeded",
+            "path": "/work/device-api/.context-cache/resume-v1/c74cc1ed0ea0ba5bfe01d0917bb7b39497dc6094d80e113dc11bf2b67c5cf41e/b7d64a9221007dfd5390f7df6cd5b8f3ea4f82faa1237141e35ebf161f5511a1/observations",
+            "from": null,
+            "link": null,
+            "observationId": null
+          }
+        ]
+      }
+    }
+  ]
+}

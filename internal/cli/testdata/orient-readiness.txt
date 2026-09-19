@@ -1,5 +1,5 @@
 # Known blockers do not make an otherwise fully evaluated project partial.
-exec ctx orient --bundle bundle
+exec ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'Shortlist:'

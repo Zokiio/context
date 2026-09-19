@@ -1,5 +1,5 @@
 # Requirement fingerprints are distinct from the whole-file source digest.
-exit 1 ctx orient --bundle bundle
+exit 1 ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'fingerprint: version 1'
 stdout 'ticketSHA256: 30174732d241730b320ac9f47adf2346da4e7b3a078186f3b250bc1fcc95821c'

@@ -16,7 +16,9 @@ import (
 
 type readScope struct {
 	discovery.Scope
-	directBundle bool
+	directBundle  bool
+	invocationCwd string
+	cwdError      error
 }
 
 func scopeFlags() []urfave.Flag {
@@ -52,6 +54,7 @@ func resolveReadScope(ctx context.Context, cmd *urfave.Command, environment Envi
 		return readScope{}, errors.New("max-files and max-bytes must be positive integers")
 	}
 	cwd, err := environment.WorkingDirectory()
+	cwdError := err
 	if err != nil {
 		alias := (selector == "project" || selector == "workspace") && strings.HasPrefix(cmd.String(selector), "@")
 		if !alias {
@@ -102,6 +105,8 @@ func resolveReadScope(ctx context.Context, cmd *urfave.Command, environment Envi
 			selected.Project.AllowSources = append(selected.Project.AllowSources, resolved)
 		}
 	}
+	selected.invocationCwd = cwd
+	selected.cwdError = cwdError
 	return selected, nil
 }
 

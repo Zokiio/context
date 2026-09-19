@@ -1,7 +1,7 @@
 # Both reports retain known work facts when required readiness information is missing.
 mkdir caller
 cd caller
-exit 1 ctx orient --bundle ../bundle --allow-source ../docs,extra --allow-source ../other
+exit 1 ctx orient --bundle ../bundle --allow-source ../docs,extra --allow-source ../other --detail
 ! stderr .
 stdout 'Project: Independent project \[independent-project\]'
 stdout 'Current commitments:'

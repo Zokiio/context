@@ -1,0 +1,61 @@
+---
+type: WorkItem
+id: 94acbf45-cc6b-4957-b3fe-3218e955ef3f
+title: "Handle competing and interrupted checkpoints"
+triage: ready-for-agent
+execution: completed
+---
+
+# Handle competing and interrupted checkpoints
+
+## What to build
+
+Extend resume to evaluate complete checkpoint histories, expose competing candidates, and remain explicit about invalid or incomplete observations without selecting a false winner.
+
+## Slice boundary
+
+This completes the read-side recovery contract. Skills, rather than the CLI, perform the authoring and deliberate recovery procedures in the following ticket.
+
+## Acceptance criteria
+
+- [x] Evaluate all observed identity-matching notes as the directed predecessor graph specified by the contract. Preserve earlier observations, find all leaves only after complete valid inspection, and select candidates in lexical ID order without using timestamps.
+- [x] Support linear history, multiple roots, competing successors, and explicit reconciliation referencing all incorporated candidates. Multiple valid leaves produce conflicting recovery with a separate comparison per candidate; a fully evaluated conflict may return exit status 0.
+- [x] Dangling predecessors, self-links, duplicate identities, cycles, unreadable/unfinished notes, and incomplete inventory return their specified graph status and diagnostics with no selected candidates. Parsed observations and dangling references remain inspectable.
+- [x] Only current candidates load snapshot bodies. Superseded snapshots remain not_loaded without making the report partial. A selected note can remain graph-available with an invalid snapshot while comparison and the overall report are incomplete.
+- [x] Cache-budget exhaustion stops enumeration/reading within the documented lookahead bounds, exposes known omissions, and makes no global lexical-prefix or unique-candidate claim. Quarantine is excluded from discovery.
+- [x] Remove intermediate single-note/history restrictions from prior slices. Verify all final nested JSON shapes, diagnostic attribution/deduplication/order, aggregate completeness, and exit statuses using real fixtures for every supplied example state.
+- [x] Cooperative concurrent publication fixtures preserve both successors; an incomplete publication remains unknown, an explicit reconciled successor converges the graph, and a stopped-writer quarantine fixture permits complete inspection again without discarding finalized competitors. The reader itself performs no mutation.
+
+## Blocked by
+
+- [Resume from a retained checkpoint](04-retained-checkpoint.md)
+
+## Blocked by decisions
+
+None
+
+## Spec
+
+- [Local orientation and resumption](../../../cli-wayfinding/spec.md)
+
+## Context
+
+- [Product vision](../../../../docs/vision.md)
+- [Domain glossary](../../../../CONTEXT.md)
+- [Reader contracts](../../../../docs/readers.md)
+- [Discovery contracts](../../../../docs/discovery.md)
+- [Acceptance procedure](../../../../docs/agents/acceptance.md)
+- [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
+- [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
+
+## Acceptance
+
+- [Acceptance](../acceptances/05-competing-checkpoints-compact-paths-20260919.md)
+
+## Comments
+
+2026-09-19: Reassessed the compact path requirements using retained prior evidence, new checks, exact report comparisons, and independent review. Prior decision: [Acceptance](../acceptances/05-competing-checkpoints-final-20260919.md).
+
+2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/05-competing-checkpoints-20260919.md).
+
+Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.

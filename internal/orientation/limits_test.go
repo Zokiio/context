@@ -96,6 +96,47 @@ func TestInvalidEncodingStillConsumesInspectionBudget(t *testing.T) {
 	}
 }
 
+func TestLimitBreachForRepeatedUnadmittedSnapshotSourceIsReportedOnce(t *testing.T) {
+	parent := t.TempDir()
+	project := filepath.Join(parent, "bundle")
+	if err := os.Mkdir(project, 0700); err != nil {
+		t.Fatal(err)
+	}
+	const digest = "0000000000000000000000000000000000000000000000000000000000000000"
+	files := map[string]string{
+		"project.md":      "---\ntype: Project\nid: project\ntitle: Project\n---\n## Goals\nNone\n## Current commitments\n[Leaf](a-leaf.md)\n## Open decisions\nNone\n",
+		"a-leaf.md":       "---\ntype: WorkItem\nid: leaf\ntitle: Leaf\ntriage: ready-for-agent\nexecution: completed\n---\n## Acceptance criteria\n- [ ] Done\n## Blocked by\nNone\n## Blocked by decisions\nNone\n## Acceptance\n[Trial](b-acceptance.md)\n",
+		"b-acceptance.md": "---\ntype: Acceptance\nid: trial\ntitle: Trial\n---\n## Requirements\n- [Trial 02](../acceptance-trial-manifest.md) `" + digest + "`\n- [Trial 03](../acceptance-trial-manifest.md) `" + digest + "`\n- [Trial 04](../acceptance-trial-manifest.md) `" + digest + "`\n- [Trial 05](../acceptance-trial-manifest.md) `" + digest + "`\n## Evidence\n- [Later](../later.md) `" + digest + "`\n",
+	}
+	for name, content := range files {
+		if err := os.WriteFile(filepath.Join(project, name), []byte(content), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for name, content := range map[string]string{"acceptance-trial-manifest.md": strings.Repeat("x", 256), "later.md": "later\n"} {
+		if err := os.WriteFile(filepath.Join(parent, name), []byte(content), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	got, err := orientation.Orient(context.Background(), orientation.Request{ProjectDir: project, AllowedSourceDirs: []string{parent}, MaxFiles: 3})
+	if err != nil || got.Complete || !got.InventoryComplete {
+		t.Fatalf("result: complete=%v inventory=%v diagnostics=%+v err=%v", got.Complete, got.InventoryComplete, got.Diagnostics, err)
+	}
+	breaches, pending := 0, 0
+	for _, diagnostic := range got.Diagnostics {
+		switch {
+		case diagnostic.Code == "source_limit_exceeded" && filepath.Base(diagnostic.Path) == "acceptance-trial-manifest.md":
+			breaches++
+		case diagnostic.Code == "source_omitted" && filepath.Base(diagnostic.Path) == "later.md":
+			pending++
+		}
+	}
+	if breaches != 1 || pending != 1 {
+		t.Fatalf("breaches=%d pending=%d diagnostics=%+v", breaches, pending, got.Diagnostics)
+	}
+}
+
 func TestDefaultCollectionLimits(t *testing.T) {
 	t.Run("files", func(t *testing.T) {
 		files := map[string]string{"project.md": emptyManifest()}
@@ -119,7 +160,7 @@ func TestDefaultCollectionLimits(t *testing.T) {
 			t.Fatal(err)
 		}
 		got, err = orientation.Orient(context.Background(), orientation.Request{ProjectDir: project})
-		if err != nil || got.Complete || len(got.Sources) != 0 || !hasCode(got, "source_limit_exceeded") {
+		if err != nil || got.Complete || len(got.Sources) != 0 || !hasCode(got, "source_limit_exceeded") || hasCode(got, "source_omitted") {
 			t.Fatalf("default byte limit: sources=%d diagnostics=%+v err=%v", len(got.Sources), got.Diagnostics, err)
 		}
 	})

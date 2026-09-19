@@ -1,9 +1,11 @@
 // Package orientation returns an attributed, read-only overview of a project.
 package orientation
 
+import "github.com/Zokiio/context/internal/recordread"
+
 const (
-	DefaultMaxFiles       = 100
-	DefaultMaxBytes int64 = 1_048_576
+	DefaultMaxFiles       = recordread.DefaultMaxFiles
+	DefaultMaxBytes int64 = recordread.DefaultMaxBytes
 )
 
 type Request struct {

@@ -15,3 +15,7 @@ This repo uses the five default triage roles. Before assigning a triage role, re
 ### Domain docs
 
 This repo uses a single-context layout with root `CONTEXT.md` and `docs/adr/`. Before exploring the codebase, read `docs/agents/domain.md`.
+
+### Recovery notes
+
+Before continuing a task, publishing a checkpoint, or recovering interrupted working notes, read `.agents/skills/recovery-notes/SKILL.md`.

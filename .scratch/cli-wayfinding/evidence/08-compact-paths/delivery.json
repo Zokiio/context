@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-09-19T12:37:10.013357+00:00",
+  "actor": "Codex /root",
+  "url": "https://github.com/Zokiio/context/pull/11",
+  "draft": true,
+  "branch": "feat/cli-wayfinding-spec",
+  "base": "main",
+  "descriptionUpdated": true,
+  "descriptionSHA256": "b105431279031f6d9d3ae70f1abafed1434af646b345f74fbec3038f1a98b612",
+  "testedRevision": "4d2b3822d311ecd99da4550b809fe158aca556c2",
+  "demo": {
+    "url": "http://127.0.0.1:56402/",
+    "action": "Operator overview",
+    "observedCommand": "ctx orient",
+    "exit": 0,
+    "recordStoreRootShownOnce": true,
+    "relativeTaskSelectors": true
+  },
+  "note": "Description and rebuilt live demo observed. Final branch publication and acceptance graph are verified separately after the evidence commit."
+}

@@ -1,0 +1,397 @@
+{
+  "kind": "controlled-fixtures",
+  "historicalTestedRevision": "e3d87d9de1b4423e60b3f17be5be0559f36785ae",
+  "cases": [
+    {
+      "case": "separate-record-store-and-historical-evidence",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "4779bfcd83c069fb80b2465ea6dc84a4bf392609f61fbd209cf0c7254175e2b4",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "compact-operator",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "orient",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "fb24bc1b8b207f112868f272e431a11a3c66e9ae8b11b979bb4f96a76c0a393c",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": null
+    },
+    {
+      "case": "detailed-operator",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "orient",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--detail"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "101ac191a02c8f852e1c33dd798d185feffe5b990c31cffadcd7a08e91d53f15",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": null
+    },
+    {
+      "case": "orientation-agent",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "orient",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "8f51fdaebb9fe21ec2163748c00a9f07bd67144c80f410341824e204a7d9f462",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "task-context",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "context",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--ticket",
+        "task.md"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "82e3d687352db3fa5d10f81308f5bc3a11bd6398697827ddb905dba97b607782",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "resume-operator",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "2087e27f2710c6178b0d8a1970ee4cb8381a31d8f17d7e9f4b3bad66fc521882",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": null
+    },
+    {
+      "case": "other-checkout-has-no-notes",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-b",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "abc5a39bf1266bc88ee6f0f55d85ea5952b86986d402bc34c7327ef9caa05215",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "uncommitted-requirement-change",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "840d2832d6a1caa475f24177e56210072bb72f57ba64689d84194b59e1380cbf",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "competing-successors",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "407423a0530b6b987e995adf7014e12a3cda1a4a924459c05414d1638abc170d",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "unfinished-publication",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 1,
+      "stdoutSHA256": "5d9b045eb95e63c6960c7b1bd3dcc12340ef0eb0c79bd3bbc3770cb38af231ff",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": false
+    },
+    {
+      "case": "confirmed-stop-quarantine",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "407423a0530b6b987e995adf7014e12a3cda1a4a924459c05414d1638abc170d",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "deliberate-reconciliation",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "7ed572c63143bf9df9f3b2f77554f0fa14e28fb61fcd30675d4b8f01dbe4b6aa",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "authorization-loss",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 1,
+      "stdoutSHA256": "73409d905d0da8f62a023d734945ba1a1ecddfd9dfa4ea084de91edf3e38e616",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": false
+    },
+    {
+      "case": "current-source-limit",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json",
+        "--max-files",
+        "1"
+      ],
+      "exit": 1,
+      "stdoutSHA256": "b0ec7e2d146b479f11861861527a84138e4f02d4a758e9de0400deadf0926104",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": false
+    },
+    {
+      "case": "cache-entry-limit",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json",
+        "--max-cache-files",
+        "1"
+      ],
+      "exit": 1,
+      "stdoutSHA256": "fe137d0791e64166600773555fb48f19c2141ff36c6a76007744739c3844be53",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": false
+    },
+    {
+      "case": "explicit-limit-overrides",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json",
+        "--max-files",
+        "1000",
+        "--max-cache-files",
+        "1000",
+        "--max-cache-bytes",
+        "16777216"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "7ed572c63143bf9df9f3b2f77554f0fa14e28fb61fcd30675d4b8f01dbe4b6aa",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "independent-nongit-project",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/independent-project/records",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/independent-project/working",
+        "--ticket",
+        "task.md",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/independent-project/docs",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "706db65d1eb0bbc96303a6ba566181004728249509ec5917f2014381076aaa58",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "same-task-id-other-project-keeps-separate-namespace",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/independent-project/records",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/independent-project/docs",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "42a59b19c15fc5f75e2baeb86e5489b1da5cbe9008bec48ce3564fb74c687b8a",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true
+    },
+    {
+      "case": "cache-deletion-preserves-authority",
+      "command": [
+        "/tmp/context-wayfinding-ctx",
+        "resume",
+        "--bundle",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/records",
+        "--allow-source",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/docs",
+        "--checkout",
+        "/private/var/folders/hd/nxsy37l9371g67_scvcnpxb00000gn/T/ctx-workflow-probe-84ps6fs3/checkout-a",
+        "--ticket",
+        "task.md",
+        "--json"
+      ],
+      "exit": 0,
+      "stdoutSHA256": "f65476e82fc4262ec98d5fdeb659115affb154aed7e09e51969ce79cdee452db",
+      "readOnly": true,
+      "gitStateUnchanged": true,
+      "complete": true,
+      "authoritativeBytesUnchangedAfterDeletion": true
+    }
+  ]
+}

@@ -13,6 +13,9 @@ import (
 func (e *evaluator) inventory() {
 	if e.stopped {
 		e.result.InventoryComplete = false
+		if e.exhaustedBeforeOrientation {
+			e.diagnose(Diagnostic{Code: "source_omitted", Severity: "error", Message: "project inventory was not processed after the shared source limit breach; undiscovered records and relationships are not listed", Path: e.reader.Project()})
+		}
 		return
 	}
 	paths := []string{}
@@ -136,7 +139,7 @@ func (e *evaluator) presentManifest() {
 	if r.kind != "Project" || r.id == nil || r.title == nil || r.ambiguous {
 		e.diagnose(Diagnostic{Code: "invalid_profile", Severity: "error", Message: "project manifest requires type Project, id and title", Path: r.source.Path})
 	} else {
-		e.result.Project = &Project{ID: *r.id, Title: *r.title, Source: r.source.Path, Metadata: metadataForOutput(r.doc.Metadata)}
+		e.result.Project = &Project{ID: *r.id, Title: *r.title, Source: r.source.Path, Metadata: MetadataForOutput(r.doc.Metadata)}
 	}
 	goalsKnown := e.declaration(r, "Goals", false)
 	commitmentsKnown := e.declaration(r, "Current commitments", true)
@@ -168,7 +171,7 @@ func (e *evaluator) presentManifest() {
 }
 
 func (e *evaluator) presentWorkItem(r *record) {
-	work := WorkItem{ID: r.id, Title: r.title, Source: r.source.Path, Lifecycle: stringPointer(stringField(r.doc.Metadata, "status")), Specifications: []Reference{}, Checks: []Check{}, Readiness: "unknown", ExclusionReasons: []Finding{}, Metadata: metadataForOutput(r.doc.Metadata)}
+	work := WorkItem{ID: r.id, Title: r.title, Source: r.source.Path, Lifecycle: stringPointer(stringField(r.doc.Metadata, "status")), Specifications: []Reference{}, Checks: []Check{}, Readiness: "unknown", ExclusionReasons: []Finding{}, Metadata: MetadataForOutput(r.doc.Metadata)}
 	setWorkItemFingerprints(&work, r.doc.Body)
 	if _, authored := r.doc.Metadata["status"]; !authored {
 		work.Lifecycle = stringPointer("stable")
