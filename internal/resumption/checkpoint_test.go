@@ -316,7 +316,7 @@ func TestCheckpointJSONNullShape(t *testing.T) {
 	}
 }
 
-func TestCheckpointHistoryIsExplicitlyUnsupported(t *testing.T) {
+func TestCheckpointIncompleteHistoryRemainsInspectable(t *testing.T) {
 	for _, mode := range []string{"two roots", "predecessor"} {
 		t.Run(mode, func(t *testing.T) {
 			request, directory, _ := checkpointFixture(t)
@@ -329,8 +329,13 @@ func TestCheckpointHistoryIsExplicitlyUnsupported(t *testing.T) {
 				data, _ := os.ReadFile(path)
 				writeResumeFile(t, path, strings.Replace(string(data), `"predecessors":[]`, `"predecessors":["381d6632-b93d-43ce-a5b7-796721964024"]`, 1))
 			}
-			if _, err := Resume(context.Background(), request); err == nil || !strings.Contains(err.Error(), "not supported by this implementation slice") {
-				t.Fatalf("history: %v", err)
+			result := resumeCheckpoint(t, request)
+			want := "incomplete"
+			if mode == "predecessor" {
+				want = "invalid"
+			}
+			if result.Complete || result.Recovery.GraphStatus != want || len(result.Recovery.Candidates) != 0 || len(result.Recovery.Observations) != 1 {
+				t.Fatalf("history: %+v", result)
 			}
 		})
 	}

@@ -3,7 +3,6 @@ package resumption
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -145,12 +144,19 @@ func inspectRecovery(ctx context.Context, result *Result, request Request) error
 	defer func() {
 		sort.SliceStable(findings, func(i, j int) bool {
 			a, b := findings[i], findings[j]
-			if *a.Path != *b.Path {
-				return *a.Path < *b.Path
+			firstPath, secondPath := "", ""
+			if a.Path != nil {
+				firstPath = *a.Path
+			}
+			if b.Path != nil {
+				secondPath = *b.Path
+			}
+			if firstPath != secondPath {
+				return firstPath < secondPath
 			}
 			return a.Code < b.Code
 		})
-		result.Diagnostics = append(result.Diagnostics, findings...)
+		result.Diagnostics = appendUniqueDiagnostics(result.Diagnostics, findings)
 	}()
 	incomplete := func() {
 		recovery.InventoryComplete = false
@@ -251,12 +257,8 @@ func inspectRecovery(ctx context.Context, result *Result, request Request) error
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if complete && len(names) > 1 {
-		return fmt.Errorf("multiple recovery observations at %q are not supported by this implementation slice; history evaluation is added by the next recovery slice", path)
-	}
-	if len(recovery.Observations) == 1 && len(recovery.Observations[0].Predecessors) > 0 {
-		return errors.New("recovery predecessor history is not supported by this implementation slice; history evaluation is added by the next recovery slice")
-	}
+	evaluateRecoveryGraph(recovery, names, complete, &findings)
+
 	if !recovery.InventoryComplete || recovery.GraphStatus != "valid" {
 		return nil
 	}
@@ -266,9 +268,41 @@ func inspectRecovery(ctx context.Context, result *Result, request Request) error
 		return nil
 	}
 	recovery.Status = "available"
-	observation := &recovery.Observations[0]
-	recovery.Candidates = append(recovery.Candidates, observation.ID)
+	if len(recovery.Candidates) > 1 {
+		recovery.Status = "conflicting"
+		findings = append(findings, Diagnostic{Code: "recovery_conflict", Severity: "warning", Message: "multiple recovery candidates require explicit reconciliation"})
+	}
+	result.Comparison.Complete = result.Context.Complete
+	selected := make(map[string]bool, len(recovery.Candidates))
+	for _, id := range recovery.Candidates {
+		selected[id] = true
+	}
+	for index := range recovery.Observations {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		observation := &recovery.Observations[index]
+		if !selected[observation.ID] {
+			continue
+		}
+		comparison := inspectCandidate(result, request, observation, relative, &budget, &findings)
+		result.Comparison.Candidates = append(result.Comparison.Candidates, comparison)
+		result.Comparison.BaselineAvailable = result.Comparison.BaselineAvailable || comparison.BaselineAvailable
+		result.Comparison.Complete = result.Comparison.Complete && comparison.Complete
+	}
+	return ctx.Err()
+}
+
+func inspectCandidate(result *Result, request Request, observation *Observation, relative string, budget *cacheBudget, findings *[]Diagnostic) CandidateComparison {
 	comparison := CandidateComparison{ObservationID: observation.ID, Sources: []SourceDifference{}}
+	add := func(code, message, path, id string) {
+		*findings = append(*findings, Diagnostic{Code: code, Severity: "error", Message: message, Path: optionalString(path), ObservationID: optionalString(id)})
+	}
+	if budget.stopped {
+		observation.Snapshot.Status = "unavailable"
+		add("recovery_source_omitted", "snapshot not read after cache limit", observation.Snapshot.Path, observation.ID)
+		return comparison
+	}
 	// Re-open through checked components, rejecting a replaced alias.
 	observationRoot, e := openCacheDirectory(result.Scope.WorkingDirectory, filepath.Join(relative, observation.ID))
 	if e != nil {
@@ -290,15 +324,9 @@ func inspectRecovery(ctx context.Context, result *Result, request Request) error
 				observation.Snapshot.Status = "invalid"
 				add("recovery_snapshot_invalid", e.Error(), observation.Snapshot.Path, observation.ID)
 			} else {
-				comparison = compareSnapshot(result.Context, retained, observation, result.Scope.RecordsDirectory, request.AllowedSourceDirs, &findings)
+				comparison = compareSnapshot(result.Context, retained, observation, result.Scope.RecordsDirectory, request.AllowedSourceDirs, findings)
 			}
 		}
 	}
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-	result.Comparison.Candidates = append(result.Comparison.Candidates, comparison)
-	result.Comparison.BaselineAvailable = comparison.BaselineAvailable
-	result.Comparison.Complete = comparison.Complete
-	return nil
+	return comparison
 }

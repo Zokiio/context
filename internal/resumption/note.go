@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
-	"time"
 	"unicode/utf8"
 
 	"github.com/Zokiio/context/internal/orientation"
@@ -18,9 +17,8 @@ import (
 var errNoteIdentity = errors.New("recovery note identity mismatch")
 
 var (
-	noteUUIDPattern      = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
-	noteDigestPattern    = regexp.MustCompile(`^[0-9a-f]{64}$`)
-	noteTimestampPattern = regexp.MustCompile(`^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$`)
+	noteUUIDPattern   = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+	noteDigestPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 )
 
 var requiredNoteSections = []string{
@@ -95,11 +93,8 @@ func parseNote(data []byte, notePath, directoryID, projectID, taskID string) (Ob
 	if err != nil {
 		return Observation{}, err
 	}
-	if !validNoteTimestamp(observedAt) {
+	if !recordread.ValidOffsetTimestamp(observedAt) {
 		return Observation{}, fmt.Errorf("recovery note field %q must be an RFC 3339 timestamp", "observedAt")
-	}
-	if _, err := time.Parse(time.RFC3339, observedAt); err != nil {
-		return Observation{}, fmt.Errorf("recovery note field %q must be an RFC 3339 timestamp: %w", "observedAt", err)
 	}
 
 	predecessors, err := notePredecessors(metadata, id)
@@ -149,19 +144,6 @@ func parseNote(data []byte, notePath, directoryID, projectID, taskID string) (Ob
 			SourceCount:    nil,
 		},
 	}, nil
-}
-
-func validNoteTimestamp(value string) bool {
-	if !noteTimestampPattern.MatchString(value) {
-		return false
-	}
-	if value[len(value)-1] == 'Z' {
-		return true
-	}
-	offset := value[len(value)-6:]
-	hour := int(offset[1]-'0')*10 + int(offset[2]-'0')
-	minute := int(offset[4]-'0')*10 + int(offset[5]-'0')
-	return hour <= 23 && minute <= 59
 }
 
 func requiredNoteString(metadata map[string]any, name string, trim bool) (string, error) {

@@ -246,7 +246,7 @@ func TestResumeRejectsRepeatedScalarFlagsAndInvalidArguments(t *testing.T) {
 	}
 }
 
-func TestResumeRejectsWorkspaceAndHistoryStoreAsOperationFailures(t *testing.T) {
+func TestResumeRejectsWorkspaceButReportsIncompleteHistory(t *testing.T) {
 	root := scopeTempDir(t)
 	home, checkout, records := filepath.Join(root, "home"), filepath.Join(root, "checkout"), filepath.Join(root, "records")
 	for _, directory := range []string{home, checkout} {
@@ -272,7 +272,7 @@ func TestResumeRejectsWorkspaceAndHistoryStoreAsOperationFailures(t *testing.T) 
 	stdout.Reset()
 	stderr.Reset()
 	status = cli.RunWithEnvironment(context.Background(), []string{"ctx", "resume", "--bundle", records, "--checkout", checkout, "--ticket", "task.md"}, &stdout, &stderr, cli.Operations{Resume: resumption.Resume}, scopeEnvironment(root, home))
-	if status != 2 || stdout.Len() != 0 || !strings.Contains(stderr.String(), "not supported by this implementation slice") {
+	if status != 1 || stderr.Len() != 0 || !strings.Contains(stdout.String(), "Recovery: unknown; graph: incomplete") {
 		t.Fatalf("nonempty status=%d stdout=%q stderr=%q", status, stdout.String(), stderr.String())
 	}
 }

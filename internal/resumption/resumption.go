@@ -15,7 +15,7 @@ import (
 	"github.com/Zokiio/context/internal/taskcontext"
 )
 
-// Resume refreshes current facts and compares one retained root checkpoint.
+// Resume refreshes current facts and compares each current recovery candidate.
 func Resume(ctx context.Context, request Request) (Result, error) {
 	if err := ctx.Err(); err != nil {
 		return Result{}, err

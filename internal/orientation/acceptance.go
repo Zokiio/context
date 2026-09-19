@@ -1,12 +1,10 @@
 package orientation
 
 import (
-	"regexp"
 	"strings"
-	"time"
-)
 
-var offsetTimestamp = regexp.MustCompile(`^[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]+)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$`)
+	"github.com/Zokiio/context/internal/recordread"
+)
 
 func (e *evaluator) evaluateAcceptance(subject *record) *AcceptanceSummary {
 	if result, exists := e.acceptanceResults[subject.source.Path]; exists {
@@ -165,10 +163,7 @@ func acceptanceRevision(value any) *TestedRevision {
 
 func acceptanceTime(value any) *string {
 	text, ok := value.(string)
-	if !ok || !offsetTimestamp.MatchString(text) {
-		return nil
-	}
-	if _, err := time.Parse(time.RFC3339, text); err != nil {
+	if !ok || !recordread.ValidOffsetTimestamp(text) {
 		return nil
 	}
 	return &text
