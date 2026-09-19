@@ -31,3 +31,7 @@ Use the repository's task-context and recorded-acceptance procedures when implem
 ## Publication verification
 
 Built the current reader from revision `4459638` and read all seven tickets through `context` with the repository authorized for supporting sources. Every result was complete with complete traversal. Orientation recognized all seven unambiguous WorkItems with unstarted execution and ready-for-agent triage. The two dependency-free tickets have ready checks; the remaining five are blocked by their declared prerequisites. All seven remain outside current commitments, so they are not yet pickup-shortlist entries. This verifies record publication, not implementation acceptance.
+
+## Implementation verification
+
+All seven tickets are implemented and completed. The [combined evidence](evidence/07-workflow-verification.md) records final source checks, independent reviews, a real fresh-agent continuation and controlled recovery cases. The [final dependency observation](evidence/07-final-dependency-graph.json) verifies all seven current acceptances as valid and all supported checks as passing. Earlier publication and slice evidence retain their original tested identities.

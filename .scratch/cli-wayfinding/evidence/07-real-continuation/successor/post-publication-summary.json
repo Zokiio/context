@@ -1,0 +1,34 @@
+{
+  "exit": 0,
+  "complete": true,
+  "scope": {
+    "recordsDirectory": "/Users/zoki/code/context/.scratch/records",
+    "workingDirectory": "/Users/zoki/code/context",
+    "cacheRoot": "/Users/zoki/code/context/.context-cache/resume-v1",
+    "projectId": "ca6a73e0-ae93-49a3-b287-12071f7446fd",
+    "taskId": "a9d219cd-935b-4f9a-83db-9473e2d4ea6a"
+  },
+  "recovery": {
+    "status": "available",
+    "inventoryComplete": true,
+    "graphStatus": "valid",
+    "candidates": [
+      "4b95850a-e0ec-46bb-abba-8ba1b0ae40b1"
+    ]
+  },
+  "snapshots": [
+    [
+      "4b95850a-e0ec-46bb-abba-8ba1b0ae40b1",
+      "valid"
+    ],
+    [
+      "bf12cd3e-f472-4e62-8acf-1f0d29694e68",
+      "not_loaded"
+    ]
+  ],
+  "comparisonComplete": true,
+  "changedSources": [
+    "/Users/zoki/code/context/docs/readers.md",
+    "/Users/zoki/code/context/docs/discovery.md"
+  ]
+}

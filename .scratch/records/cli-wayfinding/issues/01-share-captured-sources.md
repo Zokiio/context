@@ -48,6 +48,8 @@ None
 
 ## Comments
 
+2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/01-share-captured-sources-compatibility-20260919.md).
+
 2026-09-19: Reassessed standalone limit diagnostic compatibility. Prior decision: [Resumption integration acceptance](../acceptances/01-share-captured-sources-resume-20260919.md).
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
@@ -57,7 +59,5 @@ Earlier acceptance, retained during resumption integration reassessment:
 
 ## Acceptance
 
-- [Acceptance](../acceptances/01-share-captured-sources-compatibility-20260919.md)
-
-
+- [Acceptance](../acceptances/01-share-captured-sources-final-20260919.md)
 

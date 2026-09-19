@@ -1,0 +1,14 @@
+{
+  "actor": "Codex /root",
+  "date": "2026-09-19",
+  "readerProductRevision": "3f966925076e07c2cfe46a63981fb729764e8067",
+  "kind": "controlled-fixtures",
+  "reproduce": "python3 workflow_probe.py /absolute/path/to/ctx /temporary/results.json",
+  "files": {
+    "07-controlled-probes/check_resume_contract.py": "c5445389ee2b1907a20ef690458003fda2181d1001234b06ac1c123bf98d086d",
+    "07-controlled-probes/checkpoint_probe.py": "d05b17e3ca5d1a4ddd0e25ef33e8081c53e3ebc35fc0752fb5b83bc7294c2386",
+    "07-controlled-probes/graph_probe.py": "2e725c7e5f96db7f3fd3ab41fa6c146b8376a5de7e3ed14752702357127773ad",
+    "07-controlled-probes/workflow_probe.py": "20f3e4101ed207f3300d939b1a61a397800d66bdfba75c1e38c90d8cb65aba8d",
+    "07-controlled-results.json": "d38ff2b44f9fb7da06b128c272ed7ce3a963d435601a152cb240bef20a4ea6dc"
+  }
+}

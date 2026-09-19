@@ -50,9 +50,10 @@ None
 
 ## Acceptance
 
-- [Acceptance](../acceptances/05-competing-checkpoints-20260919.md)
-
+- [Acceptance](../acceptances/05-competing-checkpoints-final-20260919.md)
 
 ## Comments
+
+2026-09-19: Reassessed the final reader/discovery reference with passing final checks. Prior decision: [Acceptance](../acceptances/05-competing-checkpoints-20260919.md).
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
