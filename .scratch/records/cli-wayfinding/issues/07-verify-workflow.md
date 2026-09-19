@@ -3,7 +3,7 @@ type: WorkItem
 id: a9d219cd-935b-4f9a-83db-9473e2d4ea6a
 title: "Verify the complete interrupted-task workflow"
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Verify the complete interrupted-task workflow
@@ -52,3 +52,5 @@ None
 ## Comments
 
 Created from the user-approved seven-ticket breakdown. Acceptance requires retained verification and an authored Acceptance record; unstarted execution and triage do not establish implementation eligibility.
+
+2026-09-19: For the deliberate fresh-session trial, the documentation session owns user documentation. The root coordinator owns controlled verification fixtures, final repository checks, and acceptance records. The initial documentation session stops after useful unfinished work and a checkpoint. Its successor continues from this ticket and repository guidance.
