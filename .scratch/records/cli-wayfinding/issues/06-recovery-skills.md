@@ -50,7 +50,7 @@ None
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/06-recovery-skills-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/06-recovery-skills-merge-review-20260919.md)
 
 ## Comments
 

@@ -53,4 +53,4 @@ Created from the user-approved implementation plan. Verification output and acce
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/02-compact-orientation-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/02-compact-orientation-merge-review-20260919.md)

@@ -52,4 +52,4 @@ Created from the user-approved implementation plan. Verification output and acce
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/01-share-captured-sources-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/01-share-captured-sources-merge-review-20260919.md)

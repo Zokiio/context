@@ -50,7 +50,7 @@ None
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/05-competing-checkpoints-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/05-competing-checkpoints-merge-review-20260919.md)
 
 ## Comments
 

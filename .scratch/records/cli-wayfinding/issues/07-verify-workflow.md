@@ -55,4 +55,4 @@ Created from the user-approved implementation plan. Verification output and acce
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/07-verify-workflow-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/07-verify-workflow-merge-review-20260919.md)

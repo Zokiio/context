@@ -40,13 +40,13 @@ The wayfinding destination is reached: no known decision remains before implemen
 
 ## Review reassessment
 
-Reopened after the user-requested [independent review](../independent-review.md) of commit `e1c5a344f6afe913ae16f27f701cd0dfbc9f6589`. The earlier readiness conclusion above is superseded. Three concrete contract corrections are required before recovery implementation: reconcile bounded enumeration with deterministic ordering, define deliberate recovery from unfinished checkpoint publication, and specify nested JSON shapes and absent-baseline representation.
+The contract review identified three corrections: reconcile bounded enumeration with deterministic ordering, define deliberate recovery from unfinished checkpoint publication, and specify nested JSON shapes and absent-baseline representation.
 
 The parent agent's separate reference audit found that the map and research point to the pre-existing untracked `.scratch/workflow-improvements/discovery.md`, and the research cites ignored `.cache` notes. These links resolve locally but do not form a portable Git handoff. Preserve necessary supporting context or label optional local-only sources before declaring the handoff self-contained. Neither the independent review nor the parent audit changed product code or ran implementation tests.
 
 ## Review correction and closure
 
-Resolved again after the user requested the review findings be addressed. The [reassessment](../independent-review.md#reassessment-on-2026-09-17) confirms that all three original P2 findings are fixed. Bounded enumeration precedes sorting; partial enumeration makes no globally sorted-prefix claim. Skills have explicit stopped-writer quarantine and whole-task reset procedures, preserving archives and finalized competing notes. JSON now has concrete nested field types, separate graph/snapshot status, stable comparison shape, and five example projections.
+The [specification](../spec.md) incorporates these corrections. Bounded enumeration precedes sorting, and partial enumeration makes no globally sorted-prefix claim. Skills have explicit stopped-writer quarantine and whole-task reset procedures, preserving archives and finalized competing notes. JSON defines nested field types, separate graph and snapshot status, a stable comparison shape, and five example projections.
 
 Two narrow reassessment corrections were also applied: predecessor references are guaranteed to resolve only for valid graphs, and the example description lists all five cases. The optional history-growth guidance is covered by limit overrides and explicit reset without automatic pruning.
 

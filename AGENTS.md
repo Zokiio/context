@@ -2,6 +2,10 @@
 
 Before planning product changes, read `docs/vision.md` for the product direction and bootstrap milestone.
 
+## Change scope
+
+Keep features and pull requests small. Aim for one independently testable outcome per PR, with its necessary tests and documentation. Split independent refactors and follow-up behavior into separate PRs. If scope grows during implementation, finish the current outcome and record the rest as follow-up work.
+
 ## Agent skills
 
 ### Issue tracker

@@ -1,6 +1,6 @@
 # Local orientation and resumption
 
-Status: specified for implementation after [independent review and reassessment](independent-review.md#reassessment-on-2026-09-17). The contract fixes cover bounded discovery, interrupted-publication recovery, and explicit nested JSON shapes. No implementation or acceptance trial has run.
+This specification defines compact orientation and task resumption, including bounded discovery, interrupted-publication recovery, and explicit nested JSON shapes.
 
 ## Outcome and decision owners
 

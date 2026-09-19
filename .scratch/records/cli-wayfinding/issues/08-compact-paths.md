@@ -51,4 +51,4 @@ The user requested shorter actionable paths after the live operator-view demonst
 
 ## Acceptance
 
-- [Local acceptance](../acceptances/08-compact-paths-compact-paths-20260919.md)
+- [Local acceptance](../acceptances/08-compact-paths-merge-review-20260919.md)
