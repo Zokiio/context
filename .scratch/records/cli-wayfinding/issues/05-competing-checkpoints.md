@@ -3,7 +3,7 @@ type: WorkItem
 id: 94acbf45-cc6b-4957-b3fe-3218e955ef3f
 title: "Handle competing and interrupted checkpoints"
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Handle competing and interrupted checkpoints
@@ -18,13 +18,13 @@ This completes the read-side recovery contract. Skills, rather than the CLI, per
 
 ## Acceptance criteria
 
-- [ ] Evaluate all observed identity-matching notes as the directed predecessor graph specified by the contract. Preserve earlier observations, find all leaves only after complete valid inspection, and select candidates in lexical ID order without using timestamps.
-- [ ] Support linear history, multiple roots, competing successors, and explicit reconciliation referencing all incorporated candidates. Multiple valid leaves produce conflicting recovery with a separate comparison per candidate; a fully evaluated conflict may return exit status 0.
-- [ ] Dangling predecessors, self-links, duplicate identities, cycles, unreadable/unfinished notes, and incomplete inventory return their specified graph status and diagnostics with no selected candidates. Parsed observations and dangling references remain inspectable.
-- [ ] Only current candidates load snapshot bodies. Superseded snapshots remain not_loaded without making the report partial. A selected note can remain graph-available with an invalid snapshot while comparison and the overall report are incomplete.
-- [ ] Cache-budget exhaustion stops enumeration/reading within the documented lookahead bounds, exposes known omissions, and makes no global lexical-prefix or unique-candidate claim. Quarantine is excluded from discovery.
-- [ ] Remove intermediate single-note/history restrictions from prior slices. Verify all final nested JSON shapes, diagnostic attribution/deduplication/order, aggregate completeness, and exit statuses using real fixtures for every supplied example state.
-- [ ] Cooperative concurrent publication fixtures preserve both successors; an incomplete publication remains unknown, an explicit reconciled successor converges the graph, and a stopped-writer quarantine fixture permits complete inspection again without discarding finalized competitors. The reader itself performs no mutation.
+- [x] Evaluate all observed identity-matching notes as the directed predecessor graph specified by the contract. Preserve earlier observations, find all leaves only after complete valid inspection, and select candidates in lexical ID order without using timestamps.
+- [x] Support linear history, multiple roots, competing successors, and explicit reconciliation referencing all incorporated candidates. Multiple valid leaves produce conflicting recovery with a separate comparison per candidate; a fully evaluated conflict may return exit status 0.
+- [x] Dangling predecessors, self-links, duplicate identities, cycles, unreadable/unfinished notes, and incomplete inventory return their specified graph status and diagnostics with no selected candidates. Parsed observations and dangling references remain inspectable.
+- [x] Only current candidates load snapshot bodies. Superseded snapshots remain not_loaded without making the report partial. A selected note can remain graph-available with an invalid snapshot while comparison and the overall report are incomplete.
+- [x] Cache-budget exhaustion stops enumeration/reading within the documented lookahead bounds, exposes known omissions, and makes no global lexical-prefix or unique-candidate claim. Quarantine is excluded from discovery.
+- [x] Remove intermediate single-note/history restrictions from prior slices. Verify all final nested JSON shapes, diagnostic attribution/deduplication/order, aggregate completeness, and exit statuses using real fixtures for every supplied example state.
+- [x] Cooperative concurrent publication fixtures preserve both successors; an incomplete publication remains unknown, an explicit reconciled successor converges the graph, and a stopped-writer quarantine fixture permits complete inspection again without discarding finalized competitors. The reader itself performs no mutation.
 
 ## Blocked by
 
@@ -47,6 +47,11 @@ None
 - [Acceptance procedure](../../../../docs/agents/acceptance.md)
 - [Recorded acceptance decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 - [Directory selection decision](../../../../docs/adr/0004-directory-specific-project-selection.md)
+
+## Acceptance
+
+- [Acceptance](../acceptances/05-competing-checkpoints-20260919.md)
+
 
 ## Comments
 
