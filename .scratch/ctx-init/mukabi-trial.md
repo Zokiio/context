@@ -1,6 +1,6 @@
 # Mukabi manual trial
 
-Status: Claude skill discovery and the paired recovery trial are complete. The dashboard skip-navigation change has passing local behavior tests and awaits human review. `ctx init` remains draft and unstarted.
+Status: Claude skill discovery and the paired recovery trial are complete. The dashboard skip-navigation change has passing local behavior tests; its Vercel preview failed and human review is outstanding. `ctx init` remains draft and unstarted.
 
 ## Project and task
 
@@ -54,7 +54,7 @@ The retained checkpoint condition supplied the production change. After timing e
 - Explicit dashboard TypeScript checking has two existing `vite.shared.ts` errors, reproduced on the clean baseline. No new type errors were observed.
 - A Chromium fixture rendered the production shell, CSS, theme state, and TanStack router, with authentication responses stubbed. Tab, Enter, continued tabbing, focus visibility, and viewport containment passed at 1280 and 390 pixels in both themes. This is a component audit, not an authenticated application test. Other engines and screen-reader output remain untested.
 
-The bootstrap and measurement files remain on the local trial branch. The product PR contains only the feature, its tests/dependency, and a brief audit report. Human review remains outstanding.
+The bootstrap and measurement files remain on the local trial branch. The [product PR](https://github.com/Zokiio/Mukabi/pull/4) contains only the feature, its tests/dependency, and a brief audit report. Its Vercel preview failed. The CLI could not retrieve build logs because its token is invalid, so the cause is unknown; do not attribute it to the existing local type errors. Human review remains outstanding.
 
 Raw timestamped transcripts, frozen/restored manifests, original and result checkpoints, and scoring criteria are retained under the trial checkout's ignored `.context/trial/measurement/` directory. The report distinguishes measured observations from later verification.
 
