@@ -12,6 +12,14 @@ From the repository root, build with Go 1.25 or later:
 go build -o /tmp/ctx ./cmd/ctx
 ```
 
+Inspect the supplied binary's build identity from any directory:
+
+```sh
+/tmp/ctx version
+```
+
+The output reports the embedded module version, VCS revision, and `modified` flag. Checkout builds usually have module version `(devel)`. Missing VCS metadata is reported as `unknown`, including builds made with `-buildvcs=false`. This describes the binary's build, not the current directory. A dirty flag does not identify the uncommitted source changes.
+
 Read the project's orientation:
 
 ```sh

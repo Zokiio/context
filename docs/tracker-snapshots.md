@@ -40,7 +40,7 @@ These proposals need focused parser and eligibility tests before implementation.
 ## Bootstrap checklist before another trial
 
 - Establish the authoritative tracker. If there is none, offer local file tracking.
-- Supply a ctx binary and choose a local records directory. Retain its origin, version or source revision, and checksum. For a build from uncommitted source, also retain a source digest manifest. The consuming project should not need the ctx source checkout to establish binary provenance. Ignore disposable snapshots, evidence, binary files, recovery cache, and configuration locks. Preserve durable project guidance.
+- Supply a ctx binary and choose a local records directory. Run `ctx version` and retain its output. It reports the embedded module version, VCS revision, and modified flag without requiring the ctx checkout. A modified or unstamped build remains visibly uncertain; the output does not identify uncommitted changes. Ignore disposable snapshots, evidence, binary files, recovery cache, and configuration locks. Preserve durable project guidance.
 - Create a Project manifest selecting one real task. For a tracker-owned task, use the snapshot convention above.
 - Discover the agent tool and its existing skills location. Adapt task-context, recovery-notes and its PROFILE.md, and the acceptance procedure. Replace source-repository build instructions and paths. Preserve existing instructions and add concise entry pointers.
 - Bind the chosen records and the required source roots with [ctx setup](connect-projects.md). Read the task, work on it, and log setup friction and elapsed time.
