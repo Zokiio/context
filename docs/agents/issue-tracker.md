@@ -35,7 +35,7 @@ Use `triage` as the single home for the triage role. Reserve OKF's optional `sta
 
 Keep requirements and acceptance criteria in the ticket body. Require at least one nonempty criterion under `## Acceptance criteria`. Its Spec section is optional. Full OKF validation is outside the readers; the authoring profile still applies to new tickets.
 
-Every work item declares `## Blocked by` and `## Blocked by decisions`. Use local Markdown links for relationships. An empty section or the literal word `None` declares none. A missing section means unknown. Do not use explanatory prose as a substitute for an explicit declaration.
+Every work item declares `## Blocked by` and `## Blocked by decisions`. Use local Markdown links for relationships. An empty section or the literal `None` or `None.` declares none. A missing section means unknown. Do not use explanatory prose as a substitute for an explicit declaration.
 
 After acceptance, use `## Acceptance` for one link to the current Acceptance record. Keep old links under Comments or other history. A completed execution state alone does not satisfy a dependency. Follow [Record acceptance](acceptance.md) when finishing, reassessing, or migrating work.
 
@@ -49,7 +49,7 @@ Open decisions links to Decision records. Each Decision has `type: Decision`, a 
 
 Only a ticket's explicit Blocked by decisions links make a decision block that ticket. If its answer imposes implementation requirements, also select the decision through Spec or Context so the existing task-context reader supplies it.
 
-An empty link-only section or literal `None` declares no links. A missing section leaves information unknown. Goals may contain prose. Repeated recognized sections combine in document order, with nested headings inside the section. IDs are unique across typed records in a project.
+An empty link-only section or literal `None` or `None.` declares no links. A missing section leaves information unknown. Goals may contain prose. Repeated recognized sections combine in document order, with nested headings inside the section. IDs are unique across typed records in a project.
 
 Keep Decision and Acceptance records within the selected bundle, for example under feature-local `decisions/` and `acceptances/` directories. Keep immutable evidence documents outside the bundle and authorize their containing source roots. This avoids treating every historical evidence document as an inventory candidate.
 

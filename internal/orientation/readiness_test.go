@@ -254,3 +254,42 @@ func TestRequiredContextUsesAuthorizedAvailableDocuments(t *testing.T) {
 		})
 	}
 }
+
+func TestRelationshipEmptySentinelPunctuation(t *testing.T) {
+	for _, tc := range []struct {
+		text  string
+		valid bool
+	}{
+		{"None", true},
+		{"None.", true},
+		{"  None.  ", true},
+		{"None..", false},
+		{"none.", false},
+		{"None. Ask later.", false},
+		{"[Missing][unresolved]", false},
+	} {
+		t.Run(tc.text, func(t *testing.T) {
+			for _, section := range []string{"Blocked by", "Blocked by decisions", "Spec", "Context"} {
+				t.Run(section, func(t *testing.T) {
+					body := workItem("work", "unstarted", "## Spec\nNone\n## Context\nNone\n")
+					body = strings.Replace(body, "## "+section+"\nNone\n", "## "+section+"\n"+tc.text+"\n", 1)
+					got, err := orientation.Orient(context.Background(), orientation.Request{ProjectDir: writeProject(t, map[string]string{
+						"project.md": committedManifest("work.md"), "work.md": body,
+					})})
+					if err != nil {
+						t.Fatal(err)
+					}
+					work := findWork(t, got, "work.md")
+					if got.Complete != tc.valid || work.Eligible != tc.valid {
+						t.Fatalf("complete=%v eligible=%v diagnostics=%+v", got.Complete, work.Eligible, got.Diagnostics)
+					}
+				})
+			}
+			manifest := "---\ntype: Project\nid: project\ntitle: Project\n---\n## Goals\nObserve.\n## Current commitments\n" + tc.text + "\n## Open decisions\n" + tc.text + "\n"
+			got, err := orientation.Orient(context.Background(), orientation.Request{ProjectDir: writeProject(t, map[string]string{"project.md": manifest})})
+			if err != nil || got.Complete != tc.valid {
+				t.Fatalf("project complete=%v diagnostics=%+v err=%v", got.Complete, got.Diagnostics, err)
+			}
+		})
+	}
+}

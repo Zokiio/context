@@ -66,9 +66,9 @@ func (e *evaluator) declaration(r *record, name string, linkOnly bool) bool {
 		if !section.Complete {
 			complete = false
 		}
-		if content := strings.TrimSpace(section.Text); linkOnly && content != "" && content != "None" && len(section.Links) == 0 {
+		if content := strings.TrimSpace(section.Text); linkOnly && !emptyDeclaration(content) && len(section.Links) == 0 {
 			complete = false
-			e.diagnose(Diagnostic{Code: "invalid_relationship_section", Severity: "error", Message: name + " must contain file links, be empty, or contain the literal None", Path: r.source.Path})
+			e.diagnose(Diagnostic{Code: "invalid_relationship_section", Severity: "error", Message: name + " must contain file links, be empty, or contain the literal None or None.", Path: r.source.Path})
 		}
 	}
 	if !present {
@@ -92,4 +92,13 @@ func (e *evaluator) declaration(r *record, name string, linkOnly bool) bool {
 		}
 	}
 	return complete
+}
+
+func emptyDeclaration(content string) bool {
+	switch strings.TrimSpace(content) {
+	case "", "None", "None.":
+		return true
+	default:
+		return false
+	}
 }

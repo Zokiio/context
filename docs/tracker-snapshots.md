@@ -34,17 +34,17 @@ Repeat the freshness check before continuation and acceptance. A successful loca
 
 ## Two reader frictions from the trial
 
-| Source input | Current behavior | Trial adaptation | Proposed leniency, not implemented |
+| Source input | Current behavior | Trial adaptation | Handling |
 | --- | --- | --- | --- |
-| `None.` in a relationship section | Orientation rejects it as `invalid_relationship_section`; the recognized sentinel is `None` | Normalize the standalone sentinel in the local snapshot and preserve the raw response | Accept a single trailing period on the standalone sentinel. Continue reporting other prose, missing sections, and unresolved links as unknown |
-| No execution field | Orientation reports an invalid profile and unknown execution; the task cannot enter its eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Permit absent execution as unknown in WorkItems marked by a valid `sourceURL` as defined above without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
+| `None.` in a relationship section | Orientation accepts standalone `None` and `None.` | Normalize the standalone sentinel in the local snapshot and preserve the raw response | Implemented: a single trailing period is accepted. Other prose, missing sections, and unresolved links remain unknown |
+| No execution field | Orientation reports an invalid profile and unknown execution; the task cannot enter its eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Proposed, not implemented: permit absent execution as unknown in WorkItems marked by a valid `sourceURL` as defined above without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
 
-These proposals need focused parser and eligibility tests before implementation. The trial does not justify a new Snapshot record type. Keep the missing-execution proposal separate from relaxing locally authored WorkItem requirements.
+The missing-execution proposal still needs focused parser and eligibility tests before implementation. The trial does not justify a new Snapshot record type. Keep the missing-execution proposal separate from relaxing locally authored WorkItem requirements.
 
 ## Bootstrap checklist before another trial
 
 - Establish the authoritative tracker. If there is none, offer local file tracking.
-- Supply a ctx binary and choose a local records directory. Retain its origin, version or source revision, and checksum. For a build from uncommitted source, also retain a source digest manifest. The consuming project should not need the ctx source checkout to establish binary provenance. Ignore disposable snapshots, evidence, binary files, recovery cache, and configuration locks. Preserve durable project guidance.
+- Supply a ctx binary and choose a local records directory. Run `ctx version` and retain its output. It reports the embedded module version, VCS revision, and modified flag without requiring the ctx checkout. A modified or unstamped build remains visibly uncertain; the output does not identify uncommitted changes. Ignore disposable snapshots, evidence, binary files, recovery cache, and configuration locks. Preserve durable project guidance.
 - Create a Project manifest selecting one real task. For a tracker-owned task, use the snapshot convention above.
 - Discover the agent tool and its existing skills location. Adapt task-context, recovery-notes and its PROFILE.md, and the acceptance procedure. Replace source-repository build instructions and paths. Preserve existing instructions and add concise entry pointers.
 - Bind the chosen records and the required source roots with [ctx setup](connect-projects.md). Read the task, work on it, and log setup friction and elapsed time.
