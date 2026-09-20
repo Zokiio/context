@@ -53,3 +53,21 @@ The trial needed one agent, ordinary file copies into an existing skills directo
 The largest gap was preserving GitHub authority while supplying local reader inputs. The binary and record-path assumptions in the copied skills were immediate problems. Required supporting references and historical acceptance instructions also needed attention. These are observed requirements; the broader installation machinery remains untested.
 
 The [init draft](../records/ctx-init/issues/01-agent-guided-project-initialization.md) has been narrowed accordingly. Its scope decision remains open for review of these findings. The local trial is complete without resolving unrelated cases or claiming hosted CI passed.
+
+## Review follow-up on 2026-09-20
+
+The trial records are in [ctx PR 12](https://github.com/Zokiio/context/pull/12), stacked on PR 11. The application change is in [Opsbase PR 248](https://github.com/Zokiio/opsbase/pull/248). Trial bootstrap guidance and disposable inputs remain local to its worktree.
+
+Automated standards review found contradictory browser-test prerequisites. Automated spec review found that the company-name assertion only inspected its own mocked response. Both were corrected. The completion test now opens Settings through its sidebar, checks the actual company-name field, returns through client-side navigation, and creates an invoice with the new defaults. It still permits only the initial document load and the product's normal completion navigation. All three focused scenarios passed with `CI=1` after these corrections, with fixture typecheck and scoped ESLint also passing. Human review remains outstanding.
+
+### Adaptation size and elapsed time
+
+Compared with ctx source revision `826c03f`, the copied documents required these line edits. Counts are removed plus added lines, including blank lines, rather than a percentage of unique lines rewritten.
+
+| Document | Original lines | Removed | Added | Total edits |
+| --- | ---: | ---: | ---: | ---: |
+| task-context SKILL.md | 28 | 6 | 5 | 11 |
+| recovery-notes SKILL.md | 87 | 4 | 4 | 8 |
+| Acceptance procedure | 66 | 27 | 3 | 30 |
+
+No phase timer ran during the original trial. Filesystem timestamps place worktree creation at 12:59:57 UTC and the completed binding at 13:02:05, approximately two minutes for bootstrap including adaptation. The copied guidance was written within that interval, so its effort cannot be separated reliably. The final checkpoint is timestamped 13:19:28, approximately seventeen further minutes for task work, verification, and reporting. These are reconstructed wall-clock intervals, not measured human effort, and exclude earlier research and the later review. Future trials should record separate phase start and end times.

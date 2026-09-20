@@ -2,6 +2,8 @@
 
 Use `ctx setup` to connect an existing records directory to a working directory. Replace `ctx` in these examples with the path to your [built binary](../readme.md#build-and-read-this-project).
 
+For a new project whose tracker remains authoritative, start with the [manual bootstrap checklist and snapshot profile](tracker-snapshots.md).
+
 ## Connect existing records
 
 Choose a records directory that already contains `project.md` with `type: Project`, a nonempty `id`, and a nonempty `title` in YAML frontmatter. Setup does not create records.

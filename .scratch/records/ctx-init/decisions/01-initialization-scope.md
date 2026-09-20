@@ -32,6 +32,10 @@ The [friction log](../../../ctx-init/opsbase-trial.md) now supplies concrete ans
 
 Local setup, task work, and verification have been exercised. Review these findings before resolving the first-release scope. The issue remains a draft; hosted Opsbase CI and human code review have not run. This decision stays open, with evidence available rather than awaiting another debate.
 
+## Current direction after review
+
+Use the [manual checklist and tracker-snapshot profile](../../../../docs/tracker-snapshots.md) for the next project. Keep command implementation parked until a second external project shows which adaptations repeat. The Opsbase evidence supports reusable guidance, but does not establish an installer contract. This decision remains open for that evidence rather than another debate.
+
 ## Parked design direction
 
 - Preserve an existing tracker and offer local files when none exists.
