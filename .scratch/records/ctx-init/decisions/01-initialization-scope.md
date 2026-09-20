@@ -36,7 +36,7 @@ Local setup, task work, and verification have been exercised. Review these findi
 
 Use the [manual checklist and tracker-snapshot profile](../../../../docs/tracker-snapshots.md) for the next project. Keep command implementation parked until a second external project shows which adaptations repeat. The Opsbase evidence supports reusable guidance, but does not establish an installer contract. This decision remains open for that evidence rather than another debate.
 
-The next trial uses Mukabi with Claude Code to change the harness axis. Follow the [paired recovery measurement](../../../../docs/tracker-snapshots.md#next-trial-and-recovery-baseline) with and without the checkpoint. The snapshot profile now defines the proposed missing-execution discriminator as a WorkItem with a valid authoritative `sourceURL`; the leniency itself remains unimplemented.
+The next trial uses Mukabi with Claude Code to change the harness axis. Follow the [paired recovery measurement](../../../../docs/tracker-snapshots.md#next-trial-and-recovery-baseline) with and without the checkpoint. The snapshot profile now defines the missing-execution discriminator as a WorkItem with a valid authoritative `sourceURL`. The reader permits only an absent execution key, keeps execution unknown, and excludes that snapshot from pickup and dependency satisfaction.
 
 ## Parked design direction
 
