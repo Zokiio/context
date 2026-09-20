@@ -69,3 +69,5 @@ None
 After review of the first external trial, use the [manual checklist](../../../../docs/tracker-snapshots.md#bootstrap-checklist-before-another-trial) before building this command. A second external project should establish which adaptations repeat. The ticket remains draft, needs-info, and unstarted.
 
 2026-09-20: Select Mukabi with Claude Code for the next external trial and compare fresh-session continuation with and without its checkpoint. The snapshot discriminator is explicit in the profile. Initialization remains draft and unstarted.
+
+2026-09-20: The [Mukabi trial](../../../ctx-init/mukabi-trial.md) exercised Claude symlink discovery and an existing local roadmap. Supplied-binary and linked-guidance adaptation repeated. The paired recovery run showed no action-time benefit and missed the plan-before-action protocol in both conditions. Keep this ticket draft, needs-info, and unstarted.

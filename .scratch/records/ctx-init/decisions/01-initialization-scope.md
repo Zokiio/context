@@ -49,3 +49,7 @@ The next trial uses Mukabi with Claude Code to change the harness axis. Follow t
 
 - [Design interview and debates](../../../ctx-init/discovery.md)
 - [Project initialization issue](../issues/01-agent-guided-project-initialization.md)
+
+## Mukabi observation
+
+The [Mukabi trial](../../../ctx-init/mukabi-trial.md) confirmed Claude skill discovery through individual symlinks while preserving the local roadmap. Shared preparation steps repeat, but the checkpoint condition took 30.39 seconds longer to reach its first task edit in one pair. Neither session emitted the requested plan before editing. Keep this decision open and init draft; do not infer a speed benefit or multi-tool installer requirements from these results.
