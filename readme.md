@@ -18,7 +18,7 @@ Inspect the supplied binary's build identity from any directory:
 /tmp/ctx version
 ```
 
-The output reports the embedded module version, VCS revision, and `modified` flag. Checkout builds usually have module version `(devel)`. Missing VCS metadata is reported as `unknown`, including builds made with `-buildvcs=false`. This describes the binary's build, not the current directory. A dirty flag does not identify the uncommitted source changes.
+The output reports the embedded module version, VCS revision, and `modified` flag. The module version may be a release version, a generated pseudo-version, or `(devel)`, depending on the build. Missing VCS metadata is reported as `unknown`, including builds made with `-buildvcs=false`. This describes the binary's build, not the current directory. A dirty flag does not identify the uncommitted source changes.
 
 Read the project's orientation:
 
