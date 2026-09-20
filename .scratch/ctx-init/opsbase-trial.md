@@ -96,3 +96,5 @@ The original supplied ctx binary reported a dirty source revision without a reta
 A local workflow Acceptance now validates against the unchanged issue requirements and retained evidence. A new recovery checkpoint incorporates the original candidate and these results. The GitHub issue remains open, and human review remains outstanding. Local acceptance does not approve a merge.
 
 The successful session exited after 718.40 seconds, 11 minutes 58 seconds, including the 109.49 seconds to a correct continuation plan. The rest included current-code review, focused tests, fault injection, reader provenance work, and local evidence, acceptance, and checkpoint publication. This total is not a pure recovery cost. The session received no additional instructions after the ticket-path prompt.
+
+After publication, hosted frontend, backend, and smoke-test jobs all passed on final Opsbase revision `2a2fd2d`. Human review remains the outstanding review step.
