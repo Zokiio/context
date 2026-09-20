@@ -1,6 +1,6 @@
 # Opsbase manual trial
 
-Status: local trial complete. Opsbase changes await review and hosted CI. No init implementation has started.
+Status: local trial complete. Opsbase PR 248 has passing hosted CI and awaits human review. No init implementation has started.
 
 The user selected [Opsbase](https://github.com/Zokiio/opsbase) and [issue 165](https://github.com/Zokiio/opsbase/issues/165), deterministic onboarding browser coverage. The trial uses Codex on macOS and the project's existing `.agents/skills` directory.
 
@@ -71,3 +71,18 @@ Compared with ctx source revision `826c03f`, the copied documents required these
 | Acceptance procedure | 66 | 27 | 3 | 30 |
 
 No phase timer ran during the original trial. Filesystem timestamps place worktree creation at 12:59:57 UTC and the completed binding at 13:02:05, approximately two minutes for bootstrap including adaptation. The copied guidance was written within that interval, so its effort cannot be separated reliably. The final checkpoint is timestamped 13:19:28, approximately seventeen further minutes for task work, verification, and reporting. These are reconstructed wall-clock intervals, not measured human effort, and exclude earlier research and the later review. Future trials should record separate phase start and end times.
+
+### Fresh-session recovery measurement
+
+A new CLI session started in the existing trial worktree with only the absolute ticket path as its prompt. It received no conversation history or continuation hints. The original checkpoint and snapshot were preserved. The checkout did include the intervening review commits, so the session had to distinguish retained observations from current code.
+
+The first attempt with installed CLI 0.154.0 failed after 4.87 seconds because the configured model required a newer client, before the ticket was read. A temporary CLI 0.155.1 installation supplied the retry without changing the global installation. Timings below start at that second launch and exclude the failed attempt and installation.
+
+- 31 seconds: read the selected context and checked the live GitHub issue against the snapshot.
+- 62 seconds: captured exact context and ran `ctx resume`.
+- 102 seconds: explicitly read the selected checkpoint body and retained evidence.
+- 109.49 seconds: correctly stated that the implementation was already committed, recognized the later company-name assertion, noted that the checkpoint predated the commits, and chose current-code review and focused checks as its next action.
+
+This demonstrates recovery to a correct continuation plan in one fresh session. It does not measure time saved against a session without the checkpoint. The full event stream and monotonic timestamps are retained locally under `.context/trial/resume-experiment-current-cli/`; the failed attempt remains under `.context/trial/resume-experiment/`.
+
+Hosted CI for Opsbase PR 248 subsequently passed frontend, backend, and smoke-test jobs on revision `812c919`. Those automated results do not replace human review.

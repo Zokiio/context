@@ -30,7 +30,7 @@ The [friction log](../../../ctx-init/opsbase-trial.md) now supplies concrete ans
 - GitHub remained authoritative. A labeled local snapshot retained the original retrieval and required manual freshness checking and two visible format adaptations. ctx assembled that snapshot and local documents; it did not retrieve live GitHub work.
 - Existing instructions and the multi-context layout were preserved. The trial used a small additive merge, not a general reconciliation mechanism.
 
-Local setup, task work, and verification have been exercised. Review these findings before resolving the first-release scope. The issue remains a draft; hosted Opsbase CI and human code review have not run. This decision stays open, with evidence available rather than awaiting another debate.
+Local setup, task work, and verification have been exercised. Review these findings before resolving the first-release scope. The issue remains a draft; hosted Opsbase CI has passed; human code review remains outstanding. This decision stays open, with evidence available rather than awaiting another debate.
 
 ## Current direction after review
 
