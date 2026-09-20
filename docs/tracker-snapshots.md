@@ -30,12 +30,12 @@ Repeat the freshness check before continuation and acceptance. A successful loca
 
 ## Two reader frictions from the trial
 
-| Source input | Current behavior | Trial adaptation | Proposed leniency, not implemented |
+| Source input | Current behavior | Trial adaptation | Handling |
 | --- | --- | --- | --- |
-| `None.` in a relationship section | Orientation rejects it as `invalid_relationship_section`; the recognized sentinel is `None` | Normalize the standalone sentinel in the local snapshot and preserve the raw response | Accept a single trailing period on the standalone sentinel. Continue reporting other prose, missing sections, and unresolved links as unknown |
-| No execution field | Orientation reports an invalid profile and unknown execution; the task cannot enter its eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Permit absent execution as unknown in tracker snapshots without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
+| `None.` in a relationship section | Orientation accepts standalone `None` and `None.` | Normalize the standalone sentinel in the local snapshot and preserve the raw response | Implemented: a single trailing period is accepted. Other prose, missing sections, and unresolved links remain unknown |
+| No execution field | Orientation reports an invalid profile and unknown execution; the task cannot enter its eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Proposed, not implemented: permit absent execution as unknown in tracker snapshots without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
 
-These proposals need focused parser and eligibility tests before implementation. The trial does not justify a new Snapshot record type. Keep the missing-execution proposal separate from relaxing locally authored WorkItem requirements.
+The missing-execution proposal still needs focused parser and eligibility tests before implementation. The trial does not justify a new Snapshot record type. Keep the missing-execution proposal separate from relaxing locally authored WorkItem requirements.
 
 ## Bootstrap checklist before another trial
 

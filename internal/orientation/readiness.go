@@ -73,9 +73,9 @@ func (e *evaluator) contextCheck(r *record) Check {
 			if section.Name != name {
 				continue
 			}
-			if content := strings.TrimSpace(section.Text); len(section.Links) == 0 && content != "" && content != "None" {
+			if content := strings.TrimSpace(section.Text); len(section.Links) == 0 && !emptyDeclaration(content) {
 				check.Status = "unknown"
-				reason := Finding{Code: "invalid_relationship_section", Message: name + " must contain file links, be empty, or contain the literal None", Path: r.source.Path}
+				reason := Finding{Code: "invalid_relationship_section", Message: name + " must contain file links, be empty, or contain the literal None or None.", Path: r.source.Path}
 				check.Reasons = append(check.Reasons, reason)
 				e.diagnose(Diagnostic{Code: reason.Code, Severity: "error", Message: reason.Message, Path: reason.Path})
 			}
