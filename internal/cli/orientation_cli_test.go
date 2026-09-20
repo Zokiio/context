@@ -31,7 +31,7 @@ func TestOrientationTextRetainsPartialFacts(t *testing.T) {
 		Sources:     []orientation.Source{{Path: "/bundle/project.md", SHA256: strings.Repeat("a", 64), Reasons: []orientation.Reason{{Kind: "manifest"}}}},
 		Diagnostics: []orientation.Diagnostic{{Code: "missing_required_section", Severity: "error", Message: "Goals is missing.", Path: "/bundle/project.md"}},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", ".", "--detail"}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 1 || stderr.Len() != 0 {
@@ -61,7 +61,7 @@ func TestOrientationTextShowsAmbiguousIdentities(t *testing.T) {
 		WorkItems:     []orientation.WorkItem{{ID: str("shared"), Title: str("Task"), Source: "/bundle/task.md", IdentityAmbiguous: true, Readiness: "unknown"}},
 		Decisions:     []orientation.Decision{{ID: str("shared"), Title: str("Choice"), Source: "/bundle/choice.md", IdentityAmbiguous: true}},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", ".", "--detail"}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	if status != 1 || stderr.Len() != 0 || strings.Count(stdout.String(), "identity ambiguous: true") != 2 {
@@ -83,7 +83,7 @@ func TestOrientationTextUsesAuthoritativeDecisionState(t *testing.T) {
 				References:   []orientation.Reference{{Path: "/bundle/open.md", ID: str("open"), Title: str("Open choice"), From: project.Source, Link: "open.md"}}},
 		},
 	}
-	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", "."}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
+	status := cli.Run(context.Background(), []string{"ctx", "orient", "--bundle", ".", "--detail"}, &stdout, &stderr, cli.Operations{Orient: func(context.Context, orientation.Request) (orientation.Result, error) {
 		return result, nil
 	}})
 	text := stdout.String()
@@ -192,6 +192,8 @@ func TestOrientationRejectsRepeatedSingleValueFlags(t *testing.T) {
 		{"repeated byte limit", "max-bytes", []string{"--project", ".", "--max-bytes=10", "--max-bytes", "10"}},
 		{"conflicting format", "json", []string{"--project", ".", "--json=true", "--json=false"}},
 		{"repeated format", "json", []string{"--project", ".", "--json", "--json"}},
+		{"conflicting detail", "detail", []string{"--project", ".", "--detail=true", "--detail=false"}},
+		{"repeated detail", "detail", []string{"--project", ".", "--detail", "--detail"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var stdout, stderr bytes.Buffer

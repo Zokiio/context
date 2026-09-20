@@ -6,9 +6,10 @@ import (
 	"sort"
 )
 
-// YAML permits values that JSON cannot represent. Keep those values in explicit
-// tagged objects rather than making an otherwise usable report unrenderable.
-func metadataForOutput(metadata map[string]any) map[string]any {
+// MetadataForOutput converts decoded YAML metadata to values that retain YAML-
+// only information in explicit tagged objects while remaining safe to encode
+// as JSON.
+func MetadataForOutput(metadata map[string]any) map[string]any {
 	result := make(map[string]any, len(metadata))
 	for key, value := range metadata {
 		result[key] = metadataValue(value)
@@ -19,7 +20,7 @@ func metadataForOutput(metadata map[string]any) map[string]any {
 func metadataValue(value any) any {
 	switch value := value.(type) {
 	case map[string]any:
-		return metadataForOutput(value)
+		return MetadataForOutput(value)
 	case map[any]any:
 		type entry struct {
 			Key   any `json:"key"`

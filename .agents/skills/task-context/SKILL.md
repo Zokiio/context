@@ -10,7 +10,7 @@ Use the `ctx` reader for a known ticket in this repository. Resolve the reposito
 Build the current reader with `go build -o <temporary-binary> ./cmd/ctx` from the repository directory. Invoke that binary with explicit scope:
 
 ```sh
-<temporary-binary> context --project <absolute-bundle-directory> \
+<temporary-binary> context --bundle <absolute-bundle-directory> \
 	--ticket <ticket-path-relative-to-bundle> \
 	--allow-source <absolute-authorized-document-directory>
 ```

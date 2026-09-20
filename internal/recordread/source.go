@@ -28,10 +28,11 @@ type Reader struct {
 	roots     []permittedRoot
 	snapshots map[string]Source
 	failures  map[string]Diagnostic
+	resolved  map[string]string
 }
 
 func NewReader(project string, allowed []string) (*Reader, error) {
-	reader := &Reader{snapshots: map[string]Source{}, failures: map[string]Diagnostic{}}
+	reader := &Reader{snapshots: map[string]Source{}, failures: map[string]Diagnostic{}, resolved: map[string]string{}}
 	paths := append([]string{project}, allowed...)
 	for index, path := range paths {
 		label := "allowed source"
@@ -83,11 +84,20 @@ func (r *Reader) permitted(path string, role Role) (*os.Root, string) {
 	return nil, ""
 }
 
-// read keeps ticket scope distinct from document scope for additional document roots.
-func (r *Reader) Read(path string, role Role) (Source, *Diagnostic) {
+// resolve keeps record scope distinct from document scope for additional roots.
+// Successful resolutions remain stable for the lifetime of the reader so a
+// later phase can reuse captured bytes after the source changes or disappears.
+func (r *Reader) resolve(path string, role Role) (string, *Diagnostic) {
 	path = filepath.Clean(path)
-	fail := func(code string, err error) (Source, *Diagnostic) {
-		return Source{}, &Diagnostic{Code: code, Severity: "error", Message: err.Error(), Path: path}
+	fail := func(code string, err error) (string, *Diagnostic) {
+		return "", &Diagnostic{Code: code, Severity: "error", Message: err.Error(), Path: path}
+	}
+	if resolved, ok := r.resolved[path]; ok {
+		if root, _ := r.permitted(resolved, role); root == nil {
+			path = resolved
+			return fail("source_outside_scope", errors.New("source resolves outside the permitted directories"))
+		}
+		return resolved, nil
 	}
 	resolved, err := filepath.EvalSymlinks(path)
 	if err != nil {
@@ -117,10 +127,26 @@ func (r *Reader) Read(path string, role Role) (Source, *Diagnostic) {
 		return fail(readErrorCode(err), err)
 	}
 	path = resolved
-	root, relative := r.permitted(path, role)
-	if root == nil {
+	if root, _ := r.permitted(path, role); root == nil {
 		return fail("source_outside_scope", errors.New("source resolves outside the permitted directories"))
 	}
+	r.resolved[filepath.Clean(path)] = path
+	return path, nil
+}
+
+// Read keeps record scope distinct from document scope for additional roots.
+// Authorization is checked before every cache lookup.
+func (r *Reader) Read(path string, role Role) (Source, *Diagnostic) {
+	requested := filepath.Clean(path)
+	path, diagnostic := r.resolve(requested, role)
+	if diagnostic != nil {
+		return Source{}, diagnostic
+	}
+	root, relative := r.permitted(path, role)
+	if root == nil {
+		return Source{}, &Diagnostic{Code: "source_outside_scope", Severity: "error", Message: "source resolves outside the permitted directories", Path: path}
+	}
+	r.resolved[requested] = path
 	if diagnostic, exists := r.failures[path]; exists {
 		return r.snapshots[path], &diagnostic
 	}
@@ -128,7 +154,8 @@ func (r *Reader) Read(path string, role Role) (Source, *Diagnostic) {
 		return source, nil
 	}
 	readFailure := func(code string, err error) (Source, *Diagnostic) {
-		source, diagnostic := fail(code, err)
+		source := Source{}
+		diagnostic := &Diagnostic{Code: code, Severity: "error", Message: err.Error(), Path: path}
 		r.failures[path] = *diagnostic
 		return source, diagnostic
 	}

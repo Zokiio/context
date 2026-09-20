@@ -14,6 +14,7 @@ import (
 
 	"github.com/Zokiio/context/internal/cli"
 	"github.com/Zokiio/context/internal/orientation"
+	"github.com/Zokiio/context/internal/resumption"
 	"github.com/Zokiio/context/internal/taskcontext"
 	"github.com/rogpeppe/go-internal/testscript"
 )
@@ -23,6 +24,7 @@ func TestMain(m *testing.M) {
 		os.Exit(cli.Run(context.Background(), os.Args, os.Stdout, os.Stderr, cli.Operations{
 			Assemble: taskcontext.Assemble,
 			Orient:   orientation.Orient,
+			Resume:   resumption.Resume,
 		}))
 	}})
 }

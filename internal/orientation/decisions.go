@@ -11,7 +11,7 @@ func (e *evaluator) evaluateDecision(r *record) Decision {
 	if decision, exists := e.decisionResults[r.source.Path]; exists {
 		return decision
 	}
-	decision := Decision{ID: r.id, Title: r.title, Source: r.source.Path, IdentityAmbiguous: r.ambiguous, State: e.enumField(r, "decisionState", "open", "resolved"), CheckStatus: "pass", Reasons: []Finding{}, References: []Reference{}, AffectedWork: []Reference{}, Metadata: metadataForOutput(r.doc.Metadata)}
+	decision := Decision{ID: r.id, Title: r.title, Source: r.source.Path, IdentityAmbiguous: r.ambiguous, State: e.enumField(r, "decisionState", "open", "resolved"), CheckStatus: "pass", Reasons: []Finding{}, References: []Reference{}, AffectedWork: []Reference{}, Metadata: MetadataForOutput(r.doc.Metadata)}
 	unknown := func(code, message string) {
 		decision.CheckStatus = "unknown"
 		decision.Reasons = append(decision.Reasons, Finding{Code: code, Message: message, Path: r.source.Path})

@@ -1,5 +1,5 @@
 # A known cycle is a complete blocked result, alongside independently ready work.
-exec ctx orient --bundle bundle
+exec ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'dependency_cycle'
@@ -27,7 +27,7 @@ stdout 'dependency_cycle'
 
 # A missing target makes affected work unknown while independent work stays eligible.
 rm bundle/b.md
-exit 1 ctx orient --bundle bundle
+exit 1 ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Evaluation: partial; inventory: complete'
 stdout 'source_missing'

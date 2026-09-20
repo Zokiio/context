@@ -1,5 +1,5 @@
 # A known open choice blocks only its linked work and still permits a complete report.
-exec ctx orient --bundle bundle
+exec ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Evaluation: complete; inventory: complete'
 stdout 'state: open'
@@ -30,7 +30,7 @@ stdout '"shortlist":\[\{[^}]*"id":"unrelated"[^}]*\},\{[^}]*"id":"resolved-work"
 
 # Invalid state makes the linked work unknown and retains useful unrelated facts.
 cp invalid-open.md bundle/open.md
-exit 1 ctx orient --bundle bundle
+exit 1 ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Open decisions: unknown'
 stdout 'state: unknown'
@@ -47,7 +47,7 @@ stdout '"shortlist":\[\{[^}]*"id":"unrelated"'
 
 # A missing decision is a partial report rather than an operation failure.
 rm bundle/open.md
-exit 1 ctx orient --bundle bundle
+exit 1 ctx orient --bundle bundle --detail
 ! stderr .
 stdout 'Open decisions: unknown'
 stdout 'source_missing'

@@ -15,7 +15,15 @@ Skills author these records while the first CLI remains read-only. New implement
 
 Each record has one authoritative home. A ticket owns its status and acceptance criteria. An ADR owns a decision and its rationale. Handoffs, summaries, and workspace views link to these records.
 
-Include spec and ticket changes in the repository's Git history through the normal development workflow. Keep disposable output separate from these records.
+Include spec and ticket changes in the repository's Git history through the normal development workflow. Commit reusable tests and fixtures. Keep verification output and generated acceptance records out of Git.
+
+## Local verification records
+
+Store verification output in the ignored `.scratch/<feature-slug>/evidence/` directory and generated Acceptance records in `.scratch/records/<feature-slug>/acceptances/`. Preserve their original results, tested revisions, and digests. Retaining evidence does not require committing it. Put a concise check summary in the PR description.
+
+A ticket's current Acceptance link names its local decision. A fresh checkout does not include these local records, so orientation reports unknown acceptance until they are restored or recreated. Restore the decision and its referenced evidence together from retained artifacts, or rerun the required checks and follow [Record acceptance](acceptance.md). Do not claim fresh acceptance from a completed execution state or suppress missing-evidence diagnostics.
+
+Keep historical local decisions and evidence when reassessing a ticket. Summarize relevant decisions in the ticket's Comments section without adding links to every verification run. Do not copy logs, report dumps, trial workspaces, or source manifests into tracked documentation.
 
 ## Minimal implementation-ticket profile
 

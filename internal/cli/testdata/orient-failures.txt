@@ -5,8 +5,8 @@ exit 1 ctx orient --bundle missing-manifest
 stdout 'Project: unknown'
 stdout 'Goals: unknown'
 stdout 'Current commitments: unknown'
-stdout 'Open decisions: unknown'
 stdout 'source_missing'
+stdout 'New pickup shortlist: none'
 exit 1 ctx orient --bundle missing-manifest --json
 ! stderr .
 cp stdout result.json

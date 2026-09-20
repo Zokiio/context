@@ -1,0 +1,122 @@
+# Unresolved relationships keep their authored identities even when their
+# diagnostics identify the same originating ticket as the path.
+exit 1 ctx orient --bundle bundle
+! stderr .
+stdout -count=2 '^  error unsupported_source:$'
+stdout 'link "https://one.example/requirements"'
+stdout 'link "https://two.example/requirements"'
+
+# Relationships that resolve to one source still group across commitments.
+exit 1 ctx orient --bundle shared
+! stderr .
+stdout -count=1 '^  error source_missing:$'
+stdout 'source: missing.md'
+! stdout 'link "missing.md"'
+! stdout 'link "./missing.md"'
+
+# Unknown state on uncommitted work remains visible through reader diagnostics.
+exit 1 ctx orient --bundle uncommitted
+! stderr .
+stdout 'error invalid_profile:'
+stdout 'WorkItem requires a valid execution'
+stdout 'source: work.md'
+
+-- bundle/project.md --
+---
+type: Project
+id: grouping-project
+title: Grouping project
+---
+## Goals
+Keep distinct relationships visible.
+## Current commitments
+- [Work](work.md)
+## Open decisions
+None
+-- bundle/work.md --
+---
+type: WorkItem
+id: work
+title: Work
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Produce a result.
+## Spec
+- [One](https://one.example/requirements)
+- [Two](https://two.example/requirements)
+## Blocked by
+None
+## Blocked by decisions
+None
+-- uncommitted/project.md --
+---
+type: Project
+id: uncommitted-project
+title: Uncommitted project
+---
+## Goals
+Keep unknown inventory facts visible.
+## Current commitments
+None
+## Open decisions
+None
+-- uncommitted/work.md --
+---
+type: WorkItem
+id: uncommitted
+title: Uncommitted work
+triage: ready-for-agent
+---
+## Acceptance criteria
+- [ ] Produce a result.
+## Blocked by
+None
+## Blocked by decisions
+None
+-- shared/project.md --
+---
+type: Project
+id: shared-target-project
+title: Shared target project
+---
+## Goals
+Keep one resolved cause grouped.
+## Current commitments
+- [First](first.md)
+- [Second](second.md)
+## Open decisions
+None
+-- shared/first.md --
+---
+type: WorkItem
+id: first
+title: First
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Produce the first result.
+## Context
+[Shared](missing.md)
+## Blocked by
+None
+## Blocked by decisions
+None
+-- shared/second.md --
+---
+type: WorkItem
+id: second
+title: Second
+triage: ready-for-agent
+execution: unstarted
+---
+## Acceptance criteria
+- [ ] Produce the second result.
+## Context
+[Shared](./missing.md)
+## Blocked by
+None
+## Blocked by decisions
+None
