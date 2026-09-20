@@ -1,6 +1,6 @@
 # Opsbase manual trial
 
-Status: local trial complete. Opsbase changes await review and hosted CI. No init implementation has started.
+Status: local trial complete. Opsbase PR 248 has passing hosted CI and awaits human review. No init implementation has started.
 
 The user selected [Opsbase](https://github.com/Zokiio/opsbase) and [issue 165](https://github.com/Zokiio/opsbase/issues/165), deterministic onboarding browser coverage. The trial uses Codex on macOS and the project's existing `.agents/skills` directory.
 
@@ -53,3 +53,48 @@ The trial needed one agent, ordinary file copies into an existing skills directo
 The largest gap was preserving GitHub authority while supplying local reader inputs. The binary and record-path assumptions in the copied skills were immediate problems. Required supporting references and historical acceptance instructions also needed attention. These are observed requirements; the broader installation machinery remains untested.
 
 The [init draft](../records/ctx-init/issues/01-agent-guided-project-initialization.md) has been narrowed accordingly. Its scope decision remains open for review of these findings. The local trial is complete without resolving unrelated cases or claiming hosted CI passed.
+
+## Review follow-up on 2026-09-20
+
+The trial records are in [ctx PR 12](https://github.com/Zokiio/context/pull/12), stacked on PR 11. The application change is in [Opsbase PR 248](https://github.com/Zokiio/opsbase/pull/248). Trial bootstrap guidance and disposable inputs remain local to its worktree.
+
+Automated standards review found contradictory browser-test prerequisites. Automated spec review found that the company-name assertion only inspected its own mocked response. Both were corrected. The completion test now opens Settings through its sidebar, checks the actual company-name field, returns through client-side navigation, and creates an invoice with the new defaults. It still permits only the initial document load and the product's normal completion navigation. All three focused scenarios passed with `CI=1` after these corrections, with fixture typecheck and scoped ESLint also passing. Human review remains outstanding.
+
+### Adaptation size and elapsed time
+
+Compared with ctx source revision `826c03f`, the copied documents required these line edits. Counts are removed plus added lines, including blank lines, rather than a percentage of unique lines rewritten.
+
+| Document | Original lines | Removed | Added | Total edits |
+| --- | ---: | ---: | ---: | ---: |
+| task-context SKILL.md | 28 | 6 | 5 | 11 |
+| recovery-notes SKILL.md | 87 | 4 | 4 | 8 |
+| Acceptance procedure | 66 | 27 | 3 | 30 |
+
+No phase timer ran during the original trial. Filesystem timestamps place worktree creation at 12:59:57 UTC and the completed binding at 13:02:05, approximately two minutes for bootstrap including adaptation. The copied guidance was written within that interval, so its effort cannot be separated reliably. The final checkpoint is timestamped 13:19:28, approximately seventeen further minutes for task work, verification, and reporting. These are reconstructed wall-clock intervals, not measured human effort, and exclude earlier research and the later review. Future trials should record separate phase start and end times.
+
+### Fresh-session recovery measurement
+
+A new CLI session started in the existing trial worktree with only the absolute ticket path as its prompt. It received no conversation history or continuation hints. At launch, the original checkpoint and snapshot were left unchanged. The checkout did include the intervening review commits, so the session had to distinguish retained observations from current code.
+
+The first attempt with installed CLI 0.154.0 failed after 4.87 seconds because the configured model required a newer client, before the ticket was read. A temporary CLI 0.155.1 installation supplied the retry without changing the global installation. Timings below start at that second launch and exclude the failed attempt and installation.
+
+- 31 seconds: read the selected context and checked the live GitHub issue against the snapshot.
+- 62 seconds: captured exact context and ran `ctx resume`.
+- 102 seconds: explicitly read the selected checkpoint body and retained evidence.
+- 109.49 seconds: correctly stated that the implementation was already committed, recognized the later company-name assertion, noted that the checkpoint predated the commits, and chose current-code review and focused checks as its next action.
+
+This demonstrates recovery to a correct continuation plan in one fresh session. It does not measure time saved against a session without the checkpoint. The full event stream and monotonic timestamps are retained locally under `.context/trial/resume-experiment-current-cli/`; the failed attempt remains under `.context/trial/resume-experiment/`.
+
+Hosted CI for Opsbase PR 248 subsequently passed frontend, backend, and smoke-test jobs on revision `812c919`. Those automated results do not replace human review.
+
+### Continuation outcome at 2026-09-20T14:24:10.688121+00:00
+
+The fresh session distinguished the older checkpoint from the committed implementation and passing hosted CI. Review found one remaining browser assertion gap: the first Home request could fail while the completion test still passed after a later Home visit. A local assertion now checks the first company Home before Settings navigation. Fault injection demonstrated the gap, and the final three scenarios, fixture typecheck, and scoped lint pass. The assertion was subsequently committed and published as `2a2fd2d` on PR 248.
+
+The original supplied ctx binary reported a dirty source revision without a retained build-source manifest. To establish provenance for its acceptance evidence, the session rebuilt the reader from the ctx checkout with recorded source and binary digests. This depended on access to a checkout that an unrelated project would not necessarily have. The original binary remains archived. Future bootstrap should retain that provenance when supplying a binary.
+
+A local workflow Acceptance now validates against the unchanged issue requirements and retained evidence. A new recovery checkpoint incorporates the original candidate and these results. The GitHub issue remains open, and human review remains outstanding. Local acceptance does not approve a merge.
+
+The successful session exited after 718.40 seconds, 11 minutes 58 seconds, including the 109.49 seconds to a correct continuation plan. The rest included current-code review, focused tests, fault injection, reader provenance work, and local evidence, acceptance, and checkpoint publication. This total is not a pure recovery cost. The session received no additional instructions after the ticket-path prompt.
+
+After publication, hosted frontend, backend, and smoke-test jobs all passed on final Opsbase revision `2a2fd2d`. Human review remains the outstanding review step.

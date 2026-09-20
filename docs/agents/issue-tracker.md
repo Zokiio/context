@@ -59,7 +59,7 @@ The [orientation tickets](../../.scratch/session-orientation/discovery.md#implem
 
 Before required orientation checks exist, use the approved blocker graph, recorded verification, and the existing task-context workflow for these bootstrap tickets. An unsupported check stays unknown in command output. Once the checks exist, inspect their result before pickup and acceptance.
 
-Retain criteria results, source identity, and evidence after every slice. Begin structured acceptance authoring when current fingerprint output is available, then validate those records when acceptance checking lands. [Record acceptance](acceptance.md) owns the exact procedure and fingerprint reference.
+Retain criteria results, source identity, and evidence after every slice. Begin structured acceptance authoring when current fingerprint output is available, then validate those records when acceptance checking lands. [Record acceptance](acceptance.md) owns the procedure. The [orientation specification](../../.scratch/session-orientation/spec.md#acceptance-fingerprints-and-freshness) owns the fingerprint encoding.
 
 ## When a skill says "publish to the issue tracker"
 
