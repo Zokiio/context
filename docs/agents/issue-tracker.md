@@ -31,7 +31,7 @@ Require YAML frontmatter with `type: WorkItem`, a nonempty stable `id`, `title`,
 
 Generate UUIDs for new typed-record IDs. Preserve existing IDs, including valid slug IDs; adopting this authoring convention does not require an identity migration.
 
-Use `triage` as the single home for the triage role. Reserve OKF's optional `status` field for document lifecycle: `draft`, `stable`, or `deprecated`. Omission means `stable`. Record execution separately as `execution: unstarted`, `in-progress`, `completed`, or `cancelled`. Missing or invalid execution is unknown, never implicitly unstarted. Orientation computes readiness separately.
+Use `triage` as the single home for the triage role. Reserve OKF's optional `status` field for document lifecycle: `draft`, `stable`, or `deprecated`. Omission means `stable`. Record execution separately as `execution: unstarted`, `in-progress`, `completed`, or `cancelled`. Missing or invalid execution is unknown, never implicitly unstarted. A [tracker snapshot](../tracker-snapshots.md#ownership-and-identity) marked by a valid absolute HTTP(S) `sourceURL` may omit the execution key without an invalid-profile diagnostic. Empty, null, or invalid execution values remain invalid. Unknown execution remains ineligible and cannot satisfy a dependency. Orientation computes readiness separately.
 
 Keep requirements and acceptance criteria in the ticket body. Require at least one nonempty criterion under `## Acceptance criteria`. Its Spec section is optional. Full OKF validation is outside the readers; the authoring profile still applies to new tickets.
 

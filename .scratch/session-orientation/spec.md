@@ -235,3 +235,7 @@ The user also approved conservative intermediate releases, early authoring conve
 Record field names, source-snapshot encoding, conservative behavior after incomplete discovery, and exact failure distinctions are technical synthesis choices that make the agreed behavior implementable. The user confirmed the testing seam during drafting: Go application-operation tests with real project files, plus a small CLI suite.
 
 The source-reader milestone is merged at revision ecb8f294144dab8bb36f2e74e6ad174bcce17ef1. Its [recorded acceptance evidence](../context-reader/acceptance-trial.md) is the basis for the completed-ticket migration, not evidence that this orientation feature has already been implemented or tested.
+
+## Tracker snapshot execution
+
+A WorkItem with a string `sourceURL` that parses as an absolute HTTP or HTTPS URL with a nonempty hostname is an explicitly marked tracker snapshot. Only an absent execution key is tolerated without an invalid-profile diagnostic. Empty, null, or invalid values remain invalid. Native work items still require execution. Unknown execution stays ineligible and cannot satisfy a prerequisite. The URL is an authored authority marker; the reader does not fetch it or infer freshness, readiness, or remote completion.

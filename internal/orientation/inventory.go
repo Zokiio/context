@@ -178,7 +178,7 @@ func (e *evaluator) presentWorkItem(r *record) {
 	}
 	work.IdentityAmbiguous = r.ambiguous
 	work.Triage = e.enumField(r, "triage", "needs-triage", "needs-info", "ready-for-agent", "ready-for-human", "wontfix")
-	work.Execution = e.enumField(r, "execution", "unstarted", "in-progress", "completed", "cancelled")
+	work.Execution = e.executionField(r)
 	work.Acceptance = e.evaluateAcceptance(r)
 	work.Dependencies = e.dependencyEdges(r)
 	committed := false
