@@ -74,7 +74,7 @@ No phase timer ran during the original trial. Filesystem timestamps place worktr
 
 ### Fresh-session recovery measurement
 
-A new CLI session started in the existing trial worktree with only the absolute ticket path as its prompt. It received no conversation history or continuation hints. The original checkpoint and snapshot were preserved. The checkout did include the intervening review commits, so the session had to distinguish retained observations from current code.
+A new CLI session started in the existing trial worktree with only the absolute ticket path as its prompt. It received no conversation history or continuation hints. At launch, the original checkpoint and snapshot were left unchanged. The checkout did include the intervening review commits, so the session had to distinguish retained observations from current code.
 
 The first attempt with installed CLI 0.154.0 failed after 4.87 seconds because the configured model required a newer client, before the ticket was read. A temporary CLI 0.155.1 installation supplied the retry without changing the global installation. Timings below start at that second launch and exclude the failed attempt and installation.
 
@@ -86,3 +86,13 @@ The first attempt with installed CLI 0.154.0 failed after 4.87 seconds because t
 This demonstrates recovery to a correct continuation plan in one fresh session. It does not measure time saved against a session without the checkpoint. The full event stream and monotonic timestamps are retained locally under `.context/trial/resume-experiment-current-cli/`; the failed attempt remains under `.context/trial/resume-experiment/`.
 
 Hosted CI for Opsbase PR 248 subsequently passed frontend, backend, and smoke-test jobs on revision `812c919`. Those automated results do not replace human review.
+
+### Continuation outcome at 2026-09-20T14:24:10.688121+00:00
+
+The fresh session distinguished the older checkpoint from the committed implementation and passing hosted CI. Review found one remaining browser assertion gap: the first Home request could fail while the completion test still passed after a later Home visit. A local assertion now checks the first company Home before Settings navigation. Fault injection demonstrated the gap, and the final three scenarios, fixture typecheck, and scoped lint pass. The assertion was subsequently committed and published as `2a2fd2d` on PR 248.
+
+The original supplied ctx binary reported a dirty source revision without a retained build-source manifest. To establish provenance for its acceptance evidence, the session rebuilt the reader from the ctx checkout with recorded source and binary digests. This depended on access to a checkout that an unrelated project would not necessarily have. The original binary remains archived. Future bootstrap should retain that provenance when supplying a binary.
+
+A local workflow Acceptance now validates against the unchanged issue requirements and retained evidence. A new recovery checkpoint incorporates the original candidate and these results. The GitHub issue remains open, and human review remains outstanding. Local acceptance does not approve a merge.
+
+The successful session exited after 718.40 seconds, 11 minutes 58 seconds, including the 109.49 seconds to a correct continuation plan. The rest included current-code review, focused tests, fault injection, reader provenance work, and local evidence, acceptance, and checkpoint publication. This total is not a pure recovery cost. The session received no additional instructions after the ticket-path prompt.
