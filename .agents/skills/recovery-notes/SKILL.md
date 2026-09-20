@@ -43,7 +43,7 @@ Keep exploratory questions in the note. For a blocking unresolved question, use 
 
 ## Publish a checkpoint
 
-Checkpoint after a meaningful decision, completed step, verification result, failed approach, or clear next action. Retain the context file from step 2, rather than collecting newer requirements just before publication. Refresh and assess changed requirements first; a later checkpoint can use that new collection.
+Publish a checkpoint only when it preserves task-relevant information that the ticket and current checkout do not provide: a failed approach, an uncaptured decision or rationale, the intent or remaining work behind partial uncommitted changes, or an observed verification result. Identify the fact a fresh session would otherwise have to rediscover. A note that only restates requirements, describes visible code, or proposes an obvious next edit does not warrant publication. Investigation alone is not a trigger; its retained finding must meet this rule. Retain the context file from step 2, rather than collecting newer requirements just before publication. Refresh and assess changed requirements first; a later checkpoint can use that new collection.
 
 Read the [RecoveryNote profile](PROFILE.md) before creating a note. It defines the namespace, typed fields, and template. Create a new random lowercase UUID directory under that task namespace:
 
