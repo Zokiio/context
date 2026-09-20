@@ -29,6 +29,8 @@ Keep historical local decisions and evidence when reassessing a ticket. Summariz
 
 Require YAML frontmatter with `type: WorkItem`, a nonempty stable `id`, `title`, and `triage`. Keep the ID when moving or renaming a ticket. Each ticket has its own ID, independent of its filename or feature-local number.
 
+Generate UUIDs for new typed-record IDs. Preserve existing IDs, including valid slug IDs; adopting this authoring convention does not require an identity migration.
+
 Use `triage` as the single home for the triage role. Reserve OKF's optional `status` field for document lifecycle: `draft`, `stable`, or `deprecated`. Omission means `stable`. Record execution separately as `execution: unstarted`, `in-progress`, `completed`, or `cancelled`. Missing or invalid execution is unknown, never implicitly unstarted. Orientation computes readiness separately.
 
 Keep requirements and acceptance criteria in the ticket body. Require at least one nonempty criterion under `## Acceptance criteria`. Its Spec section is optional. Full OKF validation is outside the readers; the authoring profile still applies to new tickets.
