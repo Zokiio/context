@@ -67,3 +67,5 @@ None
 2026-09-20: Rewritten from the Opsbase issue 165 trial. The original debate remains in the discovery notes. The trial exercised one harness, existing-file adaptation, GitHub snapshot boundaries, local reads, and checkpoint/resume. No init implementation has started. No further design debate is needed to establish these observations.
 
 After review of the first external trial, use the [manual checklist](../../../../docs/tracker-snapshots.md#bootstrap-checklist-before-another-trial) before building this command. A second external project should establish which adaptations repeat. The ticket remains draft, needs-info, and unstarted.
+
+2026-09-20: Select Mukabi with Claude Code for the next external trial and compare fresh-session continuation with and without its checkpoint. The snapshot discriminator is explicit in the profile. Initialization remains draft and unstarted.
