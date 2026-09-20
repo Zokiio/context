@@ -1,6 +1,6 @@
 # Mukabi manual trial
 
-Status: Claude skill discovery and the paired recovery trial are complete. The dashboard skip-navigation change has passing local behavior tests; its Vercel preview failed and human review is outstanding. `ctx init` remains draft and unstarted.
+Status: Claude skill discovery and the paired recovery trial are complete. The dashboard skip-navigation change has passing local behavior tests and awaits human review. `ctx init` remains draft and unstarted.
 
 ## Project and task
 
@@ -41,6 +41,10 @@ Correctness criteria were recorded before either run. Context collection and exp
 
 The observed action-time difference, no checkpoint minus checkpoint, was **-30.39 seconds**. The checkpoint condition was slower in this pair. Both sessions edited before stating the requested continuation plan, so the intended plan-time comparison is unavailable. Their final summaries cannot be counted retroactively as plans emitted before action.
 
+**The no-checkpoint first edit was correct under the pre-recorded first-action criterion.** At 91.32 seconds it inserted a native skip anchor before the dashboard sidebar with an activation handler targeting main content. The checkpoint session inserted the identical anchor and handler. Both are correct incremental source edits, not completed features: the no-checkpoint run added the focusable main target at 94.75 seconds and theme-token, focus-only styling at 99.85 seconds. Neither first edit changed excluded shells or claimed unrun verification was complete. The retained assessment is `measurement/first-action-assessment.md`, based on `correctness.md`, timestamped tool results, and the frozen/result sources.
+
+The checkpoint did not buy first-action correctness at a cost of thirty seconds: both first steps passed that criterion. The measured cost added no first-action correctness benefit in this pair. Complete implementation equivalence was not measured, and both still lacked the separate pre-action plan.
+
 The checkpoint session read the original note, checked all seven source comparisons, inspected current code, and continued correctly. That establishes continuity, not a speed benefit. One ordered pair cannot isolate provider latency, prompt caching, or model variation. There is no basis here for a general claim that recovery saves time.
 
 The preparatory Claude investigation and initial checkpoint took 220.58 seconds. Earlier manual bootstrap/adaptation effort was not separately timed. Do not combine that figure with the preparation time or present it as end-to-end bootstrap cost.
@@ -54,7 +58,7 @@ The retained checkpoint condition supplied the production change. After timing e
 - Explicit dashboard TypeScript checking has two existing `vite.shared.ts` errors, reproduced on the clean baseline. No new type errors were observed.
 - A Chromium fixture rendered the production shell, CSS, theme state, and TanStack router, with authentication responses stubbed. Tab, Enter, continued tabbing, focus visibility, and viewport containment passed at 1280 and 390 pixels in both themes. This is a component audit, not an authenticated application test. Other engines and screen-reader output remain untested.
 
-The bootstrap and measurement files remain on the local trial branch. The [product PR](https://github.com/Zokiio/Mukabi/pull/4) contains only the feature, its tests/dependency, and a brief audit report. Its Vercel preview failed before dashboard compilation. After the operator restored Vercel access, the build log showed that the existing install command deletes `package-lock.json` and runs `npm install --include=dev`. With `vite-plus: latest`, this resolved Vite+ 0.3.3, whose CLI rejected the dashboard's pinned Vite 8.0.3. The same install command and dependency declarations are present on base commit `e2b2e59`; PR 4 did not change them. This is an independent deployment configuration blocker, not the known local TypeScript errors. A separate deployment fix should preserve the lockfile and verify compatible Vite+ aliases and versions in a clean build. No deployment settings or database migrations were changed during this diagnosis. Human review remains outstanding.
+The bootstrap and measurement files remain on the local trial branch. The [product PR](https://github.com/Zokiio/Mukabi/pull/4) contains only the feature, its tests/dependency, and a brief audit report. Human review remains outstanding.
 
 Raw timestamped transcripts, frozen/restored manifests, original and result checkpoints, and scoring criteria are retained under the trial checkout's ignored `.context/trial/measurement/` directory. The report distinguishes measured observations from later verification.
 
