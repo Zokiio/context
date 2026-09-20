@@ -56,6 +56,8 @@ Add `--json` for the full resumption report. Follow [Continue an interrupted tas
 
 ## Connect other projects
 
+Use [Prepare a project for ctx](docs/initializing-projects.md) to install the bundled skills and guidance, create an empty Project, and bind it from explicit tracker and directory choices with `ctx init`.
+
 Follow [Connect projects and group them in a workspace](docs/connect-projects.md) to register existing records. Use the [Discovery reference](docs/discovery.md) for configuration fields, selection rules, source access, and exit statuses. The [Reader reference](docs/readers.md) covers project reports, task context, fingerprints, and recorded acceptance.
 
 If an older command used `--project` for a directory without a discoverable Project marker, change that selector to `--bundle`:

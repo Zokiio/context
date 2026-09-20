@@ -10,6 +10,7 @@ import (
 type Environment struct {
 	WorkingDirectory func() (string, error)
 	HomeDirectory    func() (string, error)
+	Executable       func() (string, error)
 	Input            io.Reader
 	IsTerminal       func() bool
 }
@@ -23,6 +24,9 @@ func (environment Environment) defaults() Environment {
 	}
 	if environment.Input == nil {
 		environment.Input = os.Stdin
+	}
+	if environment.Executable == nil {
+		environment.Executable = os.Executable
 	}
 	return environment
 }
