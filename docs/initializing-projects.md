@@ -65,4 +65,6 @@ go generate ./internal/initialization
 go test ./internal/initialization ./internal/cli
 ```
 
+The `-update` test flag is local to `internal/initialization`. Use it only when testing that package.
+
 The template test checks those copies for drift. This repository retains its own authored issue-tracker conventions; target projects receive the trimmed tracker template. Target initialization needs no source checkout, generation command, or network access.

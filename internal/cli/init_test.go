@@ -51,10 +51,16 @@ func runInit(t *testing.T, env cli.Environment, args []string, want int) string 
 func TestInitPreparesProjectAndPreservesIdenticalRerun(t *testing.T) {
 	env, args := initEnvironment(t)
 	cwd, _ := env.WorkingDirectory()
+	home, _ := env.HomeDirectory()
 	writeScopeFile(t, filepath.Join(cwd, "AGENTS.md"), "Existing agent instructions\n")
 	writeScopeFile(t, filepath.Join(cwd, "CLAUDE.md"), "Existing Claude instructions\n")
 	writeScopeFile(t, filepath.Join(cwd, ".gitignore"), "existing-rule")
-	runInit(t, env, args, 0)
+	output := runInit(t, env, args, 0)
+	for _, directory := range []string{cwd, home} {
+		if !strings.Contains(output, "created: "+filepath.Join(directory, ".context/config.md.lock")) {
+			t.Fatalf("missing created lock report: %s", output)
+		}
+	}
 	for path, want := range map[string]string{"AGENTS.md": "Existing agent instructions\n", "CLAUDE.md": "Existing Claude instructions\n"} {
 		if got, _ := os.ReadFile(filepath.Join(cwd, path)); string(got) != want {
 			t.Fatalf("init changed %s", path)
@@ -85,7 +91,12 @@ func TestInitPreparesProjectAndPreservesIdenticalRerun(t *testing.T) {
 	if !bytes.Equal(version.Bytes(), files[".context/trial/ctx-version.txt"]) {
 		t.Fatal("init did not retain the running binary's version output")
 	}
-	runInit(t, env, args, 0)
+	output = runInit(t, env, args, 0)
+	for _, directory := range []string{cwd, home} {
+		if !strings.Contains(output, "preserved: "+filepath.Join(directory, ".context/config.md.lock")) {
+			t.Fatalf("missing preserved lock report: %s", output)
+		}
+	}
 	if !reflect.DeepEqual(files, initTree(t, cwd)) {
 		t.Fatal("identical init changed file contents or Project identity")
 	}
@@ -145,6 +156,30 @@ func TestInitReportsConflictsWithoutOverwriting(t *testing.T) {
 	after := initTree(t, cwd)
 	if !bytes.Equal(before[".context/config.md"], after[".context/config.md"]) || !bytes.Equal(before[".context/records/project.md"], after[".context/records/project.md"]) {
 		t.Fatal("init replaced a binding or existing Project")
+	}
+}
+
+func TestInitReportsRetainedLocksWhenSetupFails(t *testing.T) {
+	env, args := initEnvironment(t)
+	cwd, _ := env.WorkingDirectory()
+	home, _ := env.HomeDirectory()
+	config := filepath.Join(cwd, ".context/config.md")
+	// The registry lock is created before setup encounters this invalid sidecar.
+	if err := os.MkdirAll(config+".lock", 0o755); err != nil {
+		t.Fatal(err)
+	}
+	output := runInit(t, env, args, 2)
+	for _, want := range []string{
+		"created: " + filepath.Join(home, ".context/config.md.lock"),
+		"preserved: " + config + ".lock",
+		"Binding not changed:",
+	} {
+		if !strings.Contains(output, want) {
+			t.Errorf("missing %q in report: %s", want, output)
+		}
+	}
+	if _, err := os.Stat(config); !os.IsNotExist(err) {
+		t.Fatalf("failed setup created a binding: %v", err)
 	}
 }
 

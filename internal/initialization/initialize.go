@@ -113,25 +113,23 @@ func Initialize(ctx context.Context, request Request) (Result, error) {
 	}
 	summary := plan.Summary()
 	// Setup retains these sidecars even when a later binding write fails.
-	locks := map[string]bool{}
-	for _, config := range []string{summary.Destination, filepath.Join(request.Home, ".context", "config.md")} {
-		physical, err := discovery.CanonicalPath(config)
-		if err != nil {
-			return result, err
-		}
-		_, err = os.Lstat(physical + ".lock")
-		locks[physical+".lock"] = err == nil
+	lockPaths, err := plan.LockPaths()
+	if err != nil {
+		return result, err
+	}
+	existingLocks := map[string]bool{}
+	for _, path := range lockPaths {
+		_, err := os.Lstat(path)
+		existingLocks[path] = err == nil
 	}
 	applyErr := plan.Apply(ctx)
-	for _, config := range []string{summary.Destination, filepath.Join(request.Home, ".context", "config.md")} {
-		physical, _ := discovery.CanonicalPath(config)
-		lock := physical + ".lock"
-		if _, err := os.Lstat(lock); err == nil {
+	for _, path := range lockPaths {
+		if _, err := os.Lstat(path); err == nil {
 			status := "created"
-			if locks[lock] {
+			if existingLocks[path] {
 				status = "preserved"
 			}
-			result.Files = append(result.Files, FileResult{lock, status, "setup coordination lock"})
+			result.Files = append(result.Files, FileResult{path, status, "setup coordination lock"})
 		}
 	}
 	if applyErr != nil {

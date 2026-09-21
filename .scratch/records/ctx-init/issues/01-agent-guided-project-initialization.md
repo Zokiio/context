@@ -58,7 +58,7 @@ None
 
 ## Acceptance
 
-- [Local implementation acceptance](../acceptances/01-initialization-implementation.md)
+- [Local review follow-up acceptance](../acceptances/02-review-followup.md)
 
 ## Context
 
@@ -71,6 +71,8 @@ None
 - [Domain glossary](../../../../CONTEXT.md)
 
 ## Comments
+
+2026-09-21: The user approved merge after review and requested the remaining P3 fix and a package-scoped `-update` note. Setup now exposes its coordination paths for init's file report. Keep this review follow-up in its own commit. Future scope revisions should precede implementation in a separate commit or PR. Preserve the [original implementation acceptance](../acceptances/01-initialization-implementation.md) and its tested revision.
 
 2026-09-20: Implemented the flag-driven command and embedded templates. Full Go tests, race tests, vet, build, template-generation checks, and a standalone supplied-binary trial passed. The trial preserved an existing local roadmap and instructions, used an explicit Claude skills directory, exercised context and resume after manual task selection, and retained conflicts. Verification output and the workflow acceptance remain local. Human PR review remains outstanding.
 
