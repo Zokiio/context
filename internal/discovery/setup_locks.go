@@ -11,6 +11,20 @@ import (
 // Retaining sidecars keeps that identity stable across cooperating writers.
 type setupLockID [3]uint64
 
+// LockPaths returns the coordination sidecars a changed Apply can retain, so
+// callers can report them. It does not create files or acquire locks.
+func (p *SetupPlan) LockPaths() ([]string, error) {
+	registry, err := CanonicalPath(appendPath(p.request.Home, ".context/config.md"))
+	if err != nil {
+		return nil, fmt.Errorf("resolve setup coordination location: %w", err)
+	}
+	paths := []string{registry + ".lock"}
+	if !SamePath(p.target, registry) {
+		paths = append(paths, p.target+".lock")
+	}
+	return paths, nil
+}
+
 func orderSetupLocks(paths []string) ([]string, error) {
 	type lock struct {
 		path string

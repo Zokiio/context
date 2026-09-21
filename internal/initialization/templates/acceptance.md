@@ -1,12 +1,13 @@
-<!-- Generated from internal/initialization/templates/acceptance.md. Run go generate ./internal/initialization after editing the template. -->
+{{if .Development}}<!-- Generated from internal/initialization/templates/acceptance.md. Run go generate ./internal/initialization after editing the template. -->
 
+{{end -}}
 # Record acceptance
 
-Use this procedure when completing a work item, reassessing changed requirements or evidence, or backfilling a completed record. Reader commands remain read-only. Follow the project's tracker and evidence-storage conventions when authoring records. For an external tracker, use the [snapshot profile](../tracker-snapshots.md). A local Acceptance assesses captured requirements and does not update or close the remote issue.
+Use this procedure when completing a work item, reassessing changed requirements or evidence, or backfilling a completed record. Reader commands remain read-only. Follow the project's tracker and evidence-storage conventions when authoring records. For an external tracker, use the [snapshot profile]({{.SnapshotLink}}). A local Acceptance assesses captured requirements and does not update or close the remote issue.
 
 ## Complete or reassess a work item
 
-1. Read the ticket through the [task-context workflow](../../.agents/skills/task-context/SKILL.md). Verify its criteria against actual results and identify any missing evidence. Record failures and untested criteria without marking them passed.
+1. Read the ticket through the [task-context workflow]({{.TaskContextLink}}). Verify its criteria against actual results and identify any missing evidence. Record failures and untested criteria without marking them passed.
 2. Retain the results in an immutable UTF-8 evidence document. Identify the commands or observations, actor, date, and revision tested. If a commit does not identify an uncommitted working tree, include a source digest manifest. A later merge revision does not replace the original tested revision.
 3. Check the authoritative ticket and settle its requirements, relationship links, and acceptance checklist. Refresh a tracker snapshot if its source changed. Prepare an empty current Acceptance section, including its surrounding line breaks, before taking fingerprints. A new blank line before that heading belongs to the retained body; filling the section's link later does not. Record completion only after every criterion has evidence. Routine completion notes belong under Comments.
 4. Run the supplied `ctx orient` binary using the verified project binding, or explicit `--bundle` and `--allow-source` roots. Obtain the current fingerprintVersion, ticketSHA256, criteriaSHA256, and whole-source digests. Inspect any partial-result diagnostics. Unknown acceptance or readiness is not a passing check.
@@ -42,4 +43,4 @@ All directly selected Spec and Context documents and linked blocking decisions r
 
 An Acceptance cannot snapshot itself or use itself as evidence. A snapshot pointing to the subject ticket uses ticketSHA256 rather than its whole-file digest. The current decision covers the entire Acceptance criteria section; partial acceptance cannot satisfy a prerequisite.
 
-For fingerprint values, use the current orientation report. Follow the [tracker and storage guidance](issue-tracker.md) for local evidence and Acceptance paths. The [orientation specification](../../.scratch/session-orientation/spec.md#acceptance-fingerprints-and-freshness) owns the byte encoding and conformance requirements.
+For fingerprint values, use the current orientation report. Follow the [tracker and storage guidance]({{.TrackerLink}}) for local evidence and Acceptance paths.{{if .Development}} The [orientation specification](../../.scratch/session-orientation/spec.md#acceptance-fingerprints-and-freshness) owns the byte encoding and conformance requirements.{{end}}

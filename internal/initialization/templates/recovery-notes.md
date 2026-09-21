@@ -3,11 +3,12 @@ name: recovery-notes
 description: Maintain or recover a task's local working notes through ctx resume. Use for interrupted work, recovery checkpoints, competing recovery notes, incomplete note publication, or an oversized task note history.
 ---
 
-<!-- Generated from internal/initialization/templates/recovery-notes.md. Run go generate ./internal/initialization after editing the template. -->
+{{if .Development}}<!-- Generated from internal/initialization/templates/recovery-notes.md. Run go generate ./internal/initialization after editing the template. -->
 
+{{end -}}
 # Maintain recovery notes
 
-Use this skill after reading the task with [task-context](../task-context/SKILL.md). Use the local [RecoveryNote profile](PROFILE.md) for note fields and cache layout. The ticket context remains the source for the work being continued.
+Use this skill after reading the task with [task-context]({{.TaskContextLink}}). Use the local [RecoveryNote profile](PROFILE.md) for note fields and cache layout. The ticket context remains the source for the work being continued.
 
 ## Limits
 
@@ -19,11 +20,11 @@ Do not retire a note automatically. Age, an absent heartbeat, and a missing `not
 
 ## Start or continue work
 
-1. Build the current `ctx` binary in a temporary location from the repository directory. Use the project binding shown below. Resolve the selected bundle, checkout, ticket path, and authorized source roots explicitly. Preserve a narrower scope and any limits supplied by the caller. When a current-source limit makes the report partial, inspect its diagnostics, then use only the explicit `--max-files` or `--max-bytes` override justified by that scope; do not present an override as a new default.
+1. {{if .Development}}Build the current `ctx` binary in a temporary location from the repository directory.{{else}}Use the supplied binary at `{{.Command}}`.{{end}} Use the project binding shown below. Resolve the selected bundle, checkout, ticket path, and authorized source roots explicitly. Preserve a narrower scope and any limits supplied by the caller. When a current-source limit makes the report partial, inspect its diagnostics, then use only the explicit `--max-files` or `--max-bytes` override justified by that scope; do not present an override as a new default.
 2. Capture the exact task-context JSON that this session reads. With the prepared project binding, use:
 
    ```sh
-   <temporary-ctx> context --project <absolute-repository-directory> \
+   {{.Command}} context {{.Scope}} \
      --ticket <ticket-path> \
      > <temporary-context-used.json>
    ```
@@ -32,7 +33,7 @@ Do not retire a note automatically. Age, an absent heartbeat, and a missing `not
 3. Inspect the current state before acting:
 
    ```sh
-   <temporary-ctx> resume --project <absolute-repository-directory> \
+   {{.Command}} resume {{.Scope}} \
      --ticket <ticket-path> --json
    ```
 
@@ -40,7 +41,7 @@ Do not retire a note automatically. Age, an absent heartbeat, and a missing `not
 4. If recovery is absent, reconstruct from the current ticket context, current checkout, and verification results. If it is conflicting, inspect every candidate's reported work, the current code, requirements, and evidence before choosing a next action. Never choose by timestamp or treat a reported check as current evidence. If recovery is unknown or partial, keep the uncertainty visible and continue only work supported by current facts.
 5. State the completed, remaining, and changed work; unresolved blockers and verification gaps; and the next action. Continue within the agreed scope. Ask only for a decision that remains unresolved and is needed to continue soundly.
 
-Keep exploratory questions in the note. Route blocking unresolved questions through the [authoritative tracker](../../../docs/agents/issue-tracker.md). When the project permits a local Decision record, link the open decision from the WorkItem's `Blocked by decisions` section and select it through Spec or Context when its answer imposes requirements. Keep the authoritative blocker and its eventual resolution outside the disposable cache. Retain accepted evidence as an immutable document outside the cache, then link it from an Acceptance record using [Record acceptance](../../../docs/agents/acceptance.md); link those records from the next note.
+Keep exploratory questions in the note. Route blocking unresolved questions through the [authoritative tracker]({{.TrackerLink}}). When the project permits a local Decision record, link the open decision from the WorkItem's `Blocked by decisions` section and select it through Spec or Context when its answer imposes requirements. Keep the authoritative blocker and its eventual resolution outside the disposable cache. Retain accepted evidence as an immutable document outside the cache, then link it from an Acceptance record using [Record acceptance]({{.AcceptanceLink}}); link those records from the next note.
 
 ## Publish a checkpoint
 

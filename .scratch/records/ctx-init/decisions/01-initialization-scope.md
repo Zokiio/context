@@ -2,54 +2,29 @@
 type: Decision
 id: ctx-init-initialization-scope
 title: Define initial ctx init capabilities and supported targets
-decisionState: open
+decisionState: resolved
 ---
 
 # Define initial ctx init capabilities and supported targets
 
-The earlier proposal supports human callers and existing agents, preserves the chosen tracker, and prepares files for multiple harnesses. That proposal is parked until a second-project trial establishes what initialization actually needs.
+The user authorized implementation after the Opsbase and Mukabi trials, then selected a noninteractive command for their repeated mechanical preparation.
 
-## How to resolve this decision
+## Resolution
 
-Bootstrap the second project manually and use ctx for one real unfinished task. Record the files copied, the lines adapted, existing-file merges, harnesses used, and any tracker-access limitations in a friction log. Use those observations to narrow the draft issue and answer the questions below. Do not resolve them through another design debate.
+Implement the [initialization ticket](../issues/01-agent-guided-project-initialization.md) in one PR. Run `ctx init` from the target project root with explicit title, tracker, skills, documentation, records, and source-root choices. Embed portable guidance, create only a Project manifest with empty commitments and decisions, call existing setup, append ignore rules, retain the running binary's version, and print instruction pointers and a complete file report.
 
-If the trial does not exercise a harness, hook, external tracker, or repeated setup, defer that case rather than treating it as answered. This decision remains open until the trial findings have been reviewed.
+Preserve differing files and existing bindings. Leave tracker discovery, real-task selection, instruction-file edits, snapshot retrieval, and conflict resolution with the caller. Require an explicit tracker description rather than assuming that absent remote issues mean no tracker. Offer local files only when no tracker exists.
 
-## Questions
+The embedded templates own the portable skills and recovery profile. Generate the repository's development copies from them and test for drift. Target projects need only the supplied binary. Preserve the merged version-provenance and useful-information checkpoint rules.
 
-- Which skills and workflow capabilities must initialization install or adapt? Identify the required instructions and prompts, and whether any specific hooks are necessary for that workflow.
-- Which Copilot client and which platforms must be tested alongside Codex and Claude Code? Distinguish documented file locations from verified compatibility.
-- What completion can setup report when an existing tracker remains authoritative but ctx has no connector for it? The proposed boundary is working agent guidance with an explicit ctx retrieval limitation, but that boundary has not been confirmed separately.
+Setup already writes configuration, and init creates a Project record. This is a bounded bootstrap write operation, not permission to modify existing records or invent a backlog. Readers remain read-only.
 
-## Observations from the Opsbase trial
+Defer human questionnaires, agent mode, harness detection, Copilot, multiple tools, hooks, symlink creation, link fallbacks, and general rerun reconciliation. Both measured recovery first edits were correct. Continuity worked, but the pair establishes neither a correctness advantage nor a speed benefit.
 
-The [friction log](../../../ctx-init/opsbase-trial.md) now supplies concrete answers to review:
+## Basis
 
-- The trial used task-context, recovery-notes, its PROFILE.md, an adapted acceptance procedure, and three pointers in existing AGENTS.md. It needed a supplied binary and target-specific paths. No hooks were required.
-- Codex on macOS was exercised. Claude Code, Copilot, platform combinations, symlinks, and copy fallback were not. They are deferred from the rewritten draft.
-- GitHub remained authoritative. A labeled local snapshot retained the original retrieval and required manual freshness checking and two visible format adaptations. ctx assembled that snapshot and local documents; it did not retrieve live GitHub work.
-- Existing instructions and the multi-context layout were preserved. The trial used a small additive merge, not a general reconciliation mechanism.
+[Opsbase](../../../ctx-init/opsbase-trial.md) used Codex, ordinary skill copies, GitHub Issues, and an identified local snapshot. [Mukabi](../../../ctx-init/mukabi-trial.md) used Claude Code, individual skill symlinks, and an existing local roadmap. Both required a supplied binary, adapted linked guidance, an explicit binding and source selection, preservation of tracker authority, and separation of disposable local files from durable records.
 
-Local setup, task work, and verification have been exercised. Review these findings before resolving the first-release scope. The issue remains a draft; hosted Opsbase CI has passed; human code review remains outstanding. This decision stays open, with evidence available rather than awaiting another debate.
+The measured first edits were correct both without and with a checkpoint, at 91.32 and 121.71 seconds respectively. Both sessions missed the requested pre-action plan. Keep the rule that a checkpoint must preserve useful information beyond the ticket and checkout.
 
-## Current direction after review
-
-Use the [manual checklist and tracker-snapshot profile](../../../../docs/tracker-snapshots.md) for the next project. Keep command implementation parked until a second external project shows which adaptations repeat. The Opsbase evidence supports reusable guidance, but does not establish an installer contract. This decision remains open for that evidence rather than another debate.
-
-The next trial uses Mukabi with Claude Code to change the harness axis. Follow the [paired recovery measurement](../../../../docs/tracker-snapshots.md#next-trial-and-recovery-baseline) with and without the checkpoint. The snapshot profile now defines the proposed missing-execution discriminator as a WorkItem with a valid authoritative `sourceURL`; the leniency itself remains unimplemented.
-
-## Parked design direction
-
-- Preserve an existing tracker and offer local files when none exists.
-- Support multiple selected harnesses, preserving suitable existing layouts.
-- Prefer shared skill content and links, with copies when links are unsuitable. Preserve differing existing contents for reconciliation.
-- Keep the initial human handoff short and free of project-file writes. The existing agent performs project discovery and preparation.
-
-## Context
-
-- [Design interview and debates](../../../ctx-init/discovery.md)
-- [Project initialization issue](../issues/01-agent-guided-project-initialization.md)
-
-## Mukabi observation
-
-The [Mukabi trial](../../../ctx-init/mukabi-trial.md) confirmed Claude skill discovery through individual symlinks while preserving the local roadmap. Shared preparation steps repeat, but the checkpoint condition took 30.39 seconds longer to reach its first task edit in one pair. Neither session emitted the requested plan before editing. Keep this decision open and init draft; do not infer a speed benefit or multi-tool installer requirements from these results.
+The broader proposals remain in [discovery](../../../ctx-init/discovery.md). The [manual checklist](../../../../docs/tracker-snapshots.md) records the remaining task selection and snapshot steps. Neither the trials' pending human reviews nor Mukabi's unrelated deployment blocker changes this initialization scope.

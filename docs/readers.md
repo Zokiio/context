@@ -254,6 +254,7 @@ Reports and data diagnostics go to stdout. Invocation and operation errors go to
 - `cmd/ctx` wires application operations into the CLI and exits with its status.
 - `internal/cli` owns urfave/cli v3 flags, text and JSON rendering, and exit statuses. It accepts an explicit `Operations` value.
 - `internal/discovery` parses configuration, resolves project and workspace scope, and prepares and applies setup writes.
+- `internal/initialization` embeds portable guidance, creates missing bootstrap files, and delegates binding to discovery setup.
 - `internal/workspace` enumerates selected members and checks records-directory access without evaluating project work.
 - `internal/taskcontext` exposes `Assemble(context.Context, Request) (Result, error)` and owns task-context selection.
 - `internal/orientation` exposes `Orient(context.Context, Request) (Result, error)` and owns record inventory and project evaluation.

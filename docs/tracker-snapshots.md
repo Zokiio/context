@@ -50,11 +50,11 @@ The missing-execution proposal still needs focused parser and eligibility tests 
 - Bind the chosen records and the required source roots with [ctx setup](connect-projects.md). Read the task, work on it, and log setup friction and elapsed time.
 - Measure continuation with and without a checkpoint using the paired procedure below. Give each fresh session only the ticket path.
 
-Use this checklist for the next project. One trial supports these manual steps; it has not established repeated installation requirements for a `ctx init` command.
+Both the Opsbase and Mukabi trials exercised this preparation. [ctx init](initializing-projects.md) now performs the repeated file creation and binding from explicit flags. Tracker discovery, task selection, instruction review, and any snapshot retrieval remain manual.
 
-## Next trial and recovery baseline
+## Paired recovery trial procedure
 
-Use [Mukabi](https://github.com/Zokiio/Mukabi) with Claude Code for the next trial. Its checkout has project-specific `CLAUDE.md` guidance, and Claude Code is installed locally. This changes the harness axis from Opsbase's Codex trial. Try individual symlinks from `.claude/skills/` to shared skill directories before copying. Preserve existing instructions and skill layouts. Record discovery success, broken links, any copy fallback, and each adaptation in the same friction table. Add hooks only if the selected task requires them. It does not yet establish that Claude discovers the adapted skills or can use this workflow. Confirm those behaviors during bootstrap, preserve the existing tracker, and select one real unfinished task before starting. Do not create a second tracker merely to change an axis.
+The [Mukabi trial](../.scratch/ctx-init/mukabi-trial.md) exercised Claude Code, individual symlinks from `.claude/skills/` to shared skills, and an existing local roadmap. Claude discovered both adapted skills on macOS. Future trials should preserve the existing tracker, instructions, and skill layout, select one real unfinished task, and record each adaptation and discovery result. Add hooks only if actual task work requires them.
 
 For the recovery comparison:
 
@@ -63,4 +63,4 @@ For the recovery comparison:
 3. Run the no-checkpoint condition first, then restore the frozen state and run the checkpoint condition. Record the order. Give each session only the same ticket path. Time launch to the first verifiably correct continuation plan, and separately to its first correct action. Report startup time and a session that fails to continue rather than inventing a successful timing. Keep later tests and record writing outside these recovery intervals.
 4. Report both timings and the difference, no-checkpoint time minus checkpoint time. Retain the observations that establish correctness. One pair gives an observed difference, not a stable estimate of time saved across projects.
 
-Compare actual bootstrap edits with the Opsbase log. Only steps that repeat unchanged are candidates for a future init command. Keep the init ticket draft until this trial supplies that evidence.
+Compare actual bootstrap edits with the Opsbase log. The completed pair supports the [resolved init scope](../.scratch/records/ctx-init/decisions/01-initialization-scope.md). Further trials should answer a concrete remaining question; initialization does not require another recovery measurement.
