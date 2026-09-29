@@ -27,6 +27,17 @@ _Avoid_: Project, record store
 **Work item**:
 A unit of work tracked within a project. It can carry its own requirements and acceptance criteria or refer to a separate specification.
 
+**Checkpoint**:
+A small, reviewable part of a work item's implementation plan, with an outcome, required checks, and scoped context sufficient to implement it without loading the full plan. Completing a checkpoint records progress without accepting the whole work item.
+_Avoid_: Work item, acceptance decision
+
+**Orchestrator**:
+The agent role that retains a work item's overall implementation context and coordinates its checkpoints and verification. Implementing agents receive the scoped context for their assigned checkpoints.
+
+**Gate**:
+A required evaluation that a checkpoint must satisfy before it can be treated as verified. Its result is supported by evidence for the revision evaluated and does not by itself establish work-item acceptance.
+_Avoid_: Work readiness, acceptance decision
+
 **Current commitment**:
 Work the project has explicitly chosen to deliver, including work that has not started.
 
