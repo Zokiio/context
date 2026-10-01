@@ -2,6 +2,8 @@
 
 Status: proposed. This document makes Q21 in the [workflow design](helix-design.md) concrete. It does not authorize implementation or add a product feature.
 
+The [concrete implementation plan](../helix-trial/implementation-plan.md), [fixture specification](../helix-trial/spec.md), and [orchestrator design](../helix-trial/orchestrator-design.md) prepare this proposal for initial review. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) remains open and blocks the proposed trial work item.
+
 ## Work to exercise
 
 Create an orchestrator skill for the agreed workflow and exercise it on one small local fixture outside production packages. The fixture is a standalone program that reports explicitly authored criterion-to-evidence mappings. It makes no acceptance decisions and requires no remote service, account, deployment, or device.

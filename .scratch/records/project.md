@@ -31,7 +31,7 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Open decisions
 
-None
+- [Select the first Helix trial task and review its initial plan](helix-trial/decisions/01-trial-scope.md)
 
 ## Context
 
