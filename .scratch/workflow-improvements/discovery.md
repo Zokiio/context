@@ -109,6 +109,14 @@ Promote a useful conclusion into a focused authored record. Retain accepted evid
 
 For each trial, record whether the owner identified the needed intervention, the developer avoided repeated investigation, the architect could trace the contract decision, and the agent kept missing verification visible. Also record the effort spent maintaining the new material.
 
+## Status authoring follow-up
+
+Human feedback on 2026-10-01: keep `status` values to fixed keywords. Put explanations, dates, and approval references under a separate field or section, such as `Notes`.
+
+Apply this convention to plain Markdown `Status:` lines as well as structured fields. The isolated fixture trial exposed sentence-style values in its [specification](../helix-trial/spec.md), implementation plan, and checkpoint documents. Define the allowed keywords for each document kind before updating those files; preserve the existing distinction between document lifecycle, execution state, and review state.
+
+This is recorded for a future change.
+
 ## Questions still to resolve
 
 - What belongs in the shortest useful intervention view, and what should require expansion?
