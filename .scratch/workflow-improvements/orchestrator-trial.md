@@ -1,8 +1,8 @@
 # First orchestrator trial
 
-Status: proposed. This document makes Q21 in the [workflow design](helix-design.md) concrete. It does not authorize implementation or add a product feature.
+Status: isolated fixture selected and initial plan approved on 2026-10-01. This document made Q21 in the [workflow design](helix-design.md) concrete. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) records the user's authorization to start the fixture trial. It adds no product feature.
 
-The [concrete implementation plan](../helix-trial/implementation-plan.md), [fixture specification](../helix-trial/spec.md), and [orchestrator design](../helix-trial/orchestrator-design.md) prepare this proposal for initial review. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) remains open and blocks the proposed trial work item.
+The [implementation plan](../helix-trial/implementation-plan.md), [fixture specification](../helix-trial/spec.md), and [orchestrator design](../helix-trial/orchestrator-design.md) define the approved run. An Axpilot ticket is the intended follow-up after this fixture trial.
 
 ## Work to exercise
 

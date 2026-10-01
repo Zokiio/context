@@ -1,6 +1,6 @@
 # Project-local orchestrator design
 
-Status: proposed. This design implements the [confirmed workflow choices](../workflow-improvements/helix-design.md) for the [fixture trial](spec.md). It leaves the CLI's existing read-only responsibilities intact.
+Status: approved for the isolated fixture on 2026-10-01. This design implements the [confirmed workflow choices](../workflow-improvements/helix-design.md) for the [fixture trial](spec.md). It leaves the CLI's existing read-only responsibilities intact.
 
 ## Invocation and ownership
 

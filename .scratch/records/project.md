@@ -18,6 +18,8 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Current commitments
 
+- [Exercise explicit checkpoint orchestration on an isolated fixture](helix-trial/issues/01-explicit-orchestrator-trial.md)
+
 - [Prepare a project through ctx init](ctx-init/issues/01-agent-guided-project-initialization.md)
 
 - [Share captured sources between readers](cli-wayfinding/issues/01-share-captured-sources.md)
@@ -31,7 +33,7 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Open decisions
 
-- [Select the first Helix trial task and review its initial plan](helix-trial/decisions/01-trial-scope.md)
+None
 
 ## Context
 

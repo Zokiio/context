@@ -1,6 +1,6 @@
 # Checkpoint 2: Report missing verification
 
-Status: proposed. Dispatch follows passing gates and the user's review of checkpoint 1.
+Status: scope approved with the initial plan on 2026-10-01. Dispatch follows passing gates and the user's review of checkpoint 1.
 
 ## Outcome
 

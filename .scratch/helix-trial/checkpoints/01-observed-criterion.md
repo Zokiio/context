@@ -1,6 +1,6 @@
 # Checkpoint 1: Report an authored observation
 
-Status: proposed. The orchestrator resolves the initial-plan decision before dispatch. This file is the implementing agent's checkpoint, not the whole work-item plan.
+Status: scope approved with the initial plan on 2026-10-01. Verification and human checkpoint review are pending. This file is the implementing agent's checkpoint, not the whole work-item plan.
 
 ## Outcome
 

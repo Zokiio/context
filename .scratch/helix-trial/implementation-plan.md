@@ -1,17 +1,17 @@
 # Run the first orchestrator trial
 
-Status: proposed, awaiting the [scope and initial-plan decision](../records/helix-trial/decisions/01-trial-scope.md). This is the implementation plan for [one trial work item](../records/helix-trial/issues/01-explicit-orchestrator-trial.md). The [specification](spec.md) owns behavior. The [orchestrator design](orchestrator-design.md) owns the proposed delegation procedure.
+Status: approved on 2026-10-01 through the [scope and initial-plan decision](../records/helix-trial/decisions/01-trial-scope.md). This is the implementation plan for [one trial work item](../records/helix-trial/issues/01-explicit-orchestrator-trial.md). The [specification](spec.md) owns behavior. The [orchestrator design](orchestrator-design.md) owns the delegation procedure.
 
-## Review this proposal
+## Approved scope
 
-The recommended task is the isolated fixture. No existing ticket has been selected as its replacement. Approving this proposal settles Q21, the fixture's executable test seam, and the initial plan review. It preserves the agreed human review after each checkpoint.
+The user selected the isolated fixture and instructed starting the presented plan. This settles Q21, the fixture's executable test seam, and initial-plan review. It preserves the agreed human review after each checkpoint. An Axpilot ticket is the intended later trial, with no ticket selected yet.
 
 Expected human reviews are the initial plan, checkpoint 1, and checkpoint 2. The final independent result and trial assessment follow the second checkpoint review. Scope changes or unavailable verification may require an earlier decision.
 
 ## Prepare the run after approval
 
 1. Record the user's scope answer and initial-plan review with source and date. Resolve the blocking decision and retain any limits. Add the trial ticket to Current commitments only once chosen.
-2. Create `feat/helix-orchestrator-trial` from the inspected checkout. Preserve unrelated files. Commit only the approved trial records, supplied research documents if they belong in this change, and later scoped trial changes.
+2. Create `feat/helix-orchestrator-trial` from the inspected proposal checkout. Preserve unrelated files. Keep the proposal in PR #23 and the skill and fixture run in a separate implementation change. Commit only approved trial records and scoped implementation changes.
 3. Build the current `ctx` in an ignored run directory. Read the full ticket using task-context, retain the exact returned JSON, and inspect `ctx resume` and orientation. Keep progress, feedback, context packets, and evidence under `.scratch/helix-trial/evidence/<run-id>/`. Use recovery notes when they retain information that authoritative records and current code cannot supply.
 4. Commission an expectation author with the agreed specification, orchestrator design, and checkpoint files. Retain its requirements-derived skill evaluation cases and fixture gate expectations before writing skill or fixture code.
 5. Create `.agents/skills/orchestrate/SKILL.md` and its explicit-invocation metadata. Use skill-creator and writing-for-agents. Validate the skill and commission an isolated behavioral check of its context delivery and waiting behavior. Correct demonstrated failures before using it on the fixture. General implementation and review skills remain unchanged.

@@ -1,12 +1,12 @@
 # Helix workflow trial design
 
-Design interview, started 2026-09-29. This document records confirmed choices and open questions. The interview is ongoing. Implementation scope is not yet agreed.
+Design interview, started 2026-09-29. This document records confirmed choices. The user selected the isolated fixture and authorized starting its initial plan on 2026-10-01.
 
 The [research note](helix-research.md) compares Helix with the existing workflow. The [video notes](helix-video-notes.md) distinguish AI LABS' adaptation from Shopify's description. The [workflow discovery](discovery.md) retains the broader proposals. The [vision](../../docs/vision.md) and [glossary](../../CONTEXT.md) remain authoritative for product responsibility and terminology.
 
 ## Confirmed choices
 
-These choices record the user's answers during the design interview. The user refined the checkpoint definition, established project files as the primary store, and then required individual checkpoint files to limit the implementing agent's context. Detailed policies and the final trial scope remain under discussion.
+These choices record the user's answers during the design interview. The user refined the checkpoint definition, established project files as the primary store, and then required individual checkpoint files to limit the implementing agent's context. The trial scope is recorded below.
 
 1. Prioritize easier review. A small result should present its intended behavior, changes, and evidence together. Use that experience to judge where more autonomy is justified. Reduced interruptions and repeated corrections remain possible benefits, rather than the first trial's primary goal.
 2. Keep the existing execution boundary for the first trial. Skills and agent environments run the correction loop. `ctx` supplies project records and evaluations. Reconsider execution supervision only after identifying a failure of that arrangement. This confirms the existing [agent execution model](../../docs/vision.md#agent-execution-model).
@@ -28,19 +28,19 @@ These choices record the user's answers during the design interview. The user re
 18. The orchestrator proposes broader project guidance with its source and scope. The user approves that guidance before it becomes mandatory. Apply already approved relevant guidance and task-local corrections within agreed scope immediately. Supply later checkpoint agents with relevant guidance, without turning every retained observation into a requirement.
 19. Use one implementing agent at a time for the first trial. Independent reviews and research may run in parallel. Revisit concurrent implementation after evaluating review effort and the clarity of revision-specific evidence. The user accepted choices 18 and 19 while refining choice 17.
 
-The remaining decision is the concrete trial and its success measures.
+The [approved trial specification](../helix-trial/spec.md) defines the concrete fixture and its success measures.
 
-## Current questions
+## Trial scope
 
-The workflow decisions are settled. The following proposal needs the user's choice before the design interview can conclude.
+The workflow decisions are settled. The user resolved the final trial choice on 2026-10-01.
 
-- Q21: What should we use for the first trial? Proposed answer: create the orchestrator skill and exercise it on the [isolated local fixture](orchestrator-trial.md), with two checkpoint files, independently prepared expectations, and combined verification. Evaluate review effort, context separation, and correction integrity. An alternative is to wait for an approved real ticket. Routine file names and fixture layout remain implementation choices.
+- Q21: What should we use for the first trial? Resolved answer: create the orchestrator skill and exercise it on the [isolated local fixture](orchestrator-trial.md), with two checkpoint files, independently prepared expectations, and combined verification. Evaluate review effort, context separation, and correction integrity. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) records the user's instruction to start. Afterward, test on a ticket in Axpilot. Routine file names and fixture layout remain implementation choices.
 
 ## Decisions that follow
 
 - The read-only trial investigation found no eligible existing ticket: orientation observed all 19 work items as completed and an empty shortlist. Evaluation was complete. All 19 retained acceptance records were stale against the edited glossary. Their evidence and recorded decisions remain unchanged; stale acceptance is not a failed code check.
 - The [trial proposal](orchestrator-trial.md) uses an isolated criterion-report fixture inspired by the [verification-view discovery](discovery.md#explain-what-the-evidence-establishes). It does not add that proposed feature to `ctx`. Other work in the untracked CLI wayfinding effort is outside this trial.
-- Resolve Q21 and confirm shared understanding before implementation. The proposal includes concrete review observations so that the user can assess the trial before authorizing it.
+- Q21 and initial-plan review are resolved through the recorded instruction to start the presented fixture plan. The human checkpoint reviews remain required.
 
 ## Existing constraints and observed gaps
 

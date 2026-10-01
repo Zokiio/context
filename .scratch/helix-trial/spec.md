@@ -1,6 +1,6 @@
 # Explicit orchestrator fixture trial
 
-Status: proposed. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) must resolve before implementation. The [workflow design](../workflow-improvements/helix-design.md) owns the confirmed workflow policy. This specification defines the proposed fixture and trial obligations.
+Status: approved for the isolated fixture on 2026-10-01 through the [scope decision](../records/helix-trial/decisions/01-trial-scope.md). The [workflow design](../workflow-improvements/helix-design.md) owns the confirmed workflow policy. This specification defines the fixture and trial obligations.
 
 ## Outcome
 

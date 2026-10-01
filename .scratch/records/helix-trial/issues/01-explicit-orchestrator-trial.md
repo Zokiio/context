@@ -2,14 +2,14 @@
 type: WorkItem
 id: 2cc93a96-a641-4259-910f-d8ed0fd679b4
 title: Exercise explicit checkpoint orchestration on an isolated fixture
-status: draft
-triage: needs-info
-execution: unstarted
+status: stable
+triage: ready-for-agent
+execution: in-progress
 ---
 
 # Exercise explicit checkpoint orchestration on an isolated fixture
 
-This proposed work item is awaiting Q21 and initial-plan review. Preparation is authorized; fixture implementation has not started. Its independent outcome is a reviewable evaluation of the agreed loop through two small fixture behaviors.
+The user selected the fixture and authorized starting the initial plan on 2026-10-01. Its independent outcome is a reviewable evaluation of the agreed loop through two small fixture behaviors. Human checkpoint reviews remain required.
 
 ## Scope
 
@@ -54,3 +54,5 @@ None
 2026-10-01: Prepared a concrete proposal from the handoff and the 19 confirmed choices. Q21 remains open. No trial code, installed skill, automatic routing, hook, or acceptance decision has been created.
 
 Preparation returned complete task context. Project-wide resumption remained partial because the local `ctx-init` Acceptance record was unavailable. The trial's criteria, required context, and dependency declaration checks passed; its scope decision remained open. No trial recovery notes existed.
+
+2026-10-01: The user instructed starting the isolated fixture, resolving Q21 and initial-plan review. Begin skill preparation and checkpoint 1. A later trial on an Axpilot ticket is intended; that ticket remains unselected.
