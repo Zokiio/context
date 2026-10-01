@@ -18,7 +18,10 @@ func main() {
 			} `json:"observation"`
 		} `json:"criteria"`
 	}
-	json.NewDecoder(os.Stdin).Decode(&input)
+	if err := json.NewDecoder(os.Stdin).Decode(&input); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 	for _, criterion := range input.Criteria {
 		fmt.Printf("%s\t%s\t%s\t%s\t%s\n", criterion.ID, criterion.Description,
 			criterion.Observation.Result, criterion.Observation.Source, criterion.Observation.TestedRevision)
