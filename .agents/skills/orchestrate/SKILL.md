@@ -11,7 +11,7 @@ Use this skill when the user explicitly requests checkpoint orchestration for a 
 
 Read the project's `AGENTS.md`, tracker guidance, specification, and one implementation plan linking separate checkpoint files. Use [task-context](../task-context/SKILL.md) to collect the full ticket requirements and [recovery-notes](../recovery-notes/SKILL.md) to inspect continuation state. Preserve explicit project scope and the exact context JSON used. Read the returned source text, not just its inventory.
 
-Check the assigned ticket's readiness and the user's existing authorization separately. Report unrelated partial diagnostics without treating them as a new dependency. Resolve missing required context before dependent work. Inspect current source digests, code revisions, recovery candidates, and live assignments before relying on earlier observations. A progress label cannot establish a passed gate or a stopped writer.
+Check the assigned ticket's readiness and the user's existing authorization separately. Report unrelated partial diagnostics without treating them as a new dependency. Resolve missing required context before dependent work. Explicitly load the separately retained progress and feedback records for this run. Assess feedback's source, scope, adoption status, and affected checkpoints. Inspect current source digests, code revisions, recovery candidates, and live assignments before relying on earlier observations. A progress label cannot establish a passed gate or a stopped writer.
 
 The plan owns sequence and dependencies. Each checkpoint owns its outcome and required gates. Keep mutable progress and source-scoped feedback separate from those requirements. Keep generated evidence and Acceptance records in the project's ignored locations.
 
@@ -36,7 +36,7 @@ Keep one implementing or repairing agent active at a time. Supporting expectatio
 
 ## Check and correct an identified revision
 
-Commit the scoped candidate code and reusable tests before review. Pin a checkpoint base and full target SHA. Verify the base is an ancestor and that the reviewed paths match the target. Include prepared tests in the comparison even if their author wrote them earlier. Archive the exact diff command and commit list.
+Commit the scoped candidate code and reusable tests before review. For the first checkpoint, use the completed preparation commit as the base. For each later checkpoint, use the preceding human-reviewed checkpoint commit. Pin the full target SHA. Verify the base is an ancestor and that the reviewed paths match the target. Include prepared tests in the comparison even if their author wrote them earlier. Archive the exact diff command and commit list.
 
 Commission an independent runner on that revision. Retain commands, output, exit statuses, actual observer, time, environment, tested commit, and source digests. An unavailable required check leaves the checkpoint unverified. Continue only work independent of that result and escalate what is needed to run the check.
 
@@ -50,7 +50,7 @@ When requirements or dependency contracts change, assess affected checkpoints, p
 
 ## Present the checkpoint and wait for review
 
-After required checks and both review axes pass for the current target, present its outcome, starting and reviewed commits, changed files, runnable example, gate evidence, corrections, and unresolved concerns. Ask the user to review that identified revision.
+After required behavior, visual, and environment checks and both review axes pass for the current target, present its outcome, starting and reviewed commits, changed files, runnable example, gate evidence, corrections, and unresolved concerns. Ask the user to review that identified revision. This presentation precedes the human checkpoint gate.
 
 For this first trial, wait for the actual human checkpoint review before dispatching the next checkpoint. Retain the response, source, scope, actor, and reviewed revision. A workflow verdict is not human approval. Apply authorized task-local corrections and renew affected checks; broader guidance still requires adoption. Keep review timing and clarification observations outside the plan.
 
