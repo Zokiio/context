@@ -1,6 +1,6 @@
 # Run the first orchestrator trial
 
-Status: approved on 2026-10-01 through the [scope and initial-plan decision](../records/helix-trial/decisions/01-trial-scope.md). This is the implementation plan for [one trial work item](../records/helix-trial/issues/01-explicit-orchestrator-trial.md). The [specification](spec.md) owns behavior. The [orchestrator design](orchestrator-design.md) owns the delegation procedure.
+Status: approved on 2026-10-01 through the [scope and initial-plan decision](../records/orchestration-trial/decisions/01-trial-scope.md). This is the implementation plan for [one trial work item](../records/orchestration-trial/issues/01-explicit-orchestrator-trial.md). The [specification](spec.md) owns behavior. The [orchestrator design](orchestrator-design.md) owns the delegation procedure.
 
 ## Approved scope
 
@@ -11,8 +11,8 @@ Expected human reviews are the initial plan, checkpoint 1, and checkpoint 2. The
 ## Prepare the run after approval
 
 1. Record the user's scope answer and initial-plan review with source and date. Resolve the blocking decision and retain any limits. Add the trial ticket to Current commitments only once chosen.
-2. Create `feat/helix-orchestrator-trial` from the inspected proposal checkout. Preserve unrelated files. Keep the proposal in PR #23 and the skill and fixture run in a separate implementation change. Commit only approved trial records and scoped implementation changes.
-3. Build the current `ctx` in an ignored run directory. Read the full ticket using task-context, retain the exact returned JSON, and inspect `ctx resume` and orientation. Keep progress, feedback, context packets, and evidence under `.scratch/helix-trial/evidence/<run-id>/`. Use recovery notes when they retain information that authoritative records and current code cannot supply.
+2. Create a separate implementation branch from the inspected proposal checkout. Preserve unrelated files. Keep the proposal in PR #23 and the skill and fixture run in a separate implementation change. Commit only approved trial records and scoped implementation changes.
+3. Build the current `ctx` in an ignored run directory. Read the full ticket using task-context, retain the exact returned JSON, and inspect `ctx resume` and orientation. Keep progress, feedback, context packets, and evidence under `.scratch/orchestration-trial/evidence/<run-id>/`. Use recovery notes when they retain information that authoritative records and current code cannot supply.
 4. Commission an expectation author with the agreed specification, orchestrator design, and checkpoint files. Retain its requirements-derived skill evaluation cases and fixture gate expectations before writing skill or fixture code.
 5. Create `.agents/skills/orchestrate/SKILL.md` and its explicit-invocation metadata. Use skill-creator and writing-for-agents. Validate the skill and commission an isolated behavioral check of its context delivery and waiting behavior. Correct demonstrated failures before using it on the fixture. General implementation and review skills remain unchanged.
 6. Invoke `$orchestrate` explicitly for this ticket with the prepared expectations. The expectation author prepares executable fixture tests as each checkpoint begins.

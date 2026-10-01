@@ -1,6 +1,8 @@
-# Helix workflow trial design
+# Orchestration trial design
 
 Design interview, started 2026-09-29. This document records confirmed choices. The user selected the isolated fixture and authorized starting its initial plan on 2026-10-01.
+
+The temporary project name is "Orchestration trial", following the user's naming instruction on 2026-10-01. A final name remains open. References to Shopify's tool and the upstream recreation retain their source names.
 
 The [research note](helix-research.md) compares Helix with the existing workflow. The [video notes](helix-video-notes.md) distinguish AI LABS' adaptation from Shopify's description. The [workflow discovery](discovery.md) retains the broader proposals. The [vision](../../docs/vision.md) and [glossary](../../CONTEXT.md) remain authoritative for product responsibility and terminology.
 
@@ -28,13 +30,13 @@ These choices record the user's answers during the design interview. The user re
 18. The orchestrator proposes broader project guidance with its source and scope. The user approves that guidance before it becomes mandatory. Apply already approved relevant guidance and task-local corrections within agreed scope immediately. Supply later checkpoint agents with relevant guidance, without turning every retained observation into a requirement.
 19. Use one implementing agent at a time for the first trial. Independent reviews and research may run in parallel. Revisit concurrent implementation after evaluating review effort and the clarity of revision-specific evidence. The user accepted choices 18 and 19 while refining choice 17.
 
-The [approved trial specification](../helix-trial/spec.md) defines the concrete fixture and its success measures.
+The [approved trial specification](../orchestration-trial/spec.md) defines the concrete fixture and its success measures.
 
 ## Trial scope
 
 The workflow decisions are settled. The user resolved the final trial choice on 2026-10-01.
 
-- Q21: What should we use for the first trial? Resolved answer: create the orchestrator skill and exercise it on the [isolated local fixture](orchestrator-trial.md), with two checkpoint files, independently prepared expectations, and combined verification. Evaluate review effort, context separation, and correction integrity. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) records the user's instruction to start. Afterward, test on a ticket in Axpilot. Routine file names and fixture layout remain implementation choices.
+- Q21: What should we use for the first trial? Resolved answer: create the orchestrator skill and exercise it on the [isolated local fixture](orchestrator-trial.md), with two checkpoint files, independently prepared expectations, and combined verification. Evaluate review effort, context separation, and correction integrity. The [scope decision](../records/orchestration-trial/decisions/01-trial-scope.md) records the user's instruction to start. Afterward, test on a ticket in Axpilot. Routine file names and fixture layout remain implementation choices.
 
 ## Decisions that follow
 

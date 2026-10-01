@@ -18,7 +18,7 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Current commitments
 
-- [Exercise explicit checkpoint orchestration on an isolated fixture](helix-trial/issues/01-explicit-orchestrator-trial.md)
+- [Exercise explicit checkpoint orchestration on an isolated fixture](orchestration-trial/issues/01-explicit-orchestrator-trial.md)
 
 - [Prepare a project through ctx init](ctx-init/issues/01-agent-guided-project-initialization.md)
 

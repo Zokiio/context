@@ -15,7 +15,7 @@ Check the assigned ticket's readiness and the user's existing authorization sepa
 
 The plan owns sequence and dependencies. Each checkpoint owns its outcome and required gates. Keep mutable progress and source-scoped feedback separate from those requirements. Keep generated evidence and Acceptance records in the project's ignored locations.
 
-For this trial, apply the [confirmed workflow choices](../../../.scratch/workflow-improvements/helix-design.md). Reuse an existing initial-plan approval when it covers the current scope and test seam. If a material choice remains, prepare a concrete reviewable proposal and wait for the decision before dependent implementation. Waiting for human review is a valid pause.
+For this trial, apply the [confirmed workflow choices](../../../.scratch/workflow-improvements/orchestration-design.md). Reuse an existing initial-plan approval when it covers the current scope and test seam. If a material choice remains, prepare a concrete reviewable proposal and wait for the decision before dependent implementation. Waiting for human review is a valid pause.
 
 ## Prepare independent expectations and scoped assignments
 

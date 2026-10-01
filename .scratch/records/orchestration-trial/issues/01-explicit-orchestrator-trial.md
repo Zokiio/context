@@ -34,14 +34,14 @@ None
 
 ## Spec
 
-- [Fixture and workflow trial specification](../../../helix-trial/spec.md)
+- [Fixture and workflow trial specification](../../../orchestration-trial/spec.md)
 
 ## Context
 
-- [Confirmed workflow choices](../../../workflow-improvements/helix-design.md)
+- [Confirmed workflow choices](../../../workflow-improvements/orchestration-design.md)
 - [Original trial proposal and success measures](../../../workflow-improvements/orchestrator-trial.md)
-- [Implementation plan](../../../helix-trial/implementation-plan.md)
-- [Orchestrator design](../../../helix-trial/orchestrator-design.md)
+- [Implementation plan](../../../orchestration-trial/implementation-plan.md)
+- [Orchestrator design](../../../orchestration-trial/orchestrator-design.md)
 - [Trial scope decision](../decisions/01-trial-scope.md)
 - [Product vision](../../../../docs/vision.md)
 - [Domain glossary](../../../../CONTEXT.md)
@@ -56,3 +56,5 @@ None
 Preparation returned complete task context. Project-wide resumption remained partial because the local `ctx-init` Acceptance record was unavailable. The trial's criteria, required context, and dependency declaration checks passed; its scope decision remained open. No trial recovery notes existed.
 
 2026-10-01: The user instructed starting the isolated fixture, resolving Q21 and initial-plan review. Begin skill preparation and checkpoint 1. A later trial on an Axpilot ticket is intended; that ticket remains unselected.
+
+2026-10-01: The user requested a different project name while deciding on a final name. Use "Orchestration trial" temporarily. The trial and record directories, workflow design, commands, and links now use that name. WorkItem and Decision IDs remain unchanged. Earlier evidence, source snapshots, approvals, and published branch references retain their original paths and revisions; the original ignored evidence directory remains in place. The rename changes naming and paths, with the fixture requirements and implementation unchanged. Human checkpoint 2 review remains pending.

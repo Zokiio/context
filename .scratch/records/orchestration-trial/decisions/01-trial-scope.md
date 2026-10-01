@@ -1,14 +1,14 @@
 ---
 type: Decision
 id: 85d62f04-b7cb-41b2-931a-96443a926b39
-title: Select the first Helix trial task and review its initial plan
+title: Select the first orchestration trial task and review its initial plan
 status: stable
 decisionState: resolved
 ---
 
-# Select the first Helix trial task and review its initial plan
+# Select the first orchestration trial task and review its initial plan
 
-This record resolves Q21 from the [confirmed workflow design](../../../workflow-improvements/helix-design.md#trial-scope) for the [fixture trial](../issues/01-explicit-orchestrator-trial.md).
+This record resolves Q21 from the [confirmed workflow design](../../../workflow-improvements/orchestration-design.md#trial-scope) for the [fixture trial](../issues/01-explicit-orchestrator-trial.md).
 
 ## Existing authorization
 
@@ -18,7 +18,7 @@ The initial handoff left the task choice open. The later human response recorded
 
 ## Proposal
 
-Approve the [isolated two-checkpoint plan](../../../helix-trial/implementation-plan.md). This selects the fixture and reviews its proposed executable test seam. It authorizes creating the project-local skill and running checkpoint 1 through its gates, then presenting the checkpoint for the agreed human review.
+Approve the [isolated two-checkpoint plan](../../../orchestration-trial/implementation-plan.md). This selects the fixture and reviews its proposed executable test seam. It authorizes creating the project-local skill and running checkpoint 1 through its gates, then presenting the checkpoint for the agreed human review.
 
 The alternative is to name an approved real work item. That requires a new task-specific plan and checkpoint gates before its initial-plan review. The confirmed workflow choices remain applicable.
 

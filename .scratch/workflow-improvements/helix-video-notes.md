@@ -1,6 +1,6 @@
 # AI LABS checkpoint workflow
 
-Research note, 2026-09-29, based on the full English automatic captions. AI LABS describes its own Claude Code recreation of Helix. These observations do not change the [agreed trial design](helix-design.md).
+Research note, 2026-09-29, based on the full English automatic captions. AI LABS describes its own Claude Code recreation of Helix. These observations do not change the [agreed trial design](orchestration-design.md).
 
 ## What the video describes
 
@@ -12,7 +12,7 @@ Research note, 2026-09-29, based on the full English automatic captions. AI LABS
 
 ## Implications for our trial
 
-The user's individual checkpoint files can support deliberate context selection. The orchestrator must supply relevant requirements and dependency contracts without inheriting its whole conversation into the implementing agent. The [design notes](helix-design.md) track the decisions about that responsibility and the context supplied.
+The user's individual checkpoint files can support deliberate context selection. The orchestrator must supply relevant requirements and dependency contracts without inheriting its whole conversation into the implementing agent. The [design notes](orchestration-design.md) track the decisions about that responsibility and the context supplied.
 
 An independent test author needs the agreed behavior and constraints. A separate test runner needs the actual test command, code revision, exit status, and output. Distinct agents alone do not prove independent verification. Any change to a test's expected behavior needs reassessment against its source requirement.
 
@@ -22,4 +22,4 @@ We have not inspected the hook implementation. The transcript cannot establish w
 
 Retain feedback with its source and scope under the agreed design. Only adopted guidance becomes a broader requirement. Select relevant observations for each agent so retained feedback does not recreate the full-plan context problem.
 
-Combined verification must address behavior that no individual checkpoint establishes. The [design notes](helix-design.md) record the agreed responsibility for that review.
+Combined verification must address behavior that no individual checkpoint establishes. The [design notes](orchestration-design.md) record the agreed responsibility for that review.

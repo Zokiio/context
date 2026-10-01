@@ -113,7 +113,7 @@ For each trial, record whether the owner identified the needed intervention, the
 
 Human feedback on 2026-10-01: keep `status` values to fixed keywords. Put explanations, dates, and approval references under a separate field or section, such as `Notes`.
 
-Apply this convention to plain Markdown `Status:` lines as well as structured fields. The isolated fixture trial exposed sentence-style values in its [specification](../helix-trial/spec.md), implementation plan, and checkpoint documents. Define the allowed keywords for each document kind before updating those files; preserve the existing distinction between document lifecycle, execution state, and review state.
+Apply this convention to plain Markdown `Status:` lines as well as structured fields. The isolated fixture trial exposed sentence-style values in its [specification](../orchestration-trial/spec.md), implementation plan, and checkpoint documents. Define the allowed keywords for each document kind before updating those files; preserve the existing distinction between document lifecycle, execution state, and review state.
 
 This is recorded for a future change.
 
