@@ -24,6 +24,6 @@ func main() {
 	}
 	for _, criterion := range input.Criteria {
 		fmt.Printf("%s\t%s\t%s\t%s\t%s\n", criterion.ID, criterion.Description,
-			criterion.Observation.Result, criterion.Observation.Source, criterion.Observation.TestedRevision)
+			criterion.Observation.Result, criterion.Observation.Source, "HEAD")
 	}
 }
