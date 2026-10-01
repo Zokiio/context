@@ -1,0 +1,5 @@
+interface:
+  display_name: "Orchestrate"
+  short_description: "Coordinate checkpoint checks and corrections"
+policy:
+  allow_implicit_invocation: false
