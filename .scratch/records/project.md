@@ -1,12 +1,12 @@
 ---
 type: Project
 id: ca6a73e0-ae93-49a3-b287-12071f7446fd
-title: Project and context management
+title: Waymark
 ---
 
-# Project and context management
+# Waymark
 
-Authoritative work-item records for the local-first project and context management system.
+Authoritative work-item records for Waymark, the local-first project and context management system.
 
 ## Goals
 

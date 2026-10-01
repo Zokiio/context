@@ -2,7 +2,7 @@
 
 Design interview, started 2026-09-29. This document records confirmed choices. The user selected the isolated fixture and authorized starting its initial plan on 2026-10-01.
 
-The temporary project name is "Orchestration trial", following the user's naming instruction on 2026-10-01. A final name remains open. References to Shopify's tool and the upstream recreation retain their source names.
+The working project name is "Waymark", confirmed by the user on 2026-10-01. "Orchestration trial" names this experiment. References to Shopify's tool and the upstream recreation retain their source names.
 
 The [research note](helix-research.md) compares Helix with the existing workflow. The [video notes](helix-video-notes.md) distinguish AI LABS' adaptation from Shopify's description. The [workflow discovery](discovery.md) retains the broader proposals. The [vision](../../docs/vision.md) and [glossary](../../CONTEXT.md) remain authoritative for product responsibility and terminology.
 

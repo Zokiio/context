@@ -1,6 +1,6 @@
-# Project and context management
+# Waymark
 
-`ctx` is the development executable for this project. The product name remains open.
+`ctx` is the development executable for Waymark.
 
 The CLI reads project goals, work items, dependencies, and supporting documents from local Markdown records. It discovers the project from your current directory. Records can live in a checkout or a separate directory, and workspaces can group them without copying them.
 
