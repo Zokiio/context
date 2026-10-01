@@ -103,3 +103,24 @@ func assertFixtureOutput(t *testing.T, inputFile, expected string) {
 		t.Fatalf("stdout = %q, want %q", stdout.String(), expected)
 	}
 }
+
+func TestReportMissingObservation(t *testing.T) {
+	// CP2-MISSING-001 uses the literal row from the specification's missing example.
+	const expected = "C2\tVerification remains missing\tmissing\t-\t-\n"
+	assertFixtureOutput(t, "testdata/missing.json", expected)
+}
+
+func TestReportNullObservation(t *testing.T) {
+	// CP2-MISSING-002 gives JSON-null the independently authored missing markers.
+	const expected = "N4\tNull verification remains missing\tmissing\t-\t-\n"
+	assertFixtureOutput(t, "testdata/null-observation.json", expected)
+}
+
+func TestPreserveMixedObservationRows(t *testing.T) {
+	// CP2-MIXED-003 preserves the independent literals for all four row kinds.
+	const expected = "C1\tPreserve authored mapping\tpass\tchecks/observed.txt\tfixture-rev-1\n" +
+		"C2\tVerification remains missing\tmissing\t-\t-\n" +
+		"F7\tKeep authored failure visible\tfail\tsynthetic/does-not-exist.txt\tauthored-revision-not-HEAD\n" +
+		"N4\tNull verification remains missing\tmissing\t-\t-\n"
+	assertFixtureOutput(t, "testdata/mixed-observations.json", expected)
+}
