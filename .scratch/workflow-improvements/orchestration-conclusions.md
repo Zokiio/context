@@ -26,11 +26,14 @@ The fixture, `ctx init`, and CLI wayfinding WorkItems previously listed as curre
 
 Ignored local decisions and evidence are unavailable in a fresh checkout unless restored together or recreated through the acceptance procedure. Orientation continues to report the fixture's acceptance as unknown when its linked local decision is absent, even though execution is completed. Successful checks and merged PRs do not replace an Acceptance record. These conclusions renew no historical acceptance.
 
-## Chosen next work
+## Completed maintenance
 
-On 2026-10-02, the user authorized two WorkItems, both in progress pending human review and merge:
+The maintenance outcomes authorized on 2026-10-02 have completed human review and merged publication:
 
-- [Publish current project and orchestration trial conclusions](../records/workflow-maintenance/issues/01-project-status-conclusions.md).
-- [Install portable explicitly invoked checkpoint orchestration](../records/workflow-maintenance/issues/02-portable-checkpoint-orchestration.md).
+- [Publish current project and orchestration trial conclusions](../records/workflow-maintenance/issues/01-project-status-conclusions.md), delivered in [PR #25](https://github.com/Zokiio/context/pull/25).
+- [Install portable explicitly invoked checkpoint orchestration](../records/workflow-maintenance/issues/02-portable-checkpoint-orchestration.md), delivered in [PR #26](https://github.com/Zokiio/context/pull/26).
+- [Give agents a discoverable ctx CLI entry point](../records/workflow-maintenance/issues/03-agent-cli-guidance.md), delivered in [PR #27](https://github.com/Zokiio/context/pull/27).
+
+The [Project record](../records/project.md) owns current commitments. These WorkItems link local closeout Acceptance decisions; a fresh checkout keeps acceptance unknown until those decisions and their retained evidence are restored. Historical trial acceptance remains separate.
 
 The [discovery proposals](discovery.md), including status-authoring migration, remain deferred. Managed claims, automatic routing, supervision, and broader workflow adoption have no new authorization from these trials.

@@ -20,14 +20,19 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
-- [Publish current project and orchestration trial conclusions](workflow-maintenance/issues/01-project-status-conclusions.md)
-- [Install portable explicitly invoked checkpoint orchestration](workflow-maintenance/issues/02-portable-checkpoint-orchestration.md)
+None
 
 ## Commitment notes
 
-2026-10-02: The user authorized these two WorkItems. Both record in-progress execution. Human review and merge remain pending.
+2026-10-02: The two maintenance commitments completed after human review and merged through PRs #25 and #26. The additional CLI-guidance outcome merged through PR #27. No new implementation commitment is selected here.
 
 ## Delivered work and acceptance
+
+2026-10-02: The maintenance work below is delivered. Each WorkItem links its current local Acceptance decision, based on retained verification at the original tested revision and reviewed publication. Restore those decisions with their evidence when evaluating acceptance in another checkout.
+
+- [Publish current project and orchestration trial conclusions](workflow-maintenance/issues/01-project-status-conclusions.md), [PR #25](https://github.com/Zokiio/context/pull/25).
+- [Install portable explicitly invoked checkpoint orchestration](workflow-maintenance/issues/02-portable-checkpoint-orchestration.md), [PR #26](https://github.com/Zokiio/context/pull/26).
+- [Give agents a discoverable ctx CLI entry point](workflow-maintenance/issues/03-agent-cli-guidance.md), [PR #27](https://github.com/Zokiio/context/pull/27).
 
 2026-10-02: The previous commitments below record completed execution. The [trial conclusions](../workflow-improvements/orchestration-conclusions.md) identify the fixture and Axpilot #241 outcomes, tested revisions, merged publication, and verification limits.
 

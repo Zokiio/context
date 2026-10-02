@@ -3,12 +3,12 @@ type: WorkItem
 id: 75d2ab05-5886-4920-a547-5d3960ec8ade
 title: Publish current project and orchestration trial conclusions
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Publish current project and orchestration trial conclusions
 
-The user authorized this outcome and explicit agent orchestration on 2026-10-02. Final changes remain for human review and merge.
+The user authorized this outcome and explicit agent orchestration on 2026-10-02. [PR #25](https://github.com/Zokiio/context/pull/25) merged after human review on 2026-10-02.
 
 ## Scope
 
@@ -38,3 +38,9 @@ None
 ## Comments
 
 2026-10-02: The implementation plan uses one checkpoint for this independent outcome. Automated checks and reviews do not supply human approval or whole-ticket acceptance.
+
+2026-10-02: Completed after human review and merged publication in [PR #25](https://github.com/Zokiio/context/pull/25). The closeout acceptance covers S1 through S4, using retained verification at its original tested revision. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/01-status-closeout-20261002.md)

@@ -3,7 +3,7 @@ type: WorkItem
 id: 7e2d53b2-2c31-461e-a18c-ae628f8fcf3e
 title: Give agents a discoverable ctx CLI entry point
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Give agents a discoverable ctx CLI entry point
@@ -39,4 +39,10 @@ None
 
 ## Comments
 
-2026-10-02: One independently testable installation and discovery outcome. Final changes remain for human review and merge.
+2026-10-02: One independently testable installation and discovery outcome, initially pending human review and merge.
+
+2026-10-02: Completed after human review and merged publication in [PR #27](https://github.com/Zokiio/context/pull/27). The closeout acceptance covers G1 through G4, using retained verification at its original tested revision. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/03-cli-closeout-20261002.md)
