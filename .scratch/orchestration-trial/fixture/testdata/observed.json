@@ -1,0 +1,1 @@
+{"criteria":[{"id":"C1","description":"Preserve authored mapping","observation":{"result":"pass","source":"checks/observed.txt","testedRevision":"fixture-rev-1"}}]}

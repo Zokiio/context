@@ -1,6 +1,6 @@
 # Checkpoint 2: Report missing verification
 
-Status: proposed. Dispatch follows passing gates and the user's review of checkpoint 1.
+Status: scope approved with the initial plan on 2026-10-01. Dispatch follows passing gates and the user's review of checkpoint 1.
 
 ## Outcome
 
@@ -16,7 +16,7 @@ No observation means no verification. It cannot become a passing observation. Th
 
 The dispatch contains this checkpoint, relevant excerpts, applicable guidance, gate expectations, edit paths, and the preceding approved commit. The dependency contract is the existing executable interface and preservation of observed rows, including authored `pass` and `fail` results. Relevant fixture code and tests are available at that commit.
 
-Use a fresh implementing context without the prior implementation conversation, full plan, or sibling checkpoint file. Implement only under `.scratch/helix-trial/fixture/`. The expectation author owns new executable assertions and reusable missing-case input. Proposed expectation changes go to the orchestrator with their requirements basis.
+Use a fresh implementing context without the prior implementation conversation, full plan, or sibling checkpoint file. Implement only under `.scratch/orchestration-trial/fixture/`. The expectation author owns new executable assertions and reusable missing-case input. Proposed expectation changes go to the orchestrator with their requirements basis.
 
 ## Required gates
 
@@ -25,7 +25,7 @@ Use a fresh implementing context without the prior implementation conversation, 
 - Standards and specification reviewers examine the checkpoint's identified base and target revisions independently. Corrections renew affected checks and review.
 - The user reviews the passing checkpoint at its exact revision before combined-result verification.
 
-The expected suite command is `go test ./.scratch/helix-trial/fixture`. The example command is `go run ./.scratch/helix-trial/fixture < .scratch/helix-trial/fixture/testdata/missing.json`. The independent test author confirms working commands. No visual or remote-environment gate applies.
+The expected suite command is `go test ./.scratch/orchestration-trial/fixture`. The example command is `go run ./.scratch/orchestration-trial/fixture < .scratch/orchestration-trial/fixture/testdata/missing.json`. The independent test author confirms working commands. No visual or remote-environment gate applies.
 
 ## Evidence and completion
 

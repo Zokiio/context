@@ -1,6 +1,6 @@
 # Helix Loop workflow reference
 
-Source reference, 2026-10-01, for [Helix Loop at `c52ba265a778c17c11757ef86630686728d6aa02`](https://github.com/johnarks/helix-loop/tree/c52ba265a778c17c11757ef86630686728d6aa02). Remote HEAD still matches this commit at inspection. This guide describes the intended skill procedure and its artifacts. It is separate from the [adoption assessment](helix-loop-assessment.md) and does not change the [agreed trial design](helix-design.md). The viewer was exercised with the supplied example. The agent workflow was not installed or executed.
+Source reference, 2026-10-01, for [Helix Loop at `c52ba265a778c17c11757ef86630686728d6aa02`](https://github.com/johnarks/helix-loop/tree/c52ba265a778c17c11757ef86630686728d6aa02). Remote HEAD still matches this commit at inspection. This guide describes the intended skill procedure and its artifacts. It is separate from the [adoption assessment](helix-loop-assessment.md) and does not change the [agreed trial design](orchestration-design.md). The viewer was exercised with the supplied example. The agent workflow was not installed or executed.
 
 ## Orchestrator connects the roles
 

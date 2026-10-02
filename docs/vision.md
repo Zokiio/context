@@ -1,8 +1,8 @@
 # Product vision
 
-A local-first, Git-native project and context management system, built around a reusable Go core and delivered first as a CLI. Jira and GitHub connections are optional. Future TUI and web interfaces use the same application services.
+Waymark is a local-first, Git-native project and context management system, built around a reusable Go core and delivered first as a CLI. Jira and GitHub connections are optional. Future TUI and web interfaces use the same application services.
 
-This document records the intended product and bootstrap plan. The product is not implemented yet. Its name, work-item schema, package layout, and interface libraries remain open.
+This document records the intended product and bootstrap plan. The product is not implemented yet. Its work-item schema, package layout, and interface libraries remain open.
 
 ## Problem and responsibility
 

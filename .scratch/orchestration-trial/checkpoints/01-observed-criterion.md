@@ -1,6 +1,6 @@
 # Checkpoint 1: Report an authored observation
 
-Status: proposed. The orchestrator resolves the initial-plan decision before dispatch. This file is the implementing agent's checkpoint, not the whole work-item plan.
+Status: scope approved with the initial plan on 2026-10-01. Verification and human checkpoint review are pending. This file is the implementing agent's checkpoint, not the whole work-item plan.
 
 ## Outcome
 
@@ -16,7 +16,7 @@ The executable reads one JSON document from standard input and writes rows to st
 
 The dispatch contains this checkpoint, relevant requirement excerpts, applicable repository guidance, prepared gate expectations, permitted code paths, and a full starting commit SHA. It contains no orchestrator conversation, whole plan, sibling checkpoint, or unrelated work item.
 
-There is no fixture dependency. The expected edit scope is `.scratch/helix-trial/fixture/`. The expectation author owns the executable test assertions and reusable input examples. The implementer changes fixture implementation and reports proposed expectation changes to the orchestrator before editing them.
+There is no fixture dependency. The expected edit scope is `.scratch/orchestration-trial/fixture/`. The expectation author owns the executable test assertions and reusable input examples. The implementer changes fixture implementation and reports proposed expectation changes to the orchestrator before editing them.
 
 ## Required gates
 
@@ -25,7 +25,7 @@ There is no fixture dependency. The expected edit scope is `.scratch/helix-trial
 - Standards review and specification review both examine the identified checkpoint comparison. Both axes retain cited findings and their own tested revision.
 - The user reviews the passing checkpoint's outcome, revision, changed files, results, and unresolved concerns before checkpoint 2 starts.
 
-The expected suite command is `go test ./.scratch/helix-trial/fixture`. The example command is `go run ./.scratch/helix-trial/fixture < .scratch/helix-trial/fixture/testdata/observed.json`. The test author confirms working commands before dispatch. No visual or remote-environment gate applies to this text-output fixture.
+The expected suite command is `go test ./.scratch/orchestration-trial/fixture`. The example command is `go run ./.scratch/orchestration-trial/fixture < .scratch/orchestration-trial/fixture/testdata/observed.json`. The test author confirms working commands before dispatch. No visual or remote-environment gate applies to this text-output fixture.
 
 ## Evidence and completion
 

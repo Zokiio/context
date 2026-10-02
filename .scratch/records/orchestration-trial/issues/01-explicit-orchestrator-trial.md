@@ -2,14 +2,14 @@
 type: WorkItem
 id: 2cc93a96-a641-4259-910f-d8ed0fd679b4
 title: Exercise explicit checkpoint orchestration on an isolated fixture
-status: draft
-triage: needs-info
-execution: unstarted
+status: stable
+triage: ready-for-agent
+execution: completed
 ---
 
 # Exercise explicit checkpoint orchestration on an isolated fixture
 
-This proposed work item is awaiting Q21 and initial-plan review. Preparation is authorized; fixture implementation has not started. Its independent outcome is a reviewable evaluation of the agreed loop through two small fixture behaviors.
+The user selected the fixture and authorized starting the initial plan on 2026-10-01. Its independent outcome is a reviewable evaluation of the agreed loop through two small fixture behaviors. Human checkpoint reviews remain required.
 
 ## Scope
 
@@ -34,14 +34,14 @@ None
 
 ## Spec
 
-- [Fixture and workflow trial specification](../../../helix-trial/spec.md)
+- [Fixture and workflow trial specification](../../../orchestration-trial/spec.md)
 
 ## Context
 
-- [Confirmed workflow choices](../../../workflow-improvements/helix-design.md)
+- [Confirmed workflow choices](../../../workflow-improvements/orchestration-design.md)
 - [Original trial proposal and success measures](../../../workflow-improvements/orchestrator-trial.md)
-- [Implementation plan](../../../helix-trial/implementation-plan.md)
-- [Orchestrator design](../../../helix-trial/orchestrator-design.md)
+- [Implementation plan](../../../orchestration-trial/implementation-plan.md)
+- [Orchestrator design](../../../orchestration-trial/orchestrator-design.md)
 - [Trial scope decision](../decisions/01-trial-scope.md)
 - [Product vision](../../../../docs/vision.md)
 - [Domain glossary](../../../../CONTEXT.md)
@@ -49,8 +49,16 @@ None
 
 ## Acceptance
 
+- [Accept the isolated orchestration fixture trial](../acceptances/01-fixture-trial.md)
+
 ## Comments
 
 2026-10-01: Prepared a concrete proposal from the handoff and the 19 confirmed choices. Q21 remains open. No trial code, installed skill, automatic routing, hook, or acceptance decision has been created.
 
 Preparation returned complete task context. Project-wide resumption remained partial because the local `ctx-init` Acceptance record was unavailable. The trial's criteria, required context, and dependency declaration checks passed; its scope decision remained open. No trial recovery notes existed.
+
+2026-10-01: The user instructed starting the isolated fixture, resolving Q21 and initial-plan review. Begin skill preparation and checkpoint 1. A later trial on an Axpilot ticket is intended; that ticket remains unselected.
+
+2026-10-01: The user requested a different project name while deciding on a final name. Use "Orchestration trial" temporarily. The trial and record directories, workflow design, commands, and links now use that name. WorkItem and Decision IDs remain unchanged. Earlier evidence, source snapshots, approvals, and published branch references retain their original paths and revisions; the original ignored evidence directory remains in place. The rename changes naming and paths, with the fixture requirements and implementation unchanged. Human checkpoint 2 review remains pending.
+
+2026-10-01: The user authorized continuation past checkpoint 2. A fresh independent verifier checked four derived executable cases, the seven fixture regressions, and retained workflow provenance at 19de8f9694bab33bda00278ecb9890c316e8a4d0. Standards and Specification independently pass the final comparison. Repository tests, race checks, vet and build pass. The independent assessment audit supports A1-A6 with no remaining gaps. Human timing and comparative review effort remain unmeasured. Axpilot #241 is proposed as a separate next trial.

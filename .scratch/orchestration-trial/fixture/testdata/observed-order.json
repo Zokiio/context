@@ -1,0 +1,1 @@
+{"criteria":[{"id":"Z9","description":"First authored row","observation":{"result":"fail","source":"checks/z.txt","testedRevision":"revision-z"}},{"id":"A1","description":"Second authored row","observation":{"result":"pass","source":"checks/a.txt","testedRevision":"revision-a"}}]}

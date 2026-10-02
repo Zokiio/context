@@ -1,6 +1,6 @@
 # Helix Loop adoption assessment
 
-Research note, 2026-10-01. This assessment informs the existing [workflow trial design](helix-design.md). It does not authorize installation or change the agreed workflow.
+Research note, 2026-10-01. This assessment informs the existing [workflow trial design](orchestration-design.md). It does not authorize installation or change the agreed workflow.
 
 My recommendation is to adapt the checkpoint loop into the existing workflow skills. The earlier design already specifies the context, evidence, and review boundaries that this clone leaves to convention. The clone supplies useful examples, but its installer and gate policy need changes before they fit this project.
 
@@ -49,7 +49,7 @@ The useful borrowing is the checkpoint procedure and independent correction loop
 
 ## Fit with the existing workflow
 
-The [19 confirmed design choices](helix-design.md#confirmed-choices) already cover the main loop. They define fresh implementing agents, independent test preparation, checkpoint review, correction, and combined verification. The remaining design question is the first trial, not whether to adopt these basic roles.
+The [19 confirmed design choices](orchestration-design.md#confirmed-choices) already cover the main loop. They define fresh implementing agents, independent test preparation, checkpoint review, correction, and combined verification. The remaining design question is the first trial, not whether to adopt these basic roles.
 
 | Concern | Fit and necessary adaptation |
 | --- | --- |
@@ -61,7 +61,7 @@ The [19 confirmed design choices](helix-design.md#confirmed-choices) already cov
 | Storage and recovery | Preserve the existing authoritative records. Keep generated evidence and Acceptance records in their designated ignored locations. Inspect current context, code, and still-running work when resuming, rather than trusting persisted gate labels. |
 | Human decisions and blocked checks | Preserve initial plan review and checkpoint review for the first trial. Waiting for a decision, an unavailable check, or stalled repairs must remain an explicit unresolved outcome. Continue only independent work supported by current facts. |
 
-These adaptations follow the [workflow design](helix-design.md), [implementation skill](../../.agents/skills/implement/SKILL.md), [review skill](../../.agents/skills/code-review/SKILL.md), [acceptance procedure](../../docs/agents/acceptance.md), [storage conventions](../../docs/agents/issue-tracker.md), and [recovery procedure](../../.agents/skills/recovery-notes/SKILL.md). These documents remain the source for the local workflow.
+These adaptations follow the [workflow design](orchestration-design.md), [implementation skill](../../.agents/skills/implement/SKILL.md), [review skill](../../.agents/skills/code-review/SKILL.md), [acceptance procedure](../../docs/agents/acceptance.md), [storage conventions](../../docs/agents/issue-tracker.md), and [recovery procedure](../../.agents/skills/recovery-notes/SKILL.md). These documents remain the source for the local workflow.
 
 The product boundary also fits. Under the [agent execution model](../../docs/vision.md#agent-execution-model), skills coordinate the work inside an existing agent environment. `ctx` supplies context, orientation, recovery observations, and record checks. This adoption does not require a new agent runtime or execution responsibility in the Go core.
 

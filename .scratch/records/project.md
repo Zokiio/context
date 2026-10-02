@@ -1,12 +1,12 @@
 ---
 type: Project
 id: ca6a73e0-ae93-49a3-b287-12071f7446fd
-title: Project and context management
+title: Waymark
 ---
 
-# Project and context management
+# Waymark
 
-Authoritative work-item records for the local-first project and context management system.
+Authoritative work-item records for Waymark, the local-first project and context management system.
 
 ## Goals
 
@@ -17,6 +17,8 @@ Make project understanding durable through local, Git-native records and a reusa
 Deliver [session orientation](../session-orientation/spec.md) so a fresh agent can inspect goals, current commitments, ready work, and unresolved decisions before requesting detailed task context. Show eligible work with reasons and retain useful known information with explicit gaps.
 
 ## Current commitments
+
+- [Exercise explicit checkpoint orchestration on an isolated fixture](orchestration-trial/issues/01-explicit-orchestrator-trial.md)
 
 - [Prepare a project through ctx init](ctx-init/issues/01-agent-guided-project-initialization.md)
 
@@ -31,7 +33,7 @@ Deliver [session orientation](../session-orientation/spec.md) so a fresh agent c
 
 ## Open decisions
 
-- [Select the first Helix trial task and review its initial plan](helix-trial/decisions/01-trial-scope.md)
+None
 
 ## Context
 

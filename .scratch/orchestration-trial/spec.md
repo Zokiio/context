@@ -1,16 +1,16 @@
 # Explicit orchestrator fixture trial
 
-Status: proposed. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) must resolve before implementation. The [workflow design](../workflow-improvements/helix-design.md) owns the confirmed workflow policy. This specification defines the proposed fixture and trial obligations.
+Status: approved for the isolated fixture on 2026-10-01 through the [scope decision](../records/orchestration-trial/decisions/01-trial-scope.md). The [workflow design](../workflow-improvements/orchestration-design.md) owns the confirmed workflow policy. This specification defines the fixture and trial obligations.
 
 ## Outcome
 
-Exercise the checkpoint-and-correction loop through one explicitly invoked, project-local orchestrator skill. Use a standalone Go fixture under `.scratch/helix-trial/fixture/`. It reports authored criterion-to-evidence mappings without deciding acceptance. The two outcomes are an observed criterion row and a row showing missing verification.
+Exercise the checkpoint-and-correction loop through one explicitly invoked, project-local orchestrator skill. Use a standalone Go fixture under `.scratch/orchestration-trial/fixture/`. It reports authored criterion-to-evidence mappings without deciding acceptance. The two outcomes are an observed criterion row and a row showing missing verification.
 
 This is reusable evaluation material outside production packages. It adds no `ctx` command, record schema, dependency, automatic routing, hook, global skill, managed claim, deployment, or viewer.
 
 ## Fixture interface and requirements
 
-The proposed test seam is the executable's standard input, standard output, and exit status. Run it from the repository root with `go run ./.scratch/helix-trial/fixture`. Tests exercise the same executable interface. They do not inspect private rendering helpers.
+The proposed test seam is the executable's standard input, standard output, and exit status. Run it from the repository root with `go run ./.scratch/orchestration-trial/fixture`. Tests exercise the same executable interface. They do not inspect private rendering helpers.
 
 Input is one JSON document with a `criteria` array. Each entry has `id`, `description`, and an optional `observation`. A present observation has authored `result`, `source`, and `testedRevision` strings. The trial uses valid entries, single-line strings without tabs, and results `pass` or `fail`. General input validation is outside this fixture.
 

@@ -1,8 +1,8 @@
 # First orchestrator trial
 
-Status: proposed. This document makes Q21 in the [workflow design](helix-design.md) concrete. It does not authorize implementation or add a product feature.
+Status: isolated fixture selected and initial plan approved on 2026-10-01. This document made Q21 in the [workflow design](orchestration-design.md) concrete. The [scope decision](../records/orchestration-trial/decisions/01-trial-scope.md) records the user's authorization to start the fixture trial. It adds no product feature.
 
-The [concrete implementation plan](../helix-trial/implementation-plan.md), [fixture specification](../helix-trial/spec.md), and [orchestrator design](../helix-trial/orchestrator-design.md) prepare this proposal for initial review. The [scope decision](../records/helix-trial/decisions/01-trial-scope.md) remains open and blocks the proposed trial work item.
+The [implementation plan](../orchestration-trial/implementation-plan.md), [fixture specification](../orchestration-trial/spec.md), and [orchestrator design](../orchestration-trial/orchestrator-design.md) define the approved run. An Axpilot ticket is the intended follow-up after this fixture trial.
 
 ## Work to exercise
 
@@ -23,7 +23,7 @@ The orchestrator receives the complete task context. A separate agent derives th
 
 Implement one checkpoint at a time. Review explicit local code revisions, retain independent standards and specification reviews, and rerun affected checks after corrections. The user reviews the plan and each checkpoint after its gates pass. The orchestrator then arranges independent verification of the combined result before acceptance of the fixture task.
 
-Existing skills may need focused changes for checkpoint delegation and exact review targets. The [workflow design](helix-design.md#existing-constraints-and-observed-gaps) records those gaps. CLI behavior, managed claims, concurrent implementation, and enforcement hooks are outside this first trial.
+Existing skills may need focused changes for checkpoint delegation and exact review targets. The [workflow design](orchestration-design.md#existing-constraints-and-observed-gaps) records those gaps. CLI behavior, managed claims, concurrent implementation, and enforcement hooks are outside this first trial.
 
 ## Observations that determine success
 

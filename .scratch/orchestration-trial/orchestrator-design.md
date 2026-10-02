@@ -1,13 +1,13 @@
 # Project-local orchestrator design
 
-Status: proposed. This design implements the [confirmed workflow choices](../workflow-improvements/helix-design.md) for the [fixture trial](spec.md). It leaves the CLI's existing read-only responsibilities intact.
+Status: approved for the isolated fixture on 2026-10-01. This design implements the [confirmed workflow choices](../workflow-improvements/orchestration-design.md) for the [fixture trial](spec.md). It leaves the CLI's existing read-only responsibilities intact.
 
 ## Invocation and ownership
 
 The proposed caller supplies one ticket:
 
 ```text
-Use $orchestrate for helix-trial/issues/01-explicit-orchestrator-trial.md.
+Use $orchestrate for orchestration-trial/issues/01-explicit-orchestrator-trial.md.
 ```
 
 Create one project-local skill at `.agents/skills/orchestrate/`, with `SKILL.md` and `agents/openai.yaml`. The latter sets `policy.allow_implicit_invocation: false`. The entrypoint names the ticket, reads its authoritative plan, and coordinates the run. It needs no shell scheduler, new role skills, routing change, hook, or generated state schema.
