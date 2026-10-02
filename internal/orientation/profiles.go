@@ -1,6 +1,9 @@
 package orientation
 
-import "strings"
+import (
+	"net/url"
+	"strings"
+)
 
 func (e *evaluator) checkIdentities() {
 	byID := map[string][]*record{}
@@ -101,4 +104,28 @@ func emptyDeclaration(content string) bool {
 	default:
 		return false
 	}
+}
+
+// executionField keeps an absent upstream state unknown without treating a
+// labeled tracker snapshot as a malformed native WorkItem.
+func (e *evaluator) executionField(r *record) *string {
+	if _, present := r.doc.Metadata["execution"]; !present && isTrackerSnapshot(r) {
+		return nil
+	}
+	return e.enumField(r, "execution", "unstarted", "in-progress", "completed", "cancelled")
+}
+
+func isTrackerSnapshot(r *record) bool {
+	if r.kind != "WorkItem" {
+		return false
+	}
+	source, ok := r.doc.Metadata["sourceURL"].(string)
+	if !ok {
+		return false
+	}
+	parsed, err := url.Parse(source)
+	if err != nil || parsed.Hostname() == "" {
+		return false
+	}
+	return strings.EqualFold(parsed.Scheme, "http") || strings.EqualFold(parsed.Scheme, "https")
 }

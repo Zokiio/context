@@ -28,3 +28,5 @@ Defer human questionnaires, agent mode, harness detection, Copilot, multiple too
 The measured first edits were correct both without and with a checkpoint, at 91.32 and 121.71 seconds respectively. Both sessions missed the requested pre-action plan. Keep the rule that a checkpoint must preserve useful information beyond the ticket and checkout.
 
 The broader proposals remain in [discovery](../../../ctx-init/discovery.md). The [manual checklist](../../../../docs/tracker-snapshots.md) records the remaining task selection and snapshot steps. Neither the trials' pending human reviews nor Mukabi's unrelated deployment blocker changes this initialization scope.
+
+The [tracker-snapshot profile](../../../../docs/tracker-snapshots.md#ownership-and-identity) identifies snapshots by a valid authoritative `sourceURL`. The reader permits an absent execution key, keeps execution unknown, and excludes that snapshot from pickup and dependency satisfaction.

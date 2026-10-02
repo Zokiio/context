@@ -16,9 +16,9 @@ Keep the local Project and WorkItem IDs stable across refreshes. Generate UUIDs 
 
 These fields document provenance. The current reader does not fetch the URL, validate freshness against the tracker, or interpret these fields as a synchronized status. Retain the raw response and disclose unavailable source timestamps instead of inventing one.
 
-For the proposed missing-execution leniency, identify a tracker snapshot by `type: WorkItem` and a string `sourceURL` that parses as an absolute HTTP or HTTPS URL with a nonempty host. Reserve this field for the authoritative upstream task. Links to related remote material belong in the body and do not mark a snapshot. This explicit authoring signal avoids introducing another record type.
+For the missing-execution leniency, identify a tracker snapshot by `type: WorkItem` and a string `sourceURL` that parses as an absolute HTTP or HTTPS URL with a nonempty host. Reserve this field for the authoritative upstream task. Links to related remote material belong in the body and do not mark a snapshot. This explicit authoring signal avoids introducing another record type.
 
-The proposal applies only when the `execution` key is absent. An empty, null, or unrecognized execution value remains invalid. An absent, empty, non-string, or malformed `sourceURL` does not enable the leniency. Ordinary WorkItems retain their required execution field. In every case, unknown execution stays ineligible for pickup, and a source URL does not establish freshness, readiness, or permission to start. The current reader does not implement this discriminator yet.
+The leniency applies only when the `execution` key is absent. An empty, null, or unrecognized execution value remains invalid. An absent, empty, non-string, or malformed `sourceURL` does not enable the leniency. Ordinary WorkItems retain their required execution field. In every case, unknown execution stays ineligible for pickup, and a source URL does not establish freshness, readiness, or permission to start.
 
 Use the existing [WorkItem profile](agents/issue-tracker.md#minimal-implementation-ticket-profile) for identity, title, triage, relationships, and criteria. Copy the source requirements faithfully. Record local adaptations separately from the source text, including the evidence for any local execution state or relationship declaration. A remote open state or ready-for-agent label does not imply `execution: unstarted`.
 
@@ -37,9 +37,9 @@ Repeat the freshness check before continuation and acceptance. A successful loca
 | Source input | Current behavior | Trial adaptation | Handling |
 | --- | --- | --- | --- |
 | `None.` in a relationship section | Orientation accepts standalone `None` and `None.` | Normalize the standalone sentinel in the local snapshot and preserve the raw response | Implemented: a single trailing period is accepted. Other prose, missing sections, and unresolved links remain unknown |
-| No execution field | Orientation reports an invalid profile and unknown execution; the task cannot enter its eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Proposed, not implemented: permit absent execution as unknown in WorkItems marked by a valid `sourceURL` as defined above without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
+| No execution field | A marked tracker snapshot may omit execution; its execution remains unknown and it cannot enter the eligible shortlist | Record `in-progress` only after local work was observed, with its local meaning stated | Implemented: permit absent execution as unknown in WorkItems marked by a valid `sourceURL` as defined above without treating the omission as malformed. Keep unknown execution ineligible and do not infer it from remote status or triage |
 
-The missing-execution proposal still needs focused parser and eligibility tests before implementation. The trial does not justify a new Snapshot record type. Keep the missing-execution proposal separate from relaxing locally authored WorkItem requirements.
+The leniency uses the existing WorkItem type. Native WorkItems still require execution; neither snapshot metadata nor an unknown execution state satisfies a dependency.
 
 ## Bootstrap checklist before another trial
 

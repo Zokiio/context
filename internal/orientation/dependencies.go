@@ -163,7 +163,7 @@ func (e *evaluator) markDependencyCycles() {
 
 func (e *evaluator) prerequisiteFacts(r *record) Check {
 	check := Check{Status: "pass", Reasons: []Finding{}}
-	execution := e.enumField(r, "execution", "unstarted", "in-progress", "completed", "cancelled")
+	execution := e.executionField(r)
 	code, message := "completed_dependency", "prerequisite is recorded as completed"
 	switch stringValue(execution) {
 	case "unstarted", "in-progress":
