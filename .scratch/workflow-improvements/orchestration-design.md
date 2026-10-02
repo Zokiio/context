@@ -6,6 +6,8 @@ The working project name is "Waymark", confirmed by the user on 2026-10-01. "Orc
 
 The [research note](helix-research.md) compares Helix with the existing workflow. The [video notes](helix-video-notes.md) distinguish AI LABS' adaptation from Shopify's description. The [workflow discovery](discovery.md) retains the broader proposals. The [vision](../../docs/vision.md) and [glossary](../../CONTEXT.md) remain authoritative for product responsibility and terminology.
 
+2026-10-02: The isolated fixture and Axpilot #241 trials are completed and merged. The [trial conclusions](orchestration-conclusions.md) record their outcomes, publication identities, tested revisions, and limits. The trial-scope and next-step statements below retain their historical wording.
+
 ## Confirmed choices
 
 These choices record the user's answers during the design interview. The user refined the checkpoint definition, established project files as the primary store, and then required individual checkpoint files to limit the implementing agent's context. The trial scope is recorded below.
