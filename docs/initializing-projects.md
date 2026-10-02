@@ -30,6 +30,7 @@ Repeat `--allow-source` for each existing source directory the reader needs. Roo
 Init reports each file it creates, preserves, skips, or appends to, plus the binding result. It installs:
 
 - `task-context/SKILL.md`, `recovery-notes/SKILL.md`, and `recovery-notes/PROFILE.md` under the selected skills directory.
+- `orchestrate/SKILL.md`, its required `VERIFICATION.md` reference, and explicit-only `agents/openai.yaml` under that skills directory.
 - `acceptance.md` and `tracker.md` under the selected docs directory.
 - `project.md` under the records directory, with a new UUID, the supplied title, empty commitments, and no decisions.
 - `ctx-version.txt` under the local directory, containing the running binary's exact version output.
@@ -55,6 +56,14 @@ Inspect the empty project with the supplied binary:
 Choose a real task through the existing tracker. Follow the installed `tracker.md` to select source documents and create a local reader record only when needed. For an external tracker, preserve its original response, source identity, retrieval time, and any local adaptations. A captured issue is not a second editable backlog. An existing local plan remains authoritative.
 
 The installed task-context and recovery-notes skills use the saved binding. Verify source selection with context and resume after selecting a task. Their reports do not establish remote freshness, completion, human review, or hosted CI. Publish a checkpoint only when it preserves useful information beyond the ticket and checkout.
+
+## Invoke checkpoint orchestration explicitly
+
+Use `$orchestrate` for a named work item when you want the agent environment to coordinate checkpoint implementation, independent expectations, checks, reviews, and corrections. Installation alone does not invoke this workflow. Init keeps its metadata explicit-only and leaves routing, hooks, and the normal implementation workflow under the project's control.
+
+The orchestrator holds the whole task and sends actual scoped text to fresh implementing and repairing agents, with one writer active at a time. Required testing and Standards and Specification review procedures ship in `orchestrate/VERIFICATION.md`. Target projects need no separate TDD or code-review skill, trial documents, or Waymark source checkout. Links resolve from the configured skills and docs directories, and reader commands use the supplied binary and target project binding.
+
+Apply the target project's human review and publication policy. Reuse existing authorization within its scope, and wait for actual human responses where that policy requires a gate. Independent combined verification establishes evidence for the whole result. Checkpoint progress, acceptance, human review, and publication remain separate decisions.
 
 ## Maintain the embedded guidance
 

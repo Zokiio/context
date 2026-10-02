@@ -3,8 +3,9 @@ name: orchestrate
 description: Coordinate an explicitly requested checkpoint implementation and correction loop for a named work item.
 ---
 
-<!-- Generated from internal/initialization/templates/orchestrate.md. Run go generate ./internal/initialization after editing the template. -->
+{{if .Development}}<!-- Generated from internal/initialization/templates/orchestrate.md. Run go generate ./internal/initialization after editing the template. -->
 
+{{end -}}
 # Orchestrate a work item's checkpoints
 
 Use this skill when the user explicitly requests checkpoint orchestration for a named work item or approves a plan that invokes it. The orchestrator retains the whole task. Implementing and repairing agents receive fresh context for one checkpoint.
@@ -13,7 +14,7 @@ This is an opt-in workflow in the existing agent environment. The ctx readers su
 
 ## Establish the current basis
 
-Read the project's instructions and [tracker guidance](../../../docs/agents/issue-tracker.md). Use [task-context](../task-context/SKILL.md) to collect and read the full ticket requirements with explicit project scope. Keep the exact context JSON and source identities used. Use [recovery-notes](../recovery-notes/SKILL.md) to inspect continuation state.
+Read the project's instructions and [tracker guidance]({{.TrackerLink}}). Use [task-context]({{.TaskContextLink}}) to collect and read the full ticket requirements with explicit project scope. Keep the exact context JSON and source identities used. Use [recovery-notes]({{.RecoveryNotesLink}}) to inspect continuation state.
 
 Read the specification and implementation plan, then explicitly load its separate checkpoint files, progress, and feedback. Reader selection includes explicitly linked whole documents. Links inside a selected plan do not automatically load checkpoint files. The plan owns sequence and dependencies. Each checkpoint owns its outcome and gates. Keep mutable progress, feedback, and evidence separate from requirements. Assess feedback's source, scope, adoption status, and affected checkpoints before applying it.
 
@@ -60,4 +61,4 @@ Where project policy requires human review before advancement, wait for the actu
 
 Commission a fresh combined-result verifier that neither implemented nor prepared the reusable tests. Supply the full ticket, specification, final revision, and integration obligations. The verifier derives independent combined observations and identifies remaining criteria. Prepare these observations before final human review when that work is independent of the review.
 
-Checkpoint completion records progress. Whole-work acceptance requires evidence for every criterion under [Record acceptance](../../../docs/agents/acceptance.md). Snapshot selected sources and explicitly loaded checkpoint requirements. Keep acceptance, human approval, publication, and tracker updates separately attributed under project policy. A successful merge is not acceptance. Report remaining uncertainty and unrelated diagnostics separately.
+Checkpoint completion records progress. Whole-work acceptance requires evidence for every criterion under [Record acceptance]({{.AcceptanceLink}}). Snapshot selected sources and explicitly loaded checkpoint requirements. Keep acceptance, human approval, publication, and tracker updates separately attributed under project policy. A successful merge is not acceptance. Report remaining uncertainty and unrelated diagnostics separately.

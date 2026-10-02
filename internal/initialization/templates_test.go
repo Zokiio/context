@@ -23,6 +23,9 @@ func TestRepositoryGuidance(t *testing.T) {
 		}
 		path := filepath.Join("..", "..", doc.path)
 		if *updateGuidance {
+			if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+				t.Fatal(err)
+			}
 			if err := os.WriteFile(path, doc.text, 0o644); err != nil {
 				t.Fatal(err)
 			}
