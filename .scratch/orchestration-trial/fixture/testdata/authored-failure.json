@@ -1,0 +1,1 @@
+{"criteria":[{"id":"F7","description":"Keep authored failure visible","observation":{"result":"fail","source":"synthetic/does-not-exist.txt","testedRevision":"authored-revision-not-HEAD"}}]}

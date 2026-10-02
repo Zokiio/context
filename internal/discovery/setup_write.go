@@ -122,16 +122,12 @@ func (p *SetupPlan) apply(ctx context.Context, ops setupWriteOps) error {
 	if p.summary.Change == SetupUnchanged {
 		return nil
 	}
-	registry, err := CanonicalPath(appendPath(p.request.Home, ".context/config.md"))
+	locks, err := p.LockPaths()
 	if err != nil {
-		return fmt.Errorf("resolve setup coordination location: %w", err)
+		return err
 	}
 	if err := checkDirectory(p.request.Home); err != nil {
 		return fmt.Errorf("read setup coordination home %s: %w", p.request.Home, err)
-	}
-	locks := []string{registry + ".lock"}
-	if !SamePath(p.target, registry) {
-		locks = append(locks, p.target+".lock")
 	}
 	locks, err = orderSetupLocks(locks)
 	if err != nil {

@@ -1,5 +1,6 @@
-<!-- Generated from internal/initialization/templates/recovery-profile.md. Run go generate ./internal/initialization after editing the template. -->
+{{if .Development}}<!-- Generated from internal/initialization/templates/recovery-profile.md. Run go generate ./internal/initialization after editing the template. -->
 
+{{end -}}
 # RecoveryNote version-1 profile
 
 Use this reference when publishing a checkpoint. It is the local template for the `ctx resume` cache format.

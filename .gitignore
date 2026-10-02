@@ -1,6 +1,7 @@
 # Local temporary files and uncommitted working material.
 /.cache/
 /.context-cache/
+/.playwright-mcp/
 
 # Local verification output and generated acceptance records.
 /.scratch/*/evidence/

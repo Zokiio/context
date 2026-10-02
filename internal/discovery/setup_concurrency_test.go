@@ -273,11 +273,23 @@ func TestSetupSerializesSharedAndPersonalProcesses(t *testing.T) {
 func TestSetupSharedWriteRetainsRegistryAndDestinationLocks(t *testing.T) {
 	request, path := setupWriteFixture(t, false)
 	plan := setupWritePlan(t, request)
-	if err := plan.Apply(context.Background()); err != nil {
+	locks, err := plan.LockPaths()
+	if err != nil {
 		t.Fatal(err)
 	}
 	registry := filepath.Join(request.Home, ".context", "config.md")
-	for _, lock := range []string{registry + ".lock", path + ".lock"} {
+	if len(locks) != 2 || locks[0] != registry+".lock" || locks[1] != path+".lock" {
+		t.Fatalf("unexpected coordination paths: %q", locks)
+	}
+	for _, lock := range locks {
+		if _, err := os.Stat(filepath.Dir(lock)); !os.IsNotExist(err) {
+			t.Fatalf("querying lock paths created a directory: %s, %v", lock, err)
+		}
+	}
+	if err := plan.Apply(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	for _, lock := range locks {
 		if info, err := os.Stat(lock); err != nil || !info.Mode().IsRegular() {
 			t.Fatalf("coordination sidecar %s: %v, %v", lock, info, err)
 		}
