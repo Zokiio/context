@@ -25,7 +25,9 @@ Use the project's triage mapping. The current reader considers `ready-for-agent`
 
 When the task is owned outside the local reader records, retain its original source and retrieval time. Create an identified local WorkItem snapshot only when needed. Keep its Project and WorkItem IDs stable across refreshes. Record the authoritative `sourceURL`, `sourceUpdatedAt` when available, and `snapshotAt` with an explicit UTC offset. Disclose unavailable timestamps rather than inventing them. For a local plan, identify its source path and observed revision or digest.
 
-Copy requirements faithfully. Record local format adaptations and execution observations separately. An open remote issue or a ready label does not establish unstarted execution. The current reader reports missing execution as unknown and an invalid profile; do not invent a value to silence that diagnostic. Missing blocker information is also unknown.
+Copy requirements faithfully. Record local format adaptations and execution observations separately. An open remote issue or a ready label does not establish unstarted execution. Do not invent execution values to silence diagnostics. Missing blocker information is also unknown.
+
+A WorkItem with a string `sourceURL` that is an absolute HTTP or HTTPS URL with a nonempty hostname may omit the execution key. Its execution stays unknown without an invalid-profile diagnostic. Native WorkItems still require execution. Empty, null, or invalid execution values remain invalid. Unknown execution remains ineligible for pickup and cannot satisfy a dependency.
 
 Refresh the source before continuation and acceptance. Preserve earlier captures referenced by evidence or recovery notes. If retrieval fails, report freshness as unverified. A successful context read establishes readability of the capture, not remote freshness. Local decisions and snapshots do not update the authoritative tracker.
 
