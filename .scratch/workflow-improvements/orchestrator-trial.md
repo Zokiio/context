@@ -1,6 +1,10 @@
 # First orchestrator trial
 
-Status: isolated fixture selected and initial plan approved on 2026-10-01. This document made Q21 in the [workflow design](orchestration-design.md) concrete. The [scope decision](../records/orchestration-trial/decisions/01-trial-scope.md) records the user's authorization to start the fixture trial. It adds no product feature.
+Status: stable
+
+Notes: isolated fixture selected and initial plan approved on 2026-10-01. This document made Q21 in the [workflow design](orchestration-design.md) concrete. The [scope decision](../records/orchestration-trial/decisions/01-trial-scope.md) records the user's authorization to start the fixture trial. It adds no product feature.
+
+2026-10-02: This proposal is retained as trial history. The [trial conclusions](orchestration-conclusions.md) record the completed and merged fixture and Axpilot #241 trials. The intended follow-up below has been delivered.
 
 The [implementation plan](../orchestration-trial/implementation-plan.md), [fixture specification](../orchestration-trial/spec.md), and [orchestrator design](../orchestration-trial/orchestrator-design.md) define the approved run. An Axpilot ticket is the intended follow-up after this fixture trial.
 

@@ -1,6 +1,10 @@
 # Help people direct and resume project work
 
-Status: discovery. These ideas are proposals for discussion, not accepted implementation scope.
+Status: draft
+
+Notes: discovery. These ideas are proposals for discussion, not accepted implementation scope.
+
+2026-10-02: The [trial conclusions](orchestration-conclusions.md) record the delivered isolated fixture and Axpilot #241 trials. Current commitments are the [status conclusion WorkItem](../records/workflow-maintenance/issues/01-project-status-conclusions.md) and the [portable orchestration WorkItem](../records/workflow-maintenance/issues/02-portable-checkpoint-orchestration.md). The broader proposals below, including status-authoring migration, remain deferred.
 
 ## Product problem
 
