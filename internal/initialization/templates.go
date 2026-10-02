@@ -22,9 +22,9 @@ type document struct {
 }
 
 type guidance struct {
-	Development                                                bool
-	Command, Scope, Records, Local, Tracker                    string
-	AcceptanceLink, TrackerLink, TaskContextLink, SnapshotLink string
+	Development                                                                   bool
+	Command, Scope, Records, Local, Tracker                                       string
+	AcceptanceLink, TrackerLink, TaskContextLink, RecoveryNotesLink, SnapshotLink string
 }
 
 func renderGuidance(request Request, development bool) ([]document, error) {
@@ -40,6 +40,9 @@ func renderGuidance(request Request, development bool) ([]document, error) {
 		{"task-context.md", filepath.Join(request.Skills, "task-context", "SKILL.md")},
 		{"recovery-notes.md", filepath.Join(request.Skills, "recovery-notes", "SKILL.md")},
 		{"recovery-profile.md", filepath.Join(request.Skills, "recovery-notes", "PROFILE.md")},
+		{"orchestrate.md", filepath.Join(request.Skills, "orchestrate", "SKILL.md")},
+		{"orchestrate-verification.md", filepath.Join(request.Skills, "orchestrate", "VERIFICATION.md")},
+		{"orchestrate-openai.yaml", filepath.Join(request.Skills, "orchestrate", "agents", "openai.yaml")},
 		{"acceptance.md", filepath.Join(request.Docs, "acceptance.md")},
 		{"tracker.md", filepath.Join(request.Docs, "tracker.md")},
 	}
@@ -51,6 +54,7 @@ func renderGuidance(request Request, development bool) ([]document, error) {
 		}
 		values.AcceptanceLink = link(filepath.Join(request.Docs, "acceptance.md"))
 		values.TaskContextLink = link(filepath.Join(request.Skills, "task-context", "SKILL.md"))
+		values.RecoveryNotesLink = link(filepath.Join(request.Skills, "recovery-notes", "SKILL.md"))
 		values.TrackerLink = link(filepath.Join(request.Docs, "tracker.md"))
 		values.SnapshotLink = values.TrackerLink
 		if development {
