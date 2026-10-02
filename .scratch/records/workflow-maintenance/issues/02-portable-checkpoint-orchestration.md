@@ -3,12 +3,12 @@ type: WorkItem
 id: 79c165f9-4b80-48db-8a1d-a6aa20c53218
 title: Install portable explicitly invoked checkpoint orchestration
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Install portable explicitly invoked checkpoint orchestration
 
-The user authorized this outcome and explicit agent orchestration on 2026-10-02. Final changes remain for human review and merge.
+The user authorized this outcome and explicit agent orchestration on 2026-10-02. [PR #26](https://github.com/Zokiio/context/pull/26) merged after human review on 2026-10-02.
 
 ## Scope
 
@@ -39,3 +39,9 @@ None
 ## Comments
 
 2026-10-02: The implementation plan uses one checkpoint for this independent outcome. Automated checks and reviews do not supply human approval or whole-ticket acceptance.
+
+2026-10-02: Completed after human review and merged publication in [PR #26](https://github.com/Zokiio/context/pull/26). The closeout acceptance covers P1 through P5, using retained verification at its original tested revision. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/02-portable-closeout-20261002.md)
