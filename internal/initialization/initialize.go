@@ -203,7 +203,8 @@ func instructionPointers(request Request) string {
 		rel, _ := filepath.Rel(request.Directory, path)
 		return filepath.ToSlash(rel)
 	}
-	return fmt.Sprintf("Before implementing or verifying a known task, read %s.\nBefore continuing interrupted work or publishing useful recovery notes, read %s.\nFollow %s for tracker authority and %s for completion evidence.\n",
+	return fmt.Sprintf("Before selecting work, reporting project status, implementing a known ticket, or continuing work, read %s and use its scoped reader commands.\nBefore implementing or verifying a known task, read %s.\nBefore continuing interrupted work or publishing useful recovery notes, read %s.\nFollow %s for tracker authority and %s for completion evidence.\n",
+		link(filepath.Join(request.Docs, "cli.md")),
 		link(filepath.Join(request.Skills, "task-context", "SKILL.md")),
 		link(filepath.Join(request.Skills, "recovery-notes", "SKILL.md")),
 		link(filepath.Join(request.Docs, "tracker.md")), link(filepath.Join(request.Docs, "acceptance.md")))

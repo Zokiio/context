@@ -31,7 +31,7 @@ Init reports each file it creates, preserves, skips, or appends to, plus the bin
 
 - `task-context/SKILL.md`, `recovery-notes/SKILL.md`, and `recovery-notes/PROFILE.md` under the selected skills directory.
 - `orchestrate/SKILL.md`, its required `VERIFICATION.md` reference, and explicit-only `agents/openai.yaml` under that skills directory.
-- `acceptance.md` and `tracker.md` under the selected docs directory.
+- `cli.md`, `acceptance.md`, and `tracker.md` under the selected docs directory.
 - `project.md` under the records directory, with a new UUID, the supplied title, empty commitments, and no decisions.
 - `ctx-version.txt` under the local directory, containing the running binary's exact version output.
 
@@ -44,6 +44,8 @@ The existing setup implementation writes `.context/config.md` and coordinates wr
 Exit status `0` means file preparation and binding succeeded. Status `1` means a file or binding conflict needs attention. Status `2` means invalid input or an execution failure. Earlier successful writes remain visible in the report if a later operation fails; init does not roll back the project.
 
 Review the printed pointer block before adding it to the existing instructions file. Init leaves AGENTS.md, CLAUDE.md, existing hooks, and tracker contents unchanged. The generated skills refer to this installation's absolute binary and project paths. If those locations change, review and adapt the guidance manually.
+
+The CLI pointer tells agents to read the installed `cli.md` before selecting work, reporting project status, implementing a known ticket, or continuing work. That guide selects orient, context, or resume and links the specialized procedures. Add the reviewed block to the instructions file your agent loads, such as AGENTS.md or CLAUDE.md, so future sessions discover it. Installing files alone does not establish that instruction entry point.
 
 ## Select work after preparation
 
