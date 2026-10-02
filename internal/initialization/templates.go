@@ -45,6 +45,7 @@ func renderGuidance(request Request, development bool) ([]document, error) {
 		{"orchestrate-openai.yaml", filepath.Join(request.Skills, "orchestrate", "agents", "openai.yaml")},
 		{"acceptance.md", filepath.Join(request.Docs, "acceptance.md")},
 		{"tracker.md", filepath.Join(request.Docs, "tracker.md")},
+		{"cli.md", filepath.Join(request.Docs, "cli.md")},
 	}
 	var documents []document
 	for _, file := range files {

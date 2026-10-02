@@ -8,6 +8,10 @@ Keep features and pull requests small. Aim for one independently testable outcom
 
 ## Agent skills
 
+### Use the ctx CLI
+
+Before selecting work, reporting project status, implementing a known ticket, or continuing work, read `docs/agents/cli.md` and use its scoped reader commands.
+
 ### Issue tracker
 
 Specs and tickets live in local Markdown files under `.scratch/` and belong in Git. Before reading or changing them, read `docs/agents/issue-tracker.md`.
