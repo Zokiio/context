@@ -24,8 +24,11 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 - [Return short check and review summaries](workflow-adaptation/issues/02-short-summaries.md)
 - [Review a work item's sessions through a retrospective](workflow-adaptation/issues/03-retrospective.md)
 - [Write checkpoint tests in the implementer's loop](workflow-adaptation/issues/04-tests-in-implementer-loop.md)
+- [Keep orchestrate out of Claude's automatic invocation](workflow-maintenance/issues/04-claude-explicit-orchestrate.md)
 
 ## Commitment notes
+
+2026-10-04: The user selected a separate fix for orchestrate's missing Claude Code explicit-invocation field, found while reviewing the retrospective skill.
 
 2026-10-04: The user selected the four [workflow adaptation](../workflow-adaptation/spec.md) WorkItems and resolved both of its decisions: tests move into the implementer's loop, and `ctx init` installs the retrospective skill.
 
