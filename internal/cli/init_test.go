@@ -76,7 +76,7 @@ func TestInitPreparesProjectAndPreservesIdenticalRerun(t *testing.T) {
 			checkInitLinks(t, filepath.Join(cwd, path), data)
 		}
 	}
-	for _, path := range []string{".agents/skills/task-context/SKILL.md", ".agents/skills/recovery-notes/SKILL.md"} {
+	for _, path := range []string{".agents/skills/task-context/SKILL.md", ".agents/skills/recovery-notes/SKILL.md", ".agents/skills/retro/SKILL.md"} {
 		doc, err := recordread.ParseDocument(files[path])
 		if err != nil || doc.Metadata["name"] == nil || doc.Metadata["description"] == nil {
 			t.Fatalf("invalid skill %s: %v", path, err)

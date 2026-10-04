@@ -31,6 +31,7 @@ Init reports each file it creates, preserves, skips, or appends to, plus the bin
 
 - `task-context/SKILL.md`, `recovery-notes/SKILL.md`, and `recovery-notes/PROFILE.md` under the selected skills directory.
 - `orchestrate/SKILL.md`, its required `VERIFICATION.md` reference, and explicit-only `agents/openai.yaml` under that skills directory.
+- `retro/SKILL.md` and its explicit-only `agents/openai.yaml` under that skills directory.
 - `cli.md`, `acceptance.md`, and `tracker.md` under the selected docs directory.
 - `project.md` under the records directory, with a new UUID, the supplied title, empty commitments, and no decisions.
 - `ctx-version.txt` under the local directory, containing the running binary's exact version output.
@@ -66,6 +67,14 @@ Use `$orchestrate` for a named work item when you want the agent environment to 
 The orchestrator holds the whole task and sends actual scoped text to fresh implementing and repairing agents, with one writer active at a time. Required testing and Standards and Specification review procedures ship in `orchestrate/VERIFICATION.md`. Target projects need no separate TDD or code-review skill, trial documents, or Waymark source checkout. Links resolve from the configured skills and docs directories, and reader commands use the supplied binary and target project binding.
 
 Apply the target project's human review and publication policy. Reuse existing authorization within its scope, and wait for actual human responses where that policy requires a gate. Independent combined verification establishes evidence for the whole result. Checkpoint progress, acceptance, human review, and publication remain separate decisions.
+
+## Review a work item's sessions explicitly
+
+Use `$retro` with named Claude Code or Codex sessions of one work item when you want to measure a run and improve the environment for the next one. Installation alone does not invoke it; init keeps its metadata explicit-only.
+
+The skill reads the transcripts, and the work item's records through the installed task-context procedure. It reports wall time, subagents, token use, production and test line changes, review findings that led to repairs, and user interventions, each with its source or as a gap. Each proposal names one home: project guidance, an automated project check, a tracker follow-up, or Waymark feedback.
+
+It writes only its report, to the project's local evidence location, before you approve a proposal. Approved guidance records its source and scope. The report stays out of Git.
 
 ## Maintain the embedded guidance
 

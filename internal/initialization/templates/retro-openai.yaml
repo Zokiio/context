@@ -1,0 +1,5 @@
+interface:
+  display_name: "Retrospective"
+  short_description: "Measure a work item's sessions and propose fixes"
+policy:
+  allow_implicit_invocation: false

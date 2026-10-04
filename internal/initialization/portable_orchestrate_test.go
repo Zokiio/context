@@ -72,24 +72,25 @@ func TestPortableOrchestrateInstallsClosedExplicitSkill(t *testing.T) {
 	}
 	skills := filepath.Join(request.Directory, request.Skills)
 	docs := filepath.Join(request.Directory, request.Docs)
-	skillPath := filepath.Join(skills, "orchestrate", "SKILL.md")
-	skill, err := recordread.ParseDocument(portableFile(t, skillPath))
-	if err != nil || skill.Metadata["name"] != "orchestrate" {
-		t.Fatalf("invalid installed orchestrate skill: metadata=%v err=%v", skill.Metadata, err)
-	}
-	if description, ok := skill.Metadata["description"].(string); !ok || strings.TrimSpace(description) == "" {
-		t.Fatalf("installed skill has no description: %v", skill.Metadata)
-	}
-	var metadata struct {
-		Policy struct {
-			AllowImplicitInvocation *bool `yaml:"allow_implicit_invocation"`
-		} `yaml:"policy"`
-	}
-	if err := yaml.Unmarshal(portableFile(t, filepath.Join(skills, "orchestrate", "agents", "openai.yaml")), &metadata); err != nil {
-		t.Fatal(err)
-	}
-	if metadata.Policy.AllowImplicitInvocation == nil || *metadata.Policy.AllowImplicitInvocation {
-		t.Fatal("orchestrate must explicitly disable implicit invocation")
+	for _, name := range []string{"orchestrate", "retro"} {
+		skill, err := recordread.ParseDocument(portableFile(t, filepath.Join(skills, name, "SKILL.md")))
+		if err != nil || skill.Metadata["name"] != name {
+			t.Fatalf("invalid installed %s skill: metadata=%v err=%v", name, skill.Metadata, err)
+		}
+		if description, ok := skill.Metadata["description"].(string); !ok || strings.TrimSpace(description) == "" {
+			t.Fatalf("installed %s skill has no description: %v", name, skill.Metadata)
+		}
+		var metadata struct {
+			Policy struct {
+				AllowImplicitInvocation *bool `yaml:"allow_implicit_invocation"`
+			} `yaml:"policy"`
+		}
+		if err := yaml.Unmarshal(portableFile(t, filepath.Join(skills, name, "agents", "openai.yaml")), &metadata); err != nil {
+			t.Fatal(err)
+		}
+		if metadata.Policy.AllowImplicitInvocation == nil || *metadata.Policy.AllowImplicitInvocation {
+			t.Fatalf("%s must explicitly disable implicit invocation", name)
+		}
 	}
 	installed := map[string][]byte{}
 	for _, root := range []string{skills, docs} {

@@ -43,6 +43,8 @@ func renderGuidance(request Request, development bool) ([]document, error) {
 		{"orchestrate.md", filepath.Join(request.Skills, "orchestrate", "SKILL.md")},
 		{"orchestrate-verification.md", filepath.Join(request.Skills, "orchestrate", "VERIFICATION.md")},
 		{"orchestrate-openai.yaml", filepath.Join(request.Skills, "orchestrate", "agents", "openai.yaml")},
+		{"retro.md", filepath.Join(request.Skills, "retro", "SKILL.md")},
+		{"retro-openai.yaml", filepath.Join(request.Skills, "retro", "agents", "openai.yaml")},
 		{"acceptance.md", filepath.Join(request.Docs, "acceptance.md")},
 		{"tracker.md", filepath.Join(request.Docs, "tracker.md")},
 		{"cli.md", filepath.Join(request.Docs, "cli.md")},

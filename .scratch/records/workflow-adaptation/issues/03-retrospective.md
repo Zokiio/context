@@ -3,7 +3,7 @@ type: WorkItem
 id: 559f0bd2-4293-4775-a340-0ddf6c3d2a04
 title: Review a work item's sessions through a retrospective
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Review a work item's sessions through a retrospective
