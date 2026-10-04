@@ -1,6 +1,7 @@
 ---
 name: orchestrate
 description: Coordinate an explicitly requested checkpoint implementation and correction loop for a named work item.
+disable-model-invocation: true
 ---
 
 <!-- Generated from internal/initialization/templates/orchestrate.md. Run go generate ./internal/initialization after editing the template. -->

@@ -80,7 +80,7 @@ func TestPortableOrchestrateInstallsClosedExplicitSkill(t *testing.T) {
 		if description, ok := skill.Metadata["description"].(string); !ok || strings.TrimSpace(description) == "" {
 			t.Fatalf("installed %s skill has no description: %v", name, skill.Metadata)
 		}
-		if name == "retro" && skill.Metadata["disable-model-invocation"] != true {
+		if skill.Metadata["disable-model-invocation"] != true {
 			t.Fatalf("installed %s skill must disable model invocation for Claude Code: %v", name, skill.Metadata)
 		}
 		var metadata struct {
