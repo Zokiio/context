@@ -30,13 +30,15 @@ Each checkpoint file is its implementing agent's packet. Before dispatch, confir
 - Approved seams, gates, and required evidence.
 - Permitted code paths and the dependency contract.
 
+Complete a missing item from the agreed plan and requirements, or seek the needed decision, before dispatch.
+
 Before production edits, commission an expectation author separate from implementation. Give that author the checkpoint path and digest, starting revision, and relevant constraints. Read the "Prepare independent expectations" section of [Verify a checkpoint independently](VERIFICATION.md) before commissioning checks. Retain the resulting cases, original baseline observations, and source identities.
 
 Use the agent environment's delegation tools. Create implementing and repairing agents with `fork_turns: "none"`, or use an equivalent fresh context boundary without parent conversation. Retain each exact dispatch with its paths and digests, worker identity, and starting or evaluated revision.
 
-Dispatch implementation, repair, runner, and review work by pointer. Each dispatch names the role, the checkpoint path and digest, the starting or evaluated revision, and applicable shared guidance by path and digest. An implementation dispatch also names the prepared expectations, and a repair dispatch names its findings file. The worker reads the checkpoint file itself, so a dispatch does not repeat its text.
+Dispatch implementation, repair, runner, and review work by pointer. Each dispatch names the role, the checkpoint path and digest, the starting or evaluated revision, and applicable shared guidance by path and digest. An implementation or repair dispatch also names the commit with the prepared expectations, and a repair dispatch names its findings file. The worker reads the checkpoint file itself, so a dispatch does not repeat its text.
 
-Exclude the whole plan, sibling checkpoint files, full ticket-context JSON, and other workers' conversations. Return focused missing context through the orchestrator instead of asking the worker to reconstruct the plan. A scoped packet proves supplied context, not filesystem isolation.
+Exclude the whole plan, sibling checkpoint files, full task-context JSON, and other workers' conversations. Return focused missing context through the orchestrator instead of asking the worker to reconstruct the plan. A scoped packet proves supplied context, not filesystem isolation.
 
 Keep one implementation or repair writer active at a time. Confirm existing assignments before starting another writer. Expectation authors, runners, and reviewers retain separate roles and observation identities.
 
