@@ -3,7 +3,7 @@ type: WorkItem
 id: 2655e16f-84ba-420a-a054-39eabc5103d5
 title: Return short check and review summaries
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Return short check and review summaries
