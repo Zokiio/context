@@ -2,7 +2,7 @@
 
 # Verify a checkpoint independently
 
-Use these briefs for the expectation author, runner, and two reviewers. They provide the required procedures without another installed testing or review skill.
+Use these briefs for the expectation author, runner, two reviewers, and combined-result verifier. They provide the required procedures without another installed testing or review skill.
 
 ## Prepare independent expectations
 
@@ -28,11 +28,11 @@ git diff <base-sha>...<target-sha>
 git log <base-sha>..<target-sha> --oneline
 ```
 
-Dispatch the independent runner by pointer at the target SHA, with environment constraints. Require the runner to retain each exact command or procedure, result, exit status, output, observer, time, environment, and evaluated revision in its full report. Mark checks that cannot run as unverified.
+Dispatch the independent runner by pointer at the target SHA, with environment constraints. Require the runner to retain each exact command or procedure, result, exit status, output, observer, time, environment, and evaluated revision in its evidence file. Mark checks that cannot run as unverified.
 
 Run the Standards and Specification reviews in separate fresh contexts, in parallel when the environment supports it. Both inspect the complete identified diff and commit list, including tests. Supply relevant rules and requirements by path and digest. Keep implementation reasoning and the other review report out of each dispatch.
 
-Require the runner, each reviewer, and the combined-result verifier to write the full report to a new file in the project's local evidence location. Each returns a summary of about 400 words or fewer. The summary states the verdict and evaluated revision, cites the criterion identifier or Standards rule source for each finding, and names the evidence file path.
+Require the runner, each reviewer, and the combined-result verifier to write the full report to a new evidence file in the project's local evidence location. The evidence file records the observer, time, environment, source identities, and evaluated revision. Each returns a summary of about 400 words or fewer. The summary states the verdict and evaluated revision, cites the criterion identifier or Standards rule source for each finding, and names the evidence file.
 
 ### Standards review
 
@@ -63,6 +63,6 @@ Retain the Specification report and verdict separately. One axis cannot compensa
 
 ## Preserve failures and renew affected verification
 
-Keep the original failed checks and findings in their evidence files, with their evaluated revisions. Write the relevant evidence and source-grounded correction to a findings file, and name it in the dispatch to a fresh repair context for one checkpoint. After the repair produces a new revision, renew affected checks and review axes. Keep unchanged valid observations as historical evidence, with their original revision.
+Keep the original failed checks and findings in their evidence files, with their evaluated revisions. Write the source-grounded correction to a findings file that names the failed evidence files rather than copying them, and name it in the dispatch to a fresh repair context for one checkpoint. After the repair produces a new revision, renew affected checks and review axes. Keep unchanged valid observations as historical evidence, with their original revision.
 
 Record each remaining failure or uncertainty. A progress label, changed HEAD, or workflow verdict cannot turn a failed gate into a pass. Escalate unavailable required checks. If repairs stop reducing failures or producing new evidence, diagnose the cause or seek a needed decision before another dependent attempt.
