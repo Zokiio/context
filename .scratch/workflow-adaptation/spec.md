@@ -1,6 +1,6 @@
 # Adapt agent workflow skills to Waymark
 
-Status: proposed on 2026-10-04. The user asked to adapt four public skills from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering), `tdd`, `implement-spec`, `retro`, and `code-review`, to Waymark and the projects it prepares, rather than copy them. The [workflow design](../workflow-improvements/orchestration-design.md) remains the source of confirmed orchestration policy. This specification proposes changes to it. The linked decisions hold the choices that need the user.
+Status: proposed and delivered on 2026-10-04, through [PRs #29 to #33](https://github.com/Zokiio/context/pull/29). The user asked to adapt four public skills from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering), `tdd`, `implement-spec`, `retro`, and `code-review`, to Waymark and the projects it prepares, rather than copy them. The [workflow design](../workflow-improvements/orchestration-design.md) remains the source of confirmed orchestration policy. This specification proposes changes to it. The linked decisions hold the choices that need the user.
 
 ## Problem
 

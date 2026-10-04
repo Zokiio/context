@@ -20,13 +20,11 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
-- [Dispatch checkpoint work by pointer](workflow-adaptation/issues/01-dispatch-by-pointer.md)
-- [Return short check and review summaries](workflow-adaptation/issues/02-short-summaries.md)
-- [Review a work item's sessions through a retrospective](workflow-adaptation/issues/03-retrospective.md)
-- [Write checkpoint tests in the implementer's loop](workflow-adaptation/issues/04-tests-in-implementer-loop.md)
-- [Keep orchestrate out of Claude's automatic invocation](workflow-maintenance/issues/04-claude-explicit-orchestrate.md)
+None
 
 ## Commitment notes
+
+2026-10-04: The workflow adaptation and the orchestrate invocation fix merged through PRs #29 to #34. No new implementation commitment is selected here.
 
 2026-10-04: The user selected a separate fix for orchestrate's missing Claude Code explicit-invocation field, found while reviewing the retrospective skill.
 
@@ -35,6 +33,14 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 2026-10-02: The two maintenance commitments completed after human review and merged through PRs #25 and #26. The additional CLI-guidance outcome merged through PR #27. No new implementation commitment is selected here.
 
 ## Delivered work and acceptance
+
+2026-10-04: The work below is delivered. Each WorkItem links its current local Acceptance decision, based on retained verification at the merged head and reviewed publication. Restore those decisions with their evidence when evaluating acceptance in another checkout.
+
+- [Dispatch checkpoint work by pointer](workflow-adaptation/issues/01-dispatch-by-pointer.md), [PR #30](https://github.com/Zokiio/context/pull/30).
+- [Return short check and review summaries](workflow-adaptation/issues/02-short-summaries.md), [PR #31](https://github.com/Zokiio/context/pull/31).
+- [Review a work item's sessions through a retrospective](workflow-adaptation/issues/03-retrospective.md), [PR #33](https://github.com/Zokiio/context/pull/33).
+- [Write checkpoint tests in the implementer's loop](workflow-adaptation/issues/04-tests-in-implementer-loop.md), [PR #32](https://github.com/Zokiio/context/pull/32).
+- [Keep orchestrate out of Claude's automatic invocation](workflow-maintenance/issues/04-claude-explicit-orchestrate.md), [PR #34](https://github.com/Zokiio/context/pull/34).
 
 2026-10-02: The maintenance work below is delivered. Each WorkItem links its current local Acceptance decision, based on retained verification at the original tested revision and reviewed publication. Restore those decisions with their evidence when evaluating acceptance in another checkout.
 

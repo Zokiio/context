@@ -3,12 +3,12 @@ type: WorkItem
 id: b7f7c310-a6fa-43f9-91ba-1801a8f74431
 title: Keep orchestrate out of Claude's automatic invocation
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Keep orchestrate out of Claude's automatic invocation
 
-The user asked on 2026-10-04 for this fix as a separate small PR, after the review of [Zokiio/context#33](https://github.com/Zokiio/context/pull/33) gave the retrospective skill Claude Code's explicit-invocation field and left orchestrate's identical gap outside that ticket's scope.
+The user asked on 2026-10-04 for this fix as a separate small PR, after the review of [Zokiio/context#33](https://github.com/Zokiio/context/pull/33) gave the retrospective skill Claude Code's explicit-invocation field and left orchestrate's identical gap outside that ticket's scope. [PR #34](https://github.com/Zokiio/context/pull/34) merged after human review on 2026-10-04.
 
 ## Scope
 
@@ -32,3 +32,11 @@ None
 
 - [Install portable explicitly invoked checkpoint orchestration](02-portable-checkpoint-orchestration.md)
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-04: Completed after human review and merged publication in [PR #34](https://github.com/Zokiio/context/pull/34), covering C1 through C3. The widened install-test assertion failed before the template change and passed after it, and CI passed before merge. The closeout acceptance uses retained verification at the merged head. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/04-claude-explicit-orchestrate-closeout-20261004.md)
