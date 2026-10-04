@@ -24,6 +24,8 @@ None
 
 ## Commitment notes
 
+2026-10-04: The [workflow adaptation proposal](../workflow-adaptation/spec.md) adds four unstarted WorkItems under `workflow-adaptation/issues/`. None is a current commitment until the user selects it.
+
 2026-10-02: The two maintenance commitments completed after human review and merged through PRs #25 and #26. The additional CLI-guidance outcome merged through PR #27. No new implementation commitment is selected here.
 
 ## Delivered work and acceptance
@@ -53,7 +55,8 @@ Completed execution and merged publication do not establish current acceptance. 
 
 ## Open decisions
 
-None
+- [Choose who writes checkpoint tests](workflow-adaptation/decisions/01-checkpoint-test-authorship.md)
+- [Choose where the retrospective skill is installed](workflow-adaptation/decisions/02-retrospective-distribution.md)
 
 ## Context
 
