@@ -29,7 +29,7 @@ git diff <base-sha>...<target-sha>
 git log <base-sha>..<target-sha> --oneline
 ```
 
-Dispatch the independent runner by pointer at the target SHA, with environment constraints. Require the runner to retain each exact command or procedure, result, exit status, output, observer, time, environment, and evaluated revision in its evidence file. Mark checks that cannot run as unverified.
+Dispatch the independent runner by pointer at the target SHA, with environment constraints. Require the runner to retain each exact command or procedure, result, exit status, and output in its evidence file. Mark checks that cannot run as unverified.
 
 Run the Standards and Specification reviews in separate fresh contexts, in parallel when the environment supports it. Both inspect the complete identified diff and commit list, including tests. Supply relevant rules and requirements by path and digest. Keep implementation reasoning and the other review report out of each dispatch.
 

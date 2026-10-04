@@ -35,7 +35,7 @@ Before production edits, commission an expectation author separate from implemen
 
 Use the agent environment's delegation tools. Create implementing and repairing agents with `fork_turns: "none"`, or use an equivalent fresh context boundary without parent conversation. Retain each exact dispatch with its paths and digests, worker identity, and starting or evaluated revision.
 
-Dispatch implementation, repair, runner, and review work by pointer. Each dispatch names the role, the checkpoint path and digest, the starting or evaluated revision, and applicable shared guidance by path and digest. An implementation or repair dispatch also names the commit with the prepared expectations, and a repair dispatch names its findings file. The worker reads the checkpoint file itself, so a dispatch does not repeat its text.
+Dispatch implementation, repair, runner, and review work by pointer. Each dispatch names the role, the checkpoint path and digest, the starting or evaluated revision, and applicable shared guidance by path and digest. An implementation or repair dispatch also names the commit with the prepared expectations, and a repair dispatch names its findings file. A runner, review, or verifier dispatch also states the evidence location and summary limit from the verification brief. The worker reads the checkpoint file itself, so a dispatch does not repeat its text.
 
 Exclude the whole plan, sibling checkpoint files, full task-context JSON, and other workers' conversations. Return focused missing context through the orchestrator instead of asking the worker to reconstruct the plan. A scoped packet proves supplied context, not filesystem isolation.
 
@@ -45,7 +45,7 @@ Keep one implementation or repair writer active at a time. Confirm existing assi
 
 Commit the scoped candidate and reusable tests. Pin the full target SHA and the agreed review base. The complete base-to-target comparison must include independently prepared tests, even when written before implementation. Choose and record a base that includes those changes. Verify that the base is an ancestor and retain the exact diff command and commit list.
 
-Commission an independent runner and separate Standards and Specification reviewers on that identified revision. Read the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) for their complete briefs. Reviewers receive neither implementation reasoning nor the other axis's report. Retain each evidence file. Pass evidence files by path to repair dispatches and acceptance. A different HEAD or an uncommitted tree cannot establish a gate on the candidate.
+Commission an independent runner and separate Standards and Specification reviewers on that identified revision. Read the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) for their complete briefs. Reviewers receive neither implementation reasoning nor the other axis's report. Retain each evidence file and pass it by path to acceptance. A repair dispatch reaches failed evidence through its findings file. A different HEAD or an uncommitted tree cannot establish a gate on the candidate.
 
 Unmet requirements, documented constraint violations, and demonstrated defects block advancement. Investigate uncertain correctness concerns. Keep preferences as proposals until adopted. An unavailable required check remains unverified. Continue independent work and escalate what is needed to resolve the gap.
 
