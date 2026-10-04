@@ -68,7 +68,7 @@ Each proposal names where it belongs:
 - Project guidance, in the project's own instruction or standards files.
 - An automated check in the project. A mechanical mistake gets a check rather than a written rule.
 - A follow-up in the project's tracker.
-- Waymark feedback, for gaps in Waymark itself, such as records split across locations. This keeps the user's project separate from the tool.
+- ctx feedback, for gaps in ctx itself, such as records split across locations. It stays in the report for the user to pass on, which keeps the user's project separate from the tool.
 
 The retrospective changes nothing until the user approves a proposal. Approved guidance records its source and scope. The report is local evidence and stays out of Git.
 
