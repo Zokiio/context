@@ -72,7 +72,7 @@ Apply the target project's human review and publication policy. Reuse existing a
 
 Use `$retro` with named Claude Code or Codex sessions of one work item when you want to measure a run and improve the environment for the next one. Installation alone does not invoke it; init keeps its metadata explicit-only.
 
-The skill reads the transcripts, and the work item's records through the installed task-context procedure. It reports wall time, subagents, token use, production and test line changes, review findings that led to repairs, and user interventions, each with its source or as a gap. Each proposal names one home: project guidance, an automated project check, a tracker follow-up, or Waymark feedback.
+The skill reads the transcripts and the work item's records, reports measures of the run with their sources, and gives each proposed change one home. The installed `retro/SKILL.md` lists the measures and homes.
 
 It writes only its report, to the project's local evidence location, before you approve a proposal. Approved guidance records its source and scope. The report stays out of Git.
 

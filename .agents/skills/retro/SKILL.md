@@ -1,6 +1,6 @@
 ---
 name: retro
-description: Review explicitly requested agent sessions of one named work item, measure their cost, and propose environment improvements for approval.
+description: Run an explicitly requested retrospective of one work item's agent sessions, measure their cost, and propose environment improvements for approval.
 ---
 
 <!-- Generated from internal/initialization/templates/retro.md. Run go generate ./internal/initialization after editing the template. -->
@@ -15,7 +15,7 @@ The report is the only file it writes before approval. Project files, records, a
 
 Use the sessions the user names. Claude Code keeps each session at `~/.claude/projects/<escaped working directory>/<session id>.jsonl`, with its subagents under `<session id>/subagents/`. A session started in a worktree lives under the worktree's escaped path. Codex keeps one rollout file per thread under `~/.codex/sessions/<year>/<month>/<day>/`, and a subagent's session metadata names its parent thread. When you cannot identify a session's transcripts, ask the user for their location.
 
-Read the work item through [task-context](../task-context/SKILL.md) with explicit project scope. Then explicitly load its orchestration plan, checkpoint files, progress, decisions, and retained reports. Links inside a selected plan do not load these files.
+Read the work item through [task-context](../task-context/SKILL.md) with explicit project scope. When the authoritative issue lives in an external tracker with no local snapshot, read the issue directly and note that no snapshot exists; do not create one. Then explicitly load the implementation plan, checkpoint files, progress, Decision records, and retained reports, from the plan's links or the directory beside it. Ask the user when you cannot find them.
 
 Done when every named session maps to its transcripts, subagents included, and you know which records exist.
 
@@ -25,18 +25,20 @@ Extract from transcripts with short scripts or targeted search; they are too lar
 
 Report each measure with its source, the file and field or the command that produced it:
 
-- **Wall time**: first and last timestamps of each main session. Note long waits for the user separately.
+- **Wall time**: first and last timestamps of each main session. Report waits of more than five minutes for the user separately, as idle time.
 - **Subagents**: Claude Code subagent transcripts, or Codex rollouts whose metadata links them to the main thread.
-- **Token use**: per-message usage summed per session and in total, split into input, cache reads, cache writes, and output. Claude Code repeats a message's usage on each of its content-block lines, so count each message ID once. Codex `token_count` events are cumulative, so take each rollout's last total; its input count includes cached input.
-- **Production and test lines**: `git diff --numstat <base> <head>` over the work's base and head commits, taken from its records or the sessions' commits, split by the project's test file conventions.
+- **Token use**: per-message usage summed per session and in total, split into input, cache reads, cache writes, and output. Claude Code writes one line per content block and repeats the message's usage on each, so count each message ID once, from its last line; earlier lines can carry partial output counts. Codex `token_count` events are cumulative, so take each rollout's last total; its input count includes cached input.
+- **Production and test lines**: `git diff --numstat <base> <head>` over the work's base and head commits, taken from its records or the sessions' commits, split into production, test, and documentation lines by the project's test file conventions. When the project documents none, infer them from file names and say so.
 - **Review findings that led to repairs**: review reports or findings files matched to the repair dispatch or commit that followed.
-- **User interventions**: user-authored messages after the initial request, excluding tool results and injected context, with what each changed.
+- **User interventions**: user-authored messages after the initial request and answers to the agent's questions, excluding tool results, task notifications, and injected context, with what each changed.
 
 Done when every measure has a value with its source, or appears as a gap with the reason it is unavailable.
 
 ## Draw lessons
 
 Compare the run with its records. Look for repeated work, oversized context, findings a gate missed or a later gate caught, repairs that were never re-reviewed, and corrections only the user supplied. Cite each lesson's evidence by session and timestamp, and the measure it moved.
+
+Done when you have checked each listed pattern and every lesson cites its evidence.
 
 ## Propose changes
 
@@ -45,12 +47,12 @@ Give each proposal exactly one home:
 - **Project guidance**: an edit to the project's own instruction or standards files, naming the file and the text.
 - **Automated check**: a test, lint, or CI step in the project. A mechanical mistake gets a check rather than a written rule. First look for an existing check that is unwired or broken.
 - **Tracker follow-up**: a work item for the project's [authoritative tracker](../../../docs/agents/issue-tracker.md).
-- **Waymark feedback**: a gap in ctx, its records, or this installed guidance. Keep it separate from proposals for the project.
+- **ctx feedback**: a gap in ctx, its records, or this installed guidance. It stays in the report for the user to pass on, separate from proposals for the project.
 
 Order proposals by severity: escaped or likely defects first, then rework and cost, then friction. Done when every lesson has a proposal or is marked as an observation only.
 
 ## Report and apply approved proposals
 
-Write the report to the project's local evidence location, as the [tracker and storage guidance](../../../docs/agents/issue-tracker.md) defines, keeping it out of Git. Include the sessions and transcript paths, records read, measures with sources and gaps, lessons, and ordered proposals. Present the measures and proposals to the user.
+Write the report beside the project's local evidence, in the ignored location the [tracker and storage guidance](../../../docs/agents/issue-tracker.md) defines, so it stays out of Git. Include the sessions and transcript paths, records read, measures with sources and gaps, lessons, and ordered proposals. Present the measures and proposals to the user.
 
 After the user approves a proposal, apply it within the approved scope. Approved guidance records its source (this retrospective, its work item, and date) and its scope (the work or paths it governs). Unapproved proposals stay in the report.
