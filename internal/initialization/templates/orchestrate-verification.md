@@ -3,23 +3,23 @@
 {{end -}}
 # Verify a checkpoint independently
 
-Use these briefs for the expectation author, runner, two reviewers, and combined-result verifier. They provide the required procedures without another installed testing or review skill.
+Use these briefs for the implementing agent, runner, two reviewers, and combined-result verifier. They provide the required procedures without another installed testing or review skill.
 
-## Prepare independent expectations
+## Write tests in the implementation loop
 
-Dispatch an author separate from implementation by pointer, as the skill describes, with applicable constraints. Record existing authorization for the checkpoint's approved seam. Resolve a genuinely undecided seam before tests that depend on it.
+The implementing or repairing agent writes the checkpoint's tests itself, at the approved test seams in its checkpoint file. Report a needed seam that the file lacks to the orchestrator before writing tests that depend on it.
 
-Ask the author to derive observable expectations from requirements before production edits. Expected values come from the specification, known literals, or independently worked examples. Choose executable tests for missing executable behavior and focused procedures for authored records or guidance. Prepare each procedure independently before the change and state the observable pass condition.
+Work test-first in vertical slices. Write one failing test and observe it fail for the expected reason. A missing executable or compile failure does not show that an assertion detects the intended defect. Write the least code that passes the test, then start the next slice. Vertical slices replace horizontal slicing, writing all tests first and then all implementation, because bulk tests check imagined behavior. For authored records or guidance, state a focused check and its observable pass condition before the change.
 
-When executable tests are appropriate, observe public interfaces and caller-visible behavior. Test names describe the behavior, and each test covers one coherent case. Refactoring internals alone should not break a test. Keep assertions independent of private methods, internal call order, and the implementation's algorithm.
+Test public interfaces and caller-visible behavior. Name each test for its behavior, and cover one coherent case per test. Keep assertions independent of private methods, internal call order, and the implementation's algorithm. Take expected values from the specification, known literals, or worked examples. Retain valid regressions that already pass.
 
-Prepare expectations one checkpoint at a time. For missing executable behavior, establish a targeted failing test before implementation. Retain valid regressions that already pass. A missing executable or compile failure is baseline evidence, but does not show that a behavior assertion detects the intended defect. Preserve the exact command or procedure, output, result, exit when applicable, author, environment, time, code identity, and requirement identities for each baseline.
+Extend the project's existing test files and helpers. Write the fewest cases that distinguish each requirement and its failure cases. Change an existing test's expected behavior only with a reason from its authoritative source. A failure alone does not justify weakening it.
 
-Supply the cases and reusable tests to the implementing agent after preparation. Implement only the agreed checkpoint. Renew expectations when adopted requirements change. Explain any proposed test correction against its authoritative source. A failure alone does not justify weakening the expected behavior.
+Implement only the agreed checkpoint. Report each new test with the failure it showed, and give a reason for any new test file or harness.
 
 ## Run checks and both review axes
 
-Pin the full candidate SHA and review base before dispatch. Use a checkout at the candidate revision and confirm that its files match that revision. Include independently authored reusable tests in the complete comparison. If the preparation commit already contains those tests, use a prior review base that includes them. Record that choice.
+Pin the full candidate SHA and the checkpoint's starting revision as the review base before dispatch. Use a checkout at the candidate revision and confirm that its files match that revision.
 
 Retain the exact commands and commit list:
 
@@ -58,7 +58,7 @@ Retain the Standards report and verdict separately. Preferences need adoption be
 
 ### Specification review
 
-Dispatch the reviewer by pointer, as the skill describes. Ask the reviewer to report every missing or partial requirement, unrequested behavior, and apparent implementation error. Cite the requirement text and changed code for each finding. Report unavailable required sources as a verification gap.
+Dispatch the reviewer by pointer, as the skill describes. Ask the reviewer to report every missing or partial requirement, unrequested behavior, and apparent implementation error. The reviewer also checks that every requirement has a test at an approved seam, and that its expected values come from the specification, known literals, or worked examples rather than restating the implementation. Cite the requirement text and changed code for each finding. Report unavailable required sources as a verification gap.
 
 Retain the Specification report and verdict separately. One axis cannot compensate for an unresolved finding on the other.
 
