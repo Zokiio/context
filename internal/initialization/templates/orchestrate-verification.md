@@ -15,7 +15,7 @@ Test public interfaces and caller-visible behavior. Name each test for its behav
 
 Extend the project's existing test files and helpers. Write the fewest cases that distinguish each requirement and its failure cases. Change an existing test's expected behavior only with a reason from its authoritative source. A failure alone does not justify weakening it.
 
-Implement only the agreed checkpoint. Write each new test's failing command, output, revision, and a SHA-256 digest of every file `git status` reports as changed or untracked at that moment to an evidence file in the project's local evidence location, separate from your reasoning, and report its path. List deleted files by path, and copy each failing test file beside the evidence file. The digests and copies identify the observed sources after later slices change the tree. Give a reason for any new test file or harness.
+Implement only the agreed checkpoint. Write each new test's failing command, output, revision, and a SHA-256 digest of every file `git status --untracked-files=all` reports as changed or untracked at that moment to an evidence file in the project's local evidence location, separate from your reasoning, and report its path. List deleted files by path, and copy each failing test file beside the evidence file. The digests and copies identify the observed sources after later slices change the tree. Give a reason for any new test file or harness.
 
 ## Run checks and both review axes
 
@@ -58,7 +58,7 @@ Retain the Standards report and verdict separately. Preferences need adoption be
 
 ### Specification review
 
-Dispatch the reviewer by pointer, as the skill describes. Ask the reviewer to report every missing or partial requirement, unrequested behavior, and apparent implementation error. The reviewer also confirms that every requirement has a test at an approved test seam, or a focused check for authored records or guidance; that expected values come from the specification, known literals, or worked examples rather than restating the implementation; and that the implementer's failure evidence shows each new test failing for a reason that matches its requirement. Cite the requirement text and changed code for each finding. Report unavailable required sources as a verification gap.
+Dispatch the reviewer by pointer, as the skill describes. Ask the reviewer to report every missing or partial requirement, unrequested behavior, and apparent implementation error. The reviewer also confirms that every requirement has a test at an approved test seam, or a focused check for authored records or guidance; that expected values come from the specification, known literals, or worked examples rather than restating the implementation; and that the implementer's failure evidence, checked against its copied test files and digests, shows each new test failing for a reason that matches its requirement. Cite the requirement text and changed code for each finding. Report unavailable required sources as a verification gap.
 
 Retain the Specification report and verdict separately. One axis cannot compensate for an unresolved finding on the other.
 
