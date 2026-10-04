@@ -32,7 +32,7 @@ Each checkpoint file is its implementing agent's packet. Before dispatch, confir
 
 Complete a missing item from the agreed plan and requirements, or seek the needed decision, before dispatch.
 
-The implementing agent writes the checkpoint's tests in its own loop, test-first at the approved seams. Read the "Write tests in the implementation loop" section of [Verify a checkpoint independently](VERIFICATION.md) for its brief.
+The implementing agent writes the checkpoint's tests. Read the "Write tests in the implementation loop" section of [Verify a checkpoint independently](VERIFICATION.md) for its brief.
 
 Use the agent environment's delegation tools. Create implementing and repairing agents with `fork_turns: "none"`, or use an equivalent fresh context boundary without parent conversation. Retain each exact dispatch with its paths and digests, worker identity, and starting or evaluated revision.
 
@@ -44,7 +44,7 @@ Keep one implementation or repair writer active at a time. Confirm existing assi
 
 ## Check and correct an identified revision
 
-Commit the scoped candidate and reusable tests. Pin the full target SHA, and use the checkpoint's starting revision as the review base. Verify that the base is an ancestor and retain the exact diff command and commit list.
+Commit the scoped candidate and its tests. Pin the target and review base as the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) describes.
 
 Commission an independent runner and separate Standards and Specification reviewers on that identified revision. Read the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) for their complete briefs. Reviewers receive neither implementation reasoning nor the other axis's report. Retain each evidence file and pass it by path to acceptance. A repair dispatch reaches failed evidence through its findings file. A different HEAD or an uncommitted tree cannot establish a gate on the candidate.
 
