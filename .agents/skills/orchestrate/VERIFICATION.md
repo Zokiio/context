@@ -14,7 +14,7 @@ Test public interfaces and caller-visible behavior. Name each test for its behav
 
 Extend the project's existing test files and helpers. Write the fewest cases that distinguish each requirement and its failure cases. Change an existing test's expected behavior only with a reason from its authoritative source. A failure alone does not justify weakening it.
 
-Implement only the agreed checkpoint. Write each new test's failing command, output, and revision to an evidence file in the project's local evidence location, separate from your reasoning, and give a reason for any new test file or harness.
+Implement only the agreed checkpoint. Write each new test's failing command, output, and revision to an evidence file in the project's local evidence location, separate from your reasoning, and report its path, and give a reason for any new test file or harness.
 
 ## Run checks and both review axes
 
