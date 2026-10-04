@@ -2,10 +2,16 @@
 type: Decision
 id: acebfefb-2f50-4a74-9c0d-546233e4497f
 title: Choose who writes checkpoint tests
-decisionState: open
+decisionState: resolved
 ---
 
 # Choose who writes checkpoint tests
+
+## Resolution
+
+2026-10-04: The user chose to move checkpoint tests into the implementer's loop. [Ticket 04](../issues/04-tests-in-implementer-loop.md) implements it and records in the orchestration design that this decision replaces choice 16.
+
+## Basis
 
 Orchestration design choice 16 gives test preparation to an expectation author separate from implementation. In the 2026-10-04 Axpilot runs, that produced 4 to 9 times more test lines than production lines, as the [specification](../../../workflow-adaptation/spec.md) records. Both orchestrators also told their authors to write new files only, which multiplied test harnesses.
 

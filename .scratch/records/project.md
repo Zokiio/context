@@ -20,11 +20,14 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
-None
+- [Dispatch checkpoint work by pointer](workflow-adaptation/issues/01-dispatch-by-pointer.md)
+- [Return short check and review summaries](workflow-adaptation/issues/02-short-summaries.md)
+- [Review a work item's sessions through a retrospective](workflow-adaptation/issues/03-retrospective.md)
+- [Write checkpoint tests in the implementer's loop](workflow-adaptation/issues/04-tests-in-implementer-loop.md)
 
 ## Commitment notes
 
-2026-10-04: The [workflow adaptation proposal](../workflow-adaptation/spec.md) adds four unstarted WorkItems under `workflow-adaptation/issues/`. None is a current commitment until the user selects it.
+2026-10-04: The user selected the four [workflow adaptation](../workflow-adaptation/spec.md) WorkItems and resolved both of its decisions: tests move into the implementer's loop, and `ctx init` installs the retrospective skill.
 
 2026-10-02: The two maintenance commitments completed after human review and merged through PRs #25 and #26. The additional CLI-guidance outcome merged through PR #27. No new implementation commitment is selected here.
 
@@ -55,8 +58,7 @@ Completed execution and merged publication do not establish current acceptance. 
 
 ## Open decisions
 
-- [Choose who writes checkpoint tests](workflow-adaptation/decisions/01-checkpoint-test-authorship.md)
-- [Choose where the retrospective skill is installed](workflow-adaptation/decisions/02-retrospective-distribution.md)
+None
 
 ## Context
 

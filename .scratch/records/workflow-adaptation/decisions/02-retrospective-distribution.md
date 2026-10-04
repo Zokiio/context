@@ -2,10 +2,16 @@
 type: Decision
 id: a5486e68-20f2-4650-899a-025d944e4bc7
 title: Choose where the retrospective skill is installed
-decisionState: open
+decisionState: resolved
 ---
 
 # Choose where the retrospective skill is installed
+
+## Resolution
+
+2026-10-04: The user chose to install the retrospective skill through `ctx init`, explicit-only like orchestrate. [Ticket 03](../issues/03-retrospective.md) implements it.
+
+## Basis
 
 The [specification](../../../workflow-adaptation/spec.md) proposes an explicitly invoked `retro` skill. The need comes from one manual inspection of two Axpilot sessions, run from the Waymark checkout on 2026-10-04.
 
