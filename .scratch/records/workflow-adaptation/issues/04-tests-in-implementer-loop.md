@@ -3,12 +3,12 @@ type: WorkItem
 id: 9c9dd2cc-6bc4-4bcc-acc0-dc976f01c08a
 title: Write checkpoint tests in the implementer's loop
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Write checkpoint tests in the implementer's loop
 
-Proposed on 2026-10-04 in the workflow adaptation specification. In the Axpilot runs, separate expectation authors produced 4 to 9 times more test lines than production lines.
+Proposed on 2026-10-04 in the workflow adaptation specification. In the Axpilot runs, separate expectation authors produced 4 to 9 times more test lines than production lines. [PR #32](https://github.com/Zokiio/context/pull/32) merged after human review on 2026-10-04.
 
 ## Scope
 
@@ -39,3 +39,11 @@ None
 - [Choose who writes checkpoint tests](../decisions/01-checkpoint-test-authorship.md)
 - [Orchestration design](../../../workflow-improvements/orchestration-design.md)
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-04: Completed after human review and merged publication in [PR #32](https://github.com/Zokiio/context/pull/32), covering T1 through T5. Independent Standards and Specification reviews, their follow-up renewals, and CI passed before merge. The closeout acceptance uses retained verification at the merged head. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/04-tests-in-implementer-loop-closeout-20261004.md)

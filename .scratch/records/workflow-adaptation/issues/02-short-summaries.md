@@ -3,12 +3,12 @@ type: WorkItem
 id: 2655e16f-84ba-420a-a054-39eabc5103d5
 title: Return short check and review summaries
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Return short check and review summaries
 
-Proposed on 2026-10-04 in the workflow adaptation specification. Runner and reviewer reports in the Axpilot runs returned to the orchestrator in full.
+Proposed on 2026-10-04 in the workflow adaptation specification. Runner and reviewer reports in the Axpilot runs returned to the orchestrator in full. [PR #31](https://github.com/Zokiio/context/pull/31) merged after human review on 2026-10-04.
 
 ## Scope
 
@@ -36,3 +36,11 @@ None
 ## Context
 
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-04: Completed after human review and merged publication in [PR #31](https://github.com/Zokiio/context/pull/31), covering S1 through S4. Independent Standards and Specification reviews, their follow-up renewals, and CI passed before merge. The closeout acceptance uses retained verification at the merged head. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[Closeout acceptance](../acceptances/02-short-summaries-closeout-20261004.md)
