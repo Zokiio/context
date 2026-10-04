@@ -23,18 +23,19 @@ Identify the applicable project policy for human review, publication, and accept
 
 ## Prepare independent expectations and scoped assignments
 
-Before production edits, commission an expectation author separate from implementation. Give that author the agreed requirements, checkpoint outcome, approved observable test seam, and relevant constraints. Read the "Prepare independent expectations" section of [Verify a checkpoint independently](VERIFICATION.md) before commissioning checks. Retain the resulting cases, original baseline observations, and source identities.
+Each checkpoint file is its implementing agent's packet. Before dispatch, confirm that it holds:
 
-Use the agent environment's delegation tools. Create implementing and repairing agents with `fork_turns: "none"`, or use an equivalent fresh context boundary without parent conversation. Retain the exact dispatch and supplied text, source paths and digests, worker identity, and starting commit.
+- The outcome, requirements, relevant acceptance criteria, and authoritative source identities.
+- Approved seams, gates, and required evidence.
+- Permitted code paths and the dependency contract.
 
-Each implementation packet supplies actual relevant text for one checkpoint:
+Before production edits, commission an expectation author separate from implementation. Give that author the checkpoint path and digest, starting revision, and relevant constraints. Read the "Prepare independent expectations" section of [Verify a checkpoint independently](VERIFICATION.md) before commissioning checks. Retain the resulting cases, original baseline observations, and source identities.
 
-- Its outcome, requirements, gate demands, and authoritative source identities.
-- Applicable project guidance, permitted code paths, dependency contract, and starting revision.
-- Independently prepared expectations and required evidence.
-- Adopted guidance and relevant findings when the assignment is a repair.
+Use the agent environment's delegation tools. Create implementing and repairing agents with `fork_turns: "none"`, or use an equivalent fresh context boundary without parent conversation. Retain each exact dispatch with its paths and digests, worker identity, and starting or evaluated revision.
 
-Exclude the whole plan, sibling checkpoint files, full ticket-context JSON, and other workers' conversations. A pointer list alone is insufficient. Return focused missing context through the orchestrator instead of asking the worker to reconstruct the plan. A scoped packet proves supplied context, not filesystem isolation.
+Dispatch implementation, repair, runner, and review work by pointer. Each dispatch names the role, the checkpoint path and digest, the starting or evaluated revision, and applicable shared guidance by path and digest. An implementation dispatch also names the prepared expectations, and a repair dispatch names its findings file. The worker reads the checkpoint file itself, so a dispatch does not repeat its text.
+
+Exclude the whole plan, sibling checkpoint files, full ticket-context JSON, and other workers' conversations. Return focused missing context through the orchestrator instead of asking the worker to reconstruct the plan. A scoped packet proves supplied context, not filesystem isolation.
 
 Keep one implementation or repair writer active at a time. Confirm existing assignments before starting another writer. Expectation authors, runners, and reviewers retain separate roles and observation identities.
 
