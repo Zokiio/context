@@ -3,7 +3,7 @@ type: WorkItem
 id: b08c271a-47a9-4d20-9fa5-168c140e2875
 title: Dispatch checkpoint work by pointer
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Dispatch checkpoint work by pointer
