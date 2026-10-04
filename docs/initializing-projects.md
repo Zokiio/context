@@ -74,7 +74,7 @@ Use `$retro` with named Claude Code or Codex sessions of one work item when you 
 
 The skill reads the transcripts and the work item's records, reports measures of the run with their sources, and gives each proposed change one home. The installed `retro/SKILL.md` lists the measures and homes.
 
-It writes only its report, to the project's local evidence location, before you approve a proposal. Approved guidance records its source and scope. The report stays out of Git.
+It writes only its report, beside the project's ignored local evidence, before you approve a proposal. Approved guidance records its source and scope. The report stays out of Git.
 
 ## Maintain the embedded guidance
 

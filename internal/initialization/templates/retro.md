@@ -16,7 +16,7 @@ The report is the only file it writes before approval. Project files, records, a
 
 Use the sessions the user names. Claude Code keeps each session at `~/.claude/projects/<escaped working directory>/<session id>.jsonl`, with its subagents under `<session id>/subagents/`. A session started in a worktree lives under the worktree's escaped path. Codex keeps one rollout file per thread under `~/.codex/sessions/<year>/<month>/<day>/`, and a subagent's session metadata names its parent thread. When you cannot identify a session's transcripts, ask the user for their location.
 
-Read the work item through [task-context]({{.TaskContextLink}}) with explicit project scope. When the authoritative issue lives in an external tracker with no local snapshot, read the issue directly and note that no snapshot exists; do not create one. Then explicitly load the implementation plan, checkpoint files, progress, Decision records, and retained reports, from the plan's links or the directory beside it. Ask the user when you cannot find them.
+Read the work item through [task-context]({{.TaskContextLink}}) with explicit project scope. When the work item's authoritative source is an external tracker with no local snapshot, read it there and note that no snapshot exists; do not create one. Then explicitly load the implementation plan, checkpoint files, progress, Decision records, and retained reports, from the plan's links or the directory beside it. Ask the user when you cannot find them.
 
 Done when every named session maps to its transcripts, subagents included, and you know which records exist.
 
@@ -29,9 +29,9 @@ Report each measure with its source, the file and field or the command that prod
 - **Wall time**: first and last timestamps of each main session. Report waits of more than five minutes for the user separately, as idle time.
 - **Subagents**: Claude Code subagent transcripts, or Codex rollouts whose metadata links them to the main thread.
 - **Token use**: per-message usage summed per session and in total, split into input, cache reads, cache writes, and output. Claude Code writes one line per content block and repeats the message's usage on each, so count each message ID once, from its last line; earlier lines can carry partial output counts. Codex `token_count` events are cumulative, so take each rollout's last total; its input count includes cached input.
-- **Production and test lines**: `git diff --numstat <base> <head>` over the work's base and head commits, taken from its records or the sessions' commits, split into production, test, and documentation lines by the project's test file conventions. When the project documents none, infer them from file names and say so.
+- **Production, test, and documentation lines**: `git diff --numstat <base> <head>` over the work's base and head commits, taken from its records or the sessions' commits, classified by the project's test file conventions and documentation paths. When the project documents none, infer them from file names and say so.
 - **Review findings that led to repairs**: review reports or findings files matched to the repair dispatch or commit that followed.
-- **User interventions**: user-authored messages after the initial request and answers to the agent's questions, excluding tool results, task notifications, and injected context, with what each changed.
+- **User interventions**: user-authored messages after the initial request, and answers to the agent's questions, which arrive as tool results. Exclude other tool results, task notifications, and injected context. Note what each intervention changed.
 
 Done when every measure has a value with its source, or appears as a gap with the reason it is unavailable.
 
