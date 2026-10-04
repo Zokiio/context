@@ -61,7 +61,7 @@ The installed task-context and recovery-notes skills use the saved binding. Veri
 
 ## Invoke checkpoint orchestration explicitly
 
-Use `$orchestrate` for a named work item when you want the agent environment to coordinate checkpoint implementation, independent expectations, checks, reviews, and corrections. Installation alone does not invoke this workflow. Init keeps its metadata explicit-only and leaves routing, hooks, and the normal implementation workflow under the project's control.
+Use `$orchestrate` for a named work item when you want the agent environment to coordinate test-first checkpoint implementation, checks, reviews, and corrections. Installation alone does not invoke this workflow. Init keeps its metadata explicit-only and leaves routing, hooks, and the normal implementation workflow under the project's control.
 
 The orchestrator holds the whole task and dispatches fresh implementing and repairing agents by pointer to one checkpoint file, with one writer active at a time. Required testing and Standards and Specification review procedures ship in `orchestrate/VERIFICATION.md`. Target projects need no separate TDD or code-review skill, trial documents, or Waymark source checkout. Links resolve from the configured skills and docs directories, and reader commands use the supplied binary and target project binding.
 

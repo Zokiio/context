@@ -3,7 +3,7 @@ type: WorkItem
 id: 9c9dd2cc-6bc4-4bcc-acc0-dc976f01c08a
 title: Write checkpoint tests in the implementer's loop
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Write checkpoint tests in the implementer's loop
