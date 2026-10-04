@@ -1,6 +1,7 @@
 ---
 name: retro
 description: Run an explicitly requested retrospective of one work item's agent sessions, measure their cost, and propose environment improvements for approval.
+disable-model-invocation: true
 ---
 
 {{if .Development}}<!-- Generated from internal/initialization/templates/retro.md. Run go generate ./internal/initialization after editing the template. -->

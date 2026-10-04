@@ -31,7 +31,7 @@ Init reports each file it creates, preserves, skips, or appends to, plus the bin
 
 - `task-context/SKILL.md`, `recovery-notes/SKILL.md`, and `recovery-notes/PROFILE.md` under the selected skills directory.
 - `orchestrate/SKILL.md`, its required `VERIFICATION.md` reference, and explicit-only `agents/openai.yaml` under that skills directory.
-- `retro/SKILL.md` and its explicit-only `agents/openai.yaml` under that skills directory.
+- `retro/SKILL.md` under that skills directory. Its frontmatter disables Claude Code's automatic invocation, and its `agents/openai.yaml` disables Codex's.
 - `cli.md`, `acceptance.md`, and `tracker.md` under the selected docs directory.
 - `project.md` under the records directory, with a new UUID, the supplied title, empty commitments, and no decisions.
 - `ctx-version.txt` under the local directory, containing the running binary's exact version output.
