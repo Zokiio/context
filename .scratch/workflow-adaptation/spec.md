@@ -10,7 +10,7 @@ On 2026-10-04, two Axpilot sessions ran the installed orchestrate skill in paral
 | --- | --- | --- |
 | Time to a verified result | 38 minutes | About 4 hours, then 2 more for a design change |
 | Subagents | 18 | 52 |
-| Orchestrator input tokens, mostly cache reads | 103M | 161M |
+| Orchestrator input tokens, mostly cache reads | 52M | 74M |
 | Production lines | +62 −27 | +1,201 −59 |
 | Test lines | +551 −63 | +5,311 |
 | Outcome | Merged as PRs #270 and #271 | 19 local commits awaiting the user |
@@ -18,7 +18,7 @@ On 2026-10-04, two Axpilot sessions ran the installed orchestrate skill in paral
 - **Test volume.** Both orchestrators told their expectation authors to write new test files and leave existing ones untouched. Each new file built its own harness. In #264, `session_attention_test.go` has 679 lines for three tests, and two packages each implement the same permission-admission fake. Standards reviews passed this code.
 - **Orchestrator context.** #264 wrote 554 KB of dispatch packets for 20 KB of checkpoint files. Its checkpoint 4 implementer packet was five times the size of its checkpoint file. Runner and reviewer reports returned to the orchestrator in full.
 - **Useful gates.** Reviews found two real focus defects in #264, and the combined-result verifier found a stale design document in #254. The user's first look at #264, a demo after 15 commits, removed the per-row action buttons that every reviewer had verified against the specification.
-- **Unmeasured cost.** Nothing in the workflow reported these numbers. They came from a manual inspection of the transcripts, which also found a #254 doc repair that was never re-reviewed and records split across three locations. The [trial conclusions](../workflow-improvements/orchestration-conclusions.md) already list review effort as unmeasured.
+- **Unmeasured cost.** Nothing in the workflow reported these numbers. Token counts take each message once; Claude Code transcripts repeat a message's usage on every content line. They came from a manual inspection of the transcripts, which also found a #254 doc repair that was never re-reviewed and records split across three locations. The [trial conclusions](../workflow-improvements/orchestration-conclusions.md) already list review effort as unmeasured.
 
 ## What Waymark supplies
 
