@@ -3,7 +3,7 @@ type: WorkItem
 id: 2f0e308e-a049-4719-bbeb-614c5ac93ba8
 title: Ask how an approved retrospective change ships
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Ask how an approved retrospective change ships
@@ -35,3 +35,11 @@ None
 ## Context
 
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #43](https://github.com/Zokiio/context/pull/43) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[05-retro-shipping-route-20261006.md](../acceptances/05-retro-shipping-route-20261006.md)
