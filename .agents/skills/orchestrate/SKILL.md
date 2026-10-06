@@ -44,7 +44,7 @@ Keep one implementation or repair writer active at a time. Confirm existing assi
 
 ## Check and correct an identified revision
 
-Settle an implementing or repairing agent's open question about user-visible behavior before commissioning the runner and reviews. Decide it from the requirements, or ask the user under the project's review policy, and make any change the decision requires part of the candidate.
+Decide an implementing or repairing agent's open question about user-visible behavior before commissioning the runner and reviews. Decide it from the requirements, or ask the user under the project's review policy, and make any change the decision requires part of the candidate before you commit it.
 
 Commit the scoped candidate and its tests. Pin the target and review base as the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) describes.
 
