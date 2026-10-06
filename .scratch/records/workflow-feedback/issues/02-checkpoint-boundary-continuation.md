@@ -3,7 +3,7 @@ type: WorkItem
 id: 041a888f-345e-4a14-aee5-88579b649eef
 title: Continue orchestration from records at checkpoint boundaries
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Continue orchestration from records at checkpoint boundaries

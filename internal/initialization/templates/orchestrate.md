@@ -9,7 +9,7 @@ disable-model-invocation: true
 {{end -}}
 # Orchestrate a work item's checkpoints
 
-Use this skill when the user explicitly requests checkpoint orchestration for a named work item or approves a plan that invokes it. The orchestrator retains the whole task. Implementing and repairing agents receive fresh context for one checkpoint.
+Use this skill when the user explicitly requests checkpoint orchestration for a named work item or approves a plan that invokes it. The orchestrator retains the whole task in its plan, progress, dispatch, and evidence records, and continues in a fresh session at each checkpoint boundary. Implementing and repairing agents receive fresh context for one checkpoint.
 
 This is an opt-in workflow in the existing agent environment. The ctx readers supply records and evaluations. They do not route tasks, supervise execution, or manage implementation claims.
 
@@ -64,6 +64,10 @@ If requirements or dependency contracts change, assess affected checkpoints and 
 After required checks and both review axes pass on the current revision, present the outcome, base and target commits, changed files, runnable example, evidence, corrections, and unresolved concerns.
 
 Where project policy requires human review before advancement, wait for the actual response to that identified candidate before dependent implementation. Retain the response, source, actor, scope, and reviewed revision. An agent verdict cannot supply human approval. Reuse prior authorization within its actual scope. Apply authorized corrections and renew affected verification.
+
+## Continue at a checkpoint boundary
+
+After a checkpoint's gates and any required human gate pass, continue the work in a fresh session. First confirm that the plan, progress, dispatch log, evidence, and authorization on disk hold what the next checkpoint needs, and record the next step in progress. Start the session with the environment's session tool when it has one; otherwise give the user the prompt that invokes this skill for the same work item. The fresh session establishes its basis from those records, as the first section describes.
 
 ## Verify the whole result
 
