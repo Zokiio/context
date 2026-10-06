@@ -76,4 +76,4 @@ Checkpoint completion records progress. Whole-work acceptance requires evidence 
 
 ## Coordinate sibling orchestrations
 
-When the user runs orchestrations of separate work items in parallel, each runs in its own session under this skill, with its own single writer. Run a session that coordinates them, such as one passing a shared screen or device between siblings, as a fresh session. Keep it to coordination: implementation, review, and close-out work stay in the sibling sessions.
+When the user runs orchestrations of separate work items in parallel, each runs in its own session under this skill, with its own single writer. Run any session that coordinates them as a fresh session, for example one passing a shared screen or device between siblings. Keep it to coordination: implementation, review, and close-out work stay in the sibling sessions.
