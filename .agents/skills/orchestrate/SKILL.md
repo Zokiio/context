@@ -44,6 +44,8 @@ Keep one implementation or repair writer active at a time. Confirm existing assi
 
 ## Check and correct an identified revision
 
+Settle an implementing or repairing agent's open question about user-visible behavior before commissioning the runner and reviews. Decide it from the requirements, or ask the user under the project's review policy, and make any change the decision requires part of the candidate.
+
 Commit the scoped candidate and its tests. Pin the target and review base as the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) describes.
 
 Commission an independent runner and separate Standards and Specification reviewers on that identified revision. Read the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) for their complete briefs. Reviewers receive neither implementation reasoning nor the other axis's report. Retain each evidence file and pass it by path to acceptance. A repair dispatch reaches failed evidence through its findings file. A different HEAD or an uncommitted tree cannot establish a gate on the candidate.
