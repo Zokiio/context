@@ -44,6 +44,8 @@ None
 
 2026-10-04: Completed after human review and merged publication in [PR #32](https://github.com/Zokiio/context/pull/32), covering T1 through T5. Independent Standards and Specification reviews, their follow-up renewals, and CI passed before merge. The closeout acceptance uses retained verification at the merged head. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
 
+2026-10-06: Later Axpilot runs supply the measures the specification named. #272, #274, #275, and #266 are based on Axpilot PR #276, which committed Waymark 541e468. Their test-to-production ratios for added lines were 5.6:1, 5.6:1, 2.6:1, and 2.7:1, against 9:1 for #254 and 4.4:1 for #264. In the #266 and #275 batch, the native demo was the only gate that caught two defects. In #266, tests at the component seam passed an unavailable provider straight to a "not available" card that the app's own provider selection could never show. The #275 demo exposed a stale generated binding that the #274 pull request had merged after its runner, both review axes, the combined verifier, and CI passed. Axpilot answered with its own guidance on reaching user-visible states through the real selection path, and with a CI follow-up for generated bindings. Observation only; no Waymark change is recorded.
+
 ## Acceptance
 
 [Closeout acceptance](../acceptances/04-tests-in-implementer-loop-closeout-20261004.md)
