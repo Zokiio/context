@@ -2,7 +2,7 @@
 type: WorkItem
 id: c8d5451e-7101-4ca4-ae14-5bc06b54c544
 title: Record each dispatch in one step and read packets by section
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -46,6 +46,5 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
 - [Dispatch checkpoint work by pointer](../../workflow-adaptation/issues/01-dispatch-by-pointer.md)
 - [Domain glossary](../../../../CONTEXT.md)

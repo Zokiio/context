@@ -2,7 +2,7 @@
 type: WorkItem
 id: 041a888f-345e-4a14-aee5-88579b649eef
 title: Continue orchestration from records at checkpoint boundaries
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -27,14 +27,14 @@ The #274 retrospective proposed one work item per fresh session, and #275 and #2
 
 ## Scope
 
-Make checkpoint boundaries context reset points in the orchestrate skill. After a checkpoint's gates and any human gate pass, the orchestrator compacts its context or continues in a fresh session. It works from the plan, progress, dispatch records, evidence, and authorization on disk, through the recovery-notes procedure. The skill currently says the orchestrator retains the whole task. Restate that so the retained records hold the task rather than one conversation, consistent with orchestration design choice 13 and the glossary. Gates, review axes, and human review policy are unchanged.
+Make checkpoint boundaries hand-off points in the orchestrate skill. After a checkpoint's gates and any human gate pass, the orchestrator continues the work in a fresh session. It starts that session with the environment's session tool when one exists, and otherwise gives the user the prompt that starts it. The new session rebuilds its basis from the plan, progress, dispatch records, evidence, and authorization on disk, as the skill's first section already describes. The skill currently says the orchestrator retains the whole task. Restate that so the retained records hold the task rather than one conversation, consistent with orchestration design choice 13 and the glossary. Gates, review axes, and human review policy are unchanged.
 
-Triage chooses between compaction and a fresh session. A fresh session works in every agent environment. Compaction depends on the harness and keeps a summary the orchestrator did not write to disk.
+On 2026-10-06 the user chose a fresh session over compaction. A fresh session works in every agent environment. Compaction depends on the harness and keeps a summary the orchestrator did not write to disk.
 
 ## Acceptance criteria
 
-- B1: The orchestrate skill names each checkpoint boundary, after the checkpoint's gates and any human gate pass, as a point where the orchestrator resets its context by the chosen method.
-- B2: Before the reset, the orchestrator confirms that the plan, progress, dispatch records, evidence, and authorization on disk hold what the next checkpoint needs. The continuing context resumes from those records, not from conversation history.
+- B1: The orchestrate skill names each checkpoint boundary, after the checkpoint's gates and any human gate pass, as the point where the orchestrator continues the work in a fresh session.
+- B2: Before the hand-off, the orchestrator confirms that the plan, progress, dispatch records, evidence, and authorization on disk hold what the next checkpoint needs. The fresh session resumes from those records, not from conversation history.
 - B3: The orchestrate skill and the initialization guide state that the retained records hold the whole task. The orchestrator role keeps its coordinating responsibility.
 - B4: The canonical templates and generated development copies agree, and `go test ./internal/initialization ./internal/cli` passes.
 
@@ -48,8 +48,6 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
-- [Recovery notes template](../../../../internal/initialization/templates/recovery-notes.md)
 - [Orchestration design](../../../workflow-improvements/orchestration-design.md)
 - [Dispatch checkpoint work by pointer](../../workflow-adaptation/issues/01-dispatch-by-pointer.md)
 - [Return short check and review summaries](../../workflow-adaptation/issues/02-short-summaries.md)
