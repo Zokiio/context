@@ -3,7 +3,7 @@ type: WorkItem
 id: 367f867f-b810-4d0e-a643-132eba00ab96
 title: Name evidence files so agent harnesses accept them
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Name evidence files so agent harnesses accept them
