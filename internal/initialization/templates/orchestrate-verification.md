@@ -5,6 +5,8 @@
 
 Use these briefs for the implementing agent, runner, two reviewers, and combined-result verifier. They provide the required procedures without another installed testing or review skill.
 
+Each agent writes its evidence to the path its dispatch names. When the harness refuses that write, the agent returns the full content as text and says so. The orchestrator saves that text unchanged at the named path and records the fallback with that dispatch.
+
 ## Write tests in the implementation loop
 
 The implementing or repairing agent writes the checkpoint's tests itself, at the approved test seams in its checkpoint file. Report a needed seam that the file lacks to the orchestrator before writing tests that depend on it.
@@ -31,9 +33,9 @@ git log <base-sha>..<target-sha> --oneline
 
 Dispatch the independent runner by pointer at the target SHA, with environment constraints. Require the runner to retain each exact command or procedure, result, exit status, and output in its evidence file. Mark checks that cannot run as unverified.
 
-Run the Standards and Specification reviews in separate fresh contexts, in parallel when the environment supports it. Both inspect the complete identified diff and commit list, including tests. Supply relevant rules and requirements by path and digest. Keep implementation reasoning and the other review report out of each dispatch.
+Run the Standards and Specification reviews in separate fresh contexts, in parallel when the environment supports it. Both inspect the complete identified diff and commit list, including tests. Supply relevant rules and requirements by path and digest. Keep implementation reasoning and the other review's evidence out of each dispatch.
 
-Require the runner, each reviewer, and the combined-result verifier to write its full findings to the new evidence file its dispatch names, in the project's local evidence location. The evidence file records the observer, time, environment, source identities, and evaluated revision. Each returns a summary of about 400 words or fewer. The summary states the verdict and evaluated revision, cites the criterion identifier or Standards rule source for each finding, and names the evidence file.
+Require the runner, each reviewer, and the combined-result verifier to write its full output to the new evidence file its dispatch names, in the project's local evidence location. The evidence file records the observer, time, environment, source identities, and evaluated revision. Each returns a summary of about 400 words or fewer. The summary states the verdict and evaluated revision, cites the criterion identifier or Standards rule source for each finding, and names the evidence file.
 
 ### Standards review
 
