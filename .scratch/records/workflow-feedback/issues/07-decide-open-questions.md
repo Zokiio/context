@@ -3,7 +3,7 @@ type: WorkItem
 id: 5cf0853a-a513-4a82-ba90-bcf685b4bb75
 title: Decide an implementer's open questions before review
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Decide an implementer's open questions before review
@@ -37,3 +37,11 @@ None
 ## Context
 
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #38](https://github.com/Zokiio/context/pull/38) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[07-decide-open-questions-20261006.md](../acceptances/07-decide-open-questions-20261006.md)
