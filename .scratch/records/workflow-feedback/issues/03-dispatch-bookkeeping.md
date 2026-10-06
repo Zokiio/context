@@ -3,7 +3,7 @@ type: WorkItem
 id: c8d5451e-7101-4ca4-ae14-5bc06b54c544
 title: Record each dispatch in one step and read packets by section
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # Record each dispatch in one step and read packets by section
@@ -48,3 +48,11 @@ None
 
 - [Dispatch checkpoint work by pointer](../../workflow-adaptation/issues/01-dispatch-by-pointer.md)
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #40](https://github.com/Zokiio/context/pull/40) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[03-dispatch-bookkeeping-20261006.md](../acceptances/03-dispatch-bookkeeping-20261006.md)

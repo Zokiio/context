@@ -4,7 +4,7 @@
 
 Use these briefs for the implementing agent, runner, two reviewers, and combined-result verifier. They provide the required procedures without another installed testing or review skill.
 
-Each agent writes its evidence to the path its dispatch names. When the harness refuses that write, the agent returns the full content as text and says so. The orchestrator saves that text unchanged at the named path and records the fallback with that dispatch.
+Each agent writes its evidence to the path its dispatch names. When the harness refuses that write, the agent returns the full content as text and says so. The orchestrator saves that text unchanged at the named path and records the fallback in that dispatch's log entry.
 
 ## Write tests in the implementation loop
 
