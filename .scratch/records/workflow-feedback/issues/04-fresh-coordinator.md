@@ -3,7 +3,7 @@ type: WorkItem
 id: c7754bb9-7c40-4769-b831-12a826bac4cd
 title: Start a fresh coordinator for sibling orchestrations
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Start a fresh coordinator for sibling orchestrations
