@@ -24,6 +24,8 @@ None
 
 ## Commitment notes
 
+2026-10-06: Feedback on orchestrate and retro from the Axpilot retrospectives is recorded as seven WorkItems under `workflow-feedback/issues/`, awaiting triage. None is selected.
+
 2026-10-04: The workflow adaptation and the orchestrate invocation fix merged through PRs #29 to #34. No new implementation commitment is selected here.
 
 2026-10-04: The user selected a separate fix for orchestrate's missing Claude Code explicit-invocation field, found while reviewing the retrospective skill.
