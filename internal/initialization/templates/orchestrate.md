@@ -51,6 +51,8 @@ Commission an independent runner and separate Standards and Specification review
 
 Unmet requirements, documented constraint violations, and demonstrated defects block advancement. Investigate uncertain correctness concerns. Keep preferences as proposals until adopted. An unavailable required check remains unverified. Continue independent work and escalate what is needed to resolve the gap.
 
+Ground an error path, fallback, or race before it becomes a checkpoint requirement, a repair finding, or a proposal to the user. Cite the dependency source that makes it reachable and the owning service behavior that makes it visible. Record a case that lacks either citation as an observation.
+
 For a grounded finding, retain the original failed evidence and dispatch an in-scope repair in a fresh scoped context. Commit the correction, rerun affected checks, and renew affected review axes on the new revision. Include required visual and environment checks. Diagnose or escalate a repair loop that stops producing new evidence or reducing known failures.
 
 If requirements or dependency contracts change, assess affected checkpoints and existing authorization. Preserve earlier evidence. Resolve needed choices, refresh scoped context, and renew affected tests and verification. Split or reorder checkpoints only within agreed outcomes and dependencies, and record the reason.

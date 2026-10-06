@@ -3,7 +3,7 @@ type: WorkItem
 id: 6b4b8cfd-db3f-46d6-923e-115317a5af36
 title: Check that a requirement is reachable before adopting it
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Check that a requirement is reachable before adopting it
