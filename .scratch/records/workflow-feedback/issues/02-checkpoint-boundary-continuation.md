@@ -3,7 +3,7 @@ type: WorkItem
 id: 041a888f-345e-4a14-aee5-88579b649eef
 title: Continue orchestration from records at checkpoint boundaries
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # Continue orchestration from records at checkpoint boundaries
@@ -52,3 +52,11 @@ None
 - [Dispatch checkpoint work by pointer](../../workflow-adaptation/issues/01-dispatch-by-pointer.md)
 - [Return short check and review summaries](../../workflow-adaptation/issues/02-short-summaries.md)
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #41](https://github.com/Zokiio/context/pull/41) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[02-checkpoint-boundary-continuation-20261006.md](../acceptances/02-checkpoint-boundary-continuation-20261006.md)
