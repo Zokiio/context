@@ -59,4 +59,4 @@ Write the report beside the project's local evidence, in the ignored location th
 
 When you ask the user to approve project guidance or an automated check, ask in the same question how the change ships: on the work item's open pull request, or in a pull request of its own.
 
-After the user approves a proposal, apply it within the approved scope, and publish it only by the route the user chose, within the project's publication policy. Approved guidance records its source (this retrospective, its work item, and date) and its scope (the work or paths it governs). Unapproved proposals stay in the report.
+After the user approves a proposal, apply it within the approved scope. Publish an approved guidance or check change only by the route the user chose, within the project's publication policy. Approved guidance records its source (this retrospective, its work item, and date) and its scope (the work or paths it governs). Unapproved proposals stay in the report.
