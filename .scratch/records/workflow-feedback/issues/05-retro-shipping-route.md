@@ -3,7 +3,7 @@ type: WorkItem
 id: 2f0e308e-a049-4719-bbeb-614c5ac93ba8
 title: Ask how an approved retrospective change ships
 triage: ready-for-agent
-execution: unstarted
+execution: in-progress
 ---
 
 # Ask how an approved retrospective change ships
