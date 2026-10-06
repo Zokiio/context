@@ -30,7 +30,7 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Commitment notes
 
-2026-10-06: The user selected all seven workflow feedback WorkItems. Checkpoint boundaries hand off to a fresh session rather than compacting, and the coordinator guidance goes into the orchestrate skill.
+2026-10-06: The user selected all seven workflow feedback WorkItems and made the choices that tickets 02 and 04 record.
 
 2026-10-06: Feedback on orchestrate and retro from the Axpilot retrospectives is recorded as seven WorkItems under `workflow-feedback/issues/`, awaiting triage. None is selected.
 
