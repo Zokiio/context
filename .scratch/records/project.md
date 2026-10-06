@@ -20,9 +20,17 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
-None
+- [Check that a requirement is reachable before adopting it](workflow-feedback/issues/01-reachable-requirements.md)
+- [Continue orchestration from records at checkpoint boundaries](workflow-feedback/issues/02-checkpoint-boundary-continuation.md)
+- [Record each dispatch in one step and read packets by section](workflow-feedback/issues/03-dispatch-bookkeeping.md)
+- [Start a fresh coordinator for sibling orchestrations](workflow-feedback/issues/04-fresh-coordinator.md)
+- [Ask how an approved retrospective change ships](workflow-feedback/issues/05-retro-shipping-route.md)
+- [Name evidence files so agent harnesses accept them](workflow-feedback/issues/06-evidence-file-name.md)
+- [Decide an implementer's open questions before review](workflow-feedback/issues/07-decide-open-questions.md)
 
 ## Commitment notes
+
+2026-10-06: The user selected all seven workflow feedback WorkItems. Checkpoint boundaries hand off to a fresh session rather than compacting, and the coordinator guidance goes into the orchestrate skill.
 
 2026-10-06: Feedback on orchestrate and retro from the Axpilot retrospectives is recorded as seven WorkItems under `workflow-feedback/issues/`, awaiting triage. None is selected.
 

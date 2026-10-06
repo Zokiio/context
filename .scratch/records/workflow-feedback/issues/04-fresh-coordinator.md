@@ -2,7 +2,7 @@
 type: WorkItem
 id: c7754bb9-7c40-4769-b831-12a826bac4cd
 title: Start a fresh coordinator for sibling orchestrations
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -20,13 +20,13 @@ One session launched the #266 and #275 orchestrations, each for its own work ite
 
 ## Scope
 
-Add guidance for a session that coordinates sibling orchestrations of separate work items. Start it fresh, and keep implementation, review, and close-out work out of it. Each sibling still follows the orchestrate skill with one active writer. Implementation claims, routing, and parallel writers on one work item stay outside scope.
+Add guidance to the orchestrate skill for a session that coordinates sibling orchestrations of separate work items. Start it fresh, and keep implementation, review, and close-out work out of it. Each sibling still follows the orchestrate skill with one active writer. Implementation claims, routing, and parallel writers on one work item stay outside scope.
 
-Triage decides whether this guidance belongs in the installed orchestrate skill or the initialization guide, or waits for another parallel batch.
+On 2026-10-06 the user chose the orchestrate skill as the home for this guidance. In the observed batch, the coordinator was itself an orchestrator session with the skill loaded.
 
 ## Acceptance criteria
 
-- P1: Waymark guidance for coordinating sibling orchestrations says to start the coordinating session fresh and to keep implementation, review, and close-out work out of it.
+- P1: The orchestrate skill says to start a session that coordinates sibling orchestrations fresh, and to keep implementation, review, and close-out work out of it.
 - P2: The guidance keeps each sibling under the orchestrate skill with one active writer, and adds no implementation claims or routing.
 - P3: The canonical templates and generated development copies agree, and `go test ./internal/initialization ./internal/cli` passes.
 
@@ -40,7 +40,5 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
-- [Initializing projects](../../../../docs/initializing-projects.md)
 - [Orchestration design](../../../workflow-improvements/orchestration-design.md)
 - [Domain glossary](../../../../CONTEXT.md)

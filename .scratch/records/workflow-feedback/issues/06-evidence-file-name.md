@@ -2,7 +2,7 @@
 type: WorkItem
 id: 367f867f-b810-4d0e-a643-132eba00ab96
 title: Name evidence files so agent harnesses accept them
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -36,6 +36,4 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
-- [Verification template](../../../../internal/initialization/templates/orchestrate-verification.md)
 - [Domain glossary](../../../../CONTEXT.md)

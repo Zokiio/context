@@ -2,7 +2,7 @@
 type: WorkItem
 id: 6b4b8cfd-db3f-46d6-923e-115317a5af36
 title: Check that a requirement is reachable before adopting it
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -38,5 +38,4 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
 - [Domain glossary](../../../../CONTEXT.md)

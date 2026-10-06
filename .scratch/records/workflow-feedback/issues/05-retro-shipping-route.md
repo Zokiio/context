@@ -2,7 +2,7 @@
 type: WorkItem
 id: 2f0e308e-a049-4719-bbeb-614c5ac93ba8
 title: Ask how an approved retrospective change ships
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -34,5 +34,4 @@ None
 
 ## Context
 
-- [Retrospective template](../../../../internal/initialization/templates/retro.md)
 - [Domain glossary](../../../../CONTEXT.md)

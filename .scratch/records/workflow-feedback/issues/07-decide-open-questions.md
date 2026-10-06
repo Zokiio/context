@@ -2,7 +2,7 @@
 type: WorkItem
 id: 5cf0853a-a513-4a82-ba90-bcf685b4bb75
 title: Decide an implementer's open questions before review
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -36,5 +36,4 @@ None
 
 ## Context
 
-- [Orchestrate template](../../../../internal/initialization/templates/orchestrate.md)
 - [Domain glossary](../../../../CONTEXT.md)
