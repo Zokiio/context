@@ -3,7 +3,7 @@ type: WorkItem
 id: 6b4b8cfd-db3f-46d6-923e-115317a5af36
 title: Check that a requirement is reachable before adopting it
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Check that a requirement is reachable before adopting it
@@ -39,3 +39,11 @@ None
 ## Context
 
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #37](https://github.com/Zokiio/context/pull/37) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[01-reachable-requirements-20261006.md](../acceptances/01-reachable-requirements-20261006.md)
