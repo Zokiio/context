@@ -3,7 +3,7 @@ type: WorkItem
 id: c7754bb9-7c40-4769-b831-12a826bac4cd
 title: Start a fresh coordinator for sibling orchestrations
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 # Start a fresh coordinator for sibling orchestrations
@@ -42,3 +42,11 @@ None
 
 - [Orchestration design](../../../workflow-improvements/orchestration-design.md)
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #42](https://github.com/Zokiio/context/pull/42) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[04-fresh-coordinator-20261006.md](../acceptances/04-fresh-coordinator-20261006.md)

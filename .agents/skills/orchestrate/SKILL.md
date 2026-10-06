@@ -73,3 +73,7 @@ After a checkpoint's gates and any required human gate pass, continue the work i
 Commission a fresh combined-result verifier that did not implement any checkpoint. Supply the full ticket, specification, final revision, and integration obligations. The verifier derives independent combined observations and identifies remaining criteria. Read the "Run checks and both review axes" section of [Verify a checkpoint independently](VERIFICATION.md) for the evidence file and summary it returns, and pass that evidence file to acceptance. Prepare these observations before final human review when that work is independent of the review.
 
 Checkpoint completion records progress. Whole-work acceptance requires evidence for every criterion under [Record acceptance](../../../docs/agents/acceptance.md). Snapshot selected sources and explicitly loaded checkpoint requirements. Keep acceptance, human approval, publication, and tracker updates separately attributed under project policy. A successful merge is not acceptance. Report remaining uncertainty and unrelated diagnostics separately.
+
+## Coordinate sibling orchestrations
+
+When the user runs orchestrations of separate work items in parallel, each runs in its own session under this skill, with its own single writer. Run any session that coordinates them as a fresh session, for example one passing a shared screen or device between siblings. Keep it to coordination: implementation, review, and close-out work stay in the sibling sessions.
