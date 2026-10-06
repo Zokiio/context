@@ -3,7 +3,7 @@ type: WorkItem
 id: 367f867f-b810-4d0e-a643-132eba00ab96
 title: Name evidence files so agent harnesses accept them
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 # Name evidence files so agent harnesses accept them
@@ -37,3 +37,11 @@ None
 ## Context
 
 - [Domain glossary](../../../../CONTEXT.md)
+
+## Comments
+
+2026-10-06: Completed in [PR #39](https://github.com/Zokiio/context/pull/39) after independent Standards and Specification reviews and their renewals passed. Evidence and the current Acceptance record remain local under the tracker conventions; a fresh checkout reports acceptance unknown until they are restored together.
+
+## Acceptance
+
+[06-evidence-file-name-20261006.md](../acceptances/06-evidence-file-name-20261006.md)
