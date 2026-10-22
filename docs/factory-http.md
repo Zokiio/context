@@ -24,7 +24,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/users/{id}/tokens` | POST `IssueTokenRequest`; plaintext appears only in the original response |
 | `/v1/tokens/{id}/revoke` | POST `RevokeTokenRequest` |
 | `/v1/projects` | GET accessible projects, POST `RegisterProjectRequest` |
-| `/v1/projects/{id}/orientation` | GET current reader result and project policy |
+| `/v1/projects/{id}/orientation` | GET current reader result, project policy, and advisory `criterionSignals` when a decision model is configured |
 | `/v1/projects/{id}/capabilities` | GET caller's capabilities |
 | `/v1/projects/{id}/grants` | GET project grants for an authorized administrator |
 | `/v1/projects/{id}/grants/{user}` | PUT `GrantProjectRequest` |
@@ -37,7 +37,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |
 | `/v1/worker/claims` | POST `WorkerClaimRequest` |
-| `/v1/worker/heartbeat` | POST `HeartbeatRequest` with exact attempt and dispatch IDs |
+| `/v1/worker/heartbeat` | POST `HeartbeatRequest` with exact attempt and dispatch IDs and an optional `progress` note |
 | `/v1/worker/reports` | POST `WorkerReportRequest` with exact attempt and dispatch IDs |
 
 Job queries support `projectId`, `status`, `after`, and a `limit` between 1 and 500. Submission performs admission and acquires the claim in the core. There is no separate preview command that silently starts work. The browser first displays live orientation and administrator-owned policy, then explicitly submits. Submitters cannot remove required checks or supply arbitrary command text.

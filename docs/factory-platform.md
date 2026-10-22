@@ -2,6 +2,8 @@
 
 Use this guide to start the service, produce a real candidate commit, verify it with a separate worker, and record acceptance. The example uses a temporary Git repository and the bundled offline fixture. It exercises the platform without a model provider or a target-project pilot.
 
+For a single person, [solo mode](#run-everything-for-one-person) replaces the user, token, and grant setup below with one command, and [real coding agents](#connect-claude-code-or-codex) replace the fixture.
+
 Use Go 1.25 or later, Git, Python 3, and a Unix host for process workers. Keep the following commands in one shell. Reserve port `8741` for this service, or change `wm_factory_url` and `--listen` together.
 
 ## Build and bootstrap the service
@@ -261,15 +263,61 @@ For a definitively failed job, request `jobs repair` with the current version. T
 
 For an interrupted acceptance publication, repeat the exact acceptance request. The retained publication plan reconciles existing bytes before completing the decision. Once publication begins, cancellation is refused because some acceptance files may already exist. Reconcile that publication before treating the job as settled.
 
-## Connect an existing coding-agent command
+## Connect Claude Code or Codex
 
-Run workers on the service's Unix host, where the assigned workspace paths exist. Register a trusted installed executable through `executors register --program`, repeated `--arg` flags, or a `--command-file` containing a JSON argv array. Register required executable checks through `checks register`. Project policy selects permitted executors and mandatory checks.
+Run workers on the service's Unix host, where the assigned workspace paths exist. `ctx factory agent` is an executor adapter for native coding agents. It reads the assignment on standard input and gives the agent the rules, the protected paths, and every admitted context source with its digest and inclusion reasons. It then commits what the agent left in the worktree as the candidate. The agent never commits, so the candidate is exactly the agent's change. A run that changes nothing or reports an error fails without committing.
 
-Each command receives the assignment JSON on standard input. `CTX_FACTORY_ASSIGNMENT` names its retained assignment file, `CTX_FACTORY_CONTEXT` names the admitted source snapshot, and `CTX_FACTORY_ATTEMPT` identifies the attempt. Use an adapter that understands this input or translates it into the existing agent's invocation. The adapter must leave a clean candidate commit in its assigned worktree.
+Register an agent through a JSON argv file:
+
+```sh
+printf '["%s", "factory", "agent", "--harness", "claude", "--model", "sonnet", "--max-budget-usd", "1", "--allow-tool", "Bash(go test:*)"]\n' "$wm_ctx" >"$wm_factory_dir/claude.json"
+wm_admin executors register --key claude-sonnet --name "Claude Code" \
+	--command-file "$wm_factory_dir/claude.json"
+```
+
+Claude Code runs in print mode with `acceptEdits`, so it can edit files in the worktree but is denied any tool the profile does not allow. `--max-budget-usd` caps one attempt's spending. Codex (`--harness codex`) runs in its `workspace-write` sandbox. The attempt log records the agent's session ID, turns, cost, and final message, and the commit message names the job, attempt, harness, model, and session.
+
+Run the worker with a normal login environment. A worker started from inside another agent session inherits that session's variables. Register required executable checks through `checks register`. Project policy selects permitted executors and mandatory checks.
+
+Any other executable can still serve as an executor. Each command receives the assignment JSON on standard input. `CTX_FACTORY_ASSIGNMENT` names its retained assignment file, `CTX_FACTORY_CONTEXT` names the admitted source snapshot, and `CTX_FACTORY_ATTEMPT` identifies the attempt. The command must leave a clean candidate commit in its assigned worktree. It may append one-line notes, such as a finished checkpoint, to the file named by `CTX_FACTORY_PROGRESS`. The worker sends the latest note with each heartbeat, and the job history records each change as a `worker_progress` event. Progress is an observation for operators, not evidence.
 
 Waymark passes literal argv without a shell. It retains a supervised command identity, actual exit observations, bounded logs, and the candidate commit. The identity does not prove a provider account or native agent session. Executables retain the worker process's operating-system permissions, environment, filesystem access, and network access. Configure those permissions for the trusted tool you intend to run.
 
-The bundled fixture proves only the offline outcomes it executes. This guide requires no engine installation, paid evaluation, provider-backed model run, publication, or deployment.
+## Protect the tests that verification runs
+
+Verification runs required checks in a clean worktree at the candidate, so a check such as `go test ./...` runs the candidate's own test files. Without protection, an implementer that weakens or deletes a test still passes. Name the tests and expectations the implementer may not change when registering the project:
+
+```sh
+wm_admin projects register ... --protect '**/*_test.go' --protect testdata/
+```
+
+Patterns are repository-relative. `**` matches any number of directories, and a trailing `/` protects a whole directory. Admission freezes the patterns. When an implementation candidate adds, edits, renames, or deletes a protected file, the job fails before verification is queued. The job history records a `protected_paths_changed` event with the files, the attempt keeps the rejected candidate for inspection, and a repair restarts from the admitted base. Protect check scripts and fixtures as well as tests: anything a check reads can change its result.
+
+## Flag vague criteria before admission
+
+A local decision model can flag acceptance criteria that may not name a checkable result. Start the service with one installed in Ollama:
+
+```sh
+ollama pull kev:0.8b-mxfp8   # kev:0.8b-q8_0 on NVIDIA
+"$wm_ctx" factory serve --data-dir "$wm_factory_dir/state" \
+	--decision-model kev:0.8b-mxfp8
+```
+
+Project orientation then includes `criterionSignals` for open work items: each criterion's probability of naming a checkable result and whether it falls below `--decision-threshold`. The default is 0.25. Rewrite flagged criteria before admission freezes them. Answers are cached by model, question version, and input digest, and admission copies the cached answers into the job without calling the model.
+
+The signals are advisory. They never affect readiness, admission, or acceptance, and an unreachable model is reported as `unavailable`. The probabilities are uncalibrated. In trials, Kev 0.8B separated 37 real criteria from 6 vague controls well, at about 60 ms per criterion on an M4, but its absolute values were low. Compare criteria with each other rather than trusting a single number.
+
+## Run everything for one person
+
+`ctx factory solo` runs the service on loopback with an implementation worker and a verification worker in the same process:
+
+```sh
+ctx factory solo --data-dir ~/.waymark/factory --decision-model kev:0.8b-mxfp8
+```
+
+The first start creates an `operator` administrator and two worker identities, and keeps their tokens under `solo/` in the data directory. Workers are enrolled in every registered project automatically. When `claude` or `codex` is installed, solo mode registers `claude-agent` (capped at $2 an attempt) and `codex-agent` executor profiles. A project must still allow one before it runs. Register the project with `--solo-review` so the operator can review jobs they submitted. The reviewer must still be human and never the implementer. Solo mode refuses non-loopback listeners. Use `serve` with TLS for shared access.
+
+The bundled fixture proves only the offline outcomes it executes. The agent adapter was exercised once with Claude Code against a disposable Go repository. Codex was exercised only through argument construction.
 
 ## Stop the example service
 

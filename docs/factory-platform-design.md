@@ -26,6 +26,8 @@ The workspace owner allocates an isolated Git worktree at the admitted base. An 
 
 Verification uses a separate clean worktree for the exact candidate and an independent worker identity. Each required check retains its outcome, command, environment, observer, attempt, artifacts, candidate, and requirement fingerprint. An independent reviewer records a decision for that same candidate and requirement version.
 
+Running checks against the candidate means running the candidate's own tests. Project policy therefore names protected paths, and admission freezes them. An implementation candidate that changes a protected path fails before verification, so expectations stay outside the implementer's write authority even though verification executes inside the candidate.
+
 Repair creates another bounded attempt and preserves prior failures. Changed requirements, changed candidates, missing checks, missing review, or uncertainty prevent acceptance. A worker's completion message and process exit are insufficient to accept a work item.
 
 ## Recovery preserves uncertainty
@@ -44,9 +46,19 @@ The controller reports accepted only after the existing orientation reader valid
 
 Generated evidence and decisions follow project retention policy. A fresh checkout without locally retained artifacts reports unknown acceptance until the decision and evidence are restored together.
 
+## Native agents run through one adapter
+
+`ctx factory agent` adapts Claude Code and Codex to the worker protocol. It supplies the admitted context and rules on standard input, keeps the agent from committing, and commits the agent's worktree changes as the candidate. Session, turns, and cost are execution observations, not evidence. A command may report progress notes, which the controller records as events without treating them as outcomes.
+
+## Decision models are advisory
+
+An optional local decision model answers bounded questions in one forward pass, starting with whether each acceptance criterion names a checkable result. Answers carry the model, its digest, and a versioned question, and are cached by input digest. They inform people before admission and are copied into the admission snapshot, but readiness, admission, verification, and acceptance never read them.
+
 ## Shared access uses one policy
 
 The service authenticates users and workers and checks capabilities for every operation. Project grants cover reading, coordinating, verifying, reviewing, accepting, project administration, and stage-specific worker execution. UI controls reflect these permissions; the service enforces them independently.
+
+A project policy may let the coordinator review their own job, for a single-person project. The reviewer must still be human and never the implementer. `ctx factory solo` runs the service and both workers in one loopback process for that case.
 
 The first platform uses private bearer credentials. The service binds to loopback by default. Shared network access uses an explicitly configured TLS listener. The browser renders project records and worker output as text and keeps credentials out of URLs.
 
