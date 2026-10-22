@@ -422,6 +422,13 @@ func (s *Service) finishImplementation(ctx context.Context, tx *sql.Tx, attempt 
 		if err != nil {
 			return err
 		}
+		protected, err := s.protectedChanges(ctx, attempt.WorkspacePath, attempt.Admission.BaseRevision, candidate, attempt.Admission.ProtectedPaths)
+		if err != nil {
+			return err
+		}
+		if len(protected) > 0 {
+			return s.rejectProtectedCandidate(ctx, tx, attempt, request, candidate, protected, now)
+		}
 		status, jobStatus = AttemptSucceeded, JobVerifying
 		request.CandidateRevision = candidate
 		if attempt.CancellationRequested {
@@ -756,7 +763,7 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 		instructions = "Run only the configured required check in this clean candidate workspace; do not modify the candidate."
 	}
 	base := attempt.InputRevision
-	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: attempt.Admission.Deadline, LeaseExpiresAt: lease}, nil
+	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: attempt.Admission.Deadline, LeaseExpiresAt: lease, ProtectedPaths: append([]string(nil), attempt.Admission.ProtectedPaths...)}, nil
 }
 
 func mustWorkItem(ctx context.Context, q queryer, jobID JobID) string {

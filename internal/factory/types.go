@@ -180,7 +180,16 @@ type Options struct {
 	MaxContextBytes int64
 	GitBinary       string
 	Now             func() time.Time
+	// DecisionModel names an optional Ollama decision model, such as kev:0.8b-mxfp8,
+	// that flags acceptance criteria that may not be checkable. Empty disables it.
+	DecisionModel     string
+	DecisionURL       string
+	DecisionThreshold float64
 }
+
+// DefaultDecisionThreshold flags criteria whose checkable probability falls below it.
+// It comes from Kev 0.8B trials on 37 real and 6 vague criteria and is uncalibrated.
+const DefaultDecisionThreshold = 0.25
 
 type Principal struct {
 	UserID            UserID   `json:"userId"`
@@ -294,6 +303,13 @@ type ProjectPolicy struct {
 	MaxRepairAttempts     int      `json:"maxRepairAttempts"`
 	MaxJobDurationSeconds int64    `json:"maxJobDurationSeconds"`
 	Fixture               bool     `json:"fixture"`
+	// ProtectedPaths are repository path patterns an implementation candidate may not
+	// change. They keep the tests and expectations that verification runs out of the
+	// implementer's reach.
+	ProtectedPaths []string `json:"protectedPaths,omitempty"`
+	// AllowCoordinatorReview lets the human who submitted a job also review it. It suits
+	// a single-person project; the reviewer must still be human and not the implementer.
+	AllowCoordinatorReview bool `json:"allowCoordinatorReview,omitempty"`
 }
 
 type ReaderLimits struct {
@@ -322,8 +338,9 @@ type RegisterProjectRequest struct {
 }
 
 type ProjectOrientation struct {
-	Project Project            `json:"project"`
-	Result  orientation.Result `json:"result"`
+	Project          Project                      `json:"project"`
+	Result           orientation.Result           `json:"result"`
+	CriterionSignals map[string]*CriterionSignals `json:"criterionSignals,omitempty"`
 }
 
 type ContextSource struct {
@@ -355,6 +372,13 @@ type Admission struct {
 	RepairLimit        int                 `json:"repairLimit"`
 	Deadline           time.Time           `json:"deadline"`
 	AdmittedAt         time.Time           `json:"admittedAt"`
+	// ProtectedPaths and AllowCoordinatorReview freeze the project policy in force at
+	// admission, so a later policy edit cannot change the rules for running work.
+	ProtectedPaths         []string `json:"protectedPaths,omitempty"`
+	AllowCoordinatorReview bool     `json:"allowCoordinatorReview,omitempty"`
+	// CriterionSignals are advisory decision-model observations taken at admission.
+	// They never affect readiness, admission, or acceptance.
+	CriterionSignals *CriterionSignals `json:"criterionSignals,omitempty"`
 }
 
 type SubmitRequest struct {
@@ -507,6 +531,7 @@ type Assignment struct {
 	Fixture                bool            `json:"fixture"`
 	Deadline               time.Time       `json:"deadline"`
 	LeaseExpiresAt         time.Time       `json:"leaseExpiresAt"`
+	ProtectedPaths         []string        `json:"protectedPaths,omitempty"`
 }
 
 type HeartbeatRequest struct {

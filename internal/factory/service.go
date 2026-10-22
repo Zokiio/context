@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Zokiio/context/internal/decision"
 	"os"
 	"path/filepath"
 	"sync"
@@ -34,6 +35,11 @@ type serviceState struct {
 	mutations     sync.Mutex
 	closeOnce     sync.Once
 	closeErr      error
+
+	decision            *decision.Client
+	decisionThreshold   float64
+	decisionMu          sync.Mutex
+	decisionModelDigest string
 }
 
 func Open(dataDir string, options Options) (*Service, error) {
@@ -117,6 +123,13 @@ func Open(dataDir string, options Options) (*Service, error) {
 		db: db, lock: lock, dataDir: absolute, workspaceRoot: workspaceRoot,
 		evidenceRoot: evidenceRoot, gitBinary: gitBinary, leaseDuration: lease,
 		maxFiles: options.MaxContextFiles, maxBytes: options.MaxContextBytes, now: now,
+	}
+	if options.DecisionModel != "" {
+		state.decision = decision.New(options.DecisionURL, options.DecisionModel)
+		state.decisionThreshold = options.DecisionThreshold
+		if state.decisionThreshold <= 0 {
+			state.decisionThreshold = DefaultDecisionThreshold
+		}
 	}
 	if err := state.recoverInterruptedAttempts(context.Background()); err != nil {
 		return nil, err
@@ -291,6 +304,15 @@ CREATE TABLE IF NOT EXISTS acceptance_writes (
   state TEXT NOT NULL,
   error TEXT NOT NULL DEFAULT '',
   updated_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS criterion_signals (
+  model TEXT NOT NULL,
+  question TEXT NOT NULL,
+  input_sha256 TEXT NOT NULL,
+  checkable REAL NOT NULL,
+  model_digest TEXT NOT NULL,
+  observed_at TEXT NOT NULL,
+  PRIMARY KEY(model, question, input_sha256)
 );`
 	if _, err := db.Exec(schema); err != nil {
 		return err

@@ -133,6 +133,9 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 		ContextSHA256: contextDigest, ContextComplete: true, Sources: sources, Diagnostics: diagnostics,
 		ExecutorKey: request.ExecutorKey, RequiredChecks: append([]string(nil), project.Policy.RequiredChecks...),
 		RepairLimit: request.RepairLimit, Deadline: request.Deadline.UTC(), AdmittedAt: now,
+		ProtectedPaths:         append([]string(nil), project.Policy.ProtectedPaths...),
+		AllowCoordinatorReview: project.Policy.AllowCoordinatorReview,
+		CriterionSignals:       s.cachedCriterionSignals(ctx, selected.Title, selected.Source),
 	}
 	jobID, err := newID("job_")
 	if err != nil {
@@ -734,7 +737,9 @@ func jobProject(ctx context.Context, q queryer, jobID JobID) (ProjectID, error) 
 
 func availableActions(job Job) []ActionKind {
 	switch job.Status {
-	case JobQueued, JobReadyForReview, JobReadyForAcceptance, JobFailed:
+	case JobFailed:
+		return []ActionKind{ActionRepair, ActionCancel}
+	case JobQueued, JobReadyForReview, JobReadyForAcceptance:
 		return []ActionKind{ActionCancel}
 	case JobImplementing, JobVerifying:
 		return []ActionKind{ActionCancel}

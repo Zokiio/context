@@ -347,11 +347,20 @@ func pathWithin(root, path string) bool {
 func currentApprovedReview(job Job) (Review, bool) {
 	for index := len(job.Reviews) - 1; index >= 0; index-- {
 		review := job.Reviews[index]
-		if review.Decision == ReviewApproved && review.CandidateRevision == job.CandidateRevision && review.RequirementFingerprint == job.Admission.TicketSHA256 && review.ReviewerID != job.CoordinatorID && (job.ImplementerID == nil || review.ReviewerID != *job.ImplementerID) {
+		if review.Decision == ReviewApproved && review.CandidateRevision == job.CandidateRevision && review.RequirementFingerprint == job.Admission.TicketSHA256 && independentReviewer(job, review.ReviewerID) {
 			return review, true
 		}
 	}
 	return Review{}, false
+}
+
+// independentReviewer never lets the implementer review its own candidate. The
+// coordinator may review only when the admitted policy allows it.
+func independentReviewer(job Job, reviewer UserID) bool {
+	if job.ImplementerID != nil && reviewer == *job.ImplementerID {
+		return false
+	}
+	return reviewer != job.CoordinatorID || job.Admission.AllowCoordinatorReview
 }
 
 func currentChecks(job Job) []CheckResult {

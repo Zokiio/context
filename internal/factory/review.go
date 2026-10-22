@@ -46,7 +46,7 @@ func (s *Service) Review(ctx context.Context, actor Principal, request ReviewReq
 		if job.CandidateRevision != request.CandidateRevision || job.Admission.TicketSHA256 != request.RequirementFingerprint {
 			return Job{}, fault(CodeStale, "review does not match the current candidate and requirements", nil)
 		}
-		if current.UserID == job.CoordinatorID || (job.ImplementerID != nil && current.UserID == *job.ImplementerID) {
+		if !independentReviewer(job, current.UserID) {
 			return Job{}, fault(CodeForbidden, "reviewer must be independent from coordinator and implementer", nil)
 		}
 		if err := checkSourcesUnchanged(job.Admission.Sources); err != nil {

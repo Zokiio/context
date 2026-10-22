@@ -153,6 +153,11 @@ func (s *Service) RegisterProject(ctx context.Context, actor Principal, request 
 	if request.ReaderLimits.MaxFiles < 0 || request.ReaderLimits.MaxBytes < 0 {
 		return Project{}, fault(CodeInvalid, "reader limits cannot be negative", nil)
 	}
+	protected, err := normalizeProtectedPaths(request.Policy.ProtectedPaths)
+	if err != nil {
+		return Project{}, err
+	}
+	request.Policy.ProtectedPaths = protected
 	bundle, err := canonicalDirectory(request.BundlePath)
 	if err != nil {
 		return Project{}, fault(CodeInvalid, "resolve bundlePath", err)
@@ -261,7 +266,7 @@ func (s *Service) Orientation(ctx context.Context, actor Principal, projectID Pr
 	if err != nil {
 		return ProjectOrientation{}, fault(CodeInternal, "read project orientation", err)
 	}
-	return ProjectOrientation{Project: project, Result: result}, nil
+	return ProjectOrientation{Project: project, Result: result, CriterionSignals: s.orientationSignals(ctx, result)}, nil
 }
 
 func validateProfile(key, displayName string, command []string) error {

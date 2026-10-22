@@ -1011,6 +1011,10 @@ func setupJobWithChecks(t *testing.T, checks []string) jobHarness {
 }
 
 func setupJobConfig(t *testing.T, checks []string, repairLimit int, now func() time.Time) jobHarness {
+	return setupJobWith(t, checks, repairLimit, now, nil)
+}
+
+func setupJobWith(t *testing.T, checks []string, repairLimit int, now func() time.Time, mutate func(*factory.ProjectPolicy)) jobHarness {
 	t.Helper()
 	ctx := context.Background()
 	dataDir := t.TempDir()
@@ -1036,7 +1040,11 @@ func setupJobConfig(t *testing.T, checks []string, repairLimit int, now func() t
 		}
 	}
 	bundle, repository := readyTestProject(t)
-	project, err := service.RegisterProject(ctx, admin, factory.RegisterProjectRequest{RequestID: "project", BundlePath: bundle, RepositoryPath: repository, AllowedSourceRoots: []string{repository}, Policy: factory.ProjectPolicy{RequiredChecks: checks, AllowedExecutors: []string{"fixture-agent"}, MaxRepairAttempts: 2, MaxJobDurationSeconds: 3600, Fixture: true}})
+	policy := factory.ProjectPolicy{RequiredChecks: checks, AllowedExecutors: []string{"fixture-agent"}, MaxRepairAttempts: 2, MaxJobDurationSeconds: 3600, Fixture: true}
+	if mutate != nil {
+		mutate(&policy)
+	}
+	project, err := service.RegisterProject(ctx, admin, factory.RegisterProjectRequest{RequestID: "project", BundlePath: bundle, RepositoryPath: repository, AllowedSourceRoots: []string{repository}, Policy: policy})
 	if err != nil {
 		t.Fatal(err)
 	}
