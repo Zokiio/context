@@ -3,7 +3,7 @@ type: WorkItem
 id: 705d97ee-b372-4c49-8378-d4fac0c2c24f
 title: Persist factory jobs and enforce their lifecycle
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 ## Acceptance criteria
@@ -33,3 +33,7 @@ None
 ## Comments
 
 2026-10-22: Selected by the user as part of the complete factory platform, before target-project pilot work. Parallel implementation uses the same frozen interface contract and separate owned paths. Whole-platform acceptance remains a separate gate.
+
+## Acceptance
+
+- [Verified platform outcome](../acceptances/01-durable-controller-2026-10-23.md)

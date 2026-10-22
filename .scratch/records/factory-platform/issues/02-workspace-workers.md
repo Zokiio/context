@@ -3,7 +3,7 @@ type: WorkItem
 id: 48957659-d97f-4ade-939b-62ec34abf6c1
 title: Execute scoped assignments in isolated workspaces
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 ## Acceptance criteria
@@ -33,3 +33,7 @@ None
 ## Comments
 
 2026-10-22: Selected by the user as part of the complete factory platform, before target-project pilot work. Parallel implementation uses the same frozen interface contract and separate owned paths. Whole-platform acceptance remains a separate gate.
+
+## Acceptance
+
+- [Verified platform outcome](../acceptances/02-workspace-workers-2026-10-23.md)

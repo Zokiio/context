@@ -3,7 +3,7 @@ type: WorkItem
 id: de7091f5-6926-4e6e-8fb1-1a227fb5e57d
 title: Operate the factory through the ctx CLI
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 ## Acceptance criteria
@@ -33,3 +33,7 @@ None
 ## Comments
 
 2026-10-22: Selected by the user as part of the complete factory platform, before target-project pilot work. Parallel implementation uses the same frozen interface contract and separate owned paths. Whole-platform acceptance remains a separate gate.
+
+## Acceptance
+
+- [Verified platform outcome](../acceptances/04-factory-cli-2026-10-23.md)

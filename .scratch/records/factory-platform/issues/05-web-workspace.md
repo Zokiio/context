@@ -3,7 +3,7 @@ type: WorkItem
 id: 27be582d-0f90-4c66-b341-7ae8195223b8
 title: Operate shared projects and jobs in the web workspace
 triage: ready-for-agent
-execution: unstarted
+execution: completed
 ---
 
 ## Acceptance criteria
@@ -33,3 +33,7 @@ None
 ## Comments
 
 2026-10-22: Selected by the user as part of the complete factory platform, before target-project pilot work. Parallel implementation uses the same frozen interface contract and separate owned paths. Whole-platform acceptance remains a separate gate.
+
+## Acceptance
+
+- [Verified platform outcome](../acceptances/05-web-workspace-2026-10-23.md)
