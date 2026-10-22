@@ -195,9 +195,22 @@ func TestSharedPlatformProducesReaderCompatibleAcceptance(t *testing.T) {
 			t.Fatal("changed retained evidence did not stale historical acceptance")
 		}
 	}
+	assertJobAcceptance := func(want string) {
+		t.Helper()
+		current := call[factory.Job](t, reviewer.client, "GET", jobPath, nil)
+		if current.Status != factory.JobAccepted || current.AcceptanceStatus != want {
+			t.Fatalf("job must retain accepted history and report current acceptance %s, got %s / %s", want, current.Status, current.AcceptanceStatus)
+		}
+	}
+	assertJobAcceptance("stale")
+	if err := os.Remove(evidencePath); err != nil {
+		t.Fatal(err)
+	}
+	assertJobAcceptance("unknown")
 	if err := os.WriteFile(evidencePath, original, 0600); err != nil {
 		t.Fatal(err)
 	}
+	assertJobAcceptance("valid")
 	if head := git(t, repository, "rev-parse", "HEAD"); head != base {
 		t.Fatal("worker changed the primary checkout revision")
 	}
