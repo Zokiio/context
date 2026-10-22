@@ -130,6 +130,27 @@ func TestAuthenticationBoundedJSONAndBrowserPolicy(t *testing.T) {
 	}
 }
 
+func TestSelfHostedFontsAndLicenses(t *testing.T) {
+	instance := start(t)
+	for _, family := range []string{"instrument-sans", "roboto-mono"} {
+		for _, subset := range []string{"latin", "latin-ext"} {
+			path := "/assets/fonts/" + family + "-" + subset + ".woff2"
+			status, headers, raw := call(t, instance.server.URL, "", "GET", path, "", nil)
+			if status != 200 || headers.Get("Content-Type") != "font/woff2" || !bytes.HasPrefix(raw, []byte("wOF2")) {
+				t.Fatalf("font not served as WOFF2 on %s: status %d, type %q", path, status, headers.Get("Content-Type"))
+			}
+			if !strings.Contains(headers.Get("Content-Security-Policy"), "font-src 'self';") || headers.Get("X-Content-Type-Options") != "nosniff" {
+				t.Fatalf("missing same-origin font policy on %s", path)
+			}
+		}
+		path := "/assets/fonts/" + family + "-OFL.txt"
+		status, headers, raw := call(t, instance.server.URL, "", "GET", path, "", nil)
+		if status != 200 || headers.Get("Content-Type") != "text/plain; charset=utf-8" || !bytes.Contains(raw, []byte("SIL OPEN FONT LICENSE Version 1.1")) {
+			t.Fatalf("font license missing on %s: status %d", path, status)
+		}
+	}
+}
+
 func TestHTTPUserTokensAndDisableEnforceCurrentIdentity(t *testing.T) {
 	instance := start(t)
 	ctx := context.Background()

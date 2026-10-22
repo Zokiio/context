@@ -202,7 +202,15 @@ func NewHandler(service *factory.Service) http.Handler {
 		}
 		writeError(w, &factory.Error{Code: factory.CodeNotFound, Message: "endpoint not found"})
 	}))
-	for path, name := range map[string]string{"/": "index.html", "/assets/app.js": "app.js", "/assets/app.css": "app.css"} {
+	for path, name := range map[string]string{
+		"/": "index.html", "/assets/app.js": "app.js", "/assets/app.css": "app.css",
+		"/assets/fonts/instrument-sans-latin.woff2":     "fonts/instrument-sans-latin.woff2",
+		"/assets/fonts/instrument-sans-latin-ext.woff2": "fonts/instrument-sans-latin-ext.woff2",
+		"/assets/fonts/roboto-mono-latin.woff2":         "fonts/roboto-mono-latin.woff2",
+		"/assets/fonts/roboto-mono-latin-ext.woff2":     "fonts/roboto-mono-latin-ext.woff2",
+		"/assets/fonts/instrument-sans-OFL.txt":         "fonts/instrument-sans-OFL.txt",
+		"/assets/fonts/roboto-mono-OFL.txt":             "fonts/roboto-mono-OFL.txt",
+	} {
 		name := name
 		pattern := "GET " + path
 		if path == "/" {
@@ -220,6 +228,12 @@ func NewHandler(service *factory.Service) http.Handler {
 			}
 			if strings.HasSuffix(name, ".css") {
 				typeOf = "text/css; charset=utf-8"
+			}
+			if strings.HasSuffix(name, ".woff2") {
+				typeOf = "font/woff2"
+			}
+			if strings.HasSuffix(name, ".txt") {
+				typeOf = "text/plain; charset=utf-8"
 			}
 			w.Header().Set("Content-Type", typeOf)
 			_, _ = w.Write(content)
@@ -392,7 +406,7 @@ func writeError(w http.ResponseWriter, err error) {
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
-		w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'")
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Referrer-Policy", "no-referrer")
