@@ -32,7 +32,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs` | GET accessible jobs, POST `SubmitRequest` |
 | `/v1/jobs/{id}` | GET retained job, admission, attempts, checks, reviews, and events |
 | `/v1/jobs/{id}/events?after=0` | GET events after a nonnegative sequence |
-| `/v1/jobs/{id}/artifacts/{artifact}` | GET an artifact attached to that job's check evidence |
+| `/v1/jobs/{id}/artifacts/{artifact}` | GET an artifact attached to that job's implementation or verification attempt |
 | `/v1/jobs/{id}/actions` | POST `JobActionRequest` for cancel, repair, reconcile, or explicit resolution |
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |

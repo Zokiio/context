@@ -143,6 +143,14 @@ func NewHandler(service *factory.Service) http.Handler {
 			writeError(w, err)
 			return
 		}
+		for _, attempt := range job.Attempts {
+			for _, artifact := range attempt.Artifacts {
+				if string(artifact.ID) == r.PathValue("artifact") {
+					writeJSON(w, 200, artifact)
+					return
+				}
+			}
+		}
 		for _, check := range job.Checks {
 			for _, artifact := range check.Artifacts {
 				if string(artifact.ID) == r.PathValue("artifact") {

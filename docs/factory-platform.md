@@ -257,7 +257,7 @@ Use `jobs reconcile` to record a reconciliation request. Inspect the exact attem
 
 For a definitively failed job, request `jobs repair` with the current version. The service enforces the admitted repair limit, deadline, and unchanged requirements. It preserves the failed attempt and requires checks and review for the new candidate.
 
-For an interrupted acceptance publication, repeat the exact acceptance request. The retained publication plan reconciles existing bytes before completing the decision.
+For an interrupted acceptance publication, repeat the exact acceptance request. The retained publication plan reconciles existing bytes before completing the decision. Once publication begins, cancellation is refused because some acceptance files may already exist. Reconcile that publication before treating the job as settled.
 
 ## Connect an existing coding-agent command
 

@@ -121,6 +121,30 @@ func TestSharedPlatformProducesReaderCompatibleAcceptance(t *testing.T) {
 	if job.Status == factory.JobAccepted || job.CandidateRevision == "" {
 		t.Fatalf("worker success did not retain an unaccepted candidate: %+v", job)
 	}
+	var implementationArtifact factory.Artifact
+	for _, attempt := range job.Attempts {
+		if attempt.Stage != factory.StageImplementation {
+			continue
+		}
+		if attempt.TerminalReceipt == "" {
+			t.Fatal("implementation execution receipt is not inspectable")
+		}
+		for _, artifact := range attempt.Artifacts {
+			if artifact.Name == "command-1.log" {
+				implementationArtifact = artifact
+			}
+		}
+	}
+	if implementationArtifact.ID == "" || !strings.Contains(implementationArtifact.Content, "offline fixture produced candidate") {
+		t.Fatal("actual implementation output is not inspectable through the job")
+	}
+	artifactPath := jobPath + "/artifacts/" + string(implementationArtifact.ID)
+	if fetched := call[factory.Artifact](t, reviewer.client, "GET", artifactPath, nil); fetched.SHA256 != implementationArtifact.SHA256 || fetched.Content != implementationArtifact.Content {
+		t.Fatal("implementation artifact endpoint changed retained output")
+	}
+	if err := outsider.client.DoJSON(ctx, "GET", artifactPath, nil, &factory.Artifact{}); err == nil {
+		t.Fatal("an ungranted user can read implementation output directly")
+	}
 	premature := factory.AcceptRequest{RequestID: "premature-acceptance", JobID: job.ID, IfVersion: job.Version, CandidateRevision: job.CandidateRevision, RequirementFingerprint: job.Admission.TicketSHA256}
 	if err := reviewer.client.DoJSON(ctx, "POST", jobPath+"/acceptance", premature, &factory.Job{}); err == nil {
 		t.Fatal("a candidate without required verification and review was accepted")
@@ -236,4 +260,3 @@ func git(t *testing.T, dir string, args ...string) string {
 	}
 	return strings.TrimSpace(string(output))
 }
-

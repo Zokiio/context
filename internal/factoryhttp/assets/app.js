@@ -212,7 +212,14 @@ function nextAction(job) {
 	return descriptions[job.status] || 'Inspect retained state and ask an authorized coordinator for the next action.';
 }
 function attemptsPanel(job) {
-	return panel('Execution attempts', list(job.attempts).length ? table(['STAGE', 'STATE', 'IDENTITY', 'WORKSPACE'], job.attempts.map((attempt) => [element('div', {}, human(attempt.stage), element('div', { class: 'subline' }, attempt.checkKey || 'Attempt ' + attempt.ordinal)), badge(attempt.status), element('div', { class: 'mono' }, attempt.nativeRunId || 'Awaiting native run', element('div', { class: 'subline mono' }, attempt.dispatchId)), code(attempt.workspacePath)])) : empty('No attempts yet', 'The service has not dispatched this job.'));
+	const rows = list(job.attempts).map((attempt) => {
+		const observations = element('div', {});
+		if (attempt.terminalReceipt) observations.append(element('details', {}, element('summary', {}, 'Execution receipt'), element('pre', { class: 'output' }, attempt.terminalReceipt)));
+		for (const artifact of list(attempt.artifacts)) observations.append(element('details', {}, element('summary', {}, artifact.name), element('div', { class: 'fine mono' }, artifact.sha256), element('pre', { class: 'output' }, artifact.content || 'No retained text')));
+		if (!observations.children.length) observations.append(element('span', { class: 'fine' }, 'No terminal observations yet'));
+		return [element('div', {}, human(attempt.stage), element('div', { class: 'subline' }, attempt.checkKey || 'Attempt ' + attempt.ordinal)), badge(attempt.status), element('div', { class: 'mono' }, attempt.nativeRunId || 'Awaiting native run', element('div', { class: 'subline mono' }, attempt.dispatchId)), code(attempt.workspacePath), observations];
+	});
+	return panel('Execution attempts', rows.length ? table(['STAGE', 'STATE', 'IDENTITY', 'WORKSPACE', 'OBSERVATIONS'], rows) : empty('No attempts yet', 'The service has not dispatched this job.'));
 }
 function checksPanel(job) {
 	const checks = list(job.checks); const required = list(job.admission.requiredChecks);
