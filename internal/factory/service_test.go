@@ -306,6 +306,41 @@ func TestWorkerAssignmentsSeparateImplementationVerificationAndReview(t *testing
 			}
 		}
 	}
+	evidencePath := filepath.Join(harness.repository, ".factory-evidence", string(harness.project.ID), string(job.ID)+".json")
+	evidence, err := os.ReadFile(evidencePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(evidencePath, append(evidence, '\n'), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	refreshed, err := harness.service.GetJob(ctx, harness.reviewer, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if refreshed.Status != factory.JobAccepted || refreshed.AcceptanceStatus != "stale" {
+		t.Fatalf("tampered evidence did not stale the accepted job view: %+v", refreshed)
+	}
+	if err := os.Remove(evidencePath); err != nil {
+		t.Fatal(err)
+	}
+	refreshed, err = harness.service.GetJob(ctx, harness.reviewer, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if refreshed.Status != factory.JobAccepted || refreshed.AcceptanceStatus != "unknown" {
+		t.Fatalf("missing evidence did not make the accepted job view unknown: %+v", refreshed)
+	}
+	if err := os.WriteFile(evidencePath, evidence, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	refreshed, err = harness.service.GetJob(ctx, harness.reviewer, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if refreshed.Status != factory.JobAccepted || refreshed.AcceptanceStatus != "valid" {
+		t.Fatalf("restored evidence did not revalidate the accepted job view: %+v", refreshed)
+	}
 }
 
 func TestCancellationAcknowledgementAndRestartRemainUncertainUntilResolved(t *testing.T) {

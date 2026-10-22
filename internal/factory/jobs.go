@@ -273,8 +273,43 @@ func (s *Service) GetJob(ctx context.Context, actor Principal, jobID JobID) (Job
 	if err != nil {
 		return Job{}, err
 	}
+	if job.Status == JobAccepted || job.AcceptanceRecordPath != "" {
+		job.AcceptanceStatus = s.currentAcceptanceStatus(ctx, job)
+	}
 	job.AvailableActions = availableActions(job)
 	return job, nil
+}
+
+func (s *Service) currentAcceptanceStatus(ctx context.Context, job Job) string {
+	project, err := readProject(ctx, s.state.db, job.ProjectID)
+	if err != nil {
+		return "unknown"
+	}
+	result, err := orientation.Orient(ctx, orientation.Request{
+		ProjectDir:        project.BundlePath,
+		AllowedSourceDirs: project.AllowedSourceRoots,
+		MaxFiles:          project.ReaderLimits.MaxFiles,
+		MaxBytes:          project.ReaderLimits.MaxBytes,
+	})
+	if err != nil || !result.Complete || !result.InventoryComplete {
+		return "unknown"
+	}
+	work, err := selectWork(result, job.WorkItemID)
+	if err != nil || work.Acceptance == nil {
+		return "unknown"
+	}
+	if work.Acceptance.Record == nil {
+		return "unknown"
+	}
+	if work.Acceptance.Record.Path != job.AcceptanceRecordPath {
+		return "stale"
+	}
+	switch work.Acceptance.Status {
+	case "valid", "stale", "unknown":
+		return work.Acceptance.Status
+	default:
+		return "unknown"
+	}
 }
 
 func (s *Service) readJobReceipt(ctx context.Context, actor UserID, operation, requestID string, request any) (Job, bool, error) {
