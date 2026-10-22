@@ -80,6 +80,9 @@ func (s *Service) Action(ctx context.Context, actor Principal, request JobAction
 }
 
 func (s *Service) cancelJob(ctx context.Context, tx *sql.Tx, job Job, now time.Time) error {
+	if job.Status == JobAccepting {
+		return fault(CodeConflict, "acceptance publication must be reconciled before cancellation", nil)
+	}
 	if job.Status == JobAccepted || job.Status == JobCancelled {
 		return fault(CodeConflict, "job is already terminal", nil)
 	}
@@ -228,7 +231,7 @@ func (s *Service) resolveExecution(ctx context.Context, tx *sql.Tx, job Job, req
 		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,finished_at=? WHERE id=?`, AttemptCancelled, OutcomeCancelled, formatTime(now), attempt.ID); err != nil {
 			return fault(CodeInternal, "resolve cancelled attempt", err)
 		}
-		_, err = tx.ExecContext(ctx, `UPDATE jobs SET status=?,active_claim=0,version=version+1,updated_at=? WHERE id=?`, JobCancelled, formatTime(now), job.ID)
+		err = s.updateJobAfterResolvedCancellation(ctx, tx, job, attempt, now)
 	default:
 		return fault(CodeInvalid, "unknown execution resolution", nil)
 	}
@@ -237,6 +240,62 @@ func (s *Service) resolveExecution(ctx context.Context, tx *sql.Tx, job Job, req
 	}
 	if _, err := appendEvent(ctx, tx, job.ID, nil, "execution_resolved", map[string]any{"attemptId": attempt.ID, "resolution": request.Resolution, "evidence": strings.TrimSpace(request.Evidence)}, now); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (s *Service) updateJobAfterResolvedCancellation(ctx context.Context, tx *sql.Tx, job Job, resolved attemptRecord, now time.Time) error {
+	var pending, active, uncertain, verificationOutstanding, cancellationOutstanding int
+	err := tx.QueryRowContext(ctx, `SELECT
+		COALESCE(sum(CASE WHEN status=? THEN 1 ELSE 0 END),0),
+		COALESCE(sum(CASE WHEN status IN (?,?,?,?) THEN 1 ELSE 0 END),0),
+		COALESCE(sum(CASE WHEN status=? THEN 1 ELSE 0 END),0),
+		COALESCE(sum(CASE WHEN stage=? AND status IN (?,?,?,?,?,?) THEN 1 ELSE 0 END),0),
+		COALESCE(sum(CASE WHEN cancellation_requested=1 AND status IN (?,?,?,?,?,?) THEN 1 ELSE 0 END),0)
+		FROM attempts WHERE job_id=?`,
+		AttemptPending,
+		AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged,
+		AttemptUnknown,
+		StageVerification, AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged, AttemptUnknown,
+		AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged, AttemptUnknown,
+		job.ID,
+	).Scan(&pending, &active, &uncertain, &verificationOutstanding, &cancellationOutstanding)
+	if err != nil {
+		return fault(CodeInternal, "inspect attempts after cancellation resolution", err)
+	}
+
+	status := JobCancelled
+	activeClaim := 0
+	globalCancellation := resolved.CancellationRequested || job.Status == JobCancelRequested || job.Status == JobCancellationUnknown || cancellationOutstanding > 0
+	if globalCancellation {
+		activeClaim = 1
+		switch {
+		case uncertain > 0:
+			status = JobCancellationUnknown
+		case pending+active > 0:
+			status = JobCancelRequested
+		default:
+			status, activeClaim = JobCancelled, 0
+		}
+	} else {
+		activeClaim = 1
+		switch {
+		case uncertain > 0:
+			status = JobImplementationUnknown
+		case verificationOutstanding > 0:
+			status = JobVerifying
+		case active > 0:
+			status = JobImplementing
+		case pending > 0:
+			status = JobQueued
+		case resolved.Stage == StageVerification:
+			status = JobVerificationFailed
+		default:
+			status, activeClaim = JobCancelled, 0
+		}
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,active_claim=?,version=version+1,updated_at=? WHERE id=?`, status, activeClaim, formatTime(now), job.ID); err != nil {
+		return fault(CodeInternal, "update job after cancellation resolution", err)
 	}
 	return nil
 }

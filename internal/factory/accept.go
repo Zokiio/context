@@ -124,6 +124,13 @@ func (s *Service) prepareAcceptance(ctx context.Context, tx *sql.Tx, actor Princ
 		if operation.ActorID != actor.UserID || operation.RequestHash != hash {
 			return acceptanceOperation{}, false, fault(CodeConflict, "job already has a different acceptance publication intent", nil)
 		}
+		job, err := loadJob(ctx, tx, request.JobID)
+		if err != nil {
+			return acceptanceOperation{}, false, err
+		}
+		if job.Status != JobAccepting || job.CandidateRevision != request.CandidateRevision || job.Admission.TicketSHA256 != request.RequirementFingerprint {
+			return acceptanceOperation{}, false, fault(CodeConflict, "job no longer authorizes the prepared acceptance publication", nil)
+		}
 		return operation, true, nil
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
@@ -348,9 +355,20 @@ func currentApprovedReview(job Job) (Review, bool) {
 }
 
 func currentChecks(job Job) []CheckResult {
-	result := []CheckResult{}
+	latest := latestCurrentCheckAttempts(job)
+	byAttempt := map[AttemptID]CheckResult{}
 	for _, check := range job.Checks {
-		if check.CandidateRevision == job.CandidateRevision && check.RequirementFingerprint == job.Admission.TicketSHA256 && check.Status == CheckPassed {
+		if check.AttemptID != nil && check.CandidateRevision == job.CandidateRevision && check.RequirementFingerprint == job.Admission.TicketSHA256 && check.Status == CheckPassed {
+			byAttempt[*check.AttemptID] = check
+		}
+	}
+	result := []CheckResult{}
+	for _, required := range job.Admission.RequiredChecks {
+		attempt, ok := latest[required]
+		if !ok {
+			continue
+		}
+		if check, ok := byAttempt[attempt.ID]; ok {
 			result = append(result, check)
 		}
 	}

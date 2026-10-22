@@ -92,16 +92,32 @@ func allChecksPassed(job Job) bool {
 	if len(job.Admission.RequiredChecks) == 0 {
 		return false
 	}
-	passed := map[string]bool{}
+	latest := latestCurrentCheckAttempts(job)
+	passedAttempts := map[AttemptID]bool{}
 	for _, result := range job.Checks {
 		if result.CandidateRevision == job.CandidateRevision && result.RequirementFingerprint == job.Admission.TicketSHA256 && result.Status == CheckPassed && result.ObserverID != nil && result.AttemptID != nil {
-			passed[result.CheckKey] = true
+			passedAttempts[*result.AttemptID] = true
 		}
 	}
 	for _, required := range job.Admission.RequiredChecks {
-		if !passed[required] {
+		attempt, ok := latest[required]
+		if !ok || attempt.Status != AttemptSucceeded || attempt.CheckStatus != CheckPassed || !passedAttempts[attempt.ID] {
 			return false
 		}
 	}
 	return true
+}
+
+func latestCurrentCheckAttempts(job Job) map[string]Attempt {
+	latest := map[string]Attempt{}
+	for _, attempt := range job.Attempts {
+		if attempt.Stage != StageVerification || attempt.CandidateRevision != job.CandidateRevision {
+			continue
+		}
+		current, ok := latest[attempt.CheckKey]
+		if !ok || attempt.Ordinal > current.Ordinal {
+			latest[attempt.CheckKey] = attempt
+		}
+	}
+	return latest
 }

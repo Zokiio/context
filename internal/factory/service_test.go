@@ -223,7 +223,11 @@ func TestWorkerAssignmentsSeparateImplementationVerificationAndReview(t *testing
 	if got := strings.TrimSpace(runGit(t, assignment.WorkspacePath, "rev-parse", "HEAD")); got != assignment.BaseRevision {
 		t.Fatalf("implementation workspace HEAD = %s, want %s", got, assignment.BaseRevision)
 	}
-	if _, err := harness.service.Report(ctx, harness.implementer, factory.WorkerReportRequest{RequestID: "registered", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportStartRegistered, ObservedAt: time.Now(), NativeRunID: "native-1"}); err != nil {
+	registration := factory.WorkerReportRequest{RequestID: "registered", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportStartRegistered, ObservedAt: time.Now(), NativeRunID: "native-1"}
+	if _, err := harness.service.Report(ctx, harness.implementer, registration); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := harness.service.Report(ctx, harness.implementer, registration); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := harness.service.Report(ctx, harness.implementer, factory.WorkerReportRequest{RequestID: "started", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportStarted, ObservedAt: time.Now(), NativeRunID: "native-1"}); err != nil {
@@ -235,12 +239,15 @@ func TestWorkerAssignmentsSeparateImplementationVerificationAndReview(t *testing
 	runGit(t, assignment.WorkspacePath, "add", "candidate.txt")
 	runGit(t, assignment.WorkspacePath, "commit", "-qm", "candidate")
 	candidate := strings.TrimSpace(runGit(t, assignment.WorkspacePath, "rev-parse", "HEAD"))
-	job, err := harness.service.Report(ctx, harness.implementer, factory.WorkerReportRequest{RequestID: "implementation-terminal", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "native-1", Outcome: factory.OutcomeSucceeded, CandidateRevision: candidate, TerminalReceipt: "native terminal succeeded", Artifacts: []factory.ArtifactInput{{Name: "implementation.log", MediaType: "text/plain", Content: "fixture completed\n"}}})
+	job, err := harness.service.Report(ctx, harness.implementer, factory.WorkerReportRequest{RequestID: "implementation-terminal", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "native-1", Outcome: factory.OutcomeSucceeded, CandidateRevision: candidate, Summary: "implementation finished", TerminalReceipt: "native terminal succeeded", Artifacts: []factory.ArtifactInput{{Name: "implementation.log", MediaType: "text/plain", Content: "fixture completed\n"}}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if job.Status != factory.JobVerifying || job.CandidateRevision != candidate {
 		t.Fatalf("job after implementation = %+v", job)
+	}
+	if len(job.Attempts) == 0 || job.Attempts[0].Summary != "implementation finished" || job.Attempts[0].TerminalReceipt != "native terminal succeeded" || len(job.Attempts[0].Artifacts) != 1 || job.Attempts[0].Artifacts[0].Content != "fixture completed\n" {
+		t.Fatalf("implementation evidence was not inspectable on its attempt: %+v", job.Attempts)
 	}
 
 	verification, err := harness.service.Claim(ctx, harness.verifier, factory.WorkerClaimRequest{RequestID: "claim-verification", Stages: []factory.Stage{factory.StageVerification}, ProjectID: &harness.project.ID})
@@ -638,6 +645,207 @@ func TestClaimAndStartRecheckSourcesAndRevokedGrant(t *testing.T) {
 	}
 	if ack.ID == "" || ack.Status != factory.JobImplementationUnknown || ack.Admission.TicketPath != "" || len(ack.Attempts) != 0 || len(ack.Events) != 0 {
 		t.Fatalf("revoked worker received unredacted terminal acknowledgement: %+v", ack)
+	}
+}
+
+func TestUnknownVerificationCannotCompleteCancellationOrReleaseClaim(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, _ := completeImplementationForTest(t, harness, "cancel-unknown")
+	assignment := startVerificationForTest(t, harness, "cancel-unknown")
+	job, err := harness.service.GetJob(ctx, harness.coordinator, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Action(ctx, harness.coordinator, factory.JobActionRequest{RequestID: "cancel-unknown-action", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionCancel})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{
+		RequestID: "cancel-unknown-terminal", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID,
+		Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "cancel-unknown-verify-native",
+		Outcome: factory.OutcomeSucceeded, CheckStatus: factory.CheckUnknown, TerminalReceipt: "check outcome remains unknown",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobCancellationUnknown {
+		t.Fatalf("unknown cancelling verifier released the claim: %+v", job)
+	}
+	_, err = harness.service.Submit(ctx, harness.coordinator, factory.SubmitRequest{RequestID: "cancel-unknown-second", ProjectID: harness.project.ID, WorkItemID: job.WorkItemID, BaseRevision: "HEAD", ExecutorKey: "fixture-agent", Deadline: time.Now().Add(time.Hour)})
+	if factory.ErrorCodeOf(err) != factory.CodeConflict {
+		t.Fatalf("second submit with uncertain verifier error = %v, want conflict", err)
+	}
+}
+
+func TestResolvingOneVerifierRetainsOtherActiveVerifier(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJobWithChecks(t, []string{"first", "second"})
+	job, _ := completeImplementationForTest(t, harness, "resolve-one")
+	first := startVerificationForTest(t, harness, "resolve-first")
+	user, err := harness.service.CreateUser(ctx, harness.admin, factory.CreateUserRequest{RequestID: "resolve-second-user", Username: "second-verifier", Kind: factory.UserKindWorker})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := harness.service.GrantProject(ctx, harness.admin, factory.GrantProjectRequest{RequestID: "resolve-second-grant", ProjectID: harness.project.ID, UserID: user.ID, Capabilities: []factory.Capability{factory.CapabilityRead, factory.CapabilityVerifyWorker}}); err != nil {
+		t.Fatal(err)
+	}
+	token, err := harness.service.IssueToken(ctx, harness.admin, factory.IssueTokenRequest{RequestID: "resolve-second-token", UserID: user.ID, Label: "test"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondVerifier, err := harness.service.Authenticate(ctx, token.Token)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := harness.service.Claim(ctx, secondVerifier, factory.WorkerClaimRequest{RequestID: "resolve-second-claim", Stages: []factory.Stage{factory.StageVerification}, ProjectID: &harness.project.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := harness.service.Report(ctx, secondVerifier, factory.WorkerReportRequest{RequestID: "resolve-second-registered", AttemptID: second.AttemptID, DispatchID: second.DispatchID, Kind: factory.ReportStartRegistered, ObservedAt: time.Now(), NativeRunID: "resolve-second-native"}); err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "resolve-first-unknown", AttemptID: first.AttemptID, DispatchID: first.DispatchID, Kind: factory.ReportUnknown, ObservedAt: time.Now(), NativeRunID: "resolve-first-verify-native", Outcome: factory.OutcomeUnknown, TerminalReceipt: "first verifier outcome unknown"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Action(ctx, harness.admin, factory.JobActionRequest{RequestID: "resolve-first-cancelled", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionResolve, AttemptID: &first.AttemptID, Resolution: factory.ResolutionCancelled, Evidence: "first verifier was independently proven stopped"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobVerifying {
+		t.Fatalf("resolving one verifier released another active verifier: %+v", job)
+	}
+	_, err = harness.service.Submit(ctx, harness.coordinator, factory.SubmitRequest{RequestID: "resolve-one-second-job", ProjectID: harness.project.ID, WorkItemID: job.WorkItemID, BaseRevision: "HEAD", ExecutorKey: "fixture-agent", Deadline: time.Now().Add(time.Hour)})
+	if factory.ErrorCodeOf(err) != factory.CodeConflict {
+		t.Fatalf("second submit with active verifier error = %v, want conflict", err)
+	}
+}
+
+func TestStartRegistrationAfterDeadlineRemainsUncertain(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	clock := time.Date(2026, 10, 23, 10, 0, 0, 0, time.UTC)
+	harness := setupJobConfig(t, []string{"go-test"}, 1, func() time.Time { return clock })
+	assignment, err := harness.service.Claim(ctx, harness.implementer, factory.WorkerClaimRequest{RequestID: "late-claim", Stages: []factory.Stage{factory.StageImplementation}, ProjectID: &harness.project.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	clock = clock.Add(31 * time.Minute)
+	_, err = harness.service.Report(ctx, harness.implementer, factory.WorkerReportRequest{RequestID: "late-start", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportStartRegistered, ObservedAt: clock, NativeRunID: "late-native"})
+	if factory.ErrorCodeOf(err) != factory.CodeDeadline {
+		t.Fatalf("late start error = %v, want deadline", err)
+	}
+	job, err := harness.service.GetJob(ctx, harness.coordinator, harness.job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobCancellationUnknown || job.Attempts[0].Status != factory.AttemptUnknown {
+		t.Fatalf("late assignment was not retained for reconciliation: %+v", job)
+	}
+}
+
+func TestAcceptanceInProgressCannotBeCancelledBeforeReconciliation(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, candidate := completeImplementationForTest(t, harness, "accept-reconcile")
+	verification := startVerificationForTest(t, harness, "accept-reconcile")
+	job, err := harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "accept-reconcile-check", AttemptID: verification.AttemptID, DispatchID: verification.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "accept-reconcile-verify-native", Outcome: factory.OutcomeSucceeded, CheckStatus: factory.CheckPassed, TerminalReceipt: "check passed"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Review(ctx, harness.reviewer, factory.ReviewRequest{RequestID: "accept-reconcile-review", JobID: job.ID, IfVersion: job.Version, CandidateRevision: candidate, RequirementFingerprint: job.Admission.TicketSHA256, Decision: factory.ReviewApproved, Summary: "independent approval"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	evidencePath := filepath.Join(harness.repository, ".factory-evidence", string(harness.project.ID), string(job.ID)+".json")
+	if err := os.MkdirAll(filepath.Dir(evidencePath), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(evidencePath, []byte("conflicting destination"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	request := factory.AcceptRequest{RequestID: "accept-reconcile", JobID: job.ID, IfVersion: job.Version, CandidateRevision: candidate, RequirementFingerprint: job.Admission.TicketSHA256, Summary: "reconciled acceptance"}
+	if _, err := harness.service.Accept(ctx, harness.reviewer, request); factory.ErrorCodeOf(err) != factory.CodeStale {
+		t.Fatalf("blocked publication error = %v, want stale", err)
+	}
+	job, err = harness.service.GetJob(ctx, harness.coordinator, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := harness.service.Action(ctx, harness.coordinator, factory.JobActionRequest{RequestID: "cancel-accepting", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionCancel}); factory.ErrorCodeOf(err) != factory.CodeConflict {
+		t.Fatalf("cancel accepting error = %v, want conflict", err)
+	}
+	if err := os.Remove(evidencePath); err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Accept(ctx, harness.reviewer, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobAccepted {
+		t.Fatalf("reconciled acceptance = %+v", job)
+	}
+}
+
+func TestReplacementVerificationSupersedesUnknownAttempt(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, _ := completeImplementationForTest(t, harness, "replacement")
+	first := startVerificationForTest(t, harness, "replacement-first")
+	job, err := harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "replacement-unknown", AttemptID: first.AttemptID, DispatchID: first.DispatchID, Kind: factory.ReportUnknown, ObservedAt: time.Now(), NativeRunID: "replacement-first-verify-native", Outcome: factory.OutcomeUnknown, TerminalReceipt: "first verifier did not start"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Action(ctx, harness.admin, factory.JobActionRequest{RequestID: "replacement-resolve", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionResolve, AttemptID: &first.AttemptID, Resolution: factory.ResolutionNotStarted, Evidence: "receipt proves the first verifier did not start"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := startVerificationForTest(t, harness, "replacement-second")
+	job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "replacement-pass", AttemptID: replacement.AttemptID, DispatchID: replacement.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "replacement-second-verify-native", Outcome: factory.OutcomeSucceeded, CheckStatus: factory.CheckPassed, TerminalReceipt: "replacement passed"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobReadyForReview {
+		t.Fatalf("superseded unknown check blocked replacement: %+v", job)
+	}
+}
+
+func TestRepairAfterReplacementUsesNewVerificationGeneration(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, _ := completeImplementationForTest(t, harness, "generation-first")
+	first := startVerificationForTest(t, harness, "generation-first")
+	job, err := harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "generation-unknown", AttemptID: first.AttemptID, DispatchID: first.DispatchID, Kind: factory.ReportUnknown, ObservedAt: time.Now(), NativeRunID: "generation-first-verify-native", Outcome: factory.OutcomeUnknown, TerminalReceipt: "first verifier did not start"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Action(ctx, harness.admin, factory.JobActionRequest{RequestID: "generation-resolve", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionResolve, AttemptID: &first.AttemptID, Resolution: factory.ResolutionNotStarted, Evidence: "receipt proves the first verifier did not start"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	replacement := startVerificationForTest(t, harness, "generation-replacement")
+	job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "generation-fail", AttemptID: replacement.AttemptID, DispatchID: replacement.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "generation-replacement-verify-native", Outcome: factory.OutcomeFailed, CheckStatus: factory.CheckFailed, TerminalReceipt: "replacement failed"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Action(ctx, harness.coordinator, factory.JobActionRequest{RequestID: "generation-repair", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionRepair})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, _ = completeImplementationForTest(t, harness, "generation-repaired")
+	verification := startVerificationForTest(t, harness, "generation-repaired")
+	job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "generation-repaired-pass", AttemptID: verification.AttemptID, DispatchID: verification.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "generation-repaired-verify-native", Outcome: factory.OutcomeSucceeded, CheckStatus: factory.CheckPassed, TerminalReceipt: "repaired candidate passed"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if job.Status != factory.JobReadyForReview {
+		t.Fatalf("new verification generation did not pass: %+v", job)
 	}
 }
 

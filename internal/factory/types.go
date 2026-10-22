@@ -403,6 +403,9 @@ type Attempt struct {
 	StartedAt             *time.Time    `json:"startedAt,omitempty"`
 	FinishedAt            *time.Time    `json:"finishedAt,omitempty"`
 	CancellationRequested bool          `json:"cancellationRequested"`
+	Summary               string        `json:"summary,omitempty"`
+	TerminalReceipt       string        `json:"terminalReceipt,omitempty"`
+	Artifacts             []Artifact    `json:"artifacts"`
 }
 
 type CheckResult struct {

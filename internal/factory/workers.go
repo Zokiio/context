@@ -241,6 +241,47 @@ func (s *Service) Report(ctx context.Context, actor Principal, request WorkerRep
 		if err := authorizeWorkerStage(ctx, tx, current, attempt); err != nil {
 			return Job{}, err
 		}
+		if request.NativeRunID == "" {
+			return Job{}, fault(CodeInvalid, "start registration requires nativeRunId", nil)
+		}
+		if attempt.Status == AttemptUnknown && attempt.NativeRunID == request.NativeRunID {
+			if attempt.CancellationRequested {
+				return Job{}, fault(CodeDeadline, "job deadline elapsed before start registration", nil)
+			}
+			return Job{}, fault(CodeUncertain, "worker lease expired before start registration", nil)
+		}
+		if attempt.Status == AttemptAssigned {
+			now := s.state.now().UTC()
+			deadlineElapsed := !now.Before(attempt.Admission.Deadline)
+			leaseExpired := attempt.LeaseExpiresAt == nil || !now.Before(*attempt.LeaseExpiresAt)
+			if deadlineElapsed || leaseExpired {
+				checkStatus := attempt.CheckStatus
+				if attempt.Stage == StageVerification {
+					checkStatus = CheckUnknown
+				}
+				cancellationRequested := attempt.CancellationRequested || deadlineElapsed
+				if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,check_status=?,native_run_id=?,cancellation_requested=? WHERE id=?`, AttemptUnknown, OutcomeUnknown, checkStatus, request.NativeRunID, boolInt(cancellationRequested), attempt.ID); err != nil {
+					return Job{}, fault(CodeInternal, "retain expired pre-start assignment", err)
+				}
+				jobStatus := JobImplementationUnknown
+				if cancellationRequested {
+					jobStatus = JobCancellationUnknown
+				}
+				if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, jobStatus, formatTime(now), attempt.JobID); err != nil {
+					return Job{}, fault(CodeInternal, "retain expired pre-start job", err)
+				}
+				if _, err := appendEvent(ctx, tx, attempt.JobID, &current.UserID, "worker_start_rejected", map[string]any{"attemptId": attempt.ID, "deadlineElapsed": deadlineElapsed, "leaseExpired": leaseExpired}, now); err != nil {
+					return Job{}, err
+				}
+				if err := tx.Commit(); err != nil {
+					return Job{}, fault(CodeInternal, "commit rejected worker start", err)
+				}
+				if deadlineElapsed {
+					return Job{}, fault(CodeDeadline, "job deadline elapsed before start registration", nil)
+				}
+				return Job{}, fault(CodeUncertain, "worker lease expired before start registration", nil)
+			}
+		}
 		if err := validateAdmissionFresh(ctx, tx, attempt.ProjectID, mustWorkItem(ctx, tx, attempt.JobID), attempt.Admission); err != nil {
 			return Job{}, err
 		}
@@ -305,6 +346,11 @@ func (s *Service) Report(ctx context.Context, actor Principal, request WorkerRep
 			}
 		default:
 			return Job{}, fault(CodeInvalid, "unknown worker report kind", nil)
+		}
+		if summary := strings.TrimSpace(request.Summary); summary != "" {
+			if _, err := tx.ExecContext(ctx, `UPDATE attempts SET summary=? WHERE id=?`, summary, attempt.ID); err != nil {
+				return Job{}, fault(CodeInternal, "retain worker report summary", err)
+			}
 		}
 		if _, err := appendEvent(ctx, tx, attempt.JobID, &current.UserID, "worker_reported", map[string]any{"attemptId": attempt.ID, "kind": request.Kind, "outcome": request.Outcome, "checkStatus": request.CheckStatus}, now); err != nil {
 			return Job{}, err
@@ -381,6 +427,10 @@ func (s *Service) finishImplementation(ctx context.Context, tx *sql.Tx, attempt 
 		if attempt.CancellationRequested {
 			jobStatus, active = JobCancelled, 0
 		} else {
+			var verificationOrdinal int
+			if err := tx.QueryRowContext(ctx, `SELECT COALESCE(max(ordinal),0)+1 FROM attempts WHERE job_id=? AND stage=?`, attempt.JobID, StageVerification).Scan(&verificationOrdinal); err != nil {
+				return fault(CodeInternal, "number verification generation", err)
+			}
 			for _, check := range attempt.Admission.RequiredChecks {
 				id, err := newID("att_")
 				if err != nil {
@@ -391,7 +441,7 @@ func (s *Service) finishImplementation(ctx context.Context, tx *sql.Tx, attempt 
 					return fault(CodeInternal, "create verification dispatch", err)
 				}
 				path := s.workspacePath(attempt.JobID, AttemptID(id))
-				if _, err := tx.ExecContext(ctx, `INSERT INTO attempts(id,job_id,stage,ordinal,check_key,dispatch_id,workspace_path,input_revision,candidate_revision,status) VALUES(?,?,?,?,?,?,?,?,?,?)`, id, attempt.JobID, StageVerification, attempt.Ordinal, check, dispatch, path, candidate, candidate, AttemptPending); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO attempts(id,job_id,stage,ordinal,check_key,dispatch_id,workspace_path,input_revision,candidate_revision,status) VALUES(?,?,?,?,?,?,?,?,?,?)`, id, attempt.JobID, StageVerification, verificationOrdinal, check, dispatch, path, candidate, candidate, AttemptPending); err != nil {
 					return fault(CodeInternal, "queue verification", err)
 				}
 			}
@@ -444,14 +494,20 @@ func (s *Service) finishVerification(ctx context.Context, tx *sql.Tx, actor Prin
 	}
 	jobStatus := JobVerificationFailed
 	var incomplete int
-	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts WHERE job_id=? AND stage=? AND candidate_revision=? AND (status<>? OR check_status<>?)`, attempt.JobID, StageVerification, attempt.CandidateRevision, AttemptSucceeded, CheckPassed).Scan(&incomplete); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts current
+		WHERE current.job_id=? AND current.stage=? AND current.candidate_revision=?
+		AND current.ordinal=(SELECT max(latest.ordinal) FROM attempts latest WHERE latest.job_id=current.job_id AND latest.stage=current.stage AND latest.candidate_revision=current.candidate_revision AND latest.check_key=current.check_key)
+		AND (current.status<>? OR current.check_status<>?)`, attempt.JobID, StageVerification, attempt.CandidateRevision, AttemptSucceeded, CheckPassed).Scan(&incomplete); err != nil {
 		return fault(CodeInternal, "inspect required checks", err)
 	}
 	if incomplete == 0 {
 		jobStatus = JobReadyForReview
 	} else {
 		var pending int
-		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts WHERE job_id=? AND stage=? AND candidate_revision=? AND status IN (?,?,?,?,?)`, attempt.JobID, StageVerification, attempt.CandidateRevision, AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged).Scan(&pending); err != nil {
+		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts current
+			WHERE current.job_id=? AND current.stage=? AND current.candidate_revision=?
+			AND current.ordinal=(SELECT max(latest.ordinal) FROM attempts latest WHERE latest.job_id=current.job_id AND latest.stage=current.stage AND latest.candidate_revision=current.candidate_revision AND latest.check_key=current.check_key)
+			AND current.status IN (?,?,?,?,?)`, attempt.JobID, StageVerification, attempt.CandidateRevision, AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged).Scan(&pending); err != nil {
 			return fault(CodeInternal, "inspect pending checks", err)
 		}
 		if pending > 0 {
@@ -463,14 +519,20 @@ func (s *Service) finishVerification(ctx context.Context, tx *sql.Tx, actor Prin
 	}
 	activeClaim := 1
 	if attempt.CancellationRequested {
-		var remaining int
-		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts WHERE job_id=? AND id<>? AND status IN (?,?,?,?,?,?)`, attempt.JobID, attempt.ID, AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged, AttemptUnknown).Scan(&remaining); err != nil {
+		var remaining, uncertain int
+		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts WHERE job_id=? AND status IN (?,?,?,?,?,?)`, attempt.JobID, AttemptPending, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged, AttemptUnknown).Scan(&remaining); err != nil {
 			return fault(CodeInternal, "inspect cancelling verification attempts", err)
 		}
 		if remaining == 0 {
 			jobStatus, activeClaim = JobCancelled, 0
 		} else {
+			if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM attempts WHERE job_id=? AND status=?`, attempt.JobID, AttemptUnknown).Scan(&uncertain); err != nil {
+				return fault(CodeInternal, "inspect uncertain cancelling attempts", err)
+			}
 			jobStatus = JobCancelRequested
+			if uncertain > 0 {
+				jobStatus = JobCancellationUnknown
+			}
 		}
 	}
 	if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,active_claim=?, version=version+1, updated_at=? WHERE id=?`, jobStatus, activeClaim, formatTime(now), attempt.JobID); err != nil {

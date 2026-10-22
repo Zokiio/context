@@ -228,6 +228,7 @@ CREATE TABLE IF NOT EXISTS attempts (
   started_at TEXT,
   finished_at TEXT,
   cancellation_requested INTEGER NOT NULL DEFAULT 0,
+  summary TEXT NOT NULL DEFAULT '',
   terminal_receipt TEXT NOT NULL DEFAULT '',
   UNIQUE(job_id, stage, ordinal, check_key)
 );
@@ -291,7 +292,42 @@ CREATE TABLE IF NOT EXISTS acceptance_writes (
   error TEXT NOT NULL DEFAULT '',
   updated_at TEXT NOT NULL
 );`
-	_, err := db.Exec(schema)
+	if _, err := db.Exec(schema); err != nil {
+		return err
+	}
+	return ensureColumn(db, "attempts", "summary", `ALTER TABLE attempts ADD COLUMN summary TEXT NOT NULL DEFAULT ''`)
+}
+
+func ensureColumn(db *sql.DB, table, column, statement string) error {
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil {
+		return err
+	}
+	found := false
+	for rows.Next() {
+		var ordinal int
+		var name, dataType string
+		var notNull, primaryKey int
+		var defaultValue sql.NullString
+		if err := rows.Scan(&ordinal, &name, &dataType, &notNull, &defaultValue, &primaryKey); err != nil {
+			rows.Close()
+			return err
+		}
+		if name == column {
+			found = true
+		}
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return err
+	}
+	if err := rows.Close(); err != nil {
+		return err
+	}
+	if found {
+		return nil
+	}
+	_, err = db.Exec(statement)
 	return err
 }
 
