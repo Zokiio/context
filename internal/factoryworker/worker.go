@@ -7,6 +7,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/Zokiio/context/internal/factory"
@@ -93,7 +96,7 @@ func (w *Worker) Once(ctx context.Context) (Receipt, error) {
 				return
 			case <-timer.C:
 				callCtx, cancel := context.WithTimeout(heartbeatCtx, 5*time.Second)
-				h, err := w.Client.Heartbeat(callCtx, factory.HeartbeatRequest{RequestID: requestID("heartbeat", a.DispatchID+fmt.Sprint(time.Now().UnixNano())), AttemptID: a.AttemptID, DispatchID: a.DispatchID})
+				h, err := w.Client.Heartbeat(callCtx, factory.HeartbeatRequest{RequestID: requestID("heartbeat", a.DispatchID+fmt.Sprint(time.Now().UnixNano())), AttemptID: a.AttemptID, DispatchID: a.DispatchID, Progress: latestProgress(w.Process.progressPath(string(a.AttemptID)))})
 				cancel()
 				if err == nil && h.Directive == factory.DirectiveCancel {
 					// Acknowledgement says only that the wrapper forwarded the request.
@@ -206,4 +209,28 @@ func (w *Worker) report(ctx context.Context, r factory.WorkerReportRequest) erro
 func requestID(prefix, input string) string {
 	h := sha256.Sum256([]byte(input))
 	return prefix + "-" + hex.EncodeToString(h[:16])
+}
+
+// latestProgress returns the last nonempty line of a command's progress file, reading
+// at most its final 4 KiB.
+func latestProgress(path string) string {
+	f, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+	info, err := f.Stat()
+	if err != nil {
+		return ""
+	}
+	offset := info.Size() - 4096
+	if offset < 0 {
+		offset = 0
+	}
+	buf := make([]byte, info.Size()-offset)
+	if _, err := f.ReadAt(buf, offset); err != nil && !errors.Is(err, io.EOF) {
+		return ""
+	}
+	lines := strings.Split(strings.TrimRight(string(buf), "\r\n"), "\n")
+	return strings.TrimSpace(lines[len(lines)-1])
 }

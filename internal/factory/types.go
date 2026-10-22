@@ -538,6 +538,9 @@ type HeartbeatRequest struct {
 	RequestID  string    `json:"requestId"`
 	AttemptID  AttemptID `json:"attemptId"`
 	DispatchID string    `json:"dispatchId"`
+	// Progress is the latest note the running command wrote, such as a finished
+	// checkpoint. It is an observation for operators, not evidence.
+	Progress string `json:"progress,omitempty"`
 }
 
 type HeartbeatResult struct {

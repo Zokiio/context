@@ -207,6 +207,9 @@ func (s *Service) Heartbeat(ctx context.Context, actor Principal, request Heartb
 		if attempt.CancellationRequested {
 			directive = DirectiveCancel
 		}
+		if err := recordProgress(ctx, tx, attempt, request.Progress, now); err != nil {
+			return HeartbeatResult{}, err
+		}
 		result := HeartbeatResult{AttemptID: attempt.ID, Directive: directive, LeaseExpiresAt: lease}
 		if err := saveReceipt(ctx, tx, current.UserID, "heartbeat", request.RequestID, hash, result, false, now); err != nil {
 			return HeartbeatResult{}, err
@@ -1009,4 +1012,30 @@ func (state *serviceState) recoverInterruptedAttempts(ctx context.Context) error
 		return fault(CodeInternal, "commit interrupted-attempt recovery", err)
 	}
 	return nil
+}
+
+const maxProgressRunes = 300
+
+// recordProgress appends a worker_progress event when the running command reports a
+// note that differs from its previous one.
+func recordProgress(ctx context.Context, tx *sql.Tx, attempt attemptRecord, progress string, now time.Time) error {
+	progress = strings.TrimSpace(progress)
+	if progress == "" {
+		return nil
+	}
+	if runes := []rune(progress); len(runes) > maxProgressRunes {
+		progress = string(runes[:maxProgressRunes])
+	}
+	var last string
+	if err := tx.QueryRowContext(ctx, `SELECT progress FROM attempts WHERE id=?`, attempt.ID).Scan(&last); err != nil {
+		return fault(CodeInternal, "read attempt progress", err)
+	}
+	if last == progress {
+		return nil
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE attempts SET progress=? WHERE id=?`, progress, attempt.ID); err != nil {
+		return fault(CodeInternal, "save attempt progress", err)
+	}
+	_, err := appendEvent(ctx, tx, attempt.JobID, nil, "worker_progress", map[string]any{"attemptId": attempt.ID, "progress": progress}, now)
+	return err
 }

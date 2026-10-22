@@ -107,3 +107,9 @@ func (s *Service) rejectProtectedCandidate(ctx context.Context, tx *sql.Tx, atte
 	_, err := appendEvent(ctx, tx, attempt.JobID, nil, "protected_paths_changed", map[string]any{"attemptId": attempt.ID, "candidateRevision": candidate, "paths": paths}, now)
 	return err
 }
+
+// MatchProtectedPath reports whether a repository-relative file matches a normalized
+// protected path pattern. Adapters use it to warn before the controller rejects.
+func MatchProtectedPath(pattern, file string) bool {
+	return protectedMatch(pattern, file)
+}

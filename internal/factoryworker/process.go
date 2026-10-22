@@ -278,6 +278,12 @@ func (p *Process) Read(id string) (Receipt, error) {
 	e = json.Unmarshal(b, &r)
 	return r, e
 }
+
+// progressPath is where a running command may append progress notes. The worker
+// forwards the latest line with each heartbeat.
+func (p *Process) progressPath(id string) string {
+	return filepath.Join(filepath.Dir(p.receiptPath(id)), "progress.txt")
+}
 func (p *Process) receiptPath(id string) string {
 	h := sha256.Sum256([]byte(id))
 	return filepath.Join(p.ReceiptDir, hex.EncodeToString(h[:]), "receipt.json")
@@ -337,7 +343,7 @@ func (p *Process) invoke(ctx context.Context, a Assignment, c Command, input []b
 	cmd.Stdin = bytes.NewReader(input)
 	cmd.Stdout = log
 	cmd.Stderr = log
-	cmd.Env = append(os.Environ(), "CTX_FACTORY_ASSIGNMENT="+assignmentPath, "CTX_FACTORY_CONTEXT="+contextPath, "CTX_FACTORY_ATTEMPT="+a.AttemptID)
+	cmd.Env = append(os.Environ(), "CTX_FACTORY_ASSIGNMENT="+assignmentPath, "CTX_FACTORY_CONTEXT="+contextPath, "CTX_FACTORY_ATTEMPT="+a.AttemptID, "CTX_FACTORY_PROGRESS="+p.progressPath(a.AttemptID))
 	if err := configureProcess(cmd); err != nil {
 		o.Status = "unavailable"
 		o.Log = err.Error()
