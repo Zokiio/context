@@ -401,7 +401,7 @@ func readProjectByIdentity(ctx context.Context, q queryer, projectID ProjectID, 
 }
 
 func sameProjectRegistration(left, right Project) bool {
-	left.CreatedAt, right.CreatedAt = right.CreatedAt, right.CreatedAt
+	left.CreatedAt = right.CreatedAt
 	l, _ := json.Marshal(left)
 	r, _ := json.Marshal(right)
 	return string(l) == string(r)
