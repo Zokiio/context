@@ -2,7 +2,7 @@
 
 Waymark is a local-first, Git-native software factory, built around a reusable Go core. It owns project intent, versioned requirements, readiness, orchestration policy, and acceptance. Existing coding agents execute scoped work through adapters. CLI, service, and web interfaces use the same application services. Jira and GitHub connections are optional.
 
-The CLI implements context assembly, session orientation, recovery readers, and project setup. This document also records the intended factory platform and the read-only bootstrap that preceded it. Factory execution and shared access are the next delivery phase.
+The CLI implements context assembly, session orientation, recovery readers, project setup, and factory operations. The local factory platform adds a durable service, a shared web workspace, project permissions, and external process workers. The [operator guide](factory-platform.md) exercises the platform with offline fixture workers. Live-provider compatibility and operational deployment require separate verification. This document also retains the read-only bootstrap milestone that preceded the platform.
 
 ## Problem and responsibility
 
