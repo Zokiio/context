@@ -20,6 +20,13 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Persist factory jobs and enforce their lifecycle](factory-platform/issues/01-durable-controller.md)
+- [Execute scoped assignments in isolated workspaces](factory-platform/issues/02-workspace-workers.md)
+- [Expose one authenticated factory service](factory-platform/issues/03-authenticated-service.md)
+- [Operate the factory through the ctx CLI](factory-platform/issues/04-factory-cli.md)
+- [Operate shared projects and jobs in the web workspace](factory-platform/issues/05-web-workspace.md)
+- [Verify and document the complete factory platform](factory-platform/issues/06-complete-platform.md)
+
 - [Check that a requirement is reachable before adopting it](workflow-feedback/issues/01-reachable-requirements.md)
 - [Continue orchestration from records at checkpoint boundaries](workflow-feedback/issues/02-checkpoint-boundary-continuation.md)
 - [Record each dispatch in one step and read packets by section](workflow-feedback/issues/03-dispatch-bookkeeping.md)
@@ -29,6 +36,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 - [Decide an implementer's open questions before review](workflow-feedback/issues/07-decide-open-questions.md)
 
 ## Commitment notes
+
+2026-10-22: The user selected the complete factory platform, including the core, service, CLI, web workspace and shared multi-user access. Gups pilot work follows whole-platform acceptance. Earlier commitments are preserved.
 
 2026-10-06: The user selected all seven workflow feedback WorkItems and made the choices that tickets 02 and 04 record.
 
