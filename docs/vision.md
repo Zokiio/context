@@ -1,14 +1,14 @@
 # Product vision
 
-Waymark is a local-first, Git-native project and context management system, built around a reusable Go core and delivered first as a CLI. Jira and GitHub connections are optional. Future TUI and web interfaces use the same application services.
+Waymark is a local-first, Git-native software factory, built around a reusable Go core. It owns project intent, versioned requirements, readiness, orchestration policy, and acceptance. Existing coding agents execute scoped work through adapters. CLI, service, and web interfaces use the same application services. Jira and GitHub connections are optional.
 
-This document records the intended product and bootstrap plan. The product is not implemented yet. Its work-item schema, package layout, and interface libraries remain open.
+The CLI implements context assembly, session orientation, recovery readers, and project setup. This document also records the intended factory platform and the read-only bootstrap that preceded it. Factory execution and shared access are the next delivery phase.
 
 ## Problem and responsibility
 
 Agent sessions lose project context, and their work can diverge from agreed goals and architectural boundaries. Humans compensate by repeating decisions, reconstructing project state, and manually maintaining status reports. The product makes project understanding durable and actionable so humans can direct several agents without reconstructing that understanding for each session.
 
-The product first owns project records, context assembly, and queries about ready work, blockers, and inconsistencies. Agent runners can use those operations. Launching agents, assigning tasks to them, and managing their execution remain a separate, later capability.
+The existing product owns project records, context assembly, and queries about ready work, blockers, and inconsistencies. The factory platform adds a durable controller for assignment, bounded execution, evidence, review, and acceptance. Its operational state remains separate from authored project knowledge.
 
 The first user is the project's author. A possible next pilot is a small team working in a smaller monorepo within an enterprise. The solo workflow comes first; the pilot can test shared conventions and project boundaries in an existing repository.
 
@@ -121,6 +121,8 @@ The bootstrap layout is temporary. A later importer can translate it when the pr
 
 ## First milestone
 
+The first read-only milestone below established the reader foundation. The current factory direction and its sequencing are recorded under [Factory platform delivery](#factory-platform-delivery).
+
 Given an explicit project directory and ticket path, assemble context containing the ticket, its dependencies, and explicitly linked project documents. The project directory locates records and need not be a Git root.
 
 The result includes the source text, file path, and reason for inclusion for each selected record.
@@ -168,6 +170,16 @@ Agents save progress after meaningful decisions, completed steps, and verificati
 During discovery, agents propose focused record updates as conclusions emerge. Confirmed goals and decisions become authoritative; unresolved ideas remain discovery material. Retain references to source conversations or documents when available.
 
 Begin inconsistency detection with deterministic checks for broken links, missing required information, and absent or outdated evidence. Later agent-assisted reviews can identify contradictions between code and prose. Present those findings separately from mechanically verified failures.
+
+## Factory platform delivery
+
+On 22 October 2026, the user selected the complete factory platform before target-project pilot work. Deliver the durable workflow core, service, CLI, web workspace, and shared multi-user access. Keep the existing readers usable independently.
+
+One controller owns claims, dispatch, bounded repair, and reconciliation. Existing coding-agent environments retain their execution behavior. An external workflow engine may support the controller after explicit selection; none is required by this product decision.
+
+The platform must demonstrate its own complete workflow, failure handling, recovery, access controls, and evidence-based acceptance using offline fixture workers. Its implementation outcomes are defined in the [factory platform specification](../.scratch/factory-platform/spec.md).
+
+Gups is the first intended development target after the platform is ready. Developing Gups must not depend on running Gups or building a Gups execution adapter. A later Gups backend is a separate integration decision.
 
 ## Broader acceptance scenario
 

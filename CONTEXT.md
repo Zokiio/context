@@ -60,6 +60,18 @@ An unresolved choice explicitly linked as a blocker of a work item. Its effect o
 The record identifying the agent responsible for active implementation of a work item. A work item has at most one active implementation claim, distinct from its human assignment.
 _Avoid_: Human assignee, work readiness
 
+**Factory**:
+The system that turns accepted project intent into bounded development work, gathers completion evidence, and evaluates acceptance under project policy.
+
+**Factory job**:
+One coordinated effort to implement a work item against an identified requirement version. Its attempts and workflow outcomes remain distinct from the work item's authored execution state.
+
+**Execution attempt**:
+One identified invocation of a worker for a factory job. Retrying work creates a new attempt and preserves the original outcome.
+
+**Worker**:
+An execution participant that performs a scoped factory assignment and returns observations. A worker's successful execution does not itself accept the work item.
+
 **Specification**:
 A description of the desired behavior for a feature or change that one or more work items implement.
 
