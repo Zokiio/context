@@ -3,7 +3,7 @@ type: WorkItem
 id: b5dd7cb0-1929-474a-9dea-5c7b4259961d
 title: Apply the dark theme and typography to the factory workspace
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 ## Acceptance criteria
@@ -27,3 +27,4 @@ None
 
 ## Acceptance
 
+- [Current local acceptance](../acceptances/01-workspace-theme-2026-10-23.md)
