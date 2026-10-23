@@ -29,6 +29,8 @@ const ICONS = {
 	sun: ['M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41', 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z'],
 	eye: ['M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
 	arrow: ['M5 12h14M12 5l7 7-7 7'],
+	plus: ['M12 5v14M5 12h14'],
+	pencil: ['M12 20h9', 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'],
 };
 function icon(name, size = 18) {
 	const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -243,7 +245,8 @@ function boardHead(board, view) {
 	const title = needs.length === 0 ? 'Nothing needs you' : needs.length === 1 ? '1 thing needs you' : needs.length + ' things need you';
 	const line = [plural(board.running, 'agent working', 'agents working'), board.mergedToday + ' merged today', autopilotLine(board)].join(' · ');
 	const views = element('nav', { class: 'segmented', 'aria-label': 'View' }, element('a', { href: '#board', 'aria-current': view === 'board' ? 'page' : null }, 'Board'), element('a', { href: '#list', 'aria-current': view === 'list' ? 'page' : null }, 'List'), element('a', { href: '#graph', 'aria-current': view === 'graph' ? 'page' : null }, 'Graph'));
-	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
+	const add = can('coordinate') ? button('Add work', () => openWorkSheet()) : null;
+	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, add, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
 }
 function who(key, board) {
 	const ask = board.project.policy.ask || {};
@@ -263,7 +266,8 @@ function columnElement(board, key, name) {
 	const [label, you] = who(key, board);
 	return element('section', { class: 'column', 'aria-label': name },
 		element('div', { class: 'column-head' }, element('span', {}, element('h2', {}, name), element('span', { class: 'count' }, entries.length)), label ? element('span', { class: 'who' + (you ? ' you' : '') }, label) : null),
-		entries.length ? entries.map(cardElement) : element('p', { class: 'column-empty' }, { next: 'Nothing waiting.', plan: 'Nothing being planned.', build: 'Nothing being built.', approve: 'Nothing to approve.', merge: 'Nothing merging.', done: 'Nothing merged yet.' }[key]));
+		entries.length ? entries.map(cardElement) : element('p', { class: 'column-empty' }, { next: 'Nothing waiting.', plan: 'Nothing being planned.', build: 'Nothing being built.', approve: 'Nothing to approve.', merge: 'Nothing merging.', done: 'Nothing merged yet.' }[key]),
+		key === 'next' && can('coordinate') ? element('button', { type: 'button', class: 'add-work', onclick: () => openWorkSheet() }, icon('plus', 16), 'Add work') : null);
 }
 function cardAction(card) {
 	if (card.decision === 'plan') return card.questions ? 'Answer' : card.state === 'needs_you' ? 'Review the plan' : 'Start';
@@ -313,6 +317,122 @@ async function listPage() {
 		needs.length ? element('section', { class: 'stack', 'aria-label': 'Needs you' }, needs.map(row)) : empty('Nothing needs you', 'Everything else runs by itself or waits for its turn.'),
 		running.length ? element('section', { class: 'stack' }, element('h2', { class: 'section' }, 'Agents working'), element('div', { class: 'surface compact' }, running.map((card) => element('a', { class: 'list-row', href: card.jobId ? '#job/' + e(card.jobId) : '#item/' + e(card.workItemId) }, element('span', { class: 'dot', 'aria-hidden': 'true' }), element('span', { class: 'grow' }, element('strong', {}, card.title), element('span', { class: 'card-status' }, card.status)), elapsed(card.since))))) : null,
 		element('div', { class: 'row' }, element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow' }, 'Up next · ' + next.length), element('span', { class: 'fine' }, next.map((card) => card.title).join(', ') || 'Nothing waiting.')), element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow ok' }, 'Merged today · ' + done.length), element('span', { class: 'fine' }, done.map((card) => card.title).join(', ') || 'Nothing yet.'))));
+}
+
+// Adding and editing work items
+
+// workForm edits a work item's title, description, requirements and dependencies, and
+// asks the decision model about each requirement while the person types.
+function workForm(board, draft, selfId) {
+	const values = { title: draft.title || '', description: draft.description || '', criteria: list(draft.criteria).length ? [...draft.criteria] : [''], blockedBy: [...list(draft.blockedBy)] };
+	const title = element('input', { type: 'text', value: values.title, maxLength: 200, required: true, oninput: (event) => { values.title = event.target.value; score(); } });
+	const description = element('textarea', { rows: 3, value: values.description, oninput: (event) => { values.description = event.target.value; } });
+	const rows = element('div', { class: 'stack tight' });
+	const vague = element('div', { class: 'callout warn', hidden: true });
+	const others = cards(board).filter((card) => card.workItemId !== selfId);
+	const deps = element('div', { class: 'dep-row' });
+	let signals = null, timer = 0;
+	const badgeFor = (index) => {
+		if (!signals || signals.status !== 'observed' || !values.criteria[index].trim()) return null;
+		const position = values.criteria.slice(0, index).filter((text) => text.trim()).length;
+		const signal = list(signals.criteria)[position];
+		if (!signal) return null;
+		return element('span', { class: 'card-fact ' + (signal.flagged ? 'warn' : 'ok') }, signal.flagged ? 'Looks vague' : 'Checkable');
+	};
+	const drawRows = () => {
+		rows.replaceChildren(...values.criteria.map((text, index) => element('div', { class: 'requirement-row' },
+			element('span', { class: 'requirement-number', 'aria-hidden': 'true' }, String(index + 1)),
+			element('textarea', { rows: 2, value: text, 'aria-label': 'Requirement ' + (index + 1), placeholder: 'A result someone could check as met or not', oninput: (event) => { values.criteria[index] = event.target.value; score(); } }),
+			element('span', { class: 'requirement-side' }, badgeFor(index), values.criteria.length > 1 ? element('button', { type: 'button', class: 'button quiet', 'aria-label': 'Remove requirement ' + (index + 1), onclick: () => { values.criteria.splice(index, 1); drawRows(); score(); } }, 'Remove') : null))));
+		const flagged = signals && signals.status === 'observed' ? list(signals.criteria).filter((signal) => signal.flagged).length : 0;
+		vague.hidden = !flagged;
+		vague.replaceChildren(element('p', {}, plural(flagged, 'requirement looks', 'requirements look') + ' vague. You can save anyway: an agent sharpens it and asks you before anything is built.'));
+	};
+	const drawDeps = () => {
+		const chosen = values.blockedBy.map((id) => others.find((card) => card.workItemId === id) || { workItemId: id, title: id });
+		const picker = element('select', { 'aria-label': 'Add a dependency', onchange: (event) => { if (event.target.value) { values.blockedBy.push(event.target.value); drawDeps(); } } },
+			element('option', { value: '' }, 'Add a dependency'), others.filter((card) => !values.blockedBy.includes(card.workItemId)).map((card) => element('option', { value: card.workItemId }, card.title)));
+		deps.replaceChildren(...chosen.map((card) => element('span', { class: 'dep-chip' }, card.title, element('button', { type: 'button', 'aria-label': 'Remove the dependency on ' + card.title, onclick: () => { values.blockedBy = values.blockedBy.filter((id) => id !== card.workItemId); drawDeps(); } }, icon('close', 14)))), picker);
+	};
+	const score = () => {
+		clearTimeout(timer);
+		timer = setTimeout(async () => {
+			const criteria = values.criteria.filter((text) => text.trim());
+			if (!criteria.length) { signals = null; drawRows(); return; }
+			try { signals = await api('/projects/' + e(state.project) + '/criteria/score', { method: 'POST', body: { title: values.title, criteria } }); } catch { signals = null; }
+			drawRows();
+		}, 600);
+	};
+	drawRows(); drawDeps(); score();
+	const titleId = 'work-title-' + crypto.randomUUID(), descriptionId = 'work-description-' + crypto.randomUUID();
+	title.id = titleId; description.id = descriptionId;
+	const form = element('div', { class: 'stack loose work-form' },
+		element('div', { class: 'field' }, element('label', { htmlFor: titleId }, 'Title'), title),
+		element('div', { class: 'field' }, element('label', { htmlFor: descriptionId }, 'What and why ', element('span', { class: 'fine' }, 'optional')), description),
+		element('fieldset', { class: 'stack' }, element('legend', {}, 'Done when'), element('p', { class: 'fine' }, 'One result per line that someone could check as met or not. The locked tests are written from these.'), rows,
+			element('button', { type: 'button', class: 'add-work inline', onclick: () => { values.criteria.push(''); drawRows(); rows.querySelector('.requirement-row:last-child textarea')?.focus(); } }, icon('plus', 16), 'Add a requirement'), vague),
+		element('div', { class: 'stack tight' }, element('span', { class: 'field-label' }, 'Depends on'), deps, element('span', { class: 'fine' }, 'It waits in Up next until these are merged.')));
+	return { form, draft: () => ({ title: values.title, description: values.description, criteria: values.criteria.filter((text) => text.trim()), blockedBy: values.blockedBy }) };
+}
+// openWorkSheet adds a work item from a side panel over the board.
+async function openWorkSheet() {
+	const board = state.board || await loadBoard();
+	closeDrawer(false);
+	state.drawer = { sheet: 'add' };
+	state.drawerReturn = document.activeElement;
+	const { form, draft } = workForm(board, {}, '');
+	const problem = element('p', { class: 'alert bad', role: 'alert', hidden: true });
+	const save = async (start) => {
+		problem.hidden = true;
+		try {
+			const record = await command('/projects/' + e(state.project) + '/work-items', { draft: draft() });
+			closeDrawer(false);
+			state.flash = 'Added ' + record.draft.title + ' to Up next.';
+			await navigate('board');
+			const card = cards(await loadBoard()).find((entry) => entry.workItemId === record.workItemId);
+			if (start && card) openCard(card);
+		} catch (error) { problem.textContent = error.message; problem.hidden = false; }
+	};
+	const close = element('button', { type: 'button', class: 'icon-button', 'aria-label': 'Close', onclick: () => closeDrawer(true) }, icon('close'));
+	const drawer = element('aside', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Add work' },
+		element('div', { class: 'drawer-head' }, element('div', {}, element('span', { class: 'eyebrow' }, 'New work item · ' + board.project.title), element('h2', {}, 'Add work')), close),
+		element('div', { class: 'stack loose' }, form, problem,
+			element('p', { class: 'fine' }, 'Waymark writes a Markdown file next to your other work items and lists it in the project. Commit it with your other changes.'),
+			element('div', { class: 'actions' }, button('Add to Up next', () => save(false), 'primary'), button('Add and agree what done means', () => save(true)), element('button', { type: 'button', class: 'button quiet', onclick: () => closeDrawer(true) }, 'Cancel'))));
+	$('#drawer-root').replaceChildren(element('button', { type: 'button', class: 'scrim', tabIndex: -1, 'aria-label': 'Close the panel', onclick: () => closeDrawer(true) }), drawer);
+	drawer.querySelector('input')?.focus();
+}
+// workDetails shows a work item's record on its page, with editing in place.
+async function workDetails(workItemId, board) {
+	const record = await api('/projects/' + e(state.project) + '/work-items/' + e(workItemId));
+	const box = element('section', { class: 'surface stack' });
+	const view = () => {
+		const depends = list(record.draft.blockedBy).map((id) => cards(board).find((card) => card.workItemId === id)?.title || id);
+		box.replaceChildren(
+			element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'The work item'), can('coordinate') && !record.frozen ? button('Edit', edit) : null),
+			record.draft.description ? element('p', {}, record.draft.description) : null,
+			element('h3', { class: 'eyebrow' }, 'Done when'),
+			element('ol', { class: 'requirements' }, list(record.draft.criteria).map((text) => element('li', {}, rich(text)))),
+			depends.length ? element('p', { class: 'fine' }, 'Depends on ' + depends.join(', ') + '.') : null,
+			element('p', { class: 'fine' }, record.frozen ? 'A build holds it, so it cannot change until the build ends.' : 'You can edit it until its build starts. The file is ', record.frozen ? null : element('code', { class: 'inline' }, record.path), record.frozen ? null : '.'));
+	};
+	const edit = () => {
+		const { form, draft } = workForm(board, record.draft, workItemId);
+		const problem = element('p', { class: 'alert bad', role: 'alert', hidden: true });
+		box.replaceChildren(element('h2', { class: 'section' }, 'Edit the work item'), form, problem,
+			element('div', { class: 'actions' }, button('Save changes', async () => {
+				problem.hidden = true;
+				try {
+					const saved = await command('/projects/' + e(state.project) + '/work-items/' + e(workItemId), { workItemId, ifTicketSHA256: record.ticketSHA256, draft: draft() }, 'PUT');
+					Object.assign(record, saved);
+					view();
+					notice('Saved.');
+				} catch (error) { problem.textContent = error.message; problem.hidden = false; }
+			}, 'primary'), element('button', { type: 'button', class: 'button quiet', onclick: view }, 'Cancel')));
+		box.querySelector('input')?.focus();
+	};
+	view();
+	return box;
 }
 
 // The work graph
@@ -655,6 +775,7 @@ async function itemPage(workItemId) {
 	if (!card) throw new Error('This work item is not on the board.');
 	if (card.jobId) return jobPage(card.jobId);
 	const main = card.decision === 'plan' ? [element('span', { class: 'eyebrow warn' }, card.state === 'needs_you' ? 'Needs you · agree what done means' : 'Agree what done means'), ...(await planContent(card, 'page'))] : [statusSurface(card)];
+	main.unshift(await workDetails(workItemId, board));
 	return page('wide', pageHead(card, card.title), element('div', { class: 'columns' }, element('div', { class: 'main' }, main), element('div', { class: 'side' }, howItWorks())));
 }
 async function jobPage(id) {

@@ -297,6 +297,19 @@ details.fold > :not(summary) { margin-top: 12px; }
 .step-seg.waiting { background: var(--line-strong); }
 .card-done { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 18px; font-weight: 700; color: var(--ok); }
 .card-done .card-meta { font: inherit; font-weight: 500; color: var(--ink-3); }
+.add-work { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px dashed var(--line-strong); border-radius: 12px; background: transparent; color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.add-work:hover { border-color: var(--action); color: var(--action-text); }
+.add-work.inline { align-self: flex-start; margin-left: 34px; min-height: 40px; }
+.work-form fieldset { margin: 0; padding: 0; border: 0; }
+.work-form legend { padding: 0; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.requirement-row { display: flex; align-items: flex-start; gap: 10px; }
+.requirement-row textarea { flex: 1; min-width: 0; min-height: 64px; }
+.requirement-number { flex: none; width: 24px; padding-top: 11px; text-align: right; font: 500 12px "JetBrains Mono", ui-monospace, monospace; color: var(--ink-3); }
+.requirement-side { flex: none; width: 108px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 8px; }
+.dep-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dep-row select { width: auto; min-height: 36px; padding: 0 28px 0 12px; border-style: dashed; border-radius: 999px; }
+.dep-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 6px 0 12px; border-radius: 999px; background: var(--surface-2); font-size: 13px; font-weight: 600; }
+.dep-chip button { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: transparent; color: var(--ink-3); cursor: pointer; }
 .card-line { font-size: 13px; line-height: 20px; color: var(--ink-2); }
 .card-action { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--action-text); }
 .card-status { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; font-weight: 700; color: var(--info); }
@@ -392,7 +405,7 @@ ul.bare { margin: 0; padding: 0; list-style: none; display: flex; flex-direction
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .field.full { grid-column: 1 / -1; }
-.field label, label.field-label { font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.field label, .field-label { font-size: 13px; font-weight: 700; color: var(--ink-2); }
 input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"], select, textarea { width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--surface); color: var(--ink); font-size: 14px; }
 textarea { resize: vertical; min-height: 88px; line-height: 22px; }
 input:focus, select:focus, textarea:focus { border-color: var(--action); outline: 3px solid var(--action-tint); }

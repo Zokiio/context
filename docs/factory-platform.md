@@ -283,7 +283,7 @@ The caller needs the review, accept, and merge capabilities. Unless the project 
 
 Open the service URL and sign in with a personal token from a private token file. The browser and CLI share projects, jobs, evidence, permissions, and lifecycle operations. Keep tokens out of URLs.
 
-The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. It shows that state, a few short facts such as "3 questions" or "Checks passed", and a bar for its six steps: plan, agree, build, checks, approve, and merge. The header counts what needs you, and its button opens the first one. The Graph view draws the same cards by their `Blocked by` links: each group of connected work is a row, left to right in dependency order, with dashed arrows for dependencies that are still open. `projects board` prints the same projection.
+The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. It shows that state, a few short facts such as "3 questions" or "Checks passed", and a bar for its six steps: plan, agree, build, checks, approve, and merge. The header counts what needs you, and its button opens the first one. Add work writes a new work item, as described in [Add and edit work items](#add-and-edit-work-items). The Graph view draws the same cards by their `Blocked by` links: each group of connected work is a row, left to right in dependency order, with dashed arrows for dependencies that are still open. `projects board` prints the same projection.
 
 A change needs two decisions from a person, each made in a side panel:
 - **Agree what done means**, before the build. Answer the refiner's questions, read or edit the sharpened requirements, or read the locked tests next to the requirement each one checks. The test author's concerns and any requirement without a test come first.
@@ -437,6 +437,21 @@ wm_admin jobs report-problem --job "$wm_job_id" --summary 'Truncate splits flags
 ```
 
 A report resets the trust count and lowers `--after-build` one level, from `never` to `when_untested` or from `when_untested` to `always`.
+
+## Add and edit work items
+
+Work items are Markdown records in the project's repository; the board reads them. Add one from the board's Add work button, or:
+
+```sh
+wm_admin work add --project "$wm_project_id" --title 'Sort words by length' \
+	--description 'The preview lists headings with their shortest words first.' \
+	--criterion 'SortByLength([]string{"ccc", "a"}) is []string{"a", "ccc"}.' \
+	--blocked-by "$wm_work_id"
+```
+
+Waymark writes a new record next to the project's other work items. It has a new ID, `triage: ready-for-agent` and `execution: unstarted`, the description as prose before the first section, and the Acceptance criteria, Blocked by, Blocked by decisions and Acceptance sections. Waymark also lists the record under the project's Current commitments, so it becomes ready work once its dependencies are done. Dependencies must be work items in the same project. Waymark never commits; commit the new files with your other changes.
+
+`work show` prints a work item's title, description, requirements and dependencies, and `work edit` rewrites them; a flag left out keeps its current value. An edit changes only those parts, keeps every other section, and adds a line under Comments saying who edited it. The write is an expected-revision write: an edit made from an older copy of the record is refused. While a build holds the work item, its requirements are frozen and edits are refused. On an item's page in the browser, Edit changes the same fields in place. As you type, the decision model marks each requirement as checkable or vague.
 
 ## Tell the agents more about the project
 

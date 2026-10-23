@@ -143,6 +143,30 @@ func NewHandler(service *factory.Service) http.Handler {
 		v, err := service.Board(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)
 	})
+	get("/v1/projects/{project}/work-items/{item}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.GetWorkItem(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/work-items", 201, func(ctx context.Context, p factory.Principal, q factory.CreateWorkItemRequest, r *http.Request) (factory.WorkItemRecord, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.WorkItemRecord{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.CreateWorkItem(ctx, p, q)
+	})
+	mutationPath(mux, service, "PUT /v1/projects/{project}/work-items/{item}", 200, func(ctx context.Context, p factory.Principal, q factory.UpdateWorkItemRequest, r *http.Request) (factory.WorkItemRecord, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.WorkItemRecord{}, err
+		}
+		if err := bindID(r.PathValue("item"), q.WorkItemID); err != nil {
+			return factory.WorkItemRecord{}, err
+		}
+		q.ProjectID, q.WorkItemID = factory.ProjectID(r.PathValue("project")), r.PathValue("item")
+		return service.UpdateWorkItem(ctx, p, q)
+	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/criteria/score", 200, func(ctx context.Context, p factory.Principal, q scoreRequest, r *http.Request) (*factory.CriterionSignals, error) {
+		return service.ScoreDraftCriteria(ctx, p, factory.ProjectID(r.PathValue("project")), q.Title, q.Criteria)
+	})
 	mutationPath(mux, service, "POST /v1/projects/{project}/plan", 200, func(ctx context.Context, p factory.Principal, q factory.ApprovePlanRequest, r *http.Request) (factory.PlanResult, error) {
 		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
 			return factory.PlanResult{}, err
@@ -360,6 +384,12 @@ func mutation[Q, V any](mux *http.ServeMux, service *factory.Service, pattern st
 }
 
 // mutationPath validates the URL subject before passing a core request through.
+// scoreRequest carries requirements a person is still writing.
+type scoreRequest struct {
+	Title    string   `json:"title"`
+	Criteria []string `json:"criteria"`
+}
+
 func mutationPath[Q, V any](mux *http.ServeMux, service *factory.Service, pattern string, status int, operation func(context.Context, factory.Principal, Q, *http.Request) (V, error)) {
 	mux.HandleFunc(pattern, authenticated(service, func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		var input Q

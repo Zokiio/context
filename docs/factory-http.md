@@ -27,6 +27,9 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/projects/{id}/orientation` | GET current reader result, project policy, and advisory `criterionSignals` when a decision model is configured |
 | `/v1/projects/{id}/metrics` | GET measured outcomes, lead times, human and delegated decisions, findings, and agent cost |
 | `/v1/projects/{id}/board` | GET one card per open work item: its column, state, the decision it waits for, its cost so far, short facts, its step among six, and the work items it depends on |
+| `/v1/projects/{id}/work-items` | POST `CreateWorkItemRequest`; writes a new work item record and lists it in the project |
+| `/v1/projects/{id}/work-items/{item}` | GET the editable `WorkItemRecord`, PUT `UpdateWorkItemRequest` with the `ifTicketSHA256` it was read at; refused while a build holds the item |
+| `/v1/projects/{id}/criteria/score` | POST a title and requirements; returns the decision model's advisory signals for a draft |
 | `/v1/projects/{id}/plan` | POST `ApprovePlanRequest`: answer, accept a refinement or locked tests, and start the next step; `continue` gives a go-ahead to build |
 | `/v1/projects/{id}/ask` | PUT `SetAskPolicyRequest`; requires a human project administrator who holds the delegated capabilities |
 | `/v1/projects/{id}/instructions` | PUT `SetAgentInstructionsRequest`, replacing the refiner, test author and builder instructions; requires a human project administrator |
