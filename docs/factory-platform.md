@@ -406,6 +406,39 @@ A job submitted with `--expectations` starts from that commit:
 
 Register a project with `--require-expectations` to admit jobs only this way. `ctx factory expectation-author` runs Claude Code with edit access, an optional allowlist of test commands, and a spending cap. Solo mode uses it when Claude Code is installed: `--expectation-model` (default `sonnet`) and `--expectation-budget-usd` (default 1) tune it, and `--no-expectations` disables it. Configure another author with `serve --expectation-command-file`.
 
+## Send a disputed test or requirement to the judge
+
+When a builder finds a conflict in the frozen requirements or tests, it can submit a structured dispute and stop. The report identifies the affected criteria or test paths, the observed failure, evidence references, and an optional proposed correction. The worker retains the report with the terminal receipt and submits no candidate for that attempt. Ordinary build and check failures still use the repair path.
+
+An independent, read-only judge compares that report with the admitted requirements and protected test snapshot. It records a decision, rationale, evidence, and a directive for the next agent:
+
+| Decision | Next responsible participant |
+| --- | --- |
+| Implementation defect | Builder, within the existing repair limit and deadline |
+| Incorrect test or missing coverage of accepted intent | Test author, who proposes a protected test revision |
+| Unclear intent, changed behavior, weaker acceptance, or insufficient evidence | You |
+
+Run adds a **Judge** step when a dispute exists. Its decision card shows the verdict, rationale, next participant, current handoff status, and links to the original and replacement runs. A test proposal waits for your approval by default. Read its patch before accepting it. Only the existing delegated `before-build: never` policy can approve a scope-preserving correction automatically; intent changes, weaker acceptance, and author concerns still require you. Each run lineage gets one automatic dispute cycle before further disputes require a decision.
+
+Accepted test revisions produce a new expectation version and a linked replacement job. The previous admission, attempts, and evidence stay in History. The replacement must pass fresh verification and approval. **Return to planning** ends the disputed run and holds the task so you can clarify its requirements; queue it explicitly when ready. A stop, uncertain execution, stale version, or expired deadline prevents a new automatic handoff.
+
+You can also report a dispute for a conclusively failed or reviewable job through Run or the CLI:
+
+```sh
+wm_admin disputes report --job "$wm_job" --if-version "$wm_job_version" \
+  --summary 'The assertion contradicts criterion 2' --criterion 2 \
+  --test-path strutil/wordfreq_test.go --observed-failure 'Expected 1 for two occurrences' \
+  --evidence 'command-1.log:18' --request-id dispute-1
+wm_admin disputes list --project "$wm_project_id" --work-item "$wm_work_id"
+wm_admin disputes show --id dspte_...
+wm_admin disputes resolve --id dspte_... --if-version 3 --action accept_tests \
+  --rationale 'The revised assertion matches the accepted counting rule' --request-id decision-1
+```
+
+Use an action returned by `disputes show` and its current version. The CLI preserves your supplied version and request ID; it does not retry a stale decision against newer evidence.
+
+Solo mode configures the judge when Claude Code is installed. `--judge-model` defaults to `sonnet`, `--judge-budget-usd` defaults to `0.50`, and `--no-judge` disables it. Both `solo` and `serve` accept `--judge-command-file`, a JSON argv whose process reads `JudgeInput` on stdin and writes `JudgeOutput` on stdout. Without a judge, the retained report waits for you. Restarting during a judge or test-author handoff also requires review before retrying.
+
 ## Agree what done means in one step
 
 `POST /v1/projects/{id}/plan` records the decision before the build, which is what the browser's plan panel sends. Depending on what the item has, it does one of the following:
@@ -474,7 +507,7 @@ Disposition commands read the current revision unless `--if-ticket-sha256` is su
 
 ### Verify the task workspace locally
 
-The Go suite covers service authorization, lifecycle, recovery, and execution. Two reusable browser checks require Node, Playwright, and its Chromium installation:
+The Go suite covers service authorization, lifecycle, recovery, and execution. The reusable browser checks require Node, Playwright, and its Chromium installation:
 
 ```sh
 node internal/factoryhttp/workspace_browser_test.cjs
@@ -495,6 +528,18 @@ node internal/factoryintegration/testdata/workspace-browser.cjs /path/to/private
 ```
 
 The driver creates a task, verifies safe draft/edit/remove behavior, runs a controlled failed check and repair, approves a verified merge, confirms a stop, and checks disconnect/reconnect. It writes screenshots and results under the private directory's `evidence/` and shuts down the fixture on success. Workers run deterministic offline commands; this does not establish compatibility with a model provider. The directory also contains private fixture credentials and service state, so retain only the evidence when sharing results.
+
+The dispute fixture exercises a real failed check, a judge verdict, test-author revision, human approval, and a linked replacement with fresh verification. Start it in one terminal, then run the browser driver in another with the same private directory:
+
+```sh
+wm_dispute_dir=$(mktemp -d)
+WAYMARK_DISPUTE_BROWSER_DIR="$wm_dispute_dir" go test ./internal/factoryintegration \
+  -run '^TestDisputeBrowserFixture$' -count=1 -timeout=30m
+```
+
+```sh
+node internal/factoryintegration/testdata/dispute-browser.cjs /path/to/private/directory
+```
 
 ## Tell the agents more about the project
 

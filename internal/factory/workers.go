@@ -403,6 +403,11 @@ func (s *Service) Report(ctx context.Context, actor Principal, request WorkerRep
 		if err := tx.Commit(); err != nil {
 			return Job{}, fault(CodeInternal, "commit worker report", err)
 		}
+		if job.Status == JobDisputed {
+			if d, err := latestJobDispute(ctx, s.state.db, job.ID); err == nil && d != nil {
+				s.launchJudge(*d)
+			}
+		}
 		return response, nil
 	}
 }
@@ -441,11 +446,14 @@ func (s *Service) finishUnknown(ctx context.Context, tx *sql.Tx, actor Principal
 }
 
 func (s *Service) finishAttempt(ctx context.Context, tx *sql.Tx, actor Principal, attempt attemptRecord, request WorkerReportRequest, now time.Time) error {
-	if request.Outcome != OutcomeSucceeded && request.Outcome != OutcomeFailed && request.Outcome != OutcomeCancelled {
+	if request.Outcome != OutcomeSucceeded && request.Outcome != OutcomeFailed && request.Outcome != OutcomeCancelled && request.Outcome != OutcomeDisputed {
 		return fault(CodeInvalid, "terminal outcome must be succeeded, failed, or cancelled", nil)
 	}
 	if err := storeArtifacts(ctx, tx, attempt.JobID, attempt.ID, request.Artifacts, now); err != nil {
 		return err
+	}
+	if request.Outcome == OutcomeDisputed {
+		return s.finishDisputedAttempt(ctx, tx, actor, attempt, request, now)
 	}
 	if attempt.Stage == StageImplementation {
 		return s.finishImplementation(ctx, tx, attempt, request, now)
@@ -811,6 +819,14 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 	deadline := attempt.Admission.Deadline
 	if attempt.Stage == StageImplementation && attempt.Admission.ExpectationsCommit != "" {
 		instructions += " Holdout tests written from the criteria are already committed under the protected paths; make them pass without changing them."
+	}
+	if attempt.Stage == StageImplementation {
+		if d, err := latestJobDispute(ctx, q, attempt.JobID); err == nil && d != nil && d.Status == "resolved" {
+			instructions += "\nIndependent judge decision: " + d.Rationale
+			if d.Decision != nil {
+				instructions += "\n" + d.Decision.Rationale + "\n" + d.Decision.Directive
+			}
+		}
 	}
 	if attempt.mergeCheck() {
 		instructions = "Run only the configured required check on this clean merge commit; do not modify it."

@@ -570,3 +570,11 @@ tr:last-child td { border-bottom: 0; }
 	.task-tabs a { min-width: 62px; }
 }
 .stage-details .run-facts { flex: none; }
+.dispute-handoff { display: flex; flex-wrap: wrap; gap: 16px 40px; align-items: center; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+.dispute-handoff p { margin: 0; flex: 1; min-width: 180px; }
+.next-owner { font-size: 22px; }
+.dispute-review { border-top: 1px solid var(--line); padding-top: 24px; }
+.dispute-form { scroll-margin-top: 24px; }
+.reference-list { padding-left: 20px; overflow-wrap: anywhere; }
+.reference-list li + li { margin-top: 8px; }
+.dispute-card .actions { align-items: flex-start; }

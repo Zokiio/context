@@ -9,10 +9,10 @@ const { chromium } = require('playwright');
 
 const project = { id: 'project', title: 'Workspace fixture', policy: { ask: { autopilot: false }, allowedExecutors: ['fixture'], maxRepairAttempts: 2, maxJobDurationSeconds: 3600 } };
 const now = () => new Date().toISOString();
-const store = { records: [], activity: { jobs: [], refinements: [], expectations: [], held: false }, offline: false, createBodies: [], scoreRequests: 0, updates: [], staleStop: false, stopAttempts: 0, jobReads: 0, admin: true, capabilities: ['read', 'coordinate', 'review', 'accept', 'merge'] };
+const store = { records: [], activity: { jobs: [], refinements: [], expectations: [], disputes: [], held: false }, offline: false, createBodies: [], disputeBodies: [], resolutions: [], scoreRequests: 0, updates: [], staleStop: false, stopAttempts: 0, jobReads: 0, admin: true, capabilities: ['read', 'coordinate', 'review', 'accept', 'merge'] };
 const draftRecord = (id, draft) => ({ projectId: project.id, workItemId: id, path: id + '.md', ticketSHA256: 'revision-1', draft, queued: false, archived: false, frozen: false, canDelete: true, dependents: [], actions: ['queue', 'archive', 'delete'] });
 const board = () => ({ project, publicationPending: !!store.publicationPending, pilot: false, running: 0, mergedToday: 0, generatedAt: now(), cards: store.records.filter((record) => record.queued).map((record) => ({ workItemId: record.workItemId, title: record.draft.title, column: 'next', state: 'waiting', status: 'Ready', step: 0, decision: ['ready_for_review', 'ready_for_acceptance'].includes(store.activity.jobs[0]?.status) ? 'approve' : 'plan', jobId: store.activity.jobs[0]?.id, updatedAt: '2026-10-23T00:00:00Z', line: 'Ready to start' })) });
-const stages = () => ({ workItemId: 'task-1', title: store.records[0]?.draft.title, costUsd: 0, steps: [{ key: 'sharpen', title: 'Sharpen requirements', kind: 'agent', status: 'done', summary: 'Requirements are clear.' }, { key: 'build', title: 'Build the change', kind: 'agent', status: store.activity.jobs[0]?.status === 'cancelled' ? 'failed' : 'running', summary: 'Fixture builder', notes: ['## Agent note\n\n- Real reported text\n\n```go\nreturn 1\n```'] }] });
+const stages = () => ({ workItemId: 'task-1', title: store.records[0]?.draft.title, costUsd: 0, steps: [{ key: 'sharpen', title: 'Sharpen requirements', kind: 'agent', status: 'done', summary: 'Requirements are clear.' }, { key: 'build', title: 'Build the change', kind: 'agent', status: store.activity.jobs[0]?.status === 'cancelled' ? 'failed' : 'running', summary: 'Fixture builder', notes: ['## Agent note\n\n- Real reported text\n\n```go\nreturn 1\n```'] }, ...(store.activity.disputes.length ? [{ key: 'judge', title: 'Judge the dispute', kind: 'agent', status: store.activity.disputes[0].status === 'judging' ? 'running' : store.activity.disputes[0].status === 'resolved' ? 'done' : 'needs_you', summary: 'Recorded judge routing.' }] : [])] });
 const server = http.createServer(async (request, response) => {
 	const url = new URL(request.url, 'http://localhost');
 	if (!url.pathname.startsWith('/v1')) {
@@ -40,7 +40,7 @@ const server = http.createServer(async (request, response) => {
 	if (route === '/projects/project/work-items' && request.method === 'POST') {
 		store.createBodies.push(body); const record = draftRecord('task-' + (store.records.length + 1), body.draft); store.records.push(record); return send(record);
 	}
-	if (route.endsWith('/activity')) return send({ projectId: project.id, workItemId: 'task-1', generatedAt: now(), truncated: false, ...store.activity });
+	if (route.endsWith('/activity')) return send({ projectId: project.id, workItemId: 'task-1', generatedAt: now(), truncated: false, ...store.activity, disputes: store.activity.disputes.map((dispute) => ({ ...dispute, availableActions: store.capabilities.includes('coordinate') ? dispute.availableActions : [] })) });
 	if (route.endsWith('/run')) return send(stages());
 	if (route === '/projects/project/work-items/reconcile') { store.publicationPending = false; return send(store.records); }
 	if (route === '/projects/project/plan') { store.activity.jobs[0].status = 'implementing'; store.activity.jobs[0].version++; return send({ job: store.activity.jobs[0] }); }
@@ -48,6 +48,19 @@ const server = http.createServer(async (request, response) => {
 	if (route === '/jobs/job-1/change') return send({ files: [], patch: '' });
 	if (route === '/jobs/job-1/artifacts/log-1') return send({ id: 'log-1', content: 'Fixture build output\nline 2\n' });
 	if (route === '/jobs/job-1') { store.jobReads++; return send(store.activity.jobs[0]); }
+	if (route === '/jobs/job-1/disputes') {
+		store.disputeBodies.push(body);
+		if (store.staleReport) { store.staleReport = false; store.activity.jobs[0].version++; return send({ code: 'stale', message: 'Run changed.' }, 409); }
+		if (body.ifVersion !== store.activity.jobs[0].version) return send({ code: 'stale', message: 'Run changed.' }, 409);
+		const dispute = { id: 'dispute-1', projectId: project.id, workItemId: 'task-1', jobId: 'job-1', version: 1, status: 'judging', input: body.dispute, nextOwner: 'judge', createdAt: now(), updatedAt: now(), availableActions: [] };
+		store.activity.disputes = [dispute]; store.activity.jobs[0].status = 'disputed'; store.activity.jobs[0].version++; store.activity.jobs[0].availableActions = ['cancel']; return send(dispute);
+	}
+	if (route === '/disputes/dispute-1/resolve') {
+		store.resolutions.push(body); const dispute = store.activity.disputes[0];
+		if (store.staleResolve) { store.staleResolve = false; dispute.version++; return send({ code: 'stale', message: 'Decision changed.' }, 409); }
+		if (body.ifVersion !== dispute.version) return send({ code: 'stale', message: 'Decision changed.' }, 409);
+		dispute.status = 'resolved'; dispute.nextOwner = 'implementer'; dispute.replacementJobId = 'job-2'; dispute.version++; dispute.availableActions = []; return send(dispute);
+	}
 	if (route === '/jobs/job-1/actions') {
 		store.stopAttempts++;
 		if (store.staleStop) { store.staleStop = false; store.activity.jobs[0].version++; return send({ code: 'stale', message: 'job version changed' }, 409); }
@@ -239,7 +252,84 @@ const server = http.createServer(async (request, response) => {
 		decisionJob.merge = { status: 'failed' }; decisionJob.version++;
 		await page.getByRole('button', { name: 'Retry merge', exact: true }).waitFor({ timeout: 7000 });
 
+		decisionJob.merge = null; decisionJob.availableActions = ['report_dispute'];
+		await asCapabilities(['coordinate'], 'verification_failed', 'run');
+		await page.getByRole('button', { name: 'Report a dispute', exact: true }).click();
+		await page.getByRole('textbox', { name: 'Dispute summary', exact: true }).fill('The protected test contradicts requirement 1.');
+		await page.getByRole('textbox', { name: 'Affected requirement numbers', exact: true }).fill('1');
+		await page.getByRole('textbox', { name: 'Affected test paths', exact: true }).fill('strutil/wordfreq_holdout_test.go');
+		await page.getByRole('textbox', { name: 'Observed failure', exact: true }).fill('The test counts empty words.');
+		await page.getByRole('textbox', { name: 'Evidence references', exact: true }).fill('attempt-1/log-1');
+		const correction = page.getByRole('textbox', { name: 'Proposed correction', exact: true });
+		await correction.fill('Keep the requirement and correct the empty-word assertion.');
+		await correction.evaluate((node) => { window.disputeInput = node; node.setSelectionRange(4, 4); });
+		decisionJob.version++;
+		await page.getByText('Run changed; review before sending', { exact: true }).waitFor({ timeout: 7000 });
+		assert.equal(await correction.evaluate((node) => node === window.disputeInput && document.activeElement === node && node.selectionStart === 4), true, 'polling preserves dispute input DOM and caret');
+		assert.equal(await page.getByRole('button', { name: 'Send dispute to judge', exact: true }).isDisabled(), true);
+		await page.getByRole('link', { name: 'History', exact: true }).click();
+		await page.getByRole('link', { name: 'Run', exact: true }).click();
+		assert.equal(await correction.inputValue(), 'Keep the requirement and correct the empty-word assertion.');
+		await page.getByRole('button', { name: 'Use current run version', exact: true }).click();
+		store.staleReport = true;
+		await page.getByRole('button', { name: 'Send dispute to judge', exact: true }).click();
+		await page.getByText('Run changed; review before sending', { exact: true }).waitFor();
+		assert.equal(await page.getByRole('button', { name: 'Send dispute to judge', exact: true }).isDisabled(), true, 'a stale submission keeps the report disabled until reviewed');
+		assert.equal(await correction.inputValue(), 'Keep the requirement and correct the empty-word assertion.');
+		await page.getByRole('button', { name: 'Use current run version', exact: true }).click();
+		const submittedVersion = decisionJob.version;
+		await page.getByRole('button', { name: 'Send dispute to judge', exact: true }).click();
+		await page.locator('.dispute-list .next-owner').getByText('Judge', { exact: true }).waitFor();
+		assert.equal(store.disputeBodies.at(-1).ifVersion, submittedVersion);
+		assert.deepEqual(store.disputeBodies[0].dispute.criterionRefs, [1]);
+		assert.ok(store.disputeBodies[0].requestId, 'dispute submission is an idempotent command');
+		await page.getByRole('button', { name: /Judge the dispute/ }).waitFor();
+		const dispute = store.activity.disputes[0];
+		dispute.status = 'needs_human'; dispute.nextOwner = 'you'; dispute.version++;
+		dispute.decision = { kind: 'revise_tests', rationale: 'The approved criterion excludes empty tokens.', evidenceRefs: ['frozen-ticket:1', 'attempt-1/log-1'], preservesIntent: true, weakensAcceptance: false, directive: 'Correct the empty-token case without changing the intended behavior.' };
+		dispute.availableActions = ['revise_tests', 'return_to_planning', 'dismiss'];
+		await page.locator('.dispute-list .next-owner').getByText('You', { exact: true }).waitFor({ timeout: 7000 });
+		assert.equal(await page.locator('.dispute-list').getByText('The approved criterion excludes empty tokens.', { exact: true }).count(), 1);
+		const rationale = page.getByRole('textbox', { name: 'Reason for your decision', exact: true });
+		await rationale.fill('I reviewed the original criterion and the reported failure.');
+		await rationale.evaluate((node) => { window.judgeInput = node; });
+		dispute.status = 'authoring_tests'; dispute.nextOwner = 'test_author'; dispute.availableActions = []; dispute.version++;
+		await page.locator('.dispute-list .next-owner').getByText('Test author', { exact: true }).waitFor({ timeout: 7000 });
+		dispute.status = 'tests_proposed'; dispute.nextOwner = 'you'; dispute.version++; dispute.expectationId = 'expectation-2'; dispute.availableActions = ['accept_tests', 'dismiss'];
+		store.activity.expectations = [{ id: 'expectation-2', status: 'proposed', createdAt: now(), notes: 'Changed only the incorrect expectation.', patch: 'diff --git a/wordfreq_test.go b/wordfreq_test.go\n--- a/wordfreq_test.go\n+++ b/wordfreq_test.go\n@@ -1 +1 @@\n-want := 1\n+want := 0\n' }];
+		await page.locator('.dispute-list .next-owner').getByText('You', { exact: true }).waitFor({ timeout: 7000 });
+		await page.getByText('Judge decision changed; review the latest state', { exact: true }).waitFor();
+		assert.equal(await rationale.evaluate((node) => node === window.judgeInput), true);
+		assert.equal(await rationale.inputValue(), 'I reviewed the original criterion and the reported failure.');
+		assert.equal(await page.getByRole('button', { name: 'Ask test author to correct tests', exact: true }).isDisabled(), true);
+		await page.getByRole('button', { name: 'Review latest judge decision', exact: true }).click();
+		await page.getByRole('button', { name: 'Approve tests and start replacement run', exact: true }).waitFor();
+		assert.equal(await page.locator('.dispute-list').getByText('Changed only the incorrect expectation.', { exact: true }).isVisible(), true, 'test patch and author notes are visible before approval');
+		store.staleResolve = true;
+		await page.getByRole('button', { name: 'Approve tests and start replacement run', exact: true }).click();
+		await page.getByText('Judge decision changed; review the latest state', { exact: true }).waitFor();
+		assert.equal(await page.getByRole('button', { name: 'Approve tests and start replacement run', exact: true }).isDisabled(), true, 'a server stale response blocks reapplying an outdated decision');
+		await page.getByRole('button', { name: 'Review latest judge decision', exact: true }).click();
+		await page.getByRole('button', { name: 'Approve tests and start replacement run', exact: true }).click();
+		await page.locator('.dispute-list .next-owner').getByText('Builder', { exact: true }).waitFor();
+		assert.equal(store.resolutions.at(-1).ifVersion, dispute.version - 1);
+		assert.equal(store.resolutions.at(-1).rationale, 'I reviewed the original criterion and the reported failure.');
+		assert.equal(await page.locator('.dispute-list').getByRole('link', { name: 'Original run job-1', exact: true }).getAttribute('href'), '#job/job-1');
+		assert.equal(await page.locator('.dispute-list').getByRole('link', { name: 'Replacement run job-2', exact: true }).getAttribute('href'), '#job/job-2');
+		await capture('judge-desktop');
+		await page.getByRole('link', { name: 'History', exact: true }).click();
+		await page.locator('.history-entry > summary').filter({ hasText: 'Judge · Correct the tests' }).click();
+		assert.equal(await page.locator('[aria-label="History"]').getByText('The approved criterion excludes empty tokens.', { exact: true }).isVisible(), true);
+		dispute.status = 'needs_human'; dispute.nextOwner = 'you'; dispute.availableActions = ['return_to_planning']; dispute.version++;
+		await asCapabilities([], 'disputed', 'run');
+		await page.locator('.dispute-list .next-owner').getByText('You', { exact: true }).waitFor();
+		assert.equal(await page.getByRole('button', { name: 'Return task to planning', exact: true }).count(), 0, 'read-only viewers cannot resolve a dispute');
+		assert.equal(await page.getByRole('textbox', { name: 'Reason for your decision', exact: true }).isVisible(), false);
+		await page.setViewportSize({ width: 390, height: 844 });
+		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'judge view fits a narrow viewport');
+		await capture('judge-mobile');
+
 		assert.deepEqual(errors, []);
-		console.log('Workspace browser regressions passed: safe Markdown, draft save, focus/caret, stale replies and saves, tab state, live polling, output expansion, reconnect, stop states, history, narrow layout, permission matrix, stale decision input and merge-state controls.');
+		console.log('Workspace browser regressions passed: task editing, safe formatting, live runs, permissions, stop, disputes, judge handoffs, stale decisions, retained input and mobile layout.');
 	} catch (error) { console.error('Browser errors:', errors); console.error((await page.locator('body').innerText()).slice(-6000)); throw error; } finally { await browser.close(); server.close(); }
 })().catch((error) => { console.error(error); process.exitCode = 1; server.close(); });

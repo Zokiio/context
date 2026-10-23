@@ -66,9 +66,12 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			&cli.Float64Flag{Name: "expectation-budget-usd", Value: 1, Usage: "Spending cap for one expectation suite"},
 			&cli.BoolFlag{Name: "no-expectations", Usage: "Disable the expectation author"},
 			&cli.StringFlag{Name: "agent-model", Value: "sonnet", Usage: "Model for the Claude Code builder"},
+			&cli.StringFlag{Name: "judge-model", Value: "sonnet", Usage: "Model for the independent read-only dispute judge"},
+			&cli.Float64Flag{Name: "judge-budget-usd", Value: 0.5, Usage: "Spending cap for one dispute judgment"},
+			&cli.BoolFlag{Name: "no-judge", Usage: "Send disputes to a person without running a judge"},
 			&cli.BoolFlag{Name: "no-pilot", Usage: "Do not run the autopilot, even for projects whose ask policy enables it"},
 			&cli.DurationFlag{Name: "pilot-interval", Value: 5 * time.Second},
-		}, append(append(decisionFlags(), refinerFlags()...), expectationFlags()...)...),
+		}, append(append(append(decisionFlags(), refinerFlags()...), expectationFlags()...), judgeFlags()...)...),
 		Action: func(ctx context.Context, c *cli.Command) error {
 			address := c.String("listen")
 			if host, _, err := net.SplitHostPort(address); err != nil || !isLoopback(host) {
@@ -82,6 +85,9 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			}
 			options.RefinerCommand = refiner
 			if options.ExpectationCommand, err = soloExpectationAuthor(c); err != nil {
+				return err
+			}
+			if options.JudgeCommand, err = soloJudge(c); err != nil {
 				return err
 			}
 			service, err := factory.Open(c.String("data-dir"), options)

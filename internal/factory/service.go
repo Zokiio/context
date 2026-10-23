@@ -43,6 +43,8 @@ type serviceState struct {
 
 	refiner           []string
 	expectationAuthor []string
+	judge             []string
+	disputeCancels    sync.Map
 	background        context.Context
 	stopBackground    context.CancelFunc
 	refiners          sync.WaitGroup
@@ -152,6 +154,10 @@ func Open(dataDir string, options Options) (*Service, error) {
 	}
 	state.refiner = append([]string(nil), options.RefinerCommand...)
 	state.expectationAuthor = append([]string(nil), options.ExpectationCommand...)
+	state.judge = append([]string(nil), options.JudgeCommand...)
+	if err := recoverDisputes(context.Background(), db, now().UTC()); err != nil {
+		return nil, err
+	}
 	state.background, state.stopBackground = context.WithCancel(context.Background())
 	state.pilot, state.pilotInterval = options.Pilot, options.PilotInterval
 	if state.pilotInterval <= 0 {
@@ -364,6 +370,18 @@ CREATE TABLE IF NOT EXISTS plan_consents (
   created_at TEXT NOT NULL,
   PRIMARY KEY(project_id, work_item_id)
 );
+CREATE TABLE IF NOT EXISTS disputes (
+  id TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES projects(id),
+  work_item_id TEXT NOT NULL,
+  job_id TEXT NOT NULL REFERENCES jobs(id),
+  lineage_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  data_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS disputes_by_task ON disputes(project_id,work_item_id,created_at);
 CREATE TABLE IF NOT EXISTS work_item_holds (
   project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
   work_item_id TEXT NOT NULL,

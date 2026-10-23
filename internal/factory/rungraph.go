@@ -92,6 +92,17 @@ func (s *Service) WorkItemRun(ctx context.Context, actor Principal, projectID Pr
 			in.cost -= implementationCost(*in.job)
 		}
 		in.job, in.jobTests = &job, nil
+		in.dispute, err = latestJobDispute(ctx, s.state.db, job.ID)
+		if err != nil {
+			return ItemRun{}, err
+		}
+		if in.dispute == nil && job.Admission.DisputeID != "" {
+			d, err := loadDispute(ctx, s.state.db, job.Admission.DisputeID)
+			if err != nil {
+				return ItemRun{}, err
+			}
+			in.dispute = &d
+		}
 		in.cost += implementationCost(job)
 		if job.Admission.ExpectationsID != "" {
 			tests, err := loadExpectation(ctx, s.state.db, job.Admission.ExpectationsID)
@@ -135,6 +146,31 @@ func (s *Service) WorkItemRun(ctx context.Context, actor Principal, projectID Pr
 		approveStep(job, card, name),
 		mergeStep(job),
 		repairStep(job, card),
+	}
+	if in.dispute != nil {
+		d := in.dispute
+		step := RunStep{Key: "judge", Kind: "agent", Title: "Judge the dispute", Status: RunDone, Summary: "Decision recorded"}
+		switch d.Status {
+		case "judging":
+			step.Status, step.Summary = RunRunning, "Independent judge reviewing"
+		case "authoring_tests":
+			step.Status, step.Summary = RunRunning, "Decision sent to the test author"
+		case "needs_human", "tests_proposed":
+			step.Status, step.Summary = RunNeedsYou, "Waiting for your decision"
+		case "stopped":
+			step.Status, step.Summary = RunSkipped, "Dispute stopped"
+		}
+		if d.Decision != nil {
+			step.Notes = append(step.Notes, d.Decision.Rationale, d.Decision.Directive)
+		}
+		step.Notes = append(step.Notes, "Next owner: "+d.NextOwner)
+		if d.Error != "" {
+			step.Notes = append(step.Notes, d.Error)
+		}
+		if d.Run != nil {
+			step.Model, step.Turns, step.CostUSD = d.Run.Model, d.Run.Turns, d.Run.CostUSD
+		}
+		run.Steps = append(run.Steps, step)
 	}
 	return run, nil
 }
@@ -317,6 +353,8 @@ func buildStep(job *Job, change string) RunStep {
 		if first.StartedAt == nil {
 			step.Status, step.Summary = RunSkipped, "Stopped before the build started"
 		}
+	case first.Outcome == OutcomeDisputed:
+		step.Status, step.Summary = RunFailed, "Stopped to dispute the requirements or tests"
 	case first.FinishedAt == nil:
 		step.Status, step.Summary = RunRunning, "Building"
 		if first.CancellationRequested {
@@ -376,6 +414,25 @@ func checksStep(job *Job) RunStep {
 	}
 	if job.Status == JobCancelRequested || job.Status == JobCancellationUnknown || job.Status == JobCancelled {
 		step.Status, step.Summary = stoppedChecks(job, keys, latest)
+		return step
+	}
+	if job.Status == JobDisputed || job.Status == JobSuperseded {
+		step.Status, step.Summary = RunIdle, "Did not run"
+		passed := 0
+		for _, attempt := range latest {
+			if attempt.CheckStatus == CheckFailed || attempt.CheckStatus == CheckUnavailable || attempt.CheckStatus == CheckSkipped {
+				step.Status, step.Summary = RunFailed, "A check failed"
+				return step
+			}
+			if attempt.CheckStatus == CheckPassed {
+				passed++
+			}
+		}
+		if len(keys) > 0 && passed == len(keys) {
+			step.Status, step.Summary = RunDone, "Passed in a clean copy"
+		} else if len(latest) > 0 {
+			step.Summary = "Checks incomplete before the dispute"
+		}
 		return step
 	}
 	switch job.Status {

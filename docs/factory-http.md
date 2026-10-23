@@ -29,7 +29,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/projects/{id}/board` | GET one card per open work item: its column, state, the decision it waits for, its cost so far, short facts, its step among six, and the work items it depends on |
 | `/v1/projects/{id}/work-items` | GET all task records, including drafts and archives; POST `CreateWorkItemRequest`, with `queue: false` to save an unqueued draft (omitting it preserves the original queued behavior) |
 | `/v1/projects/{id}/work-items/reconcile` | POST `{}` to resume retained task saves under coordinator permission; only the exact retained before/after file contents are accepted |
-| `/v1/projects/{id}/work-items/{item}/run` | GET the item's run as eight steps with status, summary, model, turns, time, cost, and who decided |
+| `/v1/projects/{id}/work-items/{item}/run` | GET the item's run stages with status, summary, model, turns, time, cost, and who decided; includes a Judge step when a dispute exists |
 | `/v1/projects/{id}/work-items/{item}` | GET the editable `WorkItemRecord`, PUT `UpdateWorkItemRequest` with its `ifTicketSHA256`; refused during active or uncertain refinement, test authoring, or execution |
 | `/v1/projects/{id}/work-items/{item}/disposition` | POST `SetWorkItemDispositionRequest` with `ifTicketSHA256` and `action`: `queue`, `unqueue`, `archive`, `restore`, or restricted `delete` |
 | `/v1/projects/{id}/work-items/{item}/activity` | GET retained jobs, attempts, checks, decisions, proposals, and participant names independently of the board; includes cancelled jobs and artifact metadata |
@@ -52,6 +52,10 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint, with optional `findings` |
 | `/v1/jobs/{id}/approve` | POST `ApproveRequest`: review, acceptance, and an optional merge as one decision |
 | `/v1/jobs/{id}/change` | GET the changed files and the patch from the base to the candidate, capped at 200 KB |
+| `/v1/jobs/{id}/disputes` | POST `ReportDisputeRequest` with the current job `ifVersion` and structured evidence; requires a human coordinator and conclusively failed or reviewable execution |
+| `/v1/projects/{id}/work-items/{item}/disputes` | GET retained disputes and permitted actions for this work item |
+| `/v1/disputes/{id}` | GET the report, judge decision, next participant, version, test proposal and replacement job references |
+| `/v1/disputes/{id}/resolve` | POST `ResolveDisputeRequest` with `ifVersion`, an available `action`, and `rationale`; stale or unavailable decisions are refused |
 | `/v1/jobs/{id}/problems` | POST `ReportProblemRequest` on merged work; lowers the project's ask policy |
 | `/v1/jobs/{id}/merge` | POST `MergeRequest` for the exact accepted candidate and job version; requires a human with `merge`. The merge is `verifying` until the required checks pass on the merge commit |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |

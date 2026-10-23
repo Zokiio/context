@@ -117,6 +117,7 @@ type boardInputs struct {
 	// ticketFile is the digest of the ticket file as it is now, the identity
 	// refinements record.
 	stopped    bool
+	dispute    *Dispute
 	publishing bool
 	ticketFile string
 }
@@ -208,6 +209,16 @@ func (s *Service) boardSnapshot(ctx context.Context, project Project) ([]boardIn
 		inputs := boardInputs{stopped: held, publishing: requireNoTaskPublication(ctx, s.state.db, project.ID) != nil, work: work, policy: project.Policy.Ask, pilot: s.state.pilot, cost: refinementCost[id] + expectationCost[id], canRefine: len(s.state.refiner) > 0, canTest: s.canWriteExpectations(project), requireTests: project.Policy.RequireExpectations}
 		if job := jobs[id]; job != nil {
 			inputs.job = job
+			if inputs.dispute, err = latestJobDispute(ctx, s.state.db, job.ID); err != nil {
+				return nil, err
+			}
+			if inputs.dispute == nil && job.Admission.DisputeID != "" {
+				d, err := loadDispute(ctx, s.state.db, job.Admission.DisputeID)
+				if err != nil {
+					return nil, err
+				}
+				inputs.dispute = &d
+			}
 			inputs.cost += implementationCost(*job)
 			if job.Admission.ExpectationsID != "" {
 				if tests, err := loadExpectation(ctx, s.state.db, job.Admission.ExpectationsID); err == nil {
@@ -236,9 +247,10 @@ func (s *Service) boardSnapshot(ctx context.Context, project Project) ([]boardIn
 	return snapshot, nil
 }
 
-// latestJobs loads each work item's most recent job that was not cancelled.
+// latestJobs omits cancelled and superseded runs so a task returned to planning
+// can start from its current records. History and run views load retained jobs.
 func latestJobs(ctx context.Context, q queryer, projectID ProjectID) (map[string]*Job, error) {
-	rows, err := q.QueryContext(ctx, `SELECT id, work_item_id FROM jobs WHERE project_id=? AND status<>? ORDER BY created_at, id`, projectID, JobCancelled)
+	rows, err := q.QueryContext(ctx, `SELECT id, work_item_id FROM jobs WHERE project_id=? AND status NOT IN (?,?) ORDER BY created_at, id`, projectID, JobCancelled, JobSuperseded)
 	if err != nil {
 		return nil, fault(CodeInternal, "list jobs for the board", err)
 	}
@@ -367,7 +379,7 @@ func deriveCard(in boardInputs) (BoardCard, bool) {
 			switch in.job.Status {
 			case JobCancellationUnknown, JobImplementationUnknown:
 				needs(&card, ColumnBuild, CardDecisionFix, "Stop outcome unknown", "Inspect the run and reconcile whether external work stopped. Automatic restart is held.")
-			case JobCancelled, JobFailed, JobStale, JobAccepted:
+			case JobCancelled, JobFailed, JobStale, JobAccepted, JobSuperseded:
 			default:
 				waiting(&card, ColumnBuild, "Stop requested", "Waiting for confirmation that the existing run stopped. Automatic restart is held.")
 			}
@@ -429,6 +441,23 @@ func jobCard(card *BoardCard, in boardInputs) {
 	job := in.job
 	card.JobID, card.JobVersion, card.UpdatedAt, card.Step = job.ID, job.Version, job.UpdatedAt, 2
 	switch job.Status {
+	case JobDisputed:
+		if in.dispute != nil {
+			d := in.dispute
+			if d.NextOwner == "judge" || d.NextOwner == "test_author" {
+				label := "Independent judge reviewing"
+				if d.NextOwner == "test_author" {
+					label = "Test author revising tests"
+				}
+				running(card, ColumnBuild, label, "The original run is held while the dispute is assessed.", &d.UpdatedAt)
+			} else {
+				needs(card, ColumnBuild, CardDecisionFix, "Dispute needs your decision", "Open Run to review the judge's decision and next step.")
+			}
+		} else {
+			needs(card, ColumnBuild, CardDecisionFix, "Dispute needs your decision", "Inspect the retained dispute before continuing.")
+		}
+	case JobSuperseded:
+		waiting(card, ColumnNext, "Run superseded", "The original evidence is retained. Open Run for its replacement or return to planning.")
 	case JobAccepted:
 		card.Step = 5
 		switch {

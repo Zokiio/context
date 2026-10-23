@@ -121,6 +121,17 @@ func ExpectationPrompt(input factory.ExpectationInput) string {
 	b.WriteString("- Do not edit the work item or any record.\n")
 	b.WriteString("- Finish with the JSON report: notes, a short summary for the person who reads your tests; coverage, the names of the tests that check each criterion, using the criterion numbers below, with an empty list for a criterion no test can check; and concerns, each contradiction or problem you found in the criteria.\n\n")
 	b.WriteString(projectInstructions(input.Instructions))
+	if input.Dispute != nil {
+		b.WriteString("## Judge-directed revision\n\nRevise only the protected tests identified by this independent decision, against the captured criteria and base revision. Preserve valid existing coverage; do not weaken assertions to fit the implementation. Do not change production code or requirements. If the directive needs changed intent, weaker acceptance, or unsupported assumptions, leave the affected tests unchanged and report concerns for a person. The old suite and run remain retained; your patch needs approval under project policy.\n\n")
+		decision, _ := json.MarshalIndent(input.Dispute, "", "  ")
+		b.Write(decision)
+		if input.OriginalTests != nil {
+			original, _ := json.MarshalIndent(input.OriginalTests, "", "  ")
+			b.WriteString("\n\n### Original test suite and coverage\n\n")
+			b.Write(original)
+		}
+		fmt.Fprintf(&b, "\n\nRevision base: %s\n\n", input.BaseRevision)
+	}
 	if len(input.Criteria) > 0 {
 		b.WriteString("## Criteria by number\n\n")
 		for index, criterion := range input.Criteria {

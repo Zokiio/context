@@ -139,6 +139,28 @@ func NewHandler(service *factory.Service) http.Handler {
 		v, err := service.Change(r.Context(), p, factory.JobID(r.PathValue("job")))
 		respond(w, 200, v, err)
 	})
+	mutationPath(mux, service, "POST /v1/jobs/{job}/disputes", 202, func(ctx context.Context, p factory.Principal, q factory.ReportDisputeRequest, r *http.Request) (factory.Dispute, error) {
+		if err := bindID(r.PathValue("job"), string(q.JobID)); err != nil {
+			return factory.Dispute{}, err
+		}
+		q.JobID = factory.JobID(r.PathValue("job"))
+		return service.ReportDispute(ctx, p, q)
+	})
+	get("/v1/projects/{project}/work-items/{item}/disputes", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.ListDisputes(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
+		respond(w, 200, v, err)
+	})
+	get("/v1/disputes/{dispute}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.GetDispute(r.Context(), p, factory.ID(r.PathValue("dispute")))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/disputes/{dispute}/resolve", 200, func(ctx context.Context, p factory.Principal, q factory.ResolveDisputeRequest, r *http.Request) (factory.Dispute, error) {
+		if err := bindID(r.PathValue("dispute"), string(q.DisputeID)); err != nil {
+			return factory.Dispute{}, err
+		}
+		q.DisputeID = factory.ID(r.PathValue("dispute"))
+		return service.ResolveDispute(ctx, p, q)
+	})
 	get("/v1/projects/{project}/board", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.Board(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)

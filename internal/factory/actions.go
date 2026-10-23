@@ -48,6 +48,15 @@ func (s *Service) Action(ctx context.Context, actor Principal, request JobAction
 			if err == nil {
 				err = holdWorkItem(ctx, tx, job.ProjectID, job.WorkItemID, now)
 			}
+			if err == nil {
+				var ids []ID
+				ids, err = stopDisputes(ctx, tx, job.ID, now)
+				for _, id := range ids {
+					if cancel, ok := s.state.disputeCancels.Load(id); ok {
+						cancel.(*disputeCancellation).cancel()
+					}
+				}
+			}
 		case ActionRepair:
 			var held bool
 			held, err = workItemHeld(ctx, tx, job.ProjectID, job.WorkItemID)
@@ -93,7 +102,7 @@ func (s *Service) cancelJob(ctx context.Context, tx *sql.Tx, job Job, now time.T
 	if job.Status == JobAccepting {
 		return fault(CodeConflict, "acceptance publication must be reconciled before cancellation", nil)
 	}
-	if job.Status == JobAccepted || job.Status == JobCancelled {
+	if job.Status == JobAccepted || job.Status == JobCancelled || job.Status == JobSuperseded {
 		return fault(CodeConflict, "job is already terminal", nil)
 	}
 	live := []AttemptID{}

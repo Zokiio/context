@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -67,7 +68,21 @@ func Agent(ctx context.Context, in io.Reader, out io.Writer, options AgentOption
 	}
 	command := exec.CommandContext(ctx, argv[0], argv[1:]...)
 	command.Dir = a.WorkspacePath
-	command.Stdin = strings.NewReader(AgentPrompt(a))
+	prompt := AgentPrompt(a)
+	// The native agent can write only inside its workspace. It never receives
+	// access to the worker's durable receipt directory through this handoff.
+	var nativeDispute string
+	if os.Getenv("CTX_FACTORY_DISPUTE") != "" {
+		directory, err := os.MkdirTemp(a.WorkspacePath, ".waymark-dispute-")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(directory)
+		nativeDispute = filepath.Join(directory, "dispute.json")
+		command.Env = append(os.Environ(), "CTX_FACTORY_DISPUTE="+nativeDispute)
+		prompt += "\n## Dispute output\n\nCTX_FACTORY_DISPUTE for this attempt is " + nativeDispute + ". Use your file-writing tool to write the JSON report at this exact path, then stop.\n"
+	}
+	command.Stdin = strings.NewReader(prompt)
 	command.Stderr = out
 	stdout, err := command.StdoutPipe()
 	if err != nil {
@@ -97,6 +112,23 @@ func Agent(ctx context.Context, in io.Reader, out io.Writer, options AgentOption
 	}
 	if result.IsError {
 		return fmt.Errorf("%s reported an error: %s", options.Harness, result.Result)
+	}
+	if nativeDispute != "" {
+		dispute, err := readDispute(nativeDispute)
+		if err != nil {
+			return err
+		}
+		if dispute != nil {
+			if err := publishAgentDispute(os.Getenv("CTX_FACTORY_DISPUTE"), dispute); err != nil {
+				return err
+			}
+			progress.note("stopped for independent judgment")
+			fmt.Fprintln(out, "waymark agent: reported dispute without committing a candidate")
+			return nil
+		}
+		if err := os.RemoveAll(filepath.Dir(nativeDispute)); err != nil {
+			return err
+		}
 	}
 	status, err := git(a.WorkspacePath, "status", "--porcelain")
 	if err != nil {
@@ -177,7 +209,7 @@ func AgentPrompt(a factory.Assignment) string {
 	if len(a.ProtectedPaths) > 0 {
 		fmt.Fprintf(&b, "- Do not create, edit, rename, or delete files matching these protected paths; verification depends on them and a candidate that touches them is rejected: %s\n", strings.Join(a.ProtectedPaths, ", "))
 	}
-	b.WriteString("- If a criterion cannot be met without changing requirements or protected files, stop and explain why instead of working around it.\n\n")
+	b.WriteString("- If a criterion cannot be met without changing requirements or protected tests, stop instead of working around it. When CTX_FACTORY_DISPUTE is set, write exactly one JSON object to that output file: {\"summary\":\"the conflict\",\"criterionRefs\":[1],\"testPaths\":[\"path/to/test\"],\"observedFailure\":\"actual failure or contradiction\",\"evidenceRefs\":[\"criterion 1; test path and failing assertion\"],\"proposedChange\":\"the correction requested\"}. Identify at least one actual criterion number or test path, cite concrete evidence, and omit references that do not apply. Then finish without committing or changing requirements or protected tests. An independent judge decides the next step; a dispute does not authorize your proposed correction. If no dispute output is configured, stop and explain the problem.\n\n")
 	b.WriteString(projectInstructions(a.ProjectInstructions))
 	b.WriteString("## Admitted context\n\n")
 	for _, source := range a.ContextSources {

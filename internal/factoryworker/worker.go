@@ -132,6 +132,14 @@ func (w *Worker) Once(ctx context.Context) (Receipt, error) {
 		return receipt, e
 	}
 	final := factory.WorkerReportRequest{RequestID: requestID("outcome", a.DispatchID), AttemptID: a.AttemptID, DispatchID: a.DispatchID, Kind: kind, ObservedAt: receipt.FinishedAt, NativeRunID: native, Outcome: factory.WorkerOutcome(receipt.State), CandidateRevision: receipt.Candidate, Summary: receipt.Error, TerminalReceipt: string(terminalBytes), Artifacts: []factory.ArtifactInput{{Name: "process-receipt.json", MediaType: "application/json", Content: string(terminalBytes)}}}
+	if receipt.State == "disputed" {
+		final.Dispute = receipt.Dispute
+		data, err := json.Marshal(receipt.Dispute)
+		if err != nil {
+			return receipt, err
+		}
+		final.Artifacts = append(final.Artifacts, factory.ArtifactInput{Name: "dispute.json", MediaType: "application/json", Content: string(data)})
+	}
 	if final.ObservedAt.IsZero() {
 		final.ObservedAt = time.Now().UTC()
 	}

@@ -113,7 +113,7 @@ func (s *Service) pilotProject(ctx context.Context, project Project) {
 
 func activeJob(status JobStatus) bool {
 	switch status {
-	case JobAccepted, JobFailed, JobCancelled, JobStale:
+	case JobAccepted, JobFailed, JobCancelled, JobStale, JobSuperseded:
 		return false
 	}
 	return true

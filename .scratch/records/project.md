@@ -20,6 +20,7 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Judge implementation disputes and show the next responsible agent](factory-task-workspace/issues/03-judge-disputes.md)
 - [Give requirement refinement the configured test ownership](factory-task-workspace/issues/02-refiner-test-ownership.md)
 - [Manage tasks and observe factory runs from a permanent workspace](factory-task-workspace/issues/01-task-control-and-live-runs.md)
 

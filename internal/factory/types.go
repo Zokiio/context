@@ -61,6 +61,8 @@ const (
 	JobCancelled             JobStatus = "cancelled"
 	JobFailed                JobStatus = "failed"
 	JobStale                 JobStatus = "stale"
+	JobDisputed              JobStatus = "disputed"
+	JobSuperseded            JobStatus = "superseded"
 )
 
 type AttemptStatus string
@@ -102,6 +104,7 @@ const (
 	ActionRepair    ActionKind = "repair"
 	ActionReconcile ActionKind = "reconcile"
 	ActionResolve   ActionKind = "resolve_execution"
+	ActionDispute   ActionKind = "report_dispute"
 )
 
 type Resolution string
@@ -130,6 +133,7 @@ const (
 	OutcomeFailed    WorkerOutcome = "failed"
 	OutcomeCancelled WorkerOutcome = "cancelled"
 	OutcomeUnknown   WorkerOutcome = "unknown"
+	OutcomeDisputed  WorkerOutcome = "disputed"
 )
 
 type WorkerDirective string
@@ -193,6 +197,8 @@ type Options struct {
 	// ExpectationCommand is the argv run to write holdout tests. It reads an
 	// ExpectationInput on stdin in a temporary worktree and writes an ExpectationOutput.
 	ExpectationCommand []string
+	// JudgeCommand runs a fresh read-only dispute assessor with JudgeInput/Output.
+	JudgeCommand []string
 	// Pilot runs the autopilot: for projects whose ask policy a person saved, it does the
 	// steps that need no decision and the decisions that person delegated.
 	Pilot bool
@@ -407,6 +413,9 @@ type Admission struct {
 	ExpectationsCommit string `json:"expectationsCommit,omitempty"`
 	// Instructions freeze the project's builder instructions in force at admission.
 	Instructions string `json:"instructions,omitempty"`
+	ParentJobID  JobID  `json:"parentJobId,omitempty"`
+	LineageID    JobID  `json:"lineageId,omitempty"`
+	DisputeID    ID     `json:"disputeId,omitempty"`
 }
 
 type SubmitRequest struct {
@@ -587,6 +596,7 @@ type HeartbeatResult struct {
 }
 
 type WorkerReportRequest struct {
+	Dispute           *DisputeInput    `json:"dispute,omitempty"`
 	RequestID         string           `json:"requestId"`
 	AttemptID         AttemptID        `json:"attemptId"`
 	DispatchID        string           `json:"dispatchId"`

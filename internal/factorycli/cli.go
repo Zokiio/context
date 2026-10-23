@@ -29,7 +29,7 @@ func Command(stdout, stderr io.Writer) *cli.Command {
 			return errors.New("expected a factory subcommand; see ctx factory --help")
 		}}
 	root.Commands = []*cli.Command{
-		initCommand(stdout), serveCommand(stderr), soloCommand(stdout, stderr), agentCommand(stdout), refineCommand(stdout), refinerCommand(stdout, stderr), expectationsCommand(stdout), workCommand(stdout), expectationAuthorCommand(stdout, stderr),
+		initCommand(stdout), serveCommand(stderr), soloCommand(stdout, stderr), agentCommand(stdout), refineCommand(stdout), refinerCommand(stdout, stderr), expectationsCommand(stdout), workCommand(stdout), expectationAuthorCommand(stdout, stderr), judgeCommand(stdout, stderr), disputesCommand(stdout),
 		{Name: "me", Usage: "Inspect the authenticated identity", Action: request(stdout, http.MethodGet, "/v1/me", nil)},
 		usersCommand(stdout), projectsCommand(stdout), profilesCommand(stdout, false), profilesCommand(stdout, true), jobsCommand(stdout), workerCommand(stdout, stderr),
 		{Name: "fixture", Usage: "Run the offline fixture implementation from assignment stdin", Hidden: true, Flags: []cli.Flag{&cli.DurationFlag{Name: "delay"}, &cli.BoolFlag{Name: "fail"}}, Action: func(ctx context.Context, c *cli.Command) error {
@@ -377,6 +377,8 @@ func watch(ctx context.Context, c *cli.Command, out io.Writer) error {
 		switch job.Status {
 		case factory.JobAccepted:
 			return nil
+		case factory.JobDisputed, factory.JobSuperseded:
+			return fmt.Errorf("job handed off: %s; inspect its disputes for the next responsible participant", job.Status)
 		case factory.JobFailed, factory.JobCancelled, factory.JobCancellationUnknown, factory.JobImplementationUnknown, factory.JobStale, factory.JobVerificationFailed:
 			return fmt.Errorf("job requires action: %s", job.Status)
 		case factory.JobReadyForReview, factory.JobReadyForAcceptance:

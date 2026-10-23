@@ -787,13 +787,15 @@ func jobProject(ctx context.Context, q queryer, jobID JobID) (ProjectID, error) 
 func availableActions(job Job) []ActionKind {
 	switch job.Status {
 	case JobFailed:
-		return []ActionKind{ActionRepair, ActionCancel}
-	case JobQueued, JobReadyForReview, JobReadyForAcceptance:
+		return []ActionKind{ActionRepair, ActionCancel, ActionDispute}
+	case JobReadyForReview, JobReadyForAcceptance:
+		return []ActionKind{ActionCancel, ActionDispute}
+	case JobQueued, JobDisputed:
 		return []ActionKind{ActionCancel}
 	case JobImplementing, JobVerifying:
 		return []ActionKind{ActionCancel}
 	case JobVerificationFailed:
-		return []ActionKind{ActionRepair, ActionCancel}
+		return []ActionKind{ActionRepair, ActionCancel, ActionDispute}
 	case JobImplementationUnknown, JobCancellationUnknown:
 		return []ActionKind{ActionCancel, ActionReconcile, ActionResolve}
 	case JobCancelRequested:

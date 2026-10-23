@@ -41,6 +41,7 @@ const (
 )
 
 type Expectation struct {
+	DisputeID      ID                `json:"disputeId,omitempty"`
 	ID             ID                `json:"id"`
 	ProjectID      ProjectID         `json:"projectId"`
 	WorkItemID     string            `json:"workItemId"`
@@ -88,6 +89,8 @@ type DecideExpectationsRequest struct {
 // ExpectationInput is written to the expectation author's standard input. The author
 // runs in a temporary worktree at the base revision.
 type ExpectationInput struct {
+	Dispute        *Dispute        `json:"dispute,omitempty"`
+	OriginalTests  *Expectation    `json:"originalTests,omitempty"`
 	ExpectationID  ID              `json:"expectationId"`
 	WorkItemID     string          `json:"workItemId"`
 	Title          string          `json:"title"`
@@ -273,6 +276,17 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 	defer s.state.refiners.Done()
 	ctx, cancel := context.WithTimeout(s.state.background, expectationTimeout)
 	defer cancel()
+	if input.Dispute != nil {
+		if job, err := loadJob(ctx, s.state.db, input.Dispute.JobID); err == nil {
+			var deadlineCancel context.CancelFunc
+			ctx, deadlineCancel = context.WithDeadline(ctx, job.Admission.Deadline)
+			defer deadlineCancel()
+		}
+		defer s.registerDisputeCancel(input.Dispute.ID, cancel)()
+		if current, err := loadDispute(ctx, s.state.db, input.Dispute.ID); err != nil || current.Status != "authoring_tests" {
+			return
+		}
+	}
 	result := struct {
 		commit, patch, log string
 		files              []string
@@ -328,7 +342,7 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 		return
 	}
 	defer tx.Rollback()
-	if saveExpectation(context.Background(), tx, expectation, false) == nil {
+	if saveExpectation(context.Background(), tx, expectation, false) == nil && s.finishDisputeTests(context.Background(), tx, expectation, expectation.UpdatedAt) == nil {
 		_ = tx.Commit()
 	}
 }
@@ -437,6 +451,9 @@ func (s *Service) decideExpectations(ctx context.Context, actor Principal, reque
 	}
 	if expectation.Status != ExpectationProposed {
 		return Expectation{}, fault(CodeConflict, "only proposed expectations can be decided", nil)
+	}
+	if expectation.DisputeID != "" {
+		return Expectation{}, fault(CodeConflict, "resolve the linked dispute to decide this replacement test proposal", nil)
 	}
 	if decision == ExpectationAccepted {
 		project, err := readProject(ctx, s.state.db, expectation.ProjectID)

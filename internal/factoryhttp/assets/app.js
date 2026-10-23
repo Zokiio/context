@@ -468,8 +468,9 @@ const canRejectJob = (job) => !!job && can('coordinate', job.projectId) && list(
 const canPlan = (projectId = state.project) => state.me?.kind === 'human' && can('coordinate', projectId);
 const canOpenResultDecision = (job) => canApproveJob(job) || canReviewJob(job) || canRejectJob(job);
 
-function dirtyWorkspace() { return state.workspace?.editor && state.workspace.dirty; }
-function canLeaveWorkspace() { return !dirtyWorkspace() || confirm('Leave this task with unsaved changes? Your draft stays in this tab.'); }
+function workspaceHasInput(space) { return !!(space?.dirty || space?.decisionDirty || space?.disputeDraft?.dirty || [...(space?.disputeReviews?.values() || [])].some((review) => review.dirty)); }
+function dirtyWorkspace() { return workspaceHasInput(state.workspace); }
+function canLeaveWorkspace() { return !dirtyWorkspace() || confirm('Leave this task with unsaved changes? Your input stays in this tab.'); }
 function itemTabs(workItemId, current) {
 	return element('nav', { class: 'segmented task-tabs', 'aria-label': 'Task workspace' }, ['task', 'run', 'history'].map((tab) => element('a', { href: '#' + (tab === 'task' ? 'item' : tab) + '/' + e(workItemId), 'aria-current': tab === current ? 'page' : null }, tab[0].toUpperCase() + tab.slice(1))));
 }
@@ -519,9 +520,12 @@ function buildWorkspace(space) {
 	space.stageDetails = element('section', { class: 'surface stack stage-details' });
 	space.live = element('section', { class: 'surface stack live-activity', 'aria-label': 'Activity' });
 	space.runSummary = element('div', { class: 'run-summary-line' });
+	space.disputes = element('section', { class: 'stack loose dispute-list', 'aria-label': 'Disputes', hidden: true });
+	space.disputeForm = element('section', { class: 'surface stack loose dispute-form', 'aria-label': 'Report a dispute', hidden: true });
+	space.disputeReviews = new Map();
 	const follow = element('input', { type: 'checkbox', checked: true, onchange: () => { space.follow = follow.checked; renderRun(space); } });
 	space.followControl = follow;
-	space.run.append(element('div', { class: 'row spread' }, space.runSummary, element('label', { class: 'switch' }, follow, 'Follow active step')), space.stagePath, element('div', { class: 'run-columns' }, space.stageDetails, space.live));
+	space.run.append(element('div', { class: 'row spread' }, space.runSummary, element('label', { class: 'switch' }, follow, 'Follow active step')), space.disputeForm, space.stagePath, space.disputes, element('div', { class: 'run-columns' }, space.stageDetails, space.live));
 	space.taskContent = element('section', { class: 'surface stack loose task-document' });
 	space.task.append(space.taskContent);
 	renderTask(space); renderWorkspaceHead(space);
@@ -591,7 +595,8 @@ function renderWorkspaceHead(space) {
 			const node = button({ queue: 'Queue task', unqueue: 'Remove from queue', archive: 'Archive', restore: 'Restore as draft', delete: 'Delete draft' }[action], () => disposition(space, action), action === 'queue' ? 'primary' : action === 'delete' ? 'danger' : 'quiet');
 			node.disabled = space.dirty; actions.push(node);
 		}
-		if (space.card?.decision && record.queued && !record.archived && !record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) actions.unshift(link(space.card.decision === 'approve' ? 'Review result' : space.card.state === 'needs_you' ? 'Review next step' : 'Start task', '#decision/' + e(space.id), 'primary'));
+		if (job?.status === 'disputed') actions.unshift(link('Review dispute', '#run/' + e(space.id), 'primary'));
+		if (job?.status !== 'disputed' && space.card?.decision && record.queued && !record.archived && !record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) actions.unshift(link(space.card.decision === 'approve' ? 'Review result' : space.card.state === 'needs_you' ? 'Review next step' : 'Start task', '#decision/' + e(space.id), 'primary'));
 		return actions;
 	});
 }
@@ -657,6 +662,7 @@ async function stopRun(space, jobId) {
 }
 function runControls(space, job) {
 	const controls = element('div', { class: 'actions' });
+	if (list(job?.availableActions).includes('report_dispute')) controls.append(button('Report a dispute', () => openDispute(space, job)));
 	for (const action of list(job?.availableActions)) {
 		if (!['cancel', 'repair', 'reconcile'].includes(action)) continue;
 		controls.append(button({ cancel: 'Stop run', repair: 'Request repair', reconcile: 'Check what happened' }[action], async () => {
@@ -668,8 +674,113 @@ function runControls(space, job) {
 	}
 	if (job && list(job.availableActions).includes('resolve_execution')) controls.append(link('Resolve uncertain execution', '#job/' + e(job.id)));
 	if (job?.status === 'accepted' && (!job.merge || job.merge.status === 'failed') && can('merge', space.project)) controls.append(button(job.merge ? 'Retry merge' : 'Merge', async () => { await command('/jobs/' + e(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: '' }); await refreshWorkspace(space); }));
-	if (space.card?.decision && space.record.queued && !space.record.archived && !space.record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(space.record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) controls.append(link('Open decision', '#decision/' + e(space.id), 'primary'));
+	if (job?.status !== 'disputed' && space.card?.decision && space.record.queued && !space.record.archived && !space.record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(space.record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) controls.append(link('Open decision', '#decision/' + e(space.id), 'primary'));
 	return controls;
+}
+const DISPUTE_OWNER = { judge: 'Judge', test_author: 'Test author', you: 'You', implementer: 'Builder', none: 'No further handoff' };
+const DISPUTE_STATUS = { judging: 'Judge is reviewing the dispute', needs_human: 'Waiting for your decision', authoring_tests: 'Test author is preparing a proposal', tests_proposed: 'Test proposal is ready for approval', routing: 'Controller is arranging the handoff', resolved: 'Handoff completed', stopped: 'Dispute stopped' };
+const DISPUTE_KIND = { repair_implementation: 'Repair the implementation', revise_tests: 'Correct the tests', add_tests: 'Add missing tests', needs_human: 'Human decision required' };
+const DISPUTE_ACTION = { retry_judge: 'Ask the judge again', repair_implementation: 'Send to builder', revise_tests: 'Ask test author to correct tests', add_tests: 'Ask test author to add tests', accept_tests: 'Approve tests and start replacement run', dismiss: 'Dismiss dispute and stop run', return_to_planning: 'Return task to planning' };
+function referenceList(title, values) {
+	return list(values).length ? element('section', { class: 'stack tight' }, element('h3', { class: 'section' }, title), element('ul', { class: 'reference-list' }, values.map((value) => element('li', {}, element('code', {}, String(value)))))) : null;
+}
+function disputeDetails(space, dispute) {
+	const decision = dispute.decision, input = dispute.input || {};
+	return [element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'Judge decision'), element('span', { class: 'state-chip' }, human(dispute.status))),
+		element('div', { class: 'dispute-handoff' }, element('div', { class: 'stack tight' }, element('span', { class: 'eyebrow' }, dispute.status === 'resolved' ? 'Handed to' : 'Next up'), element('strong', { class: 'next-owner' }, DISPUTE_OWNER[dispute.nextOwner] || 'Not recorded')), element('p', {}, DISPUTE_STATUS[dispute.status] || human(dispute.status))),
+		dispute.error ? element('p', { class: 'callout warn' }, dispute.error) : null,
+		dispute.resolution ? element('section', { class: 'stack tight' }, element('h3', { class: 'section' }, 'Recorded human decision'), element('p', {}, (DISPUTE_ACTION[dispute.resolution] || human(dispute.resolution)) + ' · ' + actorName(space, dispute.resolvedBy)), markdown(dispute.rationale)) : null,
+		decision ? element('section', { class: 'stack' }, element('h3', { class: 'section' }, DISPUTE_KIND[decision.kind] || human(decision.kind)), markdown(decision.rationale), decision.directive ? element('div', { class: 'callout stack' }, element('strong', {}, 'Proposed next work'), markdown(decision.directive)) : null, element('p', { class: 'fine' }, 'Preserves intended behavior: ' + (decision.preservesIntent === true ? 'yes' : decision.preservesIntent === false ? 'no' : 'not recorded') + ' · Weakens acceptance: ' + (decision.weakensAcceptance === true ? 'yes' : decision.weakensAcceptance === false ? 'no' : 'not recorded')), referenceList('Judge evidence', decision.evidenceRefs)) : element('p', { class: 'fine' }, 'No judge verdict has been recorded yet.'),
+		element('details', { class: 'fold', 'data-key': 'dispute-report-' + dispute.id }, element('summary', {}, 'Dispute report'), element('div', { class: 'stack' }, markdown(input.summary), list(input.criterionRefs).length ? element('p', {}, 'Affected requirements: ' + input.criterionRefs.join(', ')) : null, referenceList('Affected tests', input.testPaths), markdown(input.observedFailure), referenceList('Reported evidence', input.evidenceRefs), input.proposedChange ? element('section', { class: 'stack tight' }, element('h3', { class: 'section' }, 'Proposed correction'), markdown(input.proposedChange)) : null)),
+		dispute.run ? runNote(dispute.run) : null, dispute.log ? element('details', { class: 'fold', 'data-key': 'judge-output-' + dispute.id }, element('summary', {}, 'Judge output'), element('pre', { class: 'code output', 'data-scroll': 'judge-output-' + dispute.id }, dispute.log)) : null,
+		element('div', { class: 'actions' }, link('Original run ' + short(dispute.jobId), '#job/' + e(dispute.jobId), 'quiet'), dispute.replacementJobId ? link('Replacement run ' + short(dispute.replacementJobId), '#job/' + e(dispute.replacementJobId), 'quiet') : null), element('p', { class: 'fine mono' }, 'Decision ' + short(dispute.id) + ' · version ' + dispute.version + ' · updated ' + when(dispute.updatedAt))];
+}
+function openDispute(space, job) {
+	if (space.disputeDraft) { space.disputeForm.hidden = false; space.disputeForm.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
+	const draft = { jobId: job.id, version: job.version, dirty: false, stale: false };
+	space.disputeDraft = draft;
+	const form = element('form', { class: 'stack loose', oninput: () => { draft.dirty = true; }, onsubmit: (event) => { event.preventDefault(); run(() => submitDispute(space), draft.submit).finally(() => { if (space.disputeDraft === draft) draft.submit.disabled = draft.stale; }); } }, field('Dispute summary', 'summary', { required: true, maxLength: 4000 }), formGrid(field('Affected requirement numbers', 'criterionRefs', { placeholder: '1, 3', help: 'Use the numbers in this run’s approved requirements.' }), field('Affected test paths', 'testPaths', { type: 'textarea', rows: 2, help: 'One repository path per line.' })), field('Observed failure', 'observedFailure', { type: 'textarea', rows: 4, required: true }), field('Evidence references', 'evidenceRefs', { type: 'textarea', rows: 3, required: true, help: 'One check, attempt, artifact or file reference per line.' }), field('Proposed correction', 'proposedChange', { type: 'textarea', rows: 3, help: 'Optional. Describe a possible correction without changing the approved requirements.' }));
+	draft.form = form; draft.notice = element('div', { class: 'callout warn stack', hidden: true, role: 'status' });
+	draft.submit = element('button', { type: 'submit', class: 'button primary' }, 'Send dispute to judge');
+	form.append(draft.notice, element('div', { class: 'actions' }, draft.submit, button('Close report', () => { if (draft.dirty && !confirm('Discard this unsent dispute?')) return; space.disputeDraft = null; space.disputeForm.replaceChildren(); space.disputeForm.hidden = true; }, 'quiet')));
+	space.disputeForm.replaceChildren(element('h2', { class: 'section' }, 'Report a dispute'), element('p', {}, 'Challenge a requirement or protected test with evidence. The judge will decide whether the builder, test author or you should act next.'), element('p', { class: 'fine' }, 'Original run ' + short(job.id) + ' · run version ' + job.version + '. The run keeps its original requirements and test evidence.'), form);
+	space.disputeForm.hidden = false; space.disputeForm.scrollIntoView({ block: 'start', behavior: 'smooth' }); form.querySelector('input').focus();
+}
+function checkDisputeDraft(space) {
+	const draft = space.disputeDraft; if (!draft) return;
+	const current = list(space.activity?.jobs).find((job) => job.id === draft.jobId);
+	const allowed = list(current?.availableActions).includes('report_dispute');
+	if (!draft.stale && current?.version === draft.version && allowed) return;
+	draft.stale = true; draft.submit.disabled = true; draft.notice.hidden = false;
+	draft.notice.replaceChildren(element('strong', {}, 'Run changed; review before sending'), element('p', {}, 'Your report is preserved. The current run is ' + human(current?.status) + (current ? ', version ' + current.version : '') + '.'), link('Inspect current run evidence', '#job/' + e(draft.jobId), 'quiet'), allowed ? button('Use current run version', () => { draft.version = current.version; draft.stale = false; draft.notice.hidden = true; draft.submit.disabled = false; }) : element('p', {}, 'This run no longer allows a new dispute.'));
+}
+async function submitDispute(space) {
+	const draft = space.disputeDraft;
+	if (!draft || draft.stale || !draft.form.reportValidity()) return;
+	const values = data(draft.form), criterionRefs = split(values.criterionRefs).map(Number), testPaths = lines(values.testPaths);
+	if (criterionRefs.some((value) => !Number.isInteger(value) || value < 1)) throw new Error('Requirement numbers must be positive whole numbers separated by commas.');
+	if (!criterionRefs.length && !testPaths.length) throw new Error('Identify at least one affected requirement or test path.');
+	try {
+		await command('/jobs/' + e(draft.jobId) + '/disputes', { jobId: draft.jobId, ifVersion: draft.version, dispute: { summary: values.summary.trim(), criterionRefs, testPaths, observedFailure: values.observedFailure.trim(), evidenceRefs: lines(values.evidenceRefs), proposedChange: values.proposedChange.trim() } });
+		space.disputeDraft = null; space.disputeForm.replaceChildren(); space.disputeForm.hidden = true; await refreshWorkspace(space);
+	} catch (error) { if (error.status === 409) { draft.stale = true; await refreshWorkspace(space); checkDisputeDraft(space); } throw error; }
+}
+function disputeReview(space, dispute) {
+	let review = space.disputeReviews.get(dispute.id);
+	if (!review) {
+		review = { dirty: false, snapshot: dispute, actionsKey: '' };
+		review.notice = element('div', { class: 'callout warn stack', hidden: true, role: 'status' });
+		review.rationale = field('Reason for your decision', 'rationale', { type: 'textarea', rows: 3, required: true, oninput: () => { review.dirty = true; } });
+		review.controls = element('div', { class: 'actions' });
+		review.node = element('section', { class: 'stack dispute-review', 'aria-label': 'Resolve dispute' }, element('h3', { class: 'section' }, 'Your decision'), review.notice, review.rationale, review.controls);
+		space.disputeReviews.set(dispute.id, review);
+	}
+	const changed = dispute.version !== review.snapshot.version || JSON.stringify(dispute.availableActions) !== JSON.stringify(review.snapshot.availableActions);
+	if ((changed && review.dirty) || review.stale) {
+		review.stale = true; review.notice.hidden = false;
+		review.notice.replaceChildren(element('strong', {}, 'Judge decision changed; review the latest state'), element('p', {}, 'Your reason is preserved. Review the updated decision above before taking action.'), button('Review latest judge decision', () => { review.snapshot = dispute; review.stale = false; review.notice.hidden = true; review.actionsKey = ''; updateDisputeControls(space, review); }));
+	} else if (changed) { review.snapshot = dispute; review.stale = false; review.notice.hidden = true; }
+	review.node.hidden = !list(dispute.availableActions).length && !review.dirty;
+	updateDisputeControls(space, review);
+	return review.node;
+}
+function updateDisputeControls(space, review) {
+	const identity = JSON.stringify([review.snapshot.version, review.snapshot.availableActions, review.stale]);
+	if (review.actionsKey === identity) return;
+	review.actionsKey = identity;
+	review.controls.replaceChildren(...list(review.snapshot.availableActions).filter((action) => DISPUTE_ACTION[action]).map((action) => {
+		const control = button(DISPUTE_ACTION[action], async () => {
+			const input = review.rationale.querySelector('textarea');
+			if (review.stale || !input.reportValidity()) return;
+			const snapshot = review.snapshot;
+			try {
+				await command('/disputes/' + e(snapshot.id) + '/resolve', { disputeId: snapshot.id, ifVersion: snapshot.version, action, rationale: input.value.trim() });
+				review.dirty = false; input.value = ''; await refreshWorkspace(space);
+			} catch (error) { if (error.status === 409) { review.stale = true; review.actionsKey = ''; await refreshWorkspace(space); updateDisputeControls(space, review); } throw error; }
+		}, action === 'dismiss' ? 'quiet' : '');
+		control.disabled = !!review.stale; return control;
+	}));
+}
+function testProposal(space, dispute) {
+	if (!dispute.expectationId) return null;
+	const proposal = list(space.activity?.expectations).find((entry) => entry.id === dispute.expectationId);
+	const content = element('div', { class: 'stack' });
+	const show = (value) => content.replaceChildren(...[markdown(value.notes || ''), value.patch ? diffView(value.patch) : element('p', { class: 'fine' }, 'No test patch has been reported.'), referenceList('Test author concerns', value.concerns)].filter(Boolean));
+	if (proposal) show(proposal);
+	else { content.append(button('Load test proposal', async () => show(await api('/expectations/' + e(dispute.expectationId))))); }
+	return element('details', { class: 'fold', 'data-key': 'dispute-tests-' + dispute.id + '-' + (proposal?.status || dispute.status), open: dispute.status === 'tests_proposed' }, element('summary', {}, 'Test author proposal ' + short(dispute.expectationId)), content);
+}
+function renderDisputes(space) {
+	const disputes = list(space.activity?.disputes);
+	space.disputes.hidden = !disputes.length;
+	for (const dispute of disputes) {
+		let entry = [...space.disputes.children].find((node) => node.dataset.dispute === dispute.id);
+		if (!entry) { entry = element('article', { class: 'surface stack loose dispute-card', 'data-dispute': dispute.id }, element('div', { class: 'stack loose dispute-status' })); space.disputes.append(entry); }
+		patchRegion(entry.firstElementChild, JSON.stringify([dispute, list(space.activity?.expectations).find((entry) => entry.id === dispute.expectationId)]), () => [disputeDetails(space, dispute), testProposal(space, dispute)]);
+		const review = disputeReview(space, dispute); if (review.parentNode !== entry) entry.append(review);
+	}
+	for (const entry of [...space.disputes.children]) if (!disputes.some((dispute) => dispute.id === entry.dataset.dispute)) entry.remove();
+	checkDisputeDraft(space);
 }
 function artifactView(space, job, artifact, context) {
 	const key = context + '/' + job.id + '/' + artifact.id;
@@ -689,6 +800,7 @@ function attemptView(space, job, attempt, context = 'run') {
 	return element('article', { class: 'attempt stack', 'data-key': attempt.id }, element('div', { class: 'row spread' }, element('strong', {}, human(attempt.purpose === 'merge' ? 'Merge check' : attempt.stage) + (attempt.checkKey ? ' · ' + attempt.checkKey : '') + ' · attempt ' + attempt.ordinal), element('span', { class: 'tag' }, human(attempt.checkStatus || attempt.status))), element('div', { class: 'run-metadata' }, element('span', {}, timing), element('span', {}, attempt.lastHeartbeatAt ? 'Last contact ' + when(attempt.lastHeartbeatAt) : 'No heartbeat recorded')), attempt.progress ? markdown(attempt.progress) : null, attempt.summary ? markdown(attempt.summary) : null, element('p', { class: 'fine mono' }, 'Input ' + short(attempt.inputRevision) + ' · candidate ' + short(attempt.candidateRevision)), list(attempt.artifacts).map((artifact) => artifactView(space, job, artifact, context)), !list(attempt.artifacts).length ? element('p', { class: 'fine' }, 'Full output is available after the worker reports its result. Heartbeat notes appear above when reported.') : null);
 }
 function renderRun(space) {
+	renderDisputes(space);
 	const steps = list(space.graph?.steps), job = latestJob(space);
 	const stopped = job && ['cancel_requested', 'cancellation_unknown', 'cancelled'].includes(job.status);
 	const active = steps.find((step) => step.status === 'needs_you') || steps.find((step) => step.status === 'running') || [...steps].reverse().find((step) => step.status === 'done') || steps[0];
@@ -718,6 +830,7 @@ function renderHistory(space) {
 		const entries = [];
 		for (const job of list(space.activity?.jobs)) entries.push({ at: job.createdAt, node: element('details', { class: 'surface history-entry', 'data-key': 'job-' + job.id, open: job.id === latestJob(space)?.id }, element('summary', {}, 'Implementation · ' + human(job.status) + ' · ' + when(job.createdAt)), element('div', { class: 'stack loose' }, element('dl', { class: 'history-identities' }, [['Job', job.id], ['Admitted requirements', job.admission.ticketSHA256], ['Started from', job.admission.baseRevision], ['Candidate', job.candidateRevision || 'None'], ['Merge revision', job.merge?.revision || 'None']].map(([label, value]) => [element('dt', {}, label), element('dd', {}, element('code', {}, value))])), element('details', { class: 'fold', 'data-key': 'requirements-' + job.id }, element('summary', {}, 'Original requirements and context'), list(job.admission.sources).map((source) => element('section', { class: 'stack' }, element('h3', { class: 'section mono' }, source.path), element('pre', { class: 'code' }, source.text)))), list(job.attempts).map((attempt) => attemptView(space, job, attempt, 'history')), checkResults(job), list(job.reviews).map((review) => element('section', { class: 'stack' }, element('strong', {}, 'Review · ' + human(review.decision)), element('p', { class: 'fine' }, 'By ' + actorName(space, review.reviewerId) + ' · ' + when(review.createdAt)), markdown(review.summary), element('p', { class: 'fine mono' }, 'Candidate ' + review.candidateRevision + ' · requirements ' + review.requirementFingerprint))), eventTimeline(space, job))) });
 		for (const [name, values] of [['Refinement', space.activity?.refinements], ['Test proposal', space.activity?.expectations]]) for (const proposal of list(values)) entries.push({ at: proposal.createdAt, node: element('details', { class: 'surface history-entry', 'data-key': name + '-' + proposal.id }, element('summary', {}, name + ' · ' + human(proposal.status) + ' · ' + when(proposal.createdAt)), element('div', { class: 'stack' }, proposal.error ? element('p', { class: 'alert bad' }, proposal.error) : null, markdown(proposal.notes || proposal.proposal?.summary || ''), list(proposal.criteria).length ? element('section', {}, element('h3', { class: 'section' }, 'Original requirements'), element('ol', { class: 'requirements' }, list(proposal.criteria).map((text) => element('li', {}, markdown(text))))) : null, proposal.proposal?.criteria ? element('section', {}, element('h3', { class: 'section' }, 'Proposed requirements'), element('ol', { class: 'requirements' }, list(proposal.proposal.criteria).map((text) => element('li', {}, markdown(text))))) : null, proposal.patch ? diffView(proposal.patch) : null, element('details', { 'data-key': 'record-' + proposal.id }, element('summary', {}, 'Record, answers and execution details'), element('pre', { class: 'code' }, JSON.stringify(proposal, null, 2))))) });
+		for (const dispute of list(space.activity?.disputes)) entries.push({ at: dispute.createdAt, node: element('details', { class: 'surface history-entry', 'data-key': 'dispute-' + dispute.id }, element('summary', {}, 'Judge · ' + (DISPUTE_KIND[dispute.decision?.kind] || human(dispute.status)) + ' · ' + when(dispute.createdAt)), element('div', { class: 'stack loose' }, disputeDetails(space, dispute), testProposal(space, dispute))) });
 		entries.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
 		return [element('h2', { class: 'section' }, 'History'), space.activity?.truncated ? element('p', { class: 'callout warn' }, 'This view shows the newest 100 entries of each kind. Older records remain in the service.') : null, entries.length ? entries.map((entry) => entry.node) : empty('No execution history yet', 'Jobs, attempts, decisions and proposals remain here after the task changes.')];
 	});
@@ -765,10 +878,11 @@ async function loadDecision(space, reload = false) {
 		await refreshWorkspace(space);
 		const identity = decisionIdentity(space), card = space.card;
 		let content;
-		if (card?.decision === 'approve' && card.jobId) content = await approveContent(card.jobId, 'page');
+		if (latestJob(space)?.status === 'disputed') content = [element('p', {}, 'Review the judge’s decision, test proposal and next handoff in Run.'), link('Review dispute', '#run/' + e(space.id), 'primary')];
+		else if (card?.decision === 'approve' && card.jobId) content = await approveContent(card.jobId, 'page');
 		else if (card?.decision === 'plan' && space.record.queued && !space.record.stopped && !space.record.archived) content = canPlan(space.project) ? await planContent(card, 'page', space.board) : [element('p', {}, 'You can read this task, but making planning decisions requires coordinate access and a human account.')];
 		else content = [element('p', {}, 'No decision is waiting for you.'), link('Open run', '#run/' + e(space.id))];
-		space.decisionContent.replaceChildren(element('h2', { class: 'section' }, card?.decision === 'approve' ? 'Review the result' : 'Agree what done means'), ...content);
+		space.decisionContent.replaceChildren(element('h2', { class: 'section' }, latestJob(space)?.status === 'disputed' ? 'Resolve the dispute' : card?.decision === 'approve' ? 'Review the result' : 'Agree what done means'), ...content);
 		space.decisionIdentity = identity; space.decisionLoaded = true; space.decisionDirty = false; space.decisionStale = false; space.decisionDisabled = null; space.decisionTaskBlocked = false;
 	} catch (error) { space.decisionContent.replaceChildren(element('p', { class: 'alert bad' }, error.message), button('Try again', () => loadDecision(space))); }
 	finally { space.decisionLoading = false; checkDecisionFreshness(space); }
@@ -1358,7 +1472,7 @@ $('#signin-form').addEventListener('submit', (event) => {
 		try { await connect(); } catch (error) { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; }
 	}, event.submitter);
 });
-$('#signout').addEventListener('click', () => { if (![...taskSpaces.values()].some((space) => space.dirty) || confirm('Sign out and discard all unsaved task drafts?')) signout(); });
+$('#signout').addEventListener('click', () => { if (![...taskSpaces.values()].some(workspaceHasInput) || confirm('Sign out and discard all unsaved task and decision input?')) signout(); });
 $('#project-select').addEventListener('change', (event) => {
 	if (!canLeaveWorkspace()) { event.target.value = state.project; return; }
 	state.workspace = null; state.board = null; state.boardReturn = null;
@@ -1368,7 +1482,7 @@ $('#project-select').addEventListener('change', (event) => {
 });
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && state.drawer) closeDrawer(true); });
 window.addEventListener('hashchange', () => run(() => route()));
-window.addEventListener('beforeunload', (event) => { if ([...taskSpaces.values()].some((space) => space.dirty)) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('beforeunload', (event) => { if ([...taskSpaces.values()].some(workspaceHasInput)) { event.preventDefault(); event.returnValue = ''; } });
 if (state.token) connect().catch((error) => { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; });
 setInterval(() => {
 	for (const node of document.querySelectorAll('[data-since]')) node.textContent = clock((Date.now() - Date.parse(node.dataset.since)) / 1000);

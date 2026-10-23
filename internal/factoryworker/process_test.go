@@ -69,6 +69,25 @@ func TestWorkerHelper(t *testing.T) {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(14)
 		}
+	case "dispute", "dispute-wait", "dispute-descendant":
+		if err := os.WriteFile(os.Getenv("CTX_FACTORY_DISPUTE"), []byte(disputeFixture), 0600); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(15)
+		}
+		if args[0] == "dispute-wait" {
+			time.Sleep(30 * time.Second)
+		}
+		if args[0] == "dispute-descendant" {
+			raw, _ := json.Marshal(a)
+			child := exec.Command(os.Args[0], "-test.run=^TestWorkerHelper$", "--", "short-wait")
+			child.Env, child.Stdin = os.Environ(), bytes.NewReader(raw)
+			if err := child.Start(); err != nil {
+				os.Exit(16)
+			}
+			_ = child.Process.Release()
+		}
+	case "dispute-prose":
+		fmt.Println(disputeFixture)
 	case "descendant":
 		raw, _ := json.Marshal(a)
 		child := exec.Command(os.Args[0], "-test.run=^TestWorkerHelper$", "--", "short-wait")

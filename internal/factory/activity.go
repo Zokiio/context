@@ -22,6 +22,7 @@ type WorkItemActivity struct {
 	Jobs         []Job           `json:"jobs"`
 	Refinements  []Refinement    `json:"refinements"`
 	Expectations []Expectation   `json:"expectations"`
+	Disputes     []Dispute       `json:"disputes"`
 	Actors       []ActivityActor `json:"actors"`
 	Truncated    bool            `json:"truncated"`
 }
@@ -56,6 +57,17 @@ func (s *Service) WorkItemActivity(ctx context.Context, actor Principal, project
 		return WorkItemActivity{}, err
 	}
 	result := WorkItemActivity{ProjectID: projectID, WorkItemID: workItemID, GeneratedAt: s.state.now().UTC(), Jobs: []Job{}, Actors: []ActivityActor{}}
+	result.Disputes, result.Truncated, err = activityRecords[Dispute](ctx, tx, "disputes", projectID, workItemID)
+	if err != nil {
+		return WorkItemActivity{}, err
+	}
+	for i := range result.Disputes {
+		result.Disputes[i] = s.disputeActions(ctx, tx, current, result.Disputes[i])
+		if len([]rune(result.Disputes[i].Log)) > 2000 {
+			result.Disputes[i].Log = truncateRunes(result.Disputes[i].Log, 2000)
+			result.Disputes[i].LogTruncated = true
+		}
+	}
 	result.Held, err = workItemHeld(ctx, tx, projectID, workItemID)
 	if err != nil {
 		return WorkItemActivity{}, err
@@ -87,6 +99,10 @@ func (s *Service) WorkItemActivity(ctx context.Context, actor Principal, project
 		if id != nil && *id != "" {
 			actors[*id] = true
 		}
+	}
+	for _, dispute := range result.Disputes {
+		addActor(&dispute.RequestedBy)
+		addActor(dispute.ResolvedBy)
 	}
 	for _, id := range ids {
 		job, err := loadJobRecord(ctx, tx, id, false)

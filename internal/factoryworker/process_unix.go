@@ -4,11 +4,15 @@ package factoryworker
 
 import (
 	"errors"
+	"os"
 	"os/exec"
 	"syscall"
 )
 
 func platformSupport() error { return nil }
+func openDisputeFile(root *os.Root, name string) (*os.File, error) {
+	return root.OpenFile(name, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+}
 func configureProcess(cmd *exec.Cmd) error {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	return nil

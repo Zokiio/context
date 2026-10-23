@@ -17,6 +17,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Zokiio/context/internal/factory"
 )
 
 // Command is an administrator supplied argv. No argument is interpreted by a shell.
@@ -57,15 +59,16 @@ type Observation struct {
 }
 
 type Receipt struct {
-	AttemptID        string        `json:"attemptId"`
-	AssignmentSHA256 string        `json:"assignmentSHA256"`
-	State            string        `json:"state"`
-	Candidate        string        `json:"candidate,omitempty"`
-	PID              int           `json:"pid,omitempty"`
-	StartedAt        time.Time     `json:"startedAt"`
-	FinishedAt       time.Time     `json:"finishedAt,omitempty"`
-	Observations     []Observation `json:"observations,omitempty"`
-	Error            string        `json:"error,omitempty"`
+	Dispute          *factory.DisputeInput `json:"dispute,omitempty"`
+	AttemptID        string                `json:"attemptId"`
+	AssignmentSHA256 string                `json:"assignmentSHA256"`
+	State            string                `json:"state"`
+	Candidate        string                `json:"candidate,omitempty"`
+	PID              int                   `json:"pid,omitempty"`
+	StartedAt        time.Time             `json:"startedAt"`
+	FinishedAt       time.Time             `json:"finishedAt,omitempty"`
+	Observations     []Observation         `json:"observations,omitempty"`
+	Error            string                `json:"error,omitempty"`
 }
 
 // Process owns only processes it starts in this invocation. Stored PIDs are
@@ -232,6 +235,16 @@ func (p *Process) execute(ctx context.Context, a Assignment, hooks Hooks) (Recei
 		default:
 			receipt.State = "failed"
 		}
+		// Only a conclusively stopped process can hand control to the judge.
+		// Unknown execution and cancellation always keep their original meaning.
+		if receipt.State == "succeeded" || receipt.State == "failed" {
+			dispute, readErr := readDispute(p.disputePath(a.AttemptID))
+			if readErr != nil {
+				receipt.State, receipt.Error = "failed", readErr.Error()
+			} else if dispute != nil {
+				receipt.State, receipt.Dispute = "disputed", dispute
+			}
+		}
 		if receipt.State == "succeeded" {
 			receipt.Candidate, err = git(a.Workspace, "rev-parse", "HEAD")
 			if err == nil {
@@ -356,7 +369,7 @@ func (p *Process) invoke(ctx context.Context, a Assignment, c Command, input []b
 		}
 		return name + "=" + value
 	}
-	cmd.Env = append(os.Environ(), path("CTX_FACTORY_ASSIGNMENT", assignmentPath), path("CTX_FACTORY_CONTEXT", contextPath), "CTX_FACTORY_ATTEMPT="+a.AttemptID, path("CTX_FACTORY_PROGRESS", p.progressPath(a.AttemptID)), path("CTX_FACTORY_RESULT", p.resultPath(a.AttemptID)))
+	cmd.Env = append(os.Environ(), path("CTX_FACTORY_ASSIGNMENT", assignmentPath), path("CTX_FACTORY_CONTEXT", contextPath), "CTX_FACTORY_ATTEMPT="+a.AttemptID, path("CTX_FACTORY_PROGRESS", p.progressPath(a.AttemptID)), path("CTX_FACTORY_RESULT", p.resultPath(a.AttemptID)), path("CTX_FACTORY_DISPUTE", p.disputePath(a.AttemptID)))
 	if err := configureProcess(cmd); err != nil {
 		o.Status = "unavailable"
 		o.Log = err.Error()
@@ -452,7 +465,7 @@ func validate(a Assignment) error {
 	return nil
 }
 func terminal(s string) bool {
-	return s == "succeeded" || s == "failed" || s == "cancelled" || s == "unknown"
+	return s == "succeeded" || s == "failed" || s == "cancelled" || s == "unknown" || s == "disputed"
 }
 func verifyCandidate(a Assignment) error {
 	head, e := git(a.Workspace, "rev-parse", "HEAD")
