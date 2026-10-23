@@ -36,6 +36,10 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs/{id}/actions` | POST `JobActionRequest` for cancel, repair, reconcile, or explicit resolution |
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |
+| `/v1/projects/{id}/refinements` | GET a project's refinements, optionally `?workItemId=`, POST `StartRefinementRequest` |
+| `/v1/refinements/{id}` | GET one refinement with its proposal and before and after scores |
+| `/v1/refinements/{id}/accept` | POST `AcceptRefinementRequest`; rewrites the ticket through an expected-revision write |
+| `/v1/refinements/{id}/reject` | POST `RejectRefinementRequest` |
 | `/v1/worker/claims` | POST `WorkerClaimRequest` |
 | `/v1/worker/heartbeat` | POST `HeartbeatRequest` with exact attempt and dispatch IDs and an optional `progress` note |
 | `/v1/worker/reports` | POST `WorkerReportRequest` with exact attempt and dispatch IDs |

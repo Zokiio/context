@@ -54,6 +54,10 @@ Generated evidence and decisions follow project retention policy. A fresh checko
 
 An optional local decision model answers bounded questions in one forward pass, starting with whether each acceptance criterion names a checkable result. Answers carry the model, its digest, and a versioned question, and are cached by input digest. They inform people before admission and are copied into the admission snapshot, but readiness, admission, verification, and acceptance never read them.
 
+## Refinement precedes admission
+
+A refinement proposes rewritten criteria and at most three blocking questions for one work item before admission freezes it. The refiner only reads; a person answers, edits, and accepts. Acceptance changes the authored ticket through an expected-revision write and records the answers under Comments, so the record shows how its criteria were shaped. The decision model scores criteria before and after as an advisory comparison. Refinement is refused while an active job holds the work item, because that job's requirements are already frozen.
+
 ## Shared access uses one policy
 
 The service authenticates users and workers and checks capabilities for every operation. Project grants cover reading, coordinating, verifying, reviewing, accepting, project administration, and stage-specific worker execution. UI controls reflect these permissions; the service enforces them independently.

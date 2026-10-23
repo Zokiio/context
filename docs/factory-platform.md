@@ -307,6 +307,25 @@ Project orientation then includes `criterionSignals` for open work items: each c
 
 The signals are advisory. They never affect readiness, admission, or acceptance, and an unreachable model is reported as `unavailable`. The probabilities are uncalibrated. In trials, Kev 0.8B separated 37 real criteria from 6 vague controls well, at about 60 ms per criterion on an M4, but its absolute values were low. Compare criteria with each other rather than trusting a single number.
 
+## Refine criteria before admission
+
+Admission freezes a work item's criteria, and protected tests then hold the implementation to them. A vague criterion is therefore locked in for the whole job. A refinement fixes it first:
+
+```sh
+wm_admin refine start --project "$wm_project_id" --work-item "$wm_work_id" --wait
+wm_admin refine start --project "$wm_project_id" --work-item "$wm_work_id" \
+	--previous ref_... --answer "Strict code points, no normalization." --wait
+wm_admin refine accept --id ref_... --criterion "..." --criterion "..." --answer "..."
+```
+
+The refiner reads the ticket, its context, the decision model's flags, the protected paths, and any earlier proposal and answers. It returns rewritten criteria and at most three blocking questions, each saying what its answer unblocks. `ctx factory refiner` runs Claude Code with only the Read, Grep, and Glob tools and schema-checked JSON output, so it cannot edit anything. The decision model scores the current criteria before and the proposal after.
+
+Answer the questions and refine again, reject the proposal, or edit and accept it. Acceptance rewrites the Acceptance criteria section and appends who accepted, which refiner proposed it, and the answers under Comments. The write is an expected-revision write: if the ticket changed after the refinement started, the refinement becomes `stale` and the ticket is left alone. Refinement is refused while an active job holds the work item, one refinement runs at a time per work item, and a run interrupted by shutdown is recorded as failed.
+
+Configure a refiner with `serve --refiner-command-file` (a JSON argv that reads a `RefinerInput` on stdin and writes a `RefinerOutput` on stdout). Solo mode uses read-only Claude Code when it is installed: `--refiner-model` (default `sonnet`) and `--refiner-budget-usd` (default 0.50) tune it, and `--no-refiner` disables it. In the web workspace, open a work item and use Refine criteria.
+
+In a trial on a ticket whose criteria read "Add a palindrome helper", "handle unicode properly", and "be fast", the first pass took 27 s and $0.47 and turned them into seven checkable criteria with two questions. After answers, a second pass took 36 s and $0.09. It also found that an earlier accepted candidate had never been merged, which its holdout test needed. Kev scored the original criteria 0.27 to 0.29, above the 0.25 default threshold, so it did not flag them. The proposed criteria scored 0.37 to 0.64. Use the scores to compare criteria rather than relying on the flag alone.
+
 ## Run everything for one person
 
 `ctx factory solo` runs the service on loopback with an implementation worker and a verification worker in the same process:
