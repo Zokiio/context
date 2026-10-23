@@ -143,6 +143,10 @@ func NewHandler(service *factory.Service) http.Handler {
 		v, err := service.Board(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)
 	})
+	get("/v1/projects/{project}/work-items/{item}/run", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.WorkItemRun(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
+		respond(w, 200, v, err)
+	})
 	get("/v1/projects/{project}/work-items/{item}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.GetWorkItem(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
 		respond(w, 200, v, err)

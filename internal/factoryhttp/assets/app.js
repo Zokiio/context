@@ -30,6 +30,10 @@ const ICONS = {
 	eye: ['M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
 	arrow: ['M5 12h14M12 5l7 7-7 7'],
 	plus: ['M12 5v14M5 12h14'],
+	spark: ['M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.5 2.5M15.2 15.2l2.5 2.5M17.7 6.3l-2.5 2.5M8.8 15.2l-2.5 2.5'],
+	person: ['M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M4 21a8 8 0 0 1 16 0'],
+	terminal: ['m5 8 4 4-4 4', 'M12 16h7'],
+	merge: ['M6 3v12', 'M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M18 9a9 9 0 0 1-9 9'],
 	pencil: ['M12 20h9', 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'],
 };
 function icon(name, size = 18) {
@@ -191,7 +195,7 @@ async function route(quiet = false) {
 	state.view = parts[0] || 'board';
 	const scroll = window.scrollY;
 	if (!quiet) { closeDrawer(false); notice(state.flash); state.flash = ''; }
-	const area = { board: 'board', list: 'board', graph: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask', agents: 'agents' }[state.view] || '';
+	const area = { board: 'board', list: 'board', graph: 'board', run: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask', agents: 'agents' }[state.view] || '';
 	for (const anchor of document.querySelectorAll('[data-nav]')) {
 		if (anchor.dataset.nav === area) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
 	}
@@ -202,6 +206,7 @@ async function route(quiet = false) {
 		else if (!state.project) content = noProjects();
 		else if (state.view === 'list') content = await listPage();
 		else if (state.view === 'graph') content = await graphPage();
+		else if (state.view === 'run') content = await runPage(parts[1] || '');
 		else if (state.view === 'item') content = await itemPage(parts[1] || '');
 		else if (state.view === 'job') content = await jobPage(parts[1] || '');
 		else if (state.view === 'insights') content = await insightsPage();
@@ -433,6 +438,103 @@ async function workDetails(workItemId, board) {
 	};
 	view();
 	return box;
+}
+
+// One item's run
+
+// RUN_LAYOUT places each step on the run graph: x and y of the node's top left corner.
+const RUN_LAYOUT = { sharpen: [48, 40], tests: [48, 232], agree: [312, 232], build: [576, 232], checks: [840, 232], approve: [1104, 232], merge: [1368, 232], repair: [840, 440] };
+const RUN_NODE = { width: 192, height: 128 };
+const RUN_KIND = { agent: 'Agent', you: 'You', check: 'Check', automatic: 'Automatic' };
+const RUN_STATUS = { done: 'Done', running: 'Running', needs_you: 'Needs you', next: 'Next', idle: 'Idle', skipped: 'Skipped', failed: 'Failed' };
+const RUN_ICON = { agent: 'spark', you: 'person', check: 'terminal', automatic: 'merge' };
+async function runPage(workItemId) {
+	const [run, board] = await Promise.all([api('/projects/' + e(state.project) + '/work-items/' + e(workItemId) + '/run'), loadBoard()]);
+	const card = cards(board).find((entry) => entry.workItemId === workItemId);
+	const steps = Object.fromEntries(list(run.steps).map((step) => [step.key, step]));
+	const waiting = list(run.steps).find((step) => step.status === 'needs_you');
+	let selected = (waiting || list(run.steps).find((step) => step.status === 'running') || list(run.steps).filter((step) => step.status === 'done').pop() || run.steps[0]).key;
+	const detail = element('section', { class: 'surface run-detail', 'aria-live': 'polite' });
+	const nodes = {};
+	const select = (key) => {
+		selected = key;
+		for (const [name, node] of Object.entries(nodes)) node.setAttribute('aria-pressed', String(name === key));
+		const step = steps[key];
+		const facts = [['Model', step.model], ['Turns', step.turns || ''], ['Time', step.seconds ? Math.round(step.seconds) + ' s' : ''], ['Cost', step.costUsd ? money(step.costUsd) : ''], ['By', step.by]].filter(([, value]) => value);
+		const action = step.status === 'needs_you' ? runAction(step, card, run) : null;
+		detail.replaceChildren(
+			element('div', { class: 'stack' }, element('span', { class: 'eyebrow' }, RUN_KIND[step.kind] + ' · ' + RUN_STATUS[step.status]), element('h2', {}, step.title), step.summary ? element('p', { class: 'lead' }, step.summary) : null,
+				list(step.notes).map((note) => element('p', { class: 'run-note' }, rich(note))), action),
+			facts.length ? element('dl', { class: 'run-facts' }, facts.map(([label, value]) => [element('dt', {}, label), element('dd', {}, String(value))])) : null);
+	};
+	const host = element('div', { class: 'run-host' }, runEdges(steps));
+	for (const [key, [x, y]] of Object.entries(RUN_LAYOUT)) {
+		const step = steps[key];
+		if (!step) continue;
+		const meta = [(step.model || '').replace(/^claude-/, ''), step.turns ? plural(step.turns, 'turn', 'turns') : '', step.seconds ? Math.round(step.seconds) + ' s' : ''].filter(Boolean).join(' · ');
+		const node = element('button', { type: 'button', class: 'run-node ' + step.status.replace('_', '-'), 'aria-pressed': 'false', onclick: () => select(key) },
+			element('span', { class: 'run-icon ' + step.kind, 'aria-hidden': 'true' }, icon(RUN_ICON[step.kind], 16)),
+			element('span', { class: 'run-text' },
+				element('span', { class: 'run-top' }, element('span', {}, RUN_KIND[step.kind]), element('span', { class: 'run-status' }, RUN_STATUS[step.status])),
+				element('strong', {}, step.title),
+				element('span', { class: 'run-summary' }, step.summary || ' '),
+				element('span', { class: 'run-meta' }, element('span', {}, meta || step.by || ''), step.costUsd ? element('span', {}, money(step.costUsd)) : null)));
+		node.style.left = x + 'px';
+		node.style.top = y + 'px';
+		nodes[key] = node;
+		host.append(node);
+	}
+	const branch = steps.merge?.title.replace('Merge into ', '') || 'main';
+	const end = element('span', { class: 'run-end' + (steps.merge?.status === 'done' ? ' done' : '') }, icon('merge', 14), branch);
+	host.append(end);
+	for (const [text, x, y, width, align] of [['sharpened', 156, 191, 72, 'left'], ['ready', 252, 272, 48], ['agreed', 512, 272, 56], ['built', 780, 272, 48], ['passed', 1040, 272, 56], ['approved', 1300, 272, 64], ['passed', 1568, 272, 56], ['fail', 980, 391, 32, 'left'], ['fixed', 852, 391, 40, 'right'], ['ask for a fix', 1071, 516, 90]]) {
+		const label = element('span', { class: 'run-label' }, text);
+		label.style.left = x + 'px';
+		label.style.top = y + 'px';
+		label.style.width = width + 'px';
+		label.style.textAlign = align || 'center';
+		host.append(label);
+	}
+	select(selected);
+	const chips = element('div', { class: 'card-facts' },
+		card ? element('span', { class: 'state-chip ' + ({ needs_you: 'need', running: 'running' }[card.state] || '') }, card.state === 'needs_you' ? 'Needs you' : card.status) : null,
+		run.costUsd ? element('span', { class: 'card-fact' }, money(run.costUsd) + ' so far') : null,
+		run.repairLimit ? element('span', { class: 'card-fact' }, run.repairs + ' of ' + run.repairLimit + ' fixes used') : null);
+	return page('run-page',
+		element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', run.title), element('div', { class: 'page-head' }, element('div', { class: 'stack tight' }, element('h1', { class: 'title' }, run.title), chips), itemTabs(workItemId, 'run'))),
+		element('div', { class: 'run-scroll' }, host),
+		element('p', { class: 'fine' }, 'Solid arrows show what happened; dashed ones what can still happen. Select a step to see its details.'),
+		detail);
+}
+// runEdges draws the arrows between the steps, solid where the run went and dashed
+// where it can still go.
+function runEdges(steps) {
+	const status = (key) => steps[key]?.status || 'next';
+	const done = (key) => status(key) === 'done';
+	const kind = (from, to) => status(to) === 'needs_you' && done(from) ? 'wait' : done(from) && status(to) !== 'next' ? 'met' : 'open';
+	const lines = [
+		['M144 168 L144 228', done('sharpen') ? 'met' : 'open'],
+		['M240 296 L308 296', kind('tests', 'agree')], ['M504 296 L572 296', kind('agree', 'build')], ['M768 296 L836 296', kind('build', 'checks')],
+		['M1032 296 L1100 296', kind('checks', 'approve')], ['M1296 296 L1364 296', kind('approve', 'merge')], ['M1560 296 L1628 296', done('merge') ? 'met' : 'open'],
+		['M968 360 L968 436', ['done', 'running', 'needs_you'].includes(status('repair')) ? 'met' : 'open'],
+		['M904 440 L904 364', done('repair') ? 'met' : 'open'],
+		['M1200 360 L1200 504 L1036 504', 'open'],
+	];
+	return svg('svg', { class: 'run-edges', width: 1768, height: 600, viewBox: '0 0 1768 600', 'aria-hidden': 'true' },
+		svg('defs', {}, ['met', 'wait', 'open'].map((name) => svg('marker', { id: 'run-arrow-' + name, viewBox: '0 0 8 8', refX: '7', refY: '4', markerWidth: '8', markerHeight: '8', orient: 'auto' }, svg('path', { d: 'M0,0 L8,4 L0,8 z', class: 'arrow ' + name })))),
+		lines.map(([d, name]) => svg('path', { d, class: 'edge ' + name, 'marker-end': 'url(#run-arrow-' + name + ')' })));
+}
+function runAction(step, card, run) {
+	if (!card) return null;
+	if (step.key === 'agree' || step.key === 'sharpen') return button(card.questions ? 'Answer the questions' : 'Agree what done means', () => openCard(card), 'primary');
+	if (step.key === 'approve') return button('Review the change', () => openCard(card), 'primary');
+	if (run.jobId) return link('Open the build', '#job/' + e(run.jobId), 'primary');
+	return null;
+}
+function itemTabs(workItemId, current) {
+	return element('nav', { class: 'segmented', 'aria-label': 'Work item' },
+		element('a', { href: '#item/' + e(workItemId), 'aria-current': current === 'details' ? 'page' : null }, 'Details'),
+		element('a', { href: '#run/' + e(workItemId), 'aria-current': current === 'run' ? 'page' : null }, 'Run'));
 }
 
 // The work graph
@@ -760,7 +862,7 @@ function stagesElement(card) {
 	}));
 }
 function pageHead(card, title) {
-	return element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', title), element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title)), stagesElement(card)));
+	return element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', title), element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title)), element('div', { class: 'row' }, card ? itemTabs(card.workItemId, 'details') : null, stagesElement(card))));
 }
 function statusSurface(card) {
 	const eyebrow = card.state === 'needs_you' ? ['warn', 'Needs you'] : card.state === 'running' ? ['info', 'Automatic · nothing needs you'] : card.state === 'done' ? ['ok', 'Done'] : ['', 'Waiting'];
@@ -1037,7 +1139,7 @@ setInterval(() => {
 }, 1000);
 setInterval(async () => {
 	if (!state.me || !state.project || document.hidden || mutationsInFlight || state.drawer || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
-	if (!['board', 'list', 'graph', 'item', 'job', ''].includes(state.view)) return;
+	if (!['board', 'list', 'graph', 'run', 'item', 'job', ''].includes(state.view)) return;
 	try {
 		const board = await api('/projects/' + e(state.project) + '/board');
 		if (boardKey(board) !== state.boardKey) await route(true);
