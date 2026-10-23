@@ -20,7 +20,11 @@ func refinerFlags() []cli.Flag {
 }
 
 func refinerCommandFile(c *cli.Command) ([]string, error) {
-	path := c.String("refiner-command-file")
+	return commandFile(c.String("refiner-command-file"))
+}
+
+// commandFile reads a JSON argv array, or nothing when no file is named.
+func commandFile(path string) ([]string, error) {
 	if path == "" {
 		return nil, nil
 	}
@@ -30,7 +34,7 @@ func refinerCommandFile(c *cli.Command) ([]string, error) {
 	}
 	var argv []string
 	if err := json.Unmarshal(raw, &argv); err != nil || len(argv) == 0 || argv[0] == "" {
-		return nil, errors.New("refiner-command-file must contain a nonempty JSON argv array")
+		return nil, fmt.Errorf("%s must contain a nonempty JSON argv array", path)
 	}
 	return argv, nil
 }

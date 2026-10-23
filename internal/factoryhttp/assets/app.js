@@ -168,8 +168,45 @@ function inspectItem(item, project, canSubmit) {
 	const root = $('#content');
 	root.replaceChildren(pageHead(item.title || item.id, 'Current work readiness and selected requirement identities.', [button('Back to project', route)]), panel('Work item', element('div', { class: 'panel-body' }, metadata([['Stable ID', code(item.id)], ['Source', code(item.source)], ['Readiness', badge(item.readiness)], ['Eligible', String(item.eligible)], ['Ticket fingerprint', code(item.ticketSHA256)], ['Criteria fingerprint', code(item.criteriaSHA256)]]))), panel('Readiness checks', table(['CHECK', 'STATUS', 'REASONS'], list(item.checks).map((check) => [human(check.name), badge(check.status), list(check.reasons).map((reason) => reason.message).join(' · ')]))));
 	if (list(item.exclusionReasons).length) root.append(element('div', { class: 'notice' }, item.exclusionReasons.map((reason) => reason.message).join(' ')));
-	if (canSubmit && item.id) root.append(refineSection(item, project));
+	if (canSubmit && item.id) root.append(refineSection(item, project), expectationsSection(item, project));
 	if (canSubmit && item.eligible && item.readiness === 'ready') root.append(submitForm(project, [item]));
+}
+function expectationsSection(item, project) {
+	const holder = element('div', {}, panel('Holdout expectations', element('div', { class: 'panel-body check-text' }, 'Loading expectations…')));
+	const render = async (expectation) => { holder.replaceChildren(expectationsPanel(item, project, expectation, render)); };
+	run(async () => { const found = list(await api('/projects/' + encodeURIComponent(project.id) + '/expectations?workItemId=' + encodeURIComponent(item.id))); await render(found[0] || null); if (found[0]?.status === 'running') await watchExpectations(found[0], render); });
+	return holder;
+}
+async function watchExpectations(expectation, render) {
+	await render(expectation);
+	while (expectation.status === 'running') {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		expectation = await api('/expectations/' + encodeURIComponent(expectation.id));
+		await render(expectation);
+	}
+}
+function expectationsPanel(item, project, expectation, render) {
+	const protectedPaths = list(project.policy.protectedPaths);
+	const intro = element('p', { class: 'check-text' }, 'An author that never implements the work writes tests from the criteria, only under the protected paths (' + (protectedPaths.join(', ') || 'none configured') + '). You read and accept them. The job then starts from them, the implementer cannot change them, and they reach the branch only together with the implementation.');
+	if (!protectedPaths.length) return panel('Holdout expectations', element('div', { class: 'panel-body' }, intro, element('div', { class: 'notice' }, 'The project needs protected paths before expectations can be written.')));
+	const start = () => run(async () => watchExpectations(await command('/projects/' + encodeURIComponent(project.id) + '/expectations', { workItemId: item.id }), render));
+	const runNote = expectation?.run ? [expectation.run.model, expectation.run.turns + ' turns', '$' + Number(expectation.run.costUsd || 0).toFixed(2)].filter(Boolean).join(' · ') : '';
+	if (!expectation || ['failed', 'rejected'].includes(expectation.status)) {
+		const last = expectation ? element('p', { class: 'fine' }, 'Last suite ' + human(expectation.status) + (expectation.error ? ': ' + expectation.error : '') + ' · ' + time(expectation.updatedAt)) : null;
+		return panel('Holdout expectations', element('div', { class: 'panel-body' }, intro, last, element('div', { class: 'form-actions' }, button('Write holdout tests', start, 'primary'))));
+	}
+	if (expectation.status === 'running') return panel('Holdout expectations', element('div', { class: 'panel-body check-text' }, 'The author is writing tests in a temporary worktree. Nothing in your checkout changes.'), 'running');
+	const body = [intro, metadata([['Status', badge(expectation.status)], ['Files', list(expectation.files).join(', ')], ['Commit', code(expectation.commit)], ['Base', code(expectation.baseRevision)]]), expectation.notes ? element('p', { class: 'fine' }, 'Author notes: ' + expectation.notes) : null, element('details', { class: 'source', open: expectation.status === 'proposed' }, element('summary', {}, 'Patch'), element('pre', { class: 'output' }, expectation.patch || ''))];
+	if (expectation.status === 'proposed') {
+		body.push(element('div', { class: 'form-actions' }, button('Accept these tests', async () => render(await command('/expectations/' + encodeURIComponent(expectation.id) + '/accept', {})), 'primary'), button('Reject', async () => render(await command('/expectations/' + encodeURIComponent(expectation.id) + '/reject', {})))));
+		return panel('Holdout expectations', element('div', { class: 'panel-body' }, body), runNote);
+	}
+	const form = element('form', {}, formGrid(field('Executor', 'executorKey', { choices: list(project.policy.allowedExecutors).map((key) => ({ value: key, label: key })), required: true }), field('Repair limit', 'repairLimit', { type: 'number', min: 0, max: project.policy.maxRepairAttempts, value: 0, required: true }), field('Deadline', 'deadline', { type: 'datetime-local', required: true, value: localDate(new Date(Date.now() + Math.min(project.policy.maxJobDurationSeconds || 3600, 3600) * 1000)) })));
+	const submit = element('button', { type: 'submit', class: 'primary' }, 'Submit from these expectations');
+	form.append(element('div', { class: 'form-actions' }, submit));
+	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const job = await command('/jobs', { projectId: project.id, workItemId: item.id, expectationsId: expectation.id, executorKey: values.executorKey, repairLimit: Number(values.repairLimit), deadline: new Date(values.deadline).toISOString() }); await navigate('job/' + encodeURIComponent(job.id)); }, submit); });
+	body.push(element('hr'), form);
+	return panel('Holdout expectations', element('div', { class: 'panel-body' }, body), runNote || 'accepted');
 }
 function kevCell(signals) {
 	if (!signals) return element('span', { class: 'fine' }, 'Not observed');

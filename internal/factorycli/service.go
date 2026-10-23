@@ -46,7 +46,7 @@ func initCommand(out io.Writer) *cli.Command {
 	}}
 }
 func serveCommand(stderr io.Writer) *cli.Command {
-	return &cli.Command{Name: "serve", Usage: "Run the durable service; non-loopback listeners require TLS", Flags: append([]cli.Flag{&cli.StringFlag{Name: "data-dir", Required: true}, &cli.StringFlag{Name: "listen", Value: "127.0.0.1:8741"}, &cli.StringFlag{Name: "tls-cert"}, &cli.StringFlag{Name: "tls-key"}}, append(decisionFlags(), refinerFlags()...)...), Action: func(ctx context.Context, c *cli.Command) error {
+	return &cli.Command{Name: "serve", Usage: "Run the durable service; non-loopback listeners require TLS", Flags: append([]cli.Flag{&cli.StringFlag{Name: "data-dir", Required: true}, &cli.StringFlag{Name: "listen", Value: "127.0.0.1:8741"}, &cli.StringFlag{Name: "tls-cert"}, &cli.StringFlag{Name: "tls-key"}}, append(append(decisionFlags(), refinerFlags()...), expectationFlags()...)...), Action: func(ctx context.Context, c *cli.Command) error {
 		address := c.String("listen")
 		cert, key := c.String("tls-cert"), c.String("tls-key")
 		if e := validateListener(address, cert, key); e != nil {
@@ -58,6 +58,9 @@ func serveCommand(stderr io.Writer) *cli.Command {
 			return e
 		}
 		options.RefinerCommand = refiner
+		if options.ExpectationCommand, e = commandFile(c.String("expectation-command-file")); e != nil {
+			return e
+		}
 		service, e := factory.Open(c.String("data-dir"), options)
 		if e != nil {
 			return e

@@ -21,8 +21,8 @@ import (
 )
 
 func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitRequest) (Job, error) {
-	if request.ProjectID == "" || strings.TrimSpace(request.WorkItemID) == "" || strings.TrimSpace(request.BaseRevision) == "" || strings.TrimSpace(request.ExecutorKey) == "" {
-		return Job{}, fault(CodeInvalid, "projectId, workItemId, baseRevision, and executorKey are required", nil)
+	if request.ProjectID == "" || strings.TrimSpace(request.WorkItemID) == "" || (strings.TrimSpace(request.BaseRevision) == "" && request.ExpectationsID == "") || strings.TrimSpace(request.ExecutorKey) == "" {
+		return Job{}, fault(CodeInvalid, "projectId, workItemId, baseRevision or expectationsId, and executorKey are required", nil)
 	}
 	if err := requireRequestID(request.RequestID); err != nil {
 		return Job{}, err
@@ -63,7 +63,14 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 	if executorFixture && !project.Policy.Fixture {
 		return Job{}, fault(CodeInvalid, "fixture executor cannot run an ordinary project", nil)
 	}
-	base, err := s.resolveCommit(ctx, project.RepositoryPath, request.BaseRevision)
+	if project.Policy.RequireExpectations && request.ExpectationsID == "" {
+		return Job{}, fault(CodeNotReady, "project policy requires accepted holdout expectations for every job", nil)
+	}
+	baseRevision := request.BaseRevision
+	if baseRevision == "" {
+		baseRevision = "HEAD"
+	}
+	base, err := s.resolveCommit(ctx, project.RepositoryPath, baseRevision)
 	if err != nil {
 		return Job{}, err
 	}
@@ -116,6 +123,13 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 		return Job{}, fault(CodeStale, "project identity changed during admission", nil)
 	}
 
+	var expectations Expectation
+	if request.ExpectationsID != "" {
+		if expectations, err = s.admissionExpectations(ctx, project, request.WorkItemID, request.ExpectationsID, *selected.CriteriaSHA256); err != nil {
+			return Job{}, err
+		}
+		base = expectations.Commit
+	}
 	prerequisites := []string{}
 	for _, edge := range selected.Dependencies {
 		if edge.To.ID != nil {
@@ -146,6 +160,8 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 		ProtectedPaths:         append([]string(nil), project.Policy.ProtectedPaths...),
 		AllowCoordinatorReview: project.Policy.AllowCoordinatorReview,
 		CriterionSignals:       s.cachedCriterionSignals(ctx, selected.Title, selected.Source),
+		ExpectationsID:         expectations.ID,
+		ExpectationsCommit:     expectations.Commit,
 	}
 	jobID, err := newID("job_")
 	if err != nil {

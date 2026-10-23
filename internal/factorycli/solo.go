@@ -60,7 +60,10 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			&cli.StringFlag{Name: "refiner-model", Value: "sonnet", Usage: "Model for the read-only Claude Code refiner"},
 			&cli.Float64Flag{Name: "refiner-budget-usd", Value: 0.5, Usage: "Spending cap for one refinement"},
 			&cli.BoolFlag{Name: "no-refiner", Usage: "Disable refinement"},
-		}, append(decisionFlags(), refinerFlags()...)...),
+			&cli.StringFlag{Name: "expectation-model", Value: "sonnet", Usage: "Model for the Claude Code expectation author"},
+			&cli.Float64Flag{Name: "expectation-budget-usd", Value: 1, Usage: "Spending cap for one expectation suite"},
+			&cli.BoolFlag{Name: "no-expectations", Usage: "Disable the expectation author"},
+		}, append(append(decisionFlags(), refinerFlags()...), expectationFlags()...)...),
 		Action: func(ctx context.Context, c *cli.Command) error {
 			address := c.String("listen")
 			if host, _, err := net.SplitHostPort(address); err != nil || !isLoopback(host) {
@@ -72,6 +75,9 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 				return err
 			}
 			options.RefinerCommand = refiner
+			if options.ExpectationCommand, err = soloExpectationAuthor(c); err != nil {
+				return err
+			}
 			service, err := factory.Open(c.String("data-dir"), options)
 			if err != nil {
 				return err
@@ -167,6 +173,25 @@ func soloRefiner(c *cli.Command) ([]string, error) {
 		return nil, err
 	}
 	return []string{self, "factory", "refiner", "--model", c.String("refiner-model"), "--max-budget-usd", fmt.Sprint(c.Float64("refiner-budget-usd"))}, nil
+}
+
+// soloExpectationAuthor uses an explicit command, or Claude Code when it is installed.
+// The author may run tests and vet but nothing else in the shell.
+func soloExpectationAuthor(c *cli.Command) ([]string, error) {
+	if c.Bool("no-expectations") {
+		return nil, nil
+	}
+	if argv, err := commandFile(c.String("expectation-command-file")); err != nil || argv != nil {
+		return argv, err
+	}
+	if _, err := exec.LookPath("claude"); err != nil {
+		return nil, nil
+	}
+	self, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	return []string{self, "factory", "expectation-author", "--model", c.String("expectation-model"), "--max-budget-usd", fmt.Sprint(c.Float64("expectation-budget-usd")), "--allow-tool", "Bash(go test:*)", "--allow-tool", "Bash(go vet:*)"}, nil
 }
 
 func isLoopback(host string) bool {

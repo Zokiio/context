@@ -809,6 +809,9 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 	}
 	base := attempt.InputRevision
 	deadline := attempt.Admission.Deadline
+	if attempt.Stage == StageImplementation && attempt.Admission.ExpectationsCommit != "" {
+		instructions += " Holdout tests written from the criteria are already committed under the protected paths; make them pass without changing them."
+	}
 	if attempt.mergeCheck() {
 		instructions = "Run only the configured required check on this clean merge commit; do not modify it."
 		deadline = lease.Add(time.Duration(project.Policy.MaxJobDurationSeconds) * time.Second)

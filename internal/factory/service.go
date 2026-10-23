@@ -41,10 +41,11 @@ type serviceState struct {
 	decisionMu          sync.Mutex
 	decisionModelDigest string
 
-	refiner        []string
-	background     context.Context
-	stopBackground context.CancelFunc
-	refiners       sync.WaitGroup
+	refiner           []string
+	expectationAuthor []string
+	background        context.Context
+	stopBackground    context.CancelFunc
+	refiners          sync.WaitGroup
 }
 
 func Open(dataDir string, options Options) (*Service, error) {
@@ -142,7 +143,11 @@ func Open(dataDir string, options Options) (*Service, error) {
 	if err := failInterruptedRefinements(context.Background(), db, now().UTC()); err != nil {
 		return nil, fault(CodeInternal, "recover interrupted refinements", err)
 	}
+	if err := failInterruptedExpectations(context.Background(), db, now().UTC()); err != nil {
+		return nil, fault(CodeInternal, "recover interrupted expectations", err)
+	}
 	state.refiner = append([]string(nil), options.RefinerCommand...)
+	state.expectationAuthor = append([]string(nil), options.ExpectationCommand...)
 	state.background, state.stopBackground = context.WithCancel(context.Background())
 	cleanupLock, closeDB = false, false
 	return &Service{state: state}, nil
@@ -328,6 +333,16 @@ CREATE TABLE IF NOT EXISTS refinements (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS one_running_refinement ON refinements(project_id, work_item_id) WHERE status='running';
 CREATE INDEX IF NOT EXISTS refinements_by_work_item ON refinements(project_id, work_item_id, created_at);
+CREATE TABLE IF NOT EXISTS expectations (
+  id TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  work_item_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  data_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_running_expectation ON expectations(project_id, work_item_id) WHERE status='running';
 CREATE TABLE IF NOT EXISTS criterion_signals (
   model TEXT NOT NULL,
   question TEXT NOT NULL,

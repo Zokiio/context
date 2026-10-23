@@ -117,6 +117,34 @@ func NewHandler(service *factory.Service) http.Handler {
 		q.JobID = factory.JobID(r.PathValue("job"))
 		return service.Merge(ctx, p, q)
 	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/expectations", 202, func(ctx context.Context, p factory.Principal, q factory.StartExpectationsRequest, r *http.Request) (factory.Expectation, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.Expectation{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.StartExpectations(ctx, p, q)
+	})
+	get("/v1/projects/{project}/expectations", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.ListExpectations(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.URL.Query().Get("workItemId"))
+		respond(w, 200, v, err)
+	})
+	get("/v1/expectations/{expectation}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.GetExpectations(r.Context(), p, factory.ID(r.PathValue("expectation")))
+		respond(w, 200, v, err)
+	})
+	for _, decision := range []string{"accept", "reject"} {
+		decision := decision
+		mutationPath(mux, service, "POST /v1/expectations/{expectation}/"+decision, 200, func(ctx context.Context, p factory.Principal, q factory.DecideExpectationsRequest, r *http.Request) (factory.Expectation, error) {
+			if err := bindID(r.PathValue("expectation"), string(q.ExpectationID)); err != nil {
+				return factory.Expectation{}, err
+			}
+			q.ExpectationID = factory.ID(r.PathValue("expectation"))
+			if decision == "accept" {
+				return service.AcceptExpectations(ctx, p, q)
+			}
+			return service.RejectExpectations(ctx, p, q)
+		})
+	}
 	mutationPath(mux, service, "POST /v1/projects/{project}/refinements", 202, func(ctx context.Context, p factory.Principal, q factory.StartRefinementRequest, r *http.Request) (factory.Refinement, error) {
 		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
 			return factory.Refinement{}, err

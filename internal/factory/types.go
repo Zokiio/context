@@ -190,6 +190,9 @@ type Options struct {
 	// RefinerInput on stdin and writes a RefinerOutput on stdout. Empty disables
 	// refinement.
 	RefinerCommand []string
+	// ExpectationCommand is the argv run to write holdout tests. It reads an
+	// ExpectationInput on stdin in a temporary worktree and writes an ExpectationOutput.
+	ExpectationCommand []string
 }
 
 // DefaultDecisionThreshold flags criteria whose checkable probability falls below it.
@@ -315,6 +318,9 @@ type ProjectPolicy struct {
 	// AllowCoordinatorReview lets the human who submitted a job also review it. It suits
 	// a single-person project; the reviewer must still be human and not the implementer.
 	AllowCoordinatorReview bool `json:"allowCoordinatorReview,omitempty"`
+	// RequireExpectations admits a job only when it starts from accepted holdout
+	// expectations. It needs protected paths to keep them out of the implementer's reach.
+	RequireExpectations bool `json:"requireExpectations,omitempty"`
 }
 
 type ReaderLimits struct {
@@ -384,16 +390,21 @@ type Admission struct {
 	// CriterionSignals are advisory decision-model observations taken at admission.
 	// They never affect readiness, admission, or acceptance.
 	CriterionSignals *CriterionSignals `json:"criterionSignals,omitempty"`
+	// ExpectationsID and ExpectationsCommit identify the accepted holdout tests the job
+	// starts from; the commit is the job's base.
+	ExpectationsID     ID     `json:"expectationsId,omitempty"`
+	ExpectationsCommit string `json:"expectationsCommit,omitempty"`
 }
 
 type SubmitRequest struct {
-	RequestID    string    `json:"requestId"`
-	ProjectID    ProjectID `json:"projectId"`
-	WorkItemID   string    `json:"workItemId"`
-	BaseRevision string    `json:"baseRevision"`
-	ExecutorKey  string    `json:"executorKey"`
-	RepairLimit  int       `json:"repairLimit"`
-	Deadline     time.Time `json:"deadline"`
+	RequestID      string    `json:"requestId"`
+	ProjectID      ProjectID `json:"projectId"`
+	WorkItemID     string    `json:"workItemId"`
+	BaseRevision   string    `json:"baseRevision"`
+	ExecutorKey    string    `json:"executorKey"`
+	RepairLimit    int       `json:"repairLimit"`
+	Deadline       time.Time `json:"deadline"`
+	ExpectationsID ID        `json:"expectationsId,omitempty"`
 }
 
 type ArtifactInput struct {
