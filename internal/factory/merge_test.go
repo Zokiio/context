@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -275,6 +276,10 @@ func TestDependentAdmissionWaitsForTheMergedPrerequisite(t *testing.T) {
 		if err := os.WriteFile(filepath.Join(harness.bundle, name), []byte(content), 0o600); err != nil {
 			t.Fatal(err)
 		}
+	}
+	// The board draws the work graph from each card's dependencies.
+	if card := cardFor(t, harness.service, harness.admin, harness.project.ID, "work-next"); !slices.Equal(card.BlockedBy, []string{"work-test"}) || card.Status != "Waits for Ready work" {
+		t.Fatalf("dependent card = %+v", card)
 	}
 	base := head(t, harness.repository, "HEAD")
 	submit := func(id, revision string) error {

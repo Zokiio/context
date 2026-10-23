@@ -189,7 +189,7 @@ async function route(quiet = false) {
 	state.view = parts[0] || 'board';
 	const scroll = window.scrollY;
 	if (!quiet) { closeDrawer(false); notice(state.flash); state.flash = ''; }
-	const area = { board: 'board', list: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask' }[state.view] || '';
+	const area = { board: 'board', list: 'board', graph: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask' }[state.view] || '';
 	for (const anchor of document.querySelectorAll('[data-nav]')) {
 		if (anchor.dataset.nav === area) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
 	}
@@ -199,6 +199,7 @@ async function route(quiet = false) {
 		if (state.view === 'admin') content = await adminPage(parts[1] || 'users');
 		else if (!state.project) content = noProjects();
 		else if (state.view === 'list') content = await listPage();
+		else if (state.view === 'graph') content = await graphPage();
 		else if (state.view === 'item') content = await itemPage(parts[1] || '');
 		else if (state.view === 'job') content = await jobPage(parts[1] || '');
 		else if (state.view === 'insights') content = await insightsPage();
@@ -226,7 +227,7 @@ async function loadBoard() {
 	return state.board;
 }
 function boardKey(board) {
-	return JSON.stringify(list(board.cards).map((card) => [card.workItemId, card.column, card.state, card.status, card.line, card.jobVersion, card.refinementId, card.expectationId, card.progress]));
+	return JSON.stringify(list(board.cards).map((card) => [card.workItemId, card.column, card.state, card.status, card.line, card.jobVersion, card.refinementId, card.expectationId, card.progress, list(card.blockedBy).join()]));
 }
 const cards = (board) => list(board.cards);
 function needsYou(board) {
@@ -240,7 +241,7 @@ function boardHead(board, view) {
 	const needs = needsYou(board);
 	const title = needs.length === 0 ? 'Nothing needs you' : needs.length === 1 ? '1 thing needs you' : needs.length + ' things need you';
 	const line = [plural(board.running, 'agent working', 'agents working'), board.mergedToday + ' merged today', autopilotLine(board)].join(' · ');
-	const views = element('nav', { class: 'segmented', 'aria-label': 'View' }, element('a', { href: '#board', 'aria-current': view === 'board' ? 'page' : null }, 'Board'), element('a', { href: '#list', 'aria-current': view === 'list' ? 'page' : null }, 'List'));
+	const views = element('nav', { class: 'segmented', 'aria-label': 'View' }, element('a', { href: '#board', 'aria-current': view === 'board' ? 'page' : null }, 'Board'), element('a', { href: '#list', 'aria-current': view === 'list' ? 'page' : null }, 'List'), element('a', { href: '#graph', 'aria-current': view === 'graph' ? 'page' : null }, 'Graph'));
 	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
 }
 function who(key, board) {
@@ -299,6 +300,86 @@ async function listPage() {
 		needs.length ? element('section', { class: 'stack', 'aria-label': 'Needs you' }, needs.map(row)) : empty('Nothing needs you', 'Everything else runs by itself or waits for its turn.'),
 		running.length ? element('section', { class: 'stack' }, element('h2', { class: 'section' }, 'Agents working'), element('div', { class: 'surface compact' }, running.map((card) => element('a', { class: 'list-row', href: card.jobId ? '#job/' + e(card.jobId) : '#item/' + e(card.workItemId) }, element('span', { class: 'dot', 'aria-hidden': 'true' }), element('span', { class: 'grow' }, element('strong', {}, card.title), element('span', { class: 'card-status' }, card.status)), elapsed(card.since))))) : null,
 		element('div', { class: 'row' }, element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow' }, 'Up next · ' + next.length), element('span', { class: 'fine' }, next.map((card) => card.title).join(', ') || 'Nothing waiting.')), element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow ok' }, 'Merged today · ' + done.length), element('span', { class: 'fine' }, done.map((card) => card.title).join(', ') || 'Nothing yet.'))));
+}
+
+// The work graph
+
+async function graphPage() {
+	const board = await loadBoard();
+	if (!cards(board).length) return page('', boardHead(board, 'graph'), empty('Nothing on the board yet', 'Work items appear here once the project has some.'));
+	return page('', boardHead(board, 'graph'), workGraph(board), element('p', { class: 'fine' }, 'Each arrow points from work that must finish first to the work that waits for it. Dashed arrows are still open.'));
+}
+// workGraph draws each group of connected work as a row, left to right in dependency
+// order, and the work that depends on nothing as a group of its own.
+function workGraph(board) {
+	const byId = new Map(cards(board).map((card) => [card.workItemId, card]));
+	const deps = (card) => list(card.blockedBy).filter((id) => byId.has(id) && id !== card.workItemId);
+	const depth = new Map();
+	const depthOf = (card, visiting = new Set()) => {
+		if (depth.has(card.workItemId)) return depth.get(card.workItemId);
+		if (visiting.has(card.workItemId)) return 0;
+		visiting.add(card.workItemId);
+		const value = deps(card).reduce((most, id) => Math.max(most, depthOf(byId.get(id), visiting) + 1), 0);
+		visiting.delete(card.workItemId);
+		depth.set(card.workItemId, value);
+		return value;
+	};
+	const group = new Map([...byId.keys()].map((id) => [id, id]));
+	const root = (id) => group.get(id) === id ? id : root(group.get(id));
+	for (const card of byId.values()) for (const id of deps(card)) group.set(root(id), root(card.workItemId));
+	const groups = new Map();
+	for (const card of byId.values()) {
+		const key = root(card.workItemId);
+		if (!groups.has(key)) groups.set(key, []);
+		groups.get(key).push(card);
+	}
+	const rank = (members) => Math.min(...members.map((card) => ORDER[card.state]));
+	const connected = [...groups.values()].filter((members) => members.length > 1).sort((a, b) => rank(a) - rank(b));
+	const loose = [...groups.values()].filter((members) => members.length === 1).flat().sort((a, b) => ORDER[a.state] - ORDER[b.state] || a.title.localeCompare(b.title));
+	const nodes = new Map();
+	const node = (card) => {
+		const kind = { needs_you: 'need', running: 'running', waiting: 'waiting', done: 'done' }[card.state];
+		const status = card.state === 'running' ? element('span', { class: 'card-status' }, element('span', { class: 'dot', 'aria-hidden': 'true' }), card.status) : element('span', { class: 'eyebrow' + (card.state === 'needs_you' ? ' warn' : card.state === 'done' ? ' ok' : '') }, card.status);
+		const item = element('button', { type: 'button', class: 'graph-node ' + kind, onclick: () => openCard(card) }, status, element('span', { class: 'graph-title' }, card.title));
+		nodes.set(card.workItemId, item);
+		return element('div', { class: 'graph-item', role: 'listitem' }, item);
+	};
+	const row = (members) => {
+		const layers = [];
+		for (const card of members) (layers[depthOf(card)] ||= []).push(card);
+		const position = new Map();
+		const pull = (card) => { const ids = deps(card).filter((id) => position.has(id)); return ids.length ? ids.reduce((sum, id) => sum + position.get(id), 0) / ids.length : Infinity; };
+		return element('div', { class: 'graph-row', role: 'list', 'aria-label': 'Connected work' }, layers.filter(Boolean).map((layer, index) => {
+			layer.sort((a, b) => (index ? pull(a) - pull(b) : 0) || ORDER[a.state] - ORDER[b.state] || a.title.localeCompare(b.title));
+			layer.forEach((card, place) => position.set(card.workItemId, place));
+			return element('div', { class: 'graph-layer', role: 'presentation' }, layer.map(node));
+		}));
+	};
+	const edges = svg('svg', { class: 'graph-edges', 'aria-hidden': 'true' });
+	const graph = element('div', { class: 'graph' }, edges, connected.map(row),
+		loose.length ? element('section', { class: 'stack tight' }, element('h2', { class: 'section' }, connected.length ? 'Not connected to other work' : 'No item depends on another yet'), element('div', { class: 'graph-loose', role: 'list' }, loose.map(node))) : null);
+	const draw = () => {
+		if (!graph.isConnected) return;
+		const origin = graph.getBoundingClientRect();
+		const paths = [svg('defs', {}, ['met', 'open'].map((kind) => svg('marker', { id: 'arrow-' + kind, viewBox: '0 0 8 8', refX: '7', refY: '4', markerWidth: '8', markerHeight: '8', orient: 'auto' }, svg('path', { d: 'M0,0 L8,4 L0,8 z', class: 'arrow ' + kind }))))];
+		for (const card of byId.values()) {
+			for (const id of deps(card)) {
+				const from = nodes.get(id).getBoundingClientRect(), to = nodes.get(card.workItemId).getBoundingClientRect();
+				const x1 = from.right - origin.left, y1 = from.top + from.height / 2 - origin.top, x2 = to.left - origin.left - 2, y2 = to.top + to.height / 2 - origin.top, bend = Math.max(24, (x2 - x1) / 2);
+				const kind = byId.get(id).state === 'done' ? 'met' : 'open';
+				paths.push(svg('path', { class: 'edge ' + kind, d: `M${x1},${y1} C${x1 + bend},${y1} ${x2 - bend},${y2} ${x2},${y2}`, 'marker-end': `url(#arrow-${kind})` }));
+			}
+		}
+		edges.replaceChildren(...paths);
+	};
+	new ResizeObserver(draw).observe(graph);
+	return element('div', { class: 'board-scroll' }, graph);
+}
+function svg(tag, attributes = {}, ...children) {
+	const result = document.createElementNS('http://www.w3.org/2000/svg', tag);
+	for (const [name, value] of Object.entries(attributes)) result.setAttribute(name, value);
+	result.append(...children.flat().filter(Boolean));
+	return result;
 }
 
 // The decision drawer
@@ -783,7 +864,7 @@ setInterval(() => {
 }, 1000);
 setInterval(async () => {
 	if (!state.me || !state.project || document.hidden || mutationsInFlight || state.drawer || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
-	if (!['board', 'list', 'item', 'job', ''].includes(state.view)) return;
+	if (!['board', 'list', 'graph', 'item', 'job', ''].includes(state.view)) return;
 	try {
 		const board = await api('/projects/' + e(state.project) + '/board');
 		if (boardKey(board) !== state.boardKey) await route(true);

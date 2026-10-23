@@ -53,6 +53,8 @@ type BoardCard struct {
 	// Status is a short label, and Line one plain sentence about what happens next.
 	Status string `json:"status"`
 	Line   string `json:"line"`
+	// BlockedBy lists the work items this one depends on, done or not, for the work graph.
+	BlockedBy []string `json:"blockedBy,omitempty"`
 	// Since is when the current activity started, for an elapsed timer.
 	Since    *time.Time `json:"since,omitempty"`
 	Progress string     `json:"progress,omitempty"`
@@ -325,6 +327,11 @@ func deriveCard(in boardInputs) (BoardCard, bool) {
 		return BoardCard{}, false
 	}
 	card := BoardCard{WorkItemID: *work.ID, Title: *work.ID, CostUSD: in.cost}
+	for _, edge := range work.Dependencies {
+		if edge.To.ID != nil {
+			card.BlockedBy = append(card.BlockedBy, *edge.To.ID)
+		}
+	}
 	if work.Title != nil {
 		card.Title = *work.Title
 	}

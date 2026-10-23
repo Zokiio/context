@@ -26,7 +26,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/projects` | GET accessible projects, POST `RegisterProjectRequest` |
 | `/v1/projects/{id}/orientation` | GET current reader result, project policy, and advisory `criterionSignals` when a decision model is configured |
 | `/v1/projects/{id}/metrics` | GET measured outcomes, lead times, human and delegated decisions, findings, and agent cost |
-| `/v1/projects/{id}/board` | GET one card per open work item: its column, state, the decision it waits for, and its cost so far |
+| `/v1/projects/{id}/board` | GET one card per open work item: its column, state, the decision it waits for, its cost so far, and the work items it depends on |
 | `/v1/projects/{id}/plan` | POST `ApprovePlanRequest`: answer, accept a refinement or locked tests, and start the next step; `continue` gives a go-ahead to build |
 | `/v1/projects/{id}/ask` | PUT `SetAskPolicyRequest`; requires a human project administrator who holds the delegated capabilities |
 | `/v1/projects/{id}/expectations` | GET a project's holdout expectations, optionally `?workItemId=`, POST `StartExpectationsRequest` |
@@ -63,7 +63,7 @@ The typed `factoryclient.Client` keeps the token in headers, rejects redirects, 
 
 ## Browser behavior
 
-The workspace opens on the project's board, with a list view of the same cards. The two decisions open in a side panel over the board, and each also has its own page. A job page shows its stage, the change, and the merge. Its captured requirements, attempts, check evidence, events, reviews, and acceptance sit under technical details. An administrator can register existing projects and fixed executable profiles, create distinct users, issue or revoke tokens, disable users, and grant project capabilities.
+The workspace opens on the project's board, with list and graph views of the same cards. The two decisions open in a side panel over the board, and each also has its own page. A job page shows its stage, the change, and the merge. Its captured requirements, attempts, check evidence, events, reviews, and acceptance sit under technical details. An administrator can register existing projects and fixed executable profiles, create distinct users, issue or revoke tokens, disable users, and grant project capabilities.
 
 The board checks for changes every three seconds while the tab is visible and no panel or field is in use. It does not re-render when nothing changed. Interface text uses Plus Jakarta Sans and code uses JetBrains Mono, both served from the installation with their licenses. The theme follows the system setting, and the toggle stores light or dark in local storage. Review and submission forms keep their input while a request fails. Connection errors identify uncertain outcomes. Cancellation remains pending until the core records a terminal observation. Missing or skipped evidence remains visible and cannot pass through the browser.
 
