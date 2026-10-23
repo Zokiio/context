@@ -35,6 +35,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs/{id}/artifacts/{artifact}` | GET an artifact attached to that job's implementation or verification attempt |
 | `/v1/jobs/{id}/actions` | POST `JobActionRequest` for cancel, repair, reconcile, or explicit resolution |
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint |
+| `/v1/jobs/{id}/merge` | POST `MergeRequest` for the exact accepted candidate and job version; requires a human with `merge` |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |
 | `/v1/projects/{id}/refinements` | GET a project's refinements, optionally `?workItemId=`, POST `StartRefinementRequest` |
 | `/v1/refinements/{id}` | GET one refinement with its proposal and before and after scores |

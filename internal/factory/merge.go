@@ -114,7 +114,7 @@ func (s *Service) Merge(ctx context.Context, actor Principal, request MergeReque
 		if err != nil {
 			return Job{}, err
 		}
-		message := mergeMessage(job, current.Username, candidate)
+		message := mergeMessage(job, current.Username, candidate, repository)
 		switch {
 		case checkout == "":
 			record.Mode = MergeModeRef
@@ -247,8 +247,14 @@ func (s *Service) isAncestor(ctx context.Context, repository, ancestor, descenda
 	return err == nil
 }
 
-func mergeMessage(job Job, username, candidate string) string {
-	return fmt.Sprintf("Merge Waymark job %s for %s\n\nCandidate: %s\nRequirements: %s\nAcceptance: %s\nApproved-by: %s\n", job.ID, job.WorkItemID, candidate, job.Admission.TicketSHA256, job.AcceptanceRecordPath, username)
+// mergeMessage names the acceptance record relative to the repository when it lives
+// inside it, so shared history carries no machine-specific paths.
+func mergeMessage(job Job, username, candidate, repository string) string {
+	acceptance := filepath.Base(job.AcceptanceRecordPath)
+	if relative, err := filepath.Rel(repository, job.AcceptanceRecordPath); err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		acceptance = filepath.ToSlash(relative)
+	}
+	return fmt.Sprintf("Merge Waymark job %s for %s\n\nCandidate: %s\nRequirements: %s\nAcceptance: %s\nApproved-by: %s\n", job.ID, job.WorkItemID, candidate, job.Admission.TicketSHA256, acceptance, username)
 }
 
 // noteMerge appends the merged revision to the ticket's Comments. The merge has already

@@ -56,7 +56,7 @@ func TestMergeIntegratesTheAcceptedCandidateInTheCheckout(t *testing.T) {
 	if len(parents) != 2 || parents[0] != previous || parents[1] != candidate {
 		t.Fatalf("merge parents = %v", parents)
 	}
-	if message := runGit(t, harness.repository, "log", "-1", "--format=%B"); !strings.Contains(message, "Merge Waymark job "+string(job.ID)) || !strings.Contains(message, "Approved-by: admin") {
+	if message := runGit(t, harness.repository, "log", "-1", "--format=%B"); !strings.Contains(message, "Merge Waymark job "+string(job.ID)) || !strings.Contains(message, "Approved-by: admin") || strings.Contains(message, string(filepath.Separator)+"private") || strings.Contains(message, os.TempDir()) {
 		t.Fatalf("merge message = %q", message)
 	}
 	if !hasEvent(merged, "job_merged", record.Revision) || record.TicketNote != "recorded" {

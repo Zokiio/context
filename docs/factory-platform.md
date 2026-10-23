@@ -239,6 +239,23 @@ python3 -c 'import json,sys; report=json.load(sys.stdin); assert report["complet
 
 The original ticket now has `execution: completed` and one current Acceptance link. Retain the ignored decision and evidence files together. A fresh Git checkout reports unknown acceptance until those files are restored or the outcome is verified again.
 
+## Merge accepted work
+
+Acceptance does not change any branch: the candidate stays on its own commit. Merge it explicitly so that work depending on it builds on it:
+
+```sh
+wm_admin jobs merge --job "$wm_job_id" --if-version "$(wm_admin jobs show --job "$wm_job_id" | wm_json version)" \
+	--candidate "$(wm_admin jobs show --job "$wm_job_id" | wm_json candidateRevision)"
+```
+
+Merging requires a human with the `merge` capability, and installation administrators have it. The service rechecks that the acceptance is still valid and that the version and candidate match. It then merges with `--no-ff` and a commit that names the job, candidate, requirements, acceptance record, and approver. The target is the branch checked out in the project repository unless `--target-branch` names another.
+
+- **checkout:** the target branch is checked out in the project repository, so the merge happens there. A conflict, or local changes the merge would overwrite, aborts the merge and leaves the working tree as it was. The job records a `merge_failed` event.
+- **ref:** no worktree has the target branch checked out. The merge is built in a temporary worktree, and the branch moves only if it still points at the tip the merge was built on.
+- **contained:** the branch already contains the candidate, for example after a merge by hand. The service records that branch tip instead of merging again.
+
+The job keeps its `accepted` status and gains a merge record and a `job_merged` event, and the ticket gains a note under Comments. Comments are outside the requirement fingerprints, so the acceptance stays valid. Admission refuses work whose `Blocked by` prerequisite was accepted by a factory job that is not yet merged, or whose base revision does not contain that merge.
+
 ## Inspect the same installation in the browser
 
 Open the service URL and sign in with a personal token from a private token file. The browser and CLI share projects, jobs, evidence, permissions, and lifecycle operations. Keep tokens out of URLs.
