@@ -64,6 +64,11 @@ func TestWorkerHelper(t *testing.T) {
 		os.Exit(7)
 	case "pass":
 		fmt.Println("observed passing check")
+	case "result":
+		if err := os.WriteFile(os.Getenv("CTX_FACTORY_RESULT"), []byte(`{"costUsd":1}`), 0600); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(14)
+		}
 	case "descendant":
 		raw, _ := json.Marshal(a)
 		child := exec.Command(os.Args[0], "-test.run=^TestWorkerHelper$", "--", "short-wait")
@@ -141,6 +146,20 @@ func TestLiteralArgvRealCommitAndRepeatedReceipt(t *testing.T) {
 	a.Command = helper("fail")
 	if _, e = p.Execute(context.Background(), a); e == nil {
 		t.Fatal("changed delivery reused receipt")
+	}
+}
+func TestCommandsInTheirWorkspaceReachARelativeReceiptDirectory(t *testing.T) {
+	dir, base := repo(t)
+	a := assignment(dir, base)
+	a.Command = helper("result")
+	t.Chdir(t.TempDir())
+	p := Process{ReceiptDir: "receipts"}
+	if _, e := p.Execute(context.Background(), a); e != nil {
+		t.Fatal(e)
+	}
+	b, e := os.ReadFile(p.resultPath(a.AttemptID))
+	if e != nil || string(b) != `{"costUsd":1}` {
+		t.Fatalf("result written from the workspace: %q, %v", b, e)
 	}
 }
 func TestVerifierRunsEveryRequiredCommandAndRecordsFailure(t *testing.T) {

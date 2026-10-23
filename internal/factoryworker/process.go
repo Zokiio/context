@@ -349,7 +349,14 @@ func (p *Process) invoke(ctx context.Context, a Assignment, c Command, input []b
 	cmd.Stdin = bytes.NewReader(input)
 	cmd.Stdout = log
 	cmd.Stderr = log
-	cmd.Env = append(os.Environ(), "CTX_FACTORY_ASSIGNMENT="+assignmentPath, "CTX_FACTORY_CONTEXT="+contextPath, "CTX_FACTORY_ATTEMPT="+a.AttemptID, "CTX_FACTORY_PROGRESS="+p.progressPath(a.AttemptID), "CTX_FACTORY_RESULT="+p.resultPath(a.AttemptID))
+	// The command runs in its workspace, so a relative receipt directory would resolve there.
+	path := func(name, value string) string {
+		if absolute, err := filepath.Abs(value); err == nil {
+			value = absolute
+		}
+		return name + "=" + value
+	}
+	cmd.Env = append(os.Environ(), path("CTX_FACTORY_ASSIGNMENT", assignmentPath), path("CTX_FACTORY_CONTEXT", contextPath), "CTX_FACTORY_ATTEMPT="+a.AttemptID, path("CTX_FACTORY_PROGRESS", p.progressPath(a.AttemptID)), path("CTX_FACTORY_RESULT", p.resultPath(a.AttemptID)))
 	if err := configureProcess(cmd); err != nil {
 		o.Status = "unavailable"
 		o.Log = err.Error()
