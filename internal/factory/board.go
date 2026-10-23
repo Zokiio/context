@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/Zokiio/context/internal/orientation"
 )
@@ -73,8 +76,11 @@ type ProjectBoard struct {
 	Running       int         `json:"running"`
 	MergedToday   int         `json:"mergedToday"`
 	TrustedMerges int         `json:"trustedMerges"`
-	// Pilot reports whether the autopilot runs on this installation.
+	// Pilot reports whether the autopilot runs on this installation, and CanRefine and
+	// CanTest whether it can sharpen requirements and write locked tests for this project.
 	Pilot       bool      `json:"pilot"`
+	CanRefine   bool      `json:"canRefine"`
+	CanTest     bool      `json:"canTest"`
 	GeneratedAt time.Time `json:"generatedAt"`
 }
 
@@ -94,6 +100,9 @@ type boardInputs struct {
 	canRefine    bool
 	canTest      bool
 	requireTests bool
+	// ticketFile is the digest of the ticket file as it is now, the identity
+	// refinements record.
+	ticketFile string
 }
 
 func (s *Service) Board(ctx context.Context, actor Principal, projectID ProjectID) (ProjectBoard, error) {
@@ -109,7 +118,7 @@ func (s *Service) Board(ctx context.Context, actor Principal, projectID ProjectI
 		return ProjectBoard{}, err
 	}
 	now := s.state.now().UTC()
-	board := ProjectBoard{Project: project, Cards: []BoardCard{}, Pilot: s.state.pilot, GeneratedAt: now}
+	board := ProjectBoard{Project: project, Cards: []BoardCard{}, Pilot: s.state.pilot, CanRefine: len(s.state.refiner) > 0, CanTest: s.canWriteExpectations(project), GeneratedAt: now}
 	if board.TrustedMerges, err = trustedMerges(ctx, s.state.db, projectID); err != nil {
 		return ProjectBoard{}, err
 	}
@@ -160,6 +169,10 @@ func (s *Service) boardSnapshot(ctx context.Context, project Project) ([]boardIn
 	if err != nil {
 		return nil, err
 	}
+	// Scores are cached by criterion text, so only new or changed criteria reach the
+	// decision model; the timeout keeps an unreachable model from stalling the board.
+	scoring, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
 	titles := map[string]string{}
 	for _, work := range result.WorkItems {
 		if work.ID != nil && work.Title != nil {
@@ -192,9 +205,12 @@ func (s *Service) boardSnapshot(ctx context.Context, project Project) ([]boardIn
 			inputs.consent = &consent
 		}
 		if s.state.decision != nil && (work.Execution == nil || *work.Execution == "unstarted") {
-			inputs.signals = s.cachedCriterionSignals(ctx, work.Title, work.Source)
+			inputs.signals = s.criterionSignals(scoring, work.Title, work.Source, true)
 		}
 		inputs.blockers = blockers(work, titles, jobs)
+		if raw, err := os.ReadFile(work.Source); err == nil {
+			inputs.ticketFile = digestBytes(raw)
+		}
 		snapshot = append(snapshot, inputs)
 	}
 	return snapshot, nil
@@ -374,7 +390,7 @@ func jobCard(card *BoardCard, in boardInputs) {
 			at := job.Merge.RequestedAt
 			running(card, ColumnMerge, "Checking the combined version", "main moves only when every check passes on it.", &at)
 		case job.Merge != nil:
-			needs(card, ColumnMerge, CardDecisionMerge, "Merge failed", firstSentence(job.Merge.Failure, "main was left as it was."))
+			needs(card, ColumnMerge, CardDecisionMerge, "Merge failed", sentence(firstSentence(job.Merge.Failure, "Main was left as it was.")))
 		default:
 			needs(card, ColumnMerge, CardDecisionMerge, "Ready to merge", "Approved but not merged. Work that depends on it waits.")
 		}
@@ -482,7 +498,7 @@ func expectationsCard(card *BoardCard, in boardInputs) bool {
 			needs(card, ColumnPlan, CardDecisionPlan, "Start the build", "The locked tests are agreed.")
 		}
 	case ExpectationFailed:
-		needs(card, ColumnPlan, CardDecisionPlan, "Writing tests failed", firstSentence(expectation.Error, "Try again or change the requirements."))
+		needs(card, ColumnPlan, CardDecisionPlan, "Writing tests failed", sentence(firstSentence(expectation.Error, "Try again or change the requirements.")))
 	case ExpectationRejected:
 		needs(card, ColumnPlan, CardDecisionPlan, "Tests rejected", "Write them again, or change the requirements.")
 	default:
@@ -506,10 +522,7 @@ func countTests(expectation Expectation) int {
 
 func refinementCard(card *BoardCard, in boardInputs) bool {
 	refinement := in.refinement
-	ticket := ""
-	if in.work.TicketSHA256 != nil {
-		ticket = *in.work.TicketSHA256
-	}
+	ticket := in.ticketFile
 	card.RefinementID, card.UpdatedAt = refinement.ID, refinement.UpdatedAt
 	switch {
 	case refinement.Status == RefinementRunning && refinement.TicketSHA256 == ticket:
@@ -523,6 +536,9 @@ func refinementCard(card *BoardCard, in boardInputs) bool {
 		card.Questions = questions
 		flagged := refinement.After != nil && refinement.After.FlaggedCount > 0
 		line := "Your " + plural(len(refinement.Criteria), "requirement was", "requirements were") + " too vague to test. The agent rewrote them as " + fmt.Sprint(proposed) + "."
+		if flagged && questions == 0 {
+			line = "Rewritten as " + fmt.Sprint(proposed) + " requirements, but " + plural(refinement.After.FlaggedCount, "still looks", "still look") + " vague, so it stopped for you."
+		}
 		if questions == 0 && !flagged && autopilotFor(in, in.policy.Before() == AskBeforeNever) {
 			running(card, ColumnPlan, "Agreeing the sharpened requirements", line, &refinement.UpdatedAt)
 			return true
@@ -533,7 +549,7 @@ func refinementCard(card *BoardCard, in boardInputs) bool {
 		}
 		needs(card, ColumnPlan, CardDecisionPlan, status, line)
 	case refinement.Status == RefinementFailed && refinement.TicketSHA256 == ticket:
-		needs(card, ColumnPlan, CardDecisionPlan, "Sharpening failed", firstSentence(refinement.Error, "Try again or edit the requirements."))
+		needs(card, ColumnPlan, CardDecisionPlan, "Sharpening failed", sentence(firstSentence(refinement.Error, "Try again or edit the requirements.")))
 	case refinement.Status == RefinementAccepted && refinement.UpdatedTicketSHA256 == ticket:
 		next := in.canTest || (!in.policyRequiresTests() && (in.consent != nil || in.policy.Before() != AskBeforeAlways))
 		if next && autopilotFor(in, in.policy.Autopilot) {
@@ -568,15 +584,20 @@ func readyCard(card *BoardCard, in boardInputs) {
 		waiting(card, ColumnNext, "Not ready", reason)
 		return
 	}
-	line := "Ready."
-	if card.Flagged > 0 {
-		line = plural(card.Flagged, "requirement looks", "requirements look") + " vague, so it will be sharpened first."
-	}
+	vague := plural(card.Flagged, "requirement looks", "requirements look") + " vague"
 	if startsByItself(in, card.Flagged) {
+		line := "Ready."
+		if card.Flagged > 0 {
+			line = vague + ", so it will be sharpened first."
+		}
 		waiting(card, ColumnNext, "Starts by itself", line)
 		return
 	}
-	waiting(card, ColumnNext, "Ready", line+" Agree what done means to start it.")
+	line := "Agree what done means to start it."
+	if card.Flagged > 0 {
+		line = vague + ". Sharpen them before it starts."
+	}
+	waiting(card, ColumnNext, "Ready", line)
 	card.Decision = CardDecisionPlan
 }
 
@@ -644,7 +665,22 @@ func firstSentence(text, fallback string) string {
 		return fallback
 	}
 	if index := strings.IndexAny(text, ".\n"); index > 0 && index < 200 {
-		return text[:index+1]
+		return strings.TrimSpace(text[:index+1])
 	}
 	return truncateRunes(text, 200)
+}
+
+// sentence makes service text read as a sentence of its own: capitalized, with a stop.
+func sentence(text string) string {
+	first, size := utf8.DecodeRuneInString(text)
+	if size == 0 {
+		return text
+	}
+	text = string(unicode.ToUpper(first)) + text[size:]
+	for _, stop := range []string{".", "!", "?", "…"} {
+		if strings.HasSuffix(text, stop) {
+			return text
+		}
+	}
+	return text + "."
 }

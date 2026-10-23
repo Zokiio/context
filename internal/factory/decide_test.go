@@ -3,6 +3,7 @@ package factory_test
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/Zokiio/context/internal/factory"
@@ -82,6 +83,11 @@ func TestApproveChecksEveryCapabilityBeforeRecordingAnything(t *testing.T) {
 	accepted, err := h.service.Approve(ctx, h.reviewer, approveRequest(job, "accept-only", false))
 	if err != nil || accepted.Status != factory.JobAccepted || accepted.Merge != nil {
 		t.Fatalf("approving without merging = %s, %+v, %v", accepted.Status, accepted.Merge, err)
+	}
+	// A new approval of the same candidate, from a stale page, only merges.
+	merging, err := h.service.Approve(ctx, h.admin, approveRequest(job, "merge-later", true))
+	if err != nil || merging.Merge == nil || merging.Merge.Status != factory.MergeStatusVerifying || len(merging.Reviews) != 1 {
+		t.Fatalf("merging an accepted job = %+v, %d reviews, %v", merging.Merge, len(merging.Reviews), err)
 	}
 }
 
@@ -256,4 +262,47 @@ func (h expectationHarness) waitExpectation(t *testing.T, id factory.ID) factory
 	}
 	t.Fatal("expectations still running")
 	return factory.Expectation{}
+}
+
+func TestChangeShowsTheCandidateAgainstItsBase(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	h := setupJob(t)
+	if _, err := h.service.Change(ctx, h.admin, h.job.ID); !isCode(err, factory.CodeNotReady) {
+		t.Fatalf("change before a candidate = %v", err)
+	}
+	job, _ := passVerificationForTest(t, h, "change")
+	change, err := h.service.Change(ctx, h.admin, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(change.Files) != 1 || change.Files[0].Path != "change.txt" || change.Files[0].Added != 1 || !strings.Contains(change.Patch, "+change") || change.Truncated {
+		t.Fatalf("change = %+v", change)
+	}
+}
+
+func TestBoardShowsRefinementsUntilTheTicketChanges(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	refiner, _ := fakeRefiner(t, "0.3")
+	h := setupRefine(t, refiner)
+	started, err := h.service.StartRefinement(ctx, h.admin, factory.StartRefinementRequest{RequestID: "sharpen", ProjectID: h.project.ID, WorkItemID: "work-test"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if card := cardFor(t, h.service, h.admin, h.project.ID, "work-test"); card.Column != factory.ColumnPlan || card.Status != "Sharpening requirements" || card.RefinementID != started.ID {
+		t.Fatalf("running refinement card = %+v", card)
+	}
+	proposed := h.waitProposed(t, started.ID)
+	card := cardFor(t, h.service, h.admin, h.project.ID, "work-test")
+	if card.State != factory.CardNeedsYou || card.Decision != factory.CardDecisionPlan || card.Questions != len(proposed.Proposal.Questions) || !strings.HasPrefix(card.Status, "Answer") {
+		t.Fatalf("proposed refinement card = %+v", card)
+	}
+	result, err := h.service.ApprovePlan(ctx, h.admin, factory.ApprovePlanRequest{RequestID: "agree", ProjectID: h.project.ID, WorkItemID: "work-test", RefinementID: proposed.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Refinement == nil || result.Refinement.Status != factory.RefinementAccepted || result.Job == nil {
+		t.Fatalf("agreeing the sharpened requirements = %+v", result)
+	}
 }

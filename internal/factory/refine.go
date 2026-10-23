@@ -48,6 +48,9 @@ const (
 type RefinementQuestion struct {
 	Question string `json:"question"`
 	Unblocks string `json:"unblocks"`
+	// Options are likely answers, the refiner's best guess first, so a person can pick
+	// one instead of writing it out.
+	Options []string `json:"options,omitempty"`
 }
 
 type RefinementAnswer struct {
@@ -573,6 +576,13 @@ func normalizeProposal(proposal *RefinementProposal) error {
 	for _, question := range proposal.Questions {
 		question.Question = truncateRunes(oneLine(question.Question), maxRefinementRunes)
 		question.Unblocks = truncateRunes(oneLine(question.Unblocks), maxRefinementRunes)
+		options := []string{}
+		for _, option := range question.Options {
+			if option = truncateRunes(oneLine(option), maxRefinementRunes); option != "" && len(options) < 4 {
+				options = append(options, option)
+			}
+		}
+		question.Options = options
 		if question.Question != "" {
 			questions = append(questions, question)
 		}

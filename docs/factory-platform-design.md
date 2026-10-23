@@ -54,9 +54,19 @@ Generated evidence and decisions follow project retention policy. A fresh checko
 
 An optional local decision model answers bounded questions in one forward pass, starting with whether each acceptance criterion names a checkable result. Answers carry the model, its digest, and a versioned question, and are cached by input digest. They inform people before admission and are copied into the admission snapshot, but readiness, admission, verification, and acceptance never read them.
 
+## People make two decisions per change
+
+A person agrees what done means before the build and approves the change after it. Every other step is either an agent's work or a worker's check. The board derives each card from the stored records alone: refinements, expectations, jobs, attempts, and events. It therefore needs no state of its own and cannot disagree with the record.
+
+Approving a change records a review, an acceptance, and optionally a merge. Each keeps its own checks, and all of them share one decision ID, so a retry finishes the remaining steps and metrics count a single decision.
+
+## The ask policy delegates decisions to a person's autopilot
+
+A project's ask policy says which decisions a person still makes. The autopilot carries out the rest as the person who saved the policy or gave a go-ahead, and it holds no authority of its own. Saving a policy therefore requires the capabilities it delegates. Delegated records name their reason, so the history shows what a person decided and what was decided on their behalf. Merging without asking requires a record of merges with no reported problem, and a reported problem lowers the policy again.
+
 ## Merging is a separate human decision
 
-Acceptance binds a decision to an exact candidate, and merging moves a branch. They stay separate so a person decides when accepted work reaches a branch. A merge rechecks the acceptance and builds a merge commit that names the job and approver. Verification workers then run the required checks on that commit, and the branch moves only when they pass, by fast-forward or compare-and-swap. A merge is recorded as checkout, ref, or contained. Merge checks are tagged on their attempts and never change the job's own status. Any failed, unknown, expired, or interrupted check fails the merge without moving a branch. Admission treats an accepted but unmerged factory prerequisite as unmet, so dependent work cannot start from a base that lacks it. Prerequisites accepted outside the factory are left to the reader's checks.
+Acceptance binds a decision to an exact candidate, and merging moves a branch. They stay separate records so a person decides when accepted work reaches a branch, even when one approval requests both. A merge rechecks the acceptance and builds a merge commit that names the job and approver. Verification workers then run the required checks on that commit, and the branch moves only when they pass, by fast-forward or compare-and-swap. A merge is recorded as checkout, ref, or contained. Merge checks are tagged on their attempts and never change the job's own status. Any failed, unknown, expired, or interrupted check fails the merge without moving a branch. Admission treats an accepted but unmerged factory prerequisite as unmet, so dependent work cannot start from a base that lacks it. Prerequisites accepted outside the factory are left to the reader's checks.
 
 ## Holdout expectations stay outside the implementer's reach
 

@@ -132,7 +132,7 @@ func TestAuthenticationBoundedJSONAndBrowserPolicy(t *testing.T) {
 
 func TestSelfHostedFontsAndLicenses(t *testing.T) {
 	instance := start(t)
-	for _, family := range []string{"instrument-sans", "roboto-mono"} {
+	for _, family := range []string{"plus-jakarta-sans", "jetbrains-mono"} {
 		for _, subset := range []string{"latin", "latin-ext"} {
 			path := "/assets/fonts/" + family + "-" + subset + ".woff2"
 			status, headers, raw := call(t, instance.server.URL, "", "GET", path, "", nil)

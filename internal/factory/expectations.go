@@ -262,6 +262,7 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 		commit, patch, log string
 		files              []string
 		output             ExpectationOutput
+		ran                bool
 		err                error
 	}{}
 	directory := filepath.Join(s.state.workspaceRoot, "expectations", string(id))
@@ -274,6 +275,7 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 			_, _ = s.git(context.Background(), project.RepositoryPath, "worktree", "remove", "--force", directory)
 		}()
 		result.output, result.log, result.err = s.execExpectationAuthor(ctx, directory, input)
+		result.ran = result.err == nil
 		if result.err == nil {
 			result.commit, result.files, result.err = s.commitExpectations(ctx, directory, input, result.output.Run)
 		}
@@ -294,14 +296,17 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 		return
 	}
 	expectation.Log, expectation.UpdatedAt = result.log, s.state.now().UTC()
+	if result.ran {
+		// Keep what the author said and spent, even when its work is refused.
+		run := result.output.Run
+		expectation.Notes, expectation.Run = truncateRunes(result.output.Notes, 4*maxRefinementRunes), &run
+		expectation.Concerns = cleanConcerns(result.output.Concerns)
+	}
 	if result.err != nil {
 		expectation.Status, expectation.Error = ExpectationFailed, truncateRunes(result.err.Error(), maxRefinementRunes)
 	} else {
-		run := result.output.Run
 		expectation.Status, expectation.Commit, expectation.Files, expectation.Patch = ExpectationProposed, result.commit, result.files, result.patch
-		expectation.Notes, expectation.Run = truncateRunes(result.output.Notes, 4*maxRefinementRunes), &run
 		expectation.Coverage = cleanCoverage(result.output.Coverage, len(expectation.Criteria))
-		expectation.Concerns = cleanConcerns(result.output.Concerns)
 	}
 	tx, err := s.state.db.BeginTx(context.Background(), nil)
 	if err != nil {

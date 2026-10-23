@@ -135,6 +135,10 @@ func NewHandler(service *factory.Service) http.Handler {
 		q.JobID = factory.JobID(r.PathValue("job"))
 		return service.ReportProblem(ctx, p, q)
 	})
+	get("/v1/jobs/{job}/change", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.Change(r.Context(), p, factory.JobID(r.PathValue("job")))
+		respond(w, 200, v, err)
+	})
 	get("/v1/projects/{project}/board", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.Board(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)
@@ -304,12 +308,12 @@ func NewHandler(service *factory.Service) http.Handler {
 	}))
 	for path, name := range map[string]string{
 		"/": "index.html", "/assets/app.js": "app.js", "/assets/app.css": "app.css",
-		"/assets/fonts/instrument-sans-latin.woff2":     "fonts/instrument-sans-latin.woff2",
-		"/assets/fonts/instrument-sans-latin-ext.woff2": "fonts/instrument-sans-latin-ext.woff2",
-		"/assets/fonts/roboto-mono-latin.woff2":         "fonts/roboto-mono-latin.woff2",
-		"/assets/fonts/roboto-mono-latin-ext.woff2":     "fonts/roboto-mono-latin-ext.woff2",
-		"/assets/fonts/instrument-sans-OFL.txt":         "fonts/instrument-sans-OFL.txt",
-		"/assets/fonts/roboto-mono-OFL.txt":             "fonts/roboto-mono-OFL.txt",
+		"/assets/fonts/plus-jakarta-sans-latin.woff2":     "fonts/plus-jakarta-sans-latin.woff2",
+		"/assets/fonts/plus-jakarta-sans-latin-ext.woff2": "fonts/plus-jakarta-sans-latin-ext.woff2",
+		"/assets/fonts/jetbrains-mono-latin.woff2":        "fonts/jetbrains-mono-latin.woff2",
+		"/assets/fonts/jetbrains-mono-latin-ext.woff2":    "fonts/jetbrains-mono-latin-ext.woff2",
+		"/assets/fonts/plus-jakarta-sans-OFL.txt":         "fonts/plus-jakarta-sans-OFL.txt",
+		"/assets/fonts/jetbrains-mono-OFL.txt":            "fonts/jetbrains-mono-OFL.txt",
 	} {
 		name := name
 		pattern := "GET " + path

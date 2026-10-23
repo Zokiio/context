@@ -157,8 +157,9 @@ func (s *Service) Approve(ctx context.Context, actor Principal, request ApproveR
 	if job.CandidateRevision != request.CandidateRevision || job.Admission.TicketSHA256 != request.RequirementFingerprint {
 		return Job{}, fault(CodeStale, "approval does not match the current candidate and requirements", nil)
 	}
-	// A retry finds the job further along. Only a fresh approval must match the version.
-	if job.Version != request.IfVersion && !decisionRecorded(job, note.ID) {
+	// A retry finds the job further along, and an accepted job only has its merge left.
+	// Only a fresh approval of a job still under review must match the version.
+	if job.Version != request.IfVersion && job.Status != JobAccepted && !decisionRecorded(job, note.ID) {
 		return Job{}, detailFault(CodeConflict, "job version changed", map[string]any{"currentVersion": job.Version}, nil)
 	}
 	summary := strings.TrimSpace(request.Summary)

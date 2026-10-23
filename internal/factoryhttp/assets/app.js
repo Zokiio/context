@@ -1,48 +1,76 @@
 const $ = (selector) => document.querySelector(selector);
 const list = (value) => Array.isArray(value) ? value : [];
-const state = { token: '', me: null, projects: [], permissions: new Map(), job: null, tab: 'overview', view: '', generation: 0 };
+const e = encodeURIComponent;
+const state = { flash: '', token: '', me: null, projects: [], capabilities: new Map(), project: null, board: null, boardKey: '', view: '', generation: 0, drawer: null, drawerReturn: null, theme: 'auto' };
 const pending = new Map();
 let mutationsInFlight = 0;
 try { state.token = sessionStorage.getItem('waymark-token') || ''; } catch {}
+try { state.theme = localStorage.getItem('waymark-theme') || 'auto'; } catch {}
+
+// Elements
 
 function element(tag, attributes = {}, ...children) {
 	const result = document.createElement(tag);
 	for (const [name, value] of Object.entries(attributes)) {
+		if (value === null || value === undefined) continue;
 		if (name.startsWith('on')) result.addEventListener(name.slice(2), value);
 		else if (name === 'class') result.className = value;
+		else if (name.startsWith('aria-') || name.startsWith('data-')) result.setAttribute(name, value);
 		else if (name in result) result[name] = value;
 		else result.setAttribute(name, value);
 	}
-	for (const child of children.flat()) if (child !== null && child !== undefined) result.append(child instanceof Node ? child : document.createTextNode(String(child)));
+	for (const child of children.flat()) if (child !== null && child !== undefined && child !== false) result.append(child instanceof Node ? child : document.createTextNode(String(child)));
 	return result;
 }
-const button = (text, action, kind = '') => element('button', { type: 'button', class: kind, onclick: (event) => run(action, event.currentTarget) }, text);
-const code = (value) => element('span', { class: 'mono' }, value || 'Not available');
-const short = (value) => value ? String(value).slice(0, 12) : 'Pending';
-const time = (value) => value ? new Date(value).toLocaleString() : 'Not recorded';
+const ICONS = {
+	check: ['M20 6 9 17l-5-5'],
+	close: ['M18 6 6 18M6 6l12 12'],
+	moon: ['M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'],
+	sun: ['M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41', 'M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z'],
+	eye: ['M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
+	arrow: ['M5 12h14M12 5l7 7-7 7'],
+};
+function icon(name, size = 18) {
+	const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	for (const [key, value] of Object.entries({ width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': name === 'check' ? 2.25 : 1.75, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) svg.setAttribute(key, value);
+	for (const d of ICONS[name]) {
+		const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		path.setAttribute('d', d);
+		svg.append(path);
+	}
+	return svg;
+}
+const button = (text, action, kind = '') => element('button', { type: 'button', class: 'button ' + kind, onclick: (event) => run(action, event.currentTarget) }, text);
+const link = (text, href, kind = '') => element('a', { href, class: 'button ' + kind }, text);
+// rich renders `code` spans in agent-written text as inline code.
+const rich = (text) => String(text || '').split(/(`[^`]+`)/).filter(Boolean).map((part) => part.length > 2 && part.startsWith('`') && part.endsWith('`') ? element('code', { class: 'inline' }, part.slice(1, -1)) : part);
+const plural = (count, one, many) => count === 1 ? '1 ' + one : count + ' ' + many;
+const sentence = (text) => { const value = String(text).trim(); return value && value[0].toUpperCase() + value.slice(1) + (/[.!?]$/.test(value) ? '' : '.'); };
 const human = (value) => String(value || 'unknown').replaceAll('_', ' ');
-function badge(status) {
-	let kind = '';
-	if (['accepted', 'passed', 'ready', 'approved', 'succeeded', 'merged'].includes(status)) kind = 'good';
-	if (/unknown|pending|queued|requested|implementing|verifying|stale|unavailable/.test(status)) kind = 'warn';
-	if (/failed|rejected|changes_requested/.test(status)) kind = 'bad';
-	if (status === 'fixture') kind = 'fixture';
-	return element('span', { class: 'badge ' + kind }, human(status));
+const money = (value) => '$' + Number(value || 0).toFixed(2);
+const when = (value) => value ? new Date(value).toLocaleString() : 'not recorded';
+const short = (value) => value ? String(value).slice(0, 12) : 'none';
+function clock(seconds) {
+	seconds = Math.max(0, Math.floor(seconds));
+	const hours = Math.floor(seconds / 3600), minutes = Math.floor((seconds % 3600) / 60), rest = seconds % 60;
+	return hours ? hours + ' h ' + minutes + ' min' : minutes + ':' + String(rest).padStart(2, '0');
 }
-function panel(title, content, note = '') {
-	return element('section', { class: 'panel' }, element('div', { class: 'panel-head' }, element('h2', {}, title), element('small', {}, note)), content);
+function ago(value) {
+	if (!value) return '';
+	const seconds = (Date.now() - new Date(value).getTime()) / 1000;
+	if (seconds < 60) return 'just now';
+	if (seconds < 3600) return Math.round(seconds / 60) + ' min ago';
+	if (seconds < 86400) return Math.round(seconds / 3600) + ' h ago';
+	return new Date(value).toLocaleDateString();
 }
-function empty(title, detail) {
-	return element('div', { class: 'empty' }, element('div', { class: 'empty-symbol', 'aria-hidden': 'true' }, '◇'), element('strong', {}, title), detail);
-}
+const elapsed = (since) => since ? element('span', { class: 'elapsed', 'data-since': since }, clock((Date.now() - Date.parse(since)) / 1000)) : null;
+const page = (width, ...children) => element('div', { class: 'page ' + width }, ...children);
+const surface = (...children) => element('section', { class: 'surface' }, ...children);
+const fold = (summary, open, ...children) => element('details', { class: 'fold', open: !!open }, element('summary', {}, summary), ...children);
+const check = (text, open = false, extra = null) => element('div', { class: 'check' + (open ? ' open' : '') }, open ? icon('eye') : icon('check'), element('div', { class: 'stack tight' }, element('span', {}, rich(text)), extra));
+function empty(title, detail) { return element('div', { class: 'empty' }, element('strong', {}, title), element('span', {}, detail)); }
 function table(headers, rows) {
 	return element('div', { class: 'table-scroll' }, element('table', {}, element('thead', {}, element('tr', {}, headers.map((title) => element('th', {}, title)))), element('tbody', {}, rows.map((cells) => element('tr', {}, cells.map((cell) => element('td', {}, cell)))))));
-}
-function metadata(entries) {
-	return element('dl', { class: 'metadata' }, entries.flatMap(([label, value]) => [element('dt', {}, label), element('dd', {}, value ?? 'Not available')]));
-}
-function pageHead(title, description, actions = []) {
-	return element('div', { class: 'page-head' }, element('div', {}, element('span', { class: 'eyebrow' }, 'WAYMARK WORKSPACE'), element('h1', {}, title), element('p', {}, description)), element('div', { class: 'head-actions' }, actions));
 }
 function field(label, name, options = {}) {
 	const { choices, help, full, ...attributes } = options;
@@ -50,33 +78,47 @@ function field(label, name, options = {}) {
 	if (choices) input = element('select', { name, ...attributes }, choices.map((choice) => element('option', { value: choice.value }, choice.label)));
 	else if (attributes.type === 'textarea') { delete attributes.type; input = element('textarea', { name, ...attributes }); }
 	else input = element('input', { type: 'text', name, ...attributes });
-	const id = 'field-' + crypto.randomUUID(); input.id = id;
-	return element('div', { class: 'field' + (full ? ' full' : '') }, element('label', { htmlFor: id }, label), input, help ? element('span', { class: 'fine' }, help) : null);
+	input.id = 'field-' + crypto.randomUUID();
+	return element('div', { class: 'field' + (full ? ' full' : '') }, element('label', { htmlFor: input.id }, label), input, help ? element('span', { class: 'fine' }, help) : null);
 }
-function formGrid(...fields) { return element('div', { class: 'form-grid' }, fields); }
-function data(form) { return Object.fromEntries(new FormData(form)); }
+const formGrid = (...fields) => element('div', { class: 'form-grid' }, fields);
+const data = (form) => Object.fromEntries(new FormData(form));
+const split = (value) => String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
+const lines = (value) => String(value || '').split('\n').map((item) => item.trim()).filter(Boolean);
+
+// Requests
+
+let noticeTimer = null;
 function notice(message, error = false) {
-	const target = $('#notice'); target.hidden = !message; target.textContent = message; target.className = error ? 'error' : '';
+	const target = $('#notice');
+	target.hidden = !message;
+	target.textContent = message;
+	target.className = error ? 'error' : '';
+	clearTimeout(noticeTimer);
+	// Confirmations fade; errors stay until the next action.
+	if (message && !error) noticeTimer = setTimeout(() => { target.hidden = true; }, 8000);
 }
 async function run(action, target) {
 	if (target) target.disabled = true;
 	try { await action(); }
-	catch (error) { notice(error.message || 'The operation could not be completed.', true); }
-	finally { if (target) target.disabled = false; }
+	catch (error) { notice(error.message || 'That did not work.', true); }
+	finally { if (target && target.isConnected) target.disabled = false; }
 }
 async function api(path, options = {}) {
-	const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 30000);
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), 30000);
 	try {
 		const response = await fetch('/v1' + path, { method: options.method || 'GET', headers: { Authorization: 'Bearer ' + state.token, Accept: 'application/json', ...(options.body ? { 'Content-Type': 'application/json' } : {}) }, body: options.body ? JSON.stringify(options.body) : undefined, credentials: 'omit', redirect: 'error', signal: controller.signal });
 		const value = response.status === 204 ? null : await response.json();
 		if (!response.ok) {
-			const error = new Error((value.message || 'Request failed') + (value.code ? ' [' + value.code + ']' : '')); error.code = value.code; error.status = response.status;
+			const error = new Error(value.message || 'Request failed');
+			error.code = value.code; error.status = response.status;
 			if (response.status === 401 && state.me) signout();
 			throw error;
 		}
 		return value;
 	} catch (error) {
-		if (error.name === 'AbortError' || error instanceof TypeError) throw new Error('Connection interrupted. The outcome may be pending. Refresh before retrying; an unchanged request keeps its request identity.');
+		if (error.name === 'AbortError' || error instanceof TypeError) throw new Error('The connection was interrupted, and the outcome may be pending. Refresh before trying again; repeating the same request is safe.');
 		throw error;
 	} finally { clearTimeout(timeout); }
 }
@@ -86,368 +128,664 @@ async function command(path, body, method = 'POST') {
 	mutationsInFlight++;
 	try {
 		const result = await api(path, { method, body: { ...body, requestId: pending.get(identity) } });
-		pending.delete(identity); notice(''); return result;
+		pending.delete(identity);
+		notice('');
+		return result;
 	} catch (error) {
 		if (error.status >= 400 && error.status < 500) pending.delete(identity);
 		throw error;
 	} finally { mutationsInFlight--; }
 }
+const can = (capability, projectId = state.project) => !!state.me?.installationAdmin || list(state.capabilities.get(projectId)).includes(capability);
+
+// Theme
+
+function resolvedTheme() {
+	if (state.theme !== 'auto') return state.theme;
+	return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function applyTheme() {
+	document.documentElement.dataset.theme = state.theme;
+	const dark = resolvedTheme() === 'dark';
+	const toggle = $('#theme-toggle');
+	toggle.replaceChildren(icon(dark ? 'sun' : 'moon'));
+	toggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+}
+
+// Session and routing
+
 function navigate(fragment) { if (location.hash === '#' + fragment) return route(); location.hash = fragment; }
 function signout() {
-	state.token = ''; state.me = null; state.job = null; state.generation++; pending.clear();
+	state.token = ''; state.me = null; state.board = null; state.generation++; pending.clear();
 	try { sessionStorage.removeItem('waymark-token'); } catch {}
+	closeDrawer(false);
 	$('#workspace').hidden = true; $('#signin').hidden = false; $('#signin-error').hidden = true; $('#token').value = '';
 }
 async function connect() {
 	state.me = await api('/me');
 	try { sessionStorage.setItem('waymark-token', state.token); } catch {}
 	$('#token').value = ''; $('#signin').hidden = true; $('#workspace').hidden = false;
-	$('#user-name').textContent = state.me.username; $('#user-role').textContent = state.me.installationAdmin ? 'Installation administrator' : human(state.me.kind);
-	$('#user-initial').textContent = state.me.username.slice(0, 1).toUpperCase(); $('#nav-admin').hidden = !state.me.installationAdmin;
-	await refreshProjects(); await route();
+	$('#user-initials').textContent = state.me.username.slice(0, 2).toUpperCase();
+	$('#signout').setAttribute('aria-label', 'Sign out ' + state.me.username);
+	$('#nav-admin').hidden = !state.me.installationAdmin;
+	await refreshProjects();
+	await route();
 }
 async function refreshProjects() {
 	state.projects = list(await api('/projects'));
-	const permissions = await Promise.all(state.projects.map(async (project) => [project.id, list(await api('/projects/' + encodeURIComponent(project.id) + '/capabilities'))]));
-	state.permissions = new Map(permissions);
-	$('#project-navigation').replaceChildren(...state.projects.map((project) => element('button', { class: 'nav-item', onclick: () => navigate('project/' + encodeURIComponent(project.id)) }, element('span', { 'aria-hidden': 'true' }, '◈'), project.title)));
-	if (!state.projects.length) $('#project-navigation').append(element('div', { class: 'fine' }, 'No accessible projects'));
+	state.capabilities = new Map(await Promise.all(state.projects.map(async (project) => [project.id, list(await api('/projects/' + e(project.id) + '/capabilities'))])));
+	let saved = null;
+	try { saved = localStorage.getItem('waymark-project'); } catch {}
+	state.project = state.projects.find((project) => project.id === saved)?.id || state.projects[0]?.id || null;
+	const select = $('#project-select');
+	select.replaceChildren(...state.projects.map((project) => element('option', { value: project.id }, project.title)));
+	select.hidden = !state.projects.length;
+	if (state.project) select.value = state.project;
 }
-async function route() {
+async function route(quiet = false) {
 	if (!state.me) return;
-	const generation = ++state.generation; const parts = location.hash.slice(1).split('/');
-	state.view = parts[0] || 'queue'; state.job = null; notice('');
-	$('#content').replaceChildren(element('div', { class: 'loading' }, element('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Loading workspace…'));
-	$('#nav-queue').classList.toggle('active', state.view === 'queue'); $('#nav-admin').classList.toggle('active', state.view === 'admin');
+	const generation = ++state.generation;
+	const parts = location.hash.slice(1).split('/').map(decodeURIComponent);
+	state.view = parts[0] || 'board';
+	const scroll = window.scrollY;
+	if (!quiet) { closeDrawer(false); notice(state.flash); state.flash = ''; }
+	const area = { board: 'board', list: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask' }[state.view] || '';
+	for (const anchor of document.querySelectorAll('[data-nav]')) {
+		if (anchor.dataset.nav === area) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
+	}
+	if (!quiet) $('#content').replaceChildren(element('p', { class: 'loading' }, 'Loading…'));
 	try {
 		let content;
-		if (state.view === 'project') content = await projectPage(decodeURIComponent(parts[1] || ''), parts[2] || 'work');
-		else if (state.view === 'job') content = await jobPage(decodeURIComponent(parts[1] || ''), parts[2] || 'overview');
-		else if (state.view === 'admin') content = await adminPage(parts[1] || 'users');
-		else content = await queuePage();
-		if (generation === state.generation) $('#content').replaceChildren(...content);
+		if (state.view === 'admin') content = await adminPage(parts[1] || 'users');
+		else if (!state.project) content = noProjects();
+		else if (state.view === 'list') content = await listPage();
+		else if (state.view === 'item') content = await itemPage(parts[1] || '');
+		else if (state.view === 'job') content = await jobPage(parts[1] || '');
+		else if (state.view === 'insights') content = await insightsPage();
+		else if (state.view === 'ask') content = await askPage();
+		else if (state.view === 'access') content = await accessPage();
+		else content = await boardPage();
+		if (generation !== state.generation) return;
+		$('#content').replaceChildren(content);
+		if (quiet) window.scrollTo(0, scroll);
 	} catch (error) {
 		if (generation !== state.generation) return;
-		$('#content').replaceChildren(pageHead('Unable to open this view', 'The service has not returned an accessible result.'), element('div', { class: 'error', role: 'alert' }, error.message), button('Try again', route));
+		$('#content').replaceChildren(page('narrow', element('h1', { class: 'title' }, 'This view could not open'), element('p', { class: 'alert bad', role: 'alert' }, error.message), element('div', { class: 'actions' }, button('Try again', () => route()))));
 	}
 }
-async function queuePage() {
-	$('#breadcrumb').textContent = 'Work queue';
-	const jobs = list(await api('/jobs?limit=100'));
-	state.queueVersion = JSON.stringify(jobs.map((job) => [job.id, job.version]));
-	const active = jobs.filter((job) => !['accepted', 'cancelled', 'failed'].includes(job.status));
-	const writable = state.projects.find((project) => state.permissions.get(project.id)?.includes('coordinate'));
-	const statistics = [['Jobs shown', jobs.length], ['In progress', active.filter((job) => !/unknown|stale|review|acceptance/.test(job.status)).length], ['Awaiting decision', active.filter((job) => /review|acceptance/.test(job.status)).length], ['Need attention', active.filter((job) => /unknown|stale|failed/.test(job.status)).length]];
-	const head = pageHead('Work queue', 'One place to see active work, evidence, and the decision that comes next.', [button('↻ Refresh', route), ...(writable ? [button('+ New job', () => navigate('project/' + encodeURIComponent(writable.id) + '/submit'), 'primary')] : [])]);
-	const stats = element('div', { class: 'stat-grid' }, statistics.map(([label, value]) => element('div', { class: 'stat' }, element('div', { class: 'stat-label' }, label), element('div', { class: 'stat-value' }, value))));
-	return [head, stats, panel('All accessible jobs', jobsTable(jobs), 'Latest 100 · checks for updates every 5 seconds'), element('p', { class: 'section-note' }, 'Acceptance follows independent evidence and review. An execution finishing does not mark its work accepted.')];
+function noProjects() {
+	return page('narrow', empty('No projects yet', state.me.installationAdmin ? 'Register a project to put its work on the board.' : 'Ask an administrator for access to a project.'), state.me.installationAdmin ? element('div', { class: 'actions' }, link('Register a project', '#admin/projects', 'primary')) : null);
 }
-function jobsTable(jobs) {
-	if (!jobs.length) return empty('Your queue is clear', state.projects.length ? 'Open a project to inspect ready work and submit its first job.' : 'An administrator must register a project and grant you access.');
-	return table(['WORK ITEM', 'PROJECT', 'STATE', 'CANDIDATE', 'UPDATED', ''], jobs.map((job) => [element('div', {}, element('a', { class: 'row-link', href: '#job/' + encodeURIComponent(job.id) }, job.workItemId), element('div', { class: 'subline mono' }, short(job.id))), state.projects.find((project) => project.id === job.projectId)?.title || job.projectId, badge(job.status), code(short(job.candidateRevision)), time(job.updatedAt), element('a', { href: '#job/' + encodeURIComponent(job.id), 'aria-label': 'Inspect job ' + job.id }, '↗')]));
+
+// Board
+
+const COLUMNS = [['next', 'Up next'], ['plan', 'Plan'], ['build', 'Build'], ['approve', 'Approve'], ['merge', 'Merge'], ['done', 'Done']];
+async function loadBoard() {
+	state.board = await api('/projects/' + e(state.project) + '/board');
+	state.boardKey = boardKey(state.board);
+	return state.board;
 }
-function tabs(choices, selected, change) { return element('div', { class: 'tabs' }, choices.map(([key, label]) => button(label, () => change(key), 'tab' + (selected === key ? ' active' : '')))); }
-async function projectPage(id, tab) {
-	const [view, capabilities] = await Promise.all([api('/projects/' + encodeURIComponent(id) + '/orientation'), api('/projects/' + encodeURIComponent(id) + '/capabilities')]);
-	const project = view.project; const items = list(view.result.workItems); const can = (capability) => list(capabilities).includes(capability);
-	$('#breadcrumb').textContent = project.title;
-	const content = [pageHead(project.title, 'Authoritative records stay in the project bundle. The factory coordinates their execution.', [button('↻ Refresh', route), project.policy.fixture ? badge('fixture') : null].filter(Boolean)), tabs([['work', 'Work items'], ['jobs', 'Project jobs'], ['metrics', 'Metrics'], ...(can('coordinate') ? [['submit', 'Submit a job']] : []), ...(can('project_admin') ? [['access', 'Project access']] : [])], tab, (next) => navigate('project/' + encodeURIComponent(id) + '/' + next))];
-	if (tab === 'submit') {
-		if (!can('coordinate')) throw new Error('Coordination access is required to submit work.');
-		content.push(submitForm(project, items, view.criterionSignals));
-	} else if (tab === 'metrics') content.push(metricsPanel(await api('/projects/' + encodeURIComponent(id) + '/metrics')));
-	else if (tab === 'jobs') content.push(panel('Project jobs', jobsTable(list(await api('/jobs?projectId=' + encodeURIComponent(id))))));
-	else if (tab === 'access') { if (!can('project_admin')) throw new Error('Project administration access is required.'); content.push(await grantsForm(project)); }
-	else {
-		content.push(panel('Work items', items.length ? table(['WORK ITEM', 'READINESS', 'ELIGIBILITY', 'EXECUTION', 'KEV', ''], items.map((item) => [element('div', {}, element('strong', {}, item.title || item.id || 'Unidentified item'), element('div', { class: 'subline mono' }, item.id || item.source)), badge(item.readiness), item.eligible ? badge('eligible') : badge('not eligible'), human(item.execution), kevCell((view.criterionSignals || {})[item.id]), button('Inspect', () => inspectItem(item, project, can('coordinate')))])) : empty('No work items found', 'The project bundle has no visible work items.')));
-		content.push(panel('Project policy', element('div', { class: 'panel-body' }, metadata([['Required checks', list(project.policy.requiredChecks).join(', ') || 'None configured'], ['Allowed executors', list(project.policy.allowedExecutors).join(', ') || 'None configured'], ['Repair maximum', project.policy.maxRepairAttempts], ['Job duration', project.policy.maxJobDurationSeconds + ' seconds'], ['Protected paths', list(project.policy.protectedPaths).join(', ') || 'None, so an implementer can change the tests verification runs'], ['Coordinator review', project.policy.allowCoordinatorReview ? 'Allowed, for a single-person project' : 'Independent reviewer required'], ['Execution mode', project.policy.fixture ? 'Fixture project, simulated workers are labelled' : 'Ordinary project, fixture acceptance prohibited']]))));
-		if (list(view.result.diagnostics).length) content.push(panel('Reader diagnostics', element('div', { class: 'panel-body' }, list(view.result.diagnostics).map((diagnostic) => element('p', { class: 'check-text' }, diagnostic.code + ': ' + diagnostic.message)))));
+function boardKey(board) {
+	return JSON.stringify(list(board.cards).map((card) => [card.workItemId, card.column, card.state, card.status, card.line, card.jobVersion, card.refinementId, card.expectationId, card.progress]));
+}
+const cards = (board) => list(board.cards);
+function needsYou(board) {
+	return cards(board).filter((card) => card.state === 'needs_you').sort((a, b) => Date.parse(a.updatedAt || 0) - Date.parse(b.updatedAt || 0));
+}
+function autopilotLine(board) {
+	if (!board.pilot) return 'the autopilot is off on this installation';
+	return board.project.policy.ask?.autopilot ? 'ready work starts by itself' : 'ready work waits for you to start it';
+}
+function boardHead(board, view) {
+	const needs = needsYou(board);
+	const title = needs.length === 0 ? 'Nothing needs you' : needs.length === 1 ? '1 thing needs you' : needs.length + ' things need you';
+	const line = [plural(board.running, 'agent working', 'agents working'), board.mergedToday + ' merged today', autopilotLine(board)].join(' · ');
+	const views = element('nav', { class: 'segmented', 'aria-label': 'View' }, element('a', { href: '#board', 'aria-current': view === 'board' ? 'page' : null }, 'Board'), element('a', { href: '#list', 'aria-current': view === 'list' ? 'page' : null }, 'List'));
+	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
+}
+function who(key, board) {
+	const ask = board.project.policy.ask || {};
+	switch (key) {
+	case 'next': return board.pilot && ask.autopilot ? ['Starts by itself', false] : ['You start it', true];
+	case 'plan': return ['Agents, then you', true];
+	case 'build': return ['Agents', false];
+	case 'approve': return ['You', true];
+	case 'merge': return ['Automatic', false];
 	}
-	return content;
+	return ['', false];
 }
-function inspectItem(item, project, canSubmit) {
-	const root = $('#content');
-	root.replaceChildren(pageHead(item.title || item.id, 'Current work readiness and selected requirement identities.', [button('Back to project', route)]), panel('Work item', element('div', { class: 'panel-body' }, metadata([['Stable ID', code(item.id)], ['Source', code(item.source)], ['Readiness', badge(item.readiness)], ['Eligible', String(item.eligible)], ['Ticket fingerprint', code(item.ticketSHA256)], ['Criteria fingerprint', code(item.criteriaSHA256)]]))), panel('Readiness checks', table(['CHECK', 'STATUS', 'REASONS'], list(item.checks).map((check) => [human(check.name), badge(check.status), list(check.reasons).map((reason) => reason.message).join(' · ')]))));
-	if (list(item.exclusionReasons).length) root.append(element('div', { class: 'notice' }, item.exclusionReasons.map((reason) => reason.message).join(' ')));
-	if (canSubmit && item.id) root.append(refineSection(item, project), expectationsSection(item, project));
-	if (canSubmit && item.eligible && item.readiness === 'ready') root.append(submitForm(project, [item]));
+const ORDER = { needs_you: 0, running: 1, waiting: 2, done: 3 };
+function columnElement(board, key, name) {
+	let entries = cards(board).filter((card) => card.column === key).sort((a, b) => ORDER[a.state] - ORDER[b.state] || (key === 'done' ? Date.parse(b.since || 0) - Date.parse(a.since || 0) : Date.parse(a.updatedAt || 0) - Date.parse(b.updatedAt || 0)));
+	if (key === 'done') entries = entries.slice(0, 8);
+	const [label, you] = who(key, board);
+	return element('section', { class: 'column', 'aria-label': name },
+		element('div', { class: 'column-head' }, element('span', {}, element('h2', {}, name), element('span', { class: 'count' }, entries.length)), label ? element('span', { class: 'who' + (you ? ' you' : '') }, label) : null),
+		entries.length ? entries.map(cardElement) : element('p', { class: 'column-empty' }, { next: 'Nothing waiting.', plan: 'Nothing being planned.', build: 'Nothing being built.', approve: 'Nothing to approve.', merge: 'Nothing merging.', done: 'Nothing merged yet.' }[key]));
 }
-function expectationsSection(item, project) {
-	const holder = element('div', {}, panel('Holdout expectations', element('div', { class: 'panel-body check-text' }, 'Loading expectations…')));
-	const render = async (expectation) => { holder.replaceChildren(expectationsPanel(item, project, expectation, render)); };
-	run(async () => { const found = list(await api('/projects/' + encodeURIComponent(project.id) + '/expectations?workItemId=' + encodeURIComponent(item.id))); await render(found[0] || null); if (found[0]?.status === 'running') await watchExpectations(found[0], render); });
-	return holder;
+function cardAction(card) {
+	if (card.decision === 'plan') return card.questions ? 'Answer' : card.state === 'needs_you' ? 'Review the plan' : 'Start';
+	if (card.decision === 'approve') return 'Review';
+	return 'Open';
 }
-async function watchExpectations(expectation, render) {
-	await render(expectation);
-	while (expectation.status === 'running') {
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		expectation = await api('/expectations/' + encodeURIComponent(expectation.id));
-		await render(expectation);
+function cardElement(card) {
+	const kind = { needs_you: 'need', running: 'running', waiting: 'waiting', done: 'done' }[card.state];
+	const title = element('span', { class: 'card-title' }, card.title);
+	const cost = card.costUsd ? element('span', { class: 'card-meta' }, money(card.costUsd)) : null;
+	let body;
+	if (card.state === 'needs_you') body = [element('span', { class: 'eyebrow warn' }, card.status), title, element('span', { class: 'card-line' }, card.line), element('span', { class: 'card-foot' }, element('span', { class: 'card-action' }, cardAction(card) + ' →'), cost)];
+	else if (card.state === 'running') body = [element('span', { class: 'card-status' }, element('span', { class: 'dot', 'aria-hidden': 'true' }), element('span', {}, card.status), elapsed(card.since)), title, element('span', { class: 'card-line' }, card.line), card.progress ? element('span', { class: 'progress-note' }, card.progress) : null, cost];
+	else if (card.state === 'waiting') body = [title, element('span', { class: 'eyebrow' }, card.status), element('span', { class: 'card-line' }, card.line), card.decision ? element('span', { class: 'card-action' }, cardAction(card) + ' →') : null];
+	else body = [element('span', { class: 'card-status ok' }, icon('check', 14), card.status), title, element('span', { class: 'card-line' }, [card.line, card.since ? ago(card.since) : ''].filter(Boolean).join(' · '))];
+	return element('button', { type: 'button', class: 'card ' + kind, onclick: () => openCard(card) }, body);
+}
+function openCard(card) {
+	if (card.decision === 'plan' || (card.decision === 'approve' && card.jobId)) return openDrawer(card);
+	if (card.jobId) return navigate('job/' + e(card.jobId));
+	return navigate('item/' + e(card.workItemId));
+}
+async function boardPage() {
+	const board = await loadBoard();
+	return page('', boardHead(board, 'board'), element('div', { class: 'board-scroll' }, element('div', { class: 'board' }, COLUMNS.map(([key, name]) => columnElement(board, key, name)))));
+}
+async function listPage() {
+	const board = await loadBoard();
+	const needs = needsYou(board);
+	const running = cards(board).filter((card) => card.state === 'running');
+	const next = cards(board).filter((card) => card.state === 'waiting');
+	const done = cards(board).filter((card) => card.state === 'done' && card.since && new Date(card.since).toDateString() === new Date().toDateString());
+	const row = (card) => element('button', { type: 'button', class: 'decision-row', onclick: () => openCard(card) }, element('span', { class: 'grow' }, element('span', { class: 'eyebrow warn' }, card.decision === 'approve' ? 'Approve the change' : card.decision === 'plan' ? 'Agree what done means' : card.status), element('span', { class: 'lead' }, element('strong', {}, card.title)), element('span', { class: 'card-line' }, card.line)), element('span', { class: 'button primary' }, cardAction(card)));
+	return page('narrow', boardHead(board, 'list'),
+		needs.length ? element('section', { class: 'stack', 'aria-label': 'Needs you' }, needs.map(row)) : empty('Nothing needs you', 'Everything else runs by itself or waits for its turn.'),
+		running.length ? element('section', { class: 'stack' }, element('h2', { class: 'section' }, 'Agents working'), element('div', { class: 'surface compact' }, running.map((card) => element('a', { class: 'list-row', href: card.jobId ? '#job/' + e(card.jobId) : '#item/' + e(card.workItemId) }, element('span', { class: 'dot', 'aria-hidden': 'true' }), element('span', { class: 'grow' }, element('strong', {}, card.title), element('span', { class: 'card-status' }, card.status)), elapsed(card.since))))) : null,
+		element('div', { class: 'row' }, element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow' }, 'Up next · ' + next.length), element('span', { class: 'fine' }, next.map((card) => card.title).join(', ') || 'Nothing waiting.')), element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow ok' }, 'Merged today · ' + done.length), element('span', { class: 'fine' }, done.map((card) => card.title).join(', ') || 'Nothing yet.'))));
+}
+
+// The decision drawer
+
+async function openDrawer(card) {
+	closeDrawer(false);
+	state.drawer = card;
+	state.drawerReturn = document.activeElement;
+	const close = element('button', { type: 'button', class: 'icon-button', 'aria-label': 'Close', onclick: () => closeDrawer(true) }, icon('close'));
+	const body = element('div', { class: 'stack loose' }, element('p', { class: 'loading' }, 'Loading…'));
+	const approve = card.decision === 'approve';
+	const eyebrow = (card.state === 'needs_you' ? 'Needs you · ' : '') + (approve ? 'approve the change' : 'agree what done means');
+	const pageHref = approve ? '#job/' + e(card.jobId) : '#item/' + e(card.workItemId);
+	const drawer = element('aside', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': approve ? 'Approve the change' : 'Agree what done means' },
+		element('div', { class: 'drawer-head' }, element('div', {}, element('span', { class: 'eyebrow warn' }, eyebrow), element('h2', {}, card.title), element('a', { href: pageHref, class: 'fine', onclick: () => closeDrawer(false) }, 'Open as a page')), close), body);
+	$('#drawer-root').replaceChildren(element('button', { type: 'button', class: 'scrim', tabIndex: -1, 'aria-label': 'Close the panel', onclick: () => closeDrawer(true) }), drawer);
+	close.focus();
+	try { body.replaceChildren(...(approve ? await approveContent(card.jobId, 'drawer') : await planContent(card, 'drawer'))); }
+	catch (error) { body.replaceChildren(element('p', { class: 'alert bad' }, error.message)); }
+}
+function closeDrawer(restore) {
+	if (!state.drawer) return;
+	state.drawer = null;
+	$('#drawer-root').replaceChildren();
+	if (restore && state.drawerReturn?.isConnected) state.drawerReturn.focus();
+}
+async function decided(message, fragment = 'board') {
+	closeDrawer(false);
+	state.flash = message;
+	await navigate(fragment);
+}
+
+// Agreeing what done means
+
+function runNote(run) {
+	return run ? element('p', { class: 'fine' }, [run.model, run.turns ? plural(run.turns, 'turn', 'turns') : '', money(run.costUsd)].filter(Boolean).join(' · ')) : null;
+}
+function consentBox(board) {
+	const input = element('input', { type: 'checkbox', checked: true });
+	const ready = board.canTest ? 'the tests are ready' : 'the requirements are settled';
+	const text = board.pilot ? 'Start the build as soon as ' + ready + ', unless something new comes up.' : 'Start the build as soon as ' + ready + '. The autopilot is off on this installation, so the build waits for you.';
+	return { node: element('label', { class: 'consent' }, input, element('span', {}, text)), value: () => input.checked };
+}
+async function plan(card, body) {
+	const result = await command('/projects/' + e(state.project) + '/plan', { workItemId: card.workItemId, ...body });
+	await decided(result.job ? 'The build has started.' : (result.waiting || 'Saved.'));
+}
+async function planContent(card, mode) {
+	const board = state.board || await loadBoard();
+	const [refinement, expectation] = await Promise.all([card.refinementId ? api('/refinements/' + e(card.refinementId)) : null, card.expectationId ? api('/expectations/' + e(card.expectationId)) : null]);
+	if (expectation?.status === 'proposed') return testsDecision(card, expectation, board, mode);
+	if (expectation?.status === 'accepted') return startDecision(card, expectation);
+	if (expectation && ['failed', 'rejected'].includes(expectation.status)) return [...retryDecision(card, expectation.error || 'The tests were rejected.', 'Write the tests again', () => plan(card, {})), expectation.notes ? fold('The author’s note', true, element('p', {}, rich(expectation.notes))) : null, runNote(expectation.run)].filter(Boolean);
+	if (refinement?.status === 'proposed') return refineDecision(card, refinement, board, mode);
+	if (refinement?.status === 'failed') return retryDecision(card, refinement.error || 'Sharpening failed.', 'Sharpen again', () => sharpen(card));
+	return agreeDecision(card, board, refinement);
+}
+async function sharpen(card) {
+	await command('/projects/' + e(state.project) + '/refinements', { workItemId: card.workItemId });
+	await decided('An agent is sharpening the requirements.');
+}
+function questionElement(question, answer) {
+	const options = list(question.options);
+	const other = element('input', { type: 'text', placeholder: 'Your answer', 'aria-label': 'Your answer', hidden: options.length > 0, oninput: (event) => { answer.other = event.target.value; } });
+	answer.choice = options.length ? 0 : -1;
+	const buttons = [];
+	let otherButton = null;
+	const select = (index) => {
+		answer.choice = index;
+		buttons.forEach((entry, position) => entry.setAttribute('aria-pressed', String(position === index)));
+		otherButton?.setAttribute('aria-pressed', String(index === -1));
+		other.hidden = index !== -1;
+		if (index === -1) other.focus();
+	};
+	options.forEach((text, index) => buttons.push(element('button', { type: 'button', class: 'option', 'aria-pressed': String(index === 0), onclick: () => select(index) }, element('span', { class: 'radio' }), element('span', { class: 'grow' }, text), index === 0 ? element('span', { class: 'tag' }, 'Suggested') : null)));
+	if (options.length) otherButton = element('button', { type: 'button', class: 'option', 'aria-pressed': 'false', onclick: () => select(-1) }, element('span', { class: 'radio' }), element('span', { class: 'grow' }, 'Something else'));
+	const id = 'question-' + crypto.randomUUID();
+	return element('div', { class: 'question', role: 'group', 'aria-labelledby': id }, element('h3', { id, class: 'question-title' }, question.question), question.unblocks ? element('span', { class: 'fine' }, 'Decides: ' + question.unblocks) : null, buttons, otherButton, other);
+}
+function refineDecision(card, refinement, board, mode) {
+	const proposal = refinement.proposal || {};
+	const proposed = list(proposal.criteria), questions = list(proposal.questions);
+	const answers = questions.map(() => ({ choice: 0, other: '' }));
+	const editor = element('textarea', { rows: Math.max(4, proposed.length + 1), value: proposed.join('\n'), hidden: true, 'aria-label': 'Requirements, one per line' });
+	const vague = new Set(list(refinement.after?.criteria).filter((criterion) => criterion.flagged).map((criterion) => criterion.text));
+	const view = element('ol', { class: 'requirements' }, proposed.map((text) => element('li', {}, rich(text), vague.has(text) ? [' ', element('span', { class: 'tag warn' }, 'Still looks vague')] : null)));
+	const consent = consentBox(board);
+	const criteria = () => lines(editor.value);
+	const given = () => questions.map((question, index) => ({ question: question.question, answer: answers[index].choice >= 0 ? list(question.options)[answers[index].choice] : answers[index].other.trim() })).filter((answer) => answer.answer);
+	const actions = element('div', { class: 'actions' });
+	if (questions.length) {
+		actions.append(button('Send answers', () => {
+			const answered = given();
+			if (answered.length < questions.length) throw new Error('Answer every question, or accept the requirements without answering.');
+			return plan(card, { refinementId: refinement.id, answers: answered, continue: consent.value() });
+		}, 'primary'), button('Accept without answering', () => plan(card, { refinementId: refinement.id, criteria: criteria(), continue: consent.value() })));
+	} else {
+		actions.append(button('Agree and continue', () => plan(card, { refinementId: refinement.id, criteria: criteria(), continue: consent.value() }), 'primary'));
 	}
+	actions.append(button('Discard', async () => { await command('/refinements/' + e(refinement.id) + '/reject', {}); await decided('The sharpened requirements were discarded.'); }, 'danger'));
+	const original = list(refinement.criteria);
+	return [
+		element('p', { class: 'lead' }, 'Your ' + plural(original.length, 'requirement was', 'requirements were') + ' too vague to test, so an agent rewrote them as ' + plural(proposed.length, 'requirement', 'requirements') + ' it can check.' + (questions.length ? ' Answer ' + plural(questions.length, 'question', 'questions') + ' and it carries on.' : '')),
+		vague.size && !questions.length ? element('div', { class: 'callout warn' }, element('p', {}, 'Kev still rates ' + plural(vague.size, 'requirement', 'requirements') + ' as vague, so the go-ahead stopped here. Read ' + (vague.size === 1 ? 'it' : 'them') + ', edit if needed, and agree to carry on.')) : null,
+		...questions.map((question, index) => questionElement(question, answers[index])),
+		fold(element('span', {}, 'Read the ' + plural(proposed.length, 'new requirement', 'new requirements') + ' ', element('span', { class: 'muted' }, '· about 1 min')), mode === 'page' || vague.size > 0,
+			element('p', { class: 'fine' }, 'Read the examples. Agents sometimes write one that breaks their own rule.'), view, editor,
+			element('div', { class: 'actions' }, button('Edit the requirements', () => { editor.hidden = !editor.hidden; view.hidden = !editor.hidden; if (!editor.hidden) editor.focus(); }, 'small'))),
+		fold('What you wrote', false, element('ul', { class: 'plain' }, original.map((text) => element('li', {}, rich(text))))),
+		board.canTest ? element('p', { class: 'fine' }, 'A separate agent writes locked tests from these and flags any example that contradicts its own rule.') : null,
+		consent.node,
+		actions,
+		runNote(refinement.run),
+	].filter(Boolean);
 }
-function expectationsPanel(item, project, expectation, render) {
-	const protectedPaths = list(project.policy.protectedPaths);
-	const intro = element('p', { class: 'check-text' }, 'An author that never implements the work writes tests from the criteria, only under the protected paths (' + (protectedPaths.join(', ') || 'none configured') + '). You read and accept them. The job then starts from them, the implementer cannot change them, and they reach the branch only together with the implementation.');
-	if (!protectedPaths.length) return panel('Holdout expectations', element('div', { class: 'panel-body' }, intro, element('div', { class: 'notice' }, 'The project needs protected paths before expectations can be written.')));
-	const start = () => run(async () => watchExpectations(await command('/projects/' + encodeURIComponent(project.id) + '/expectations', { workItemId: item.id }), render));
-	const runNote = expectation?.run ? [expectation.run.model, expectation.run.turns + ' turns', '$' + Number(expectation.run.costUsd || 0).toFixed(2)].filter(Boolean).join(' · ') : '';
-	if (!expectation || ['failed', 'rejected'].includes(expectation.status)) {
-		const last = expectation ? element('p', { class: 'fine' }, 'Last suite ' + human(expectation.status) + (expectation.error ? ': ' + expectation.error : '') + ' · ' + time(expectation.updatedAt)) : null;
-		return panel('Holdout expectations', element('div', { class: 'panel-body' }, intro, last, element('div', { class: 'form-actions' }, button('Write holdout tests', start, 'primary'))));
+function coverageOf(expectation) {
+	const coverage = new Map(list(expectation?.coverage).map((entry) => [entry.criterion, list(entry.tests)]));
+	return list(expectation?.criteria).map((text, index) => ({ text, tests: coverage.get(index + 1) || [] }));
+}
+function diffView(patch, max = 1500) {
+	const rows = String(patch || '').split('\n').slice(0, max).map((line) => element('div', { class: line.startsWith('+') && !line.startsWith('+++') ? 'add' : line.startsWith('-') && !line.startsWith('---') ? 'del' : line.startsWith('@@') ? 'hunk' : /^(diff|index|\+\+\+|---|new file|deleted file)/.test(line) ? 'meta' : '' }, line || ' '));
+	return element('pre', { class: 'code' }, rows);
+}
+function buildDefaults(project) {
+	const policy = project.policy;
+	const executor = list(policy.allowedExecutors)[0] || 'no executor allowed yet';
+	return 'Builder: ' + executor + ' · up to ' + plural(Math.min(2, policy.maxRepairAttempts), 'fix', 'fixes') + ' · within ' + Math.round(Math.min(3600, policy.maxJobDurationSeconds) / 60) + ' min';
+}
+function testsDecision(card, expectation, board, mode) {
+	const rows = coverageOf(expectation);
+	const unchecked = rows.filter((row) => !row.tests.length).length;
+	const concerns = list(expectation.concerns);
+	return [
+		element('p', { class: 'lead' }, 'A separate agent wrote locked tests for your ' + plural(rows.length, 'requirement', 'requirements') + '. The builder cannot change them.' + (unchecked ? ' ' + plural(unchecked, 'requirement has', 'requirements have') + ' no test, so you check ' + (unchecked === 1 ? 'it' : 'them') + ' after the build.' : rows.length ? ' Every requirement has a test.' : '')),
+		concerns.length ? element('div', { class: 'callout warn' }, element('h3', { class: 'section' }, 'The test author found ' + plural(concerns.length, 'problem', 'problems')), element('ul', { class: 'plain' }, concerns.map((text) => element('li', {}, text)))) : null,
+		rows.length ? surface(element('h3', { class: 'section' }, 'Each requirement and the test that checks it'), rows.map((row) => check(row.text, !row.tests.length, row.tests.length ? element('span', { class: 'chips' }, row.tests.map((test) => element('span', { class: 'chip' }, test))) : element('span', { class: 'tag warn' }, 'You check this')))) : null,
+		fold('See the tests', mode === 'page', element('p', { class: 'fine mono' }, list(expectation.files).join(', ')), diffView(expectation.patch)),
+		expectation.notes ? fold('The author’s note', false, element('p', {}, rich(expectation.notes))) : null,
+		element('p', { class: 'fine' }, buildDefaults(board.project)),
+		element('div', { class: 'actions' },
+			button('Approve and build', () => plan(card, { expectationId: expectation.id }), 'primary'),
+			button('Write them again', async () => { await command('/expectations/' + e(expectation.id) + '/reject', {}); await plan(card, {}); }),
+			button('Reject', async () => { await command('/expectations/' + e(expectation.id) + '/reject', {}); await decided('The tests were rejected.'); }, 'danger')),
+		runNote(expectation.run),
+	].filter(Boolean);
+}
+function startDecision(card, expectation) {
+	return [element('p', { class: 'lead' }, 'The locked tests are agreed.' + (card.status.startsWith('Waits for') ? ' ' + card.status + '. ' + card.line : '')), element('div', { class: 'actions' }, button('Start the build', () => plan(card, { expectationId: expectation.id }), 'primary'))];
+}
+function retryDecision(card, message, label, action) {
+	return [element('div', { class: 'callout bad' }, element('p', {}, sentence(message))), element('div', { class: 'actions' }, button(label, action, 'primary'))];
+}
+async function agreeDecision(card, board, refinement) {
+	const orientation = await api('/projects/' + e(state.project) + '/orientation');
+	const signals = (orientation.criterionSignals || {})[card.workItemId];
+	const criteria = list(signals?.criteria);
+	const flagged = criteria.filter((criterion) => criterion.flagged).length;
+	const consent = consentBox(board);
+	const agreed = refinement?.status === 'accepted';
+	const actions = element('div', { class: 'actions' });
+	if (flagged && board.canRefine && !agreed) actions.append(button('Sharpen the requirements', () => sharpen(card), 'primary'), button('Agree and start', () => plan(card, { continue: consent.value() })));
+	else actions.append(button(agreed ? 'Start the next step' : 'Agree and start', () => plan(card, { continue: consent.value() }), 'primary'));
+	if (!agreed && !flagged && board.canRefine) actions.append(button('Sharpen first', () => sharpen(card), 'quiet'));
+	return [
+		element('p', { class: 'lead' }, agreed ? 'The sharpened requirements are agreed.' : 'Agree what done means to start this work.'),
+		criteria.length ? surface(element('h3', { class: 'section' }, 'The requirements'), criteria.map((criterion) => check(criterion.text, criterion.flagged, criterion.flagged ? element('span', { class: 'tag warn' }, 'Looks vague') : null))) : element('p', { class: 'fine' }, 'Its requirements are in the work item in the project records.'),
+		element('p', { class: 'fine' }, board.canTest ? 'A separate agent writes locked tests first. You see them before the build, unless you let it carry on.' : 'The build starts right away, because this project has no locked tests.'),
+		board.canTest ? consent.node : null,
+		actions,
+	].filter(Boolean);
+}
+
+// Approving the change
+
+function criteriaFromAdmission(job) {
+	const sources = list(job.admission?.sources);
+	const ticket = sources.find((source) => source.path === job.admission.ticketPath) || sources[0];
+	const result = [];
+	let inside = false;
+	for (const line of String(ticket?.text || '').split('\n')) {
+		if (/^##\s+/.test(line)) { inside = /^##\s+Acceptance criteria\s*$/i.test(line.trim()); continue; }
+		const item = inside && line.match(/^\s*[-*]\s+(.*)$/);
+		if (item) result.push(item[1].trim());
 	}
-	if (expectation.status === 'running') return panel('Holdout expectations', element('div', { class: 'panel-body check-text' }, 'The author is writing tests in a temporary worktree. Nothing in your checkout changes.'), 'running');
-	const body = [intro, metadata([['Status', badge(expectation.status)], ['Files', list(expectation.files).join(', ')], ['Commit', code(expectation.commit)], ['Base', code(expectation.baseRevision)]]), expectation.notes ? element('p', { class: 'fine' }, 'Author notes: ' + expectation.notes) : null, element('details', { class: 'source', open: expectation.status === 'proposed' }, element('summary', {}, 'Patch'), element('pre', { class: 'output' }, expectation.patch || ''))];
-	if (expectation.status === 'proposed') {
-		body.push(element('div', { class: 'form-actions' }, button('Accept these tests', async () => render(await command('/expectations/' + encodeURIComponent(expectation.id) + '/accept', {})), 'primary'), button('Reject', async () => render(await command('/expectations/' + encodeURIComponent(expectation.id) + '/reject', {})))));
-		return panel('Holdout expectations', element('div', { class: 'panel-body' }, body), runNote);
-	}
-	const form = element('form', {}, formGrid(field('Executor', 'executorKey', { choices: list(project.policy.allowedExecutors).map((key) => ({ value: key, label: key })), required: true }), field('Repair limit', 'repairLimit', { type: 'number', min: 0, max: project.policy.maxRepairAttempts, value: 0, required: true }), field('Deadline', 'deadline', { type: 'datetime-local', required: true, value: localDate(new Date(Date.now() + Math.min(project.policy.maxJobDurationSeconds || 3600, 3600) * 1000)) })));
-	const submit = element('button', { type: 'submit', class: 'primary' }, 'Submit from these expectations');
-	form.append(element('div', { class: 'form-actions' }, submit));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const job = await command('/jobs', { projectId: project.id, workItemId: item.id, expectationsId: expectation.id, executorKey: values.executorKey, repairLimit: Number(values.repairLimit), deadline: new Date(values.deadline).toISOString() }); await navigate('job/' + encodeURIComponent(job.id)); }, submit); });
-	body.push(element('hr'), form);
-	return panel('Holdout expectations', element('div', { class: 'panel-body' }, body), runNote || 'accepted');
-}
-function metricsPanel(m) {
-	const percent = (value) => Math.round(value * 100) + '%';
-	const minutes = (seconds) => seconds ? (seconds < 120 ? Math.round(seconds) + ' s' : Math.round(seconds / 60) + ' min') : '—';
-	const dollars = (value) => '$' + Number(value || 0).toFixed(2);
-	const tiles = (entries) => element('div', { class: 'stat-grid' }, entries.map(([label, value]) => element('div', { class: 'stat' }, element('div', { class: 'stat-label' }, label), element('div', { class: 'stat-value' }, value))));
-	return element('div', {}, panel('Outcomes', element('div', { class: 'panel-body' }, tiles([['First-pass acceptance', m.acceptedJobs ? percent(m.firstPassRate) : '—'], ['Merged jobs', m.mergedJobs + ' of ' + m.jobs], ['Repairs', m.repairs], ['Protected-path rejections', m.protectedRejections]]))),
-		panel('Time and people', element('div', { class: 'panel-body' }, tiles([['Admission to acceptance', minutes(m.medianAdmitToAcceptSeconds)], ['Acceptance to merge', minutes(m.medianAcceptToMergeSeconds)], ['Human decisions', m.humanDecisions], ['Decisions per merged job', m.mergedJobs ? m.humanDecisionsPerMerge.toFixed(1) : '—']]))),
-		panel('Verification and cost', element('div', { class: 'panel-body' }, tiles([['Merge checks passed', m.mergeChecksPassed + ' / ' + (m.mergeChecksPassed + m.mergeChecksFailed)], ['Agent cost', dollars(m.totalCostUsd)], ['Cost per merged job', m.mergedJobs ? dollars(m.costPerMergedJobUsd) : '—'], ['Refinements · expectations', m.refinements.accepted + '/' + m.refinements.total + ' · ' + m.expectations.accepted + '/' + m.expectations.total]]))),
-		element('p', { class: 'fine' }, 'Measured from this installation’s jobs, events, artifacts, refinements, and expectations at ' + time(m.generatedAt) + '. Cost covers implementation, refinement, and expectation runs that reported it.'));
-}
-function kevCell(signals) {
-	if (!signals) return element('span', { class: 'fine' }, 'Not observed');
-	if (signals.status === 'unavailable') return badge('unavailable');
-	return signals.flaggedCount ? element('span', { class: 'badge warn' }, signals.flaggedCount + ' flagged') : element('span', { class: 'badge good' }, 'checkable');
-}
-function refineSection(item, project) {
-	const holder = element('div', {}, panel('Refine criteria', element('div', { class: 'panel-body check-text' }, 'Loading refinements…')));
-	const render = async (refinement) => { holder.replaceChildren(refinementPanel(item, project, refinement, render)); };
-	run(async () => { const found = list(await api('/projects/' + encodeURIComponent(project.id) + '/refinements?workItemId=' + encodeURIComponent(item.id))); await render(found[0] || null); if (found[0]?.status === 'running') await watchRefinement(found[0], render); });
-	return holder;
-}
-async function watchRefinement(refinement, render) {
-	await render(refinement);
-	while (refinement.status === 'running') {
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-		refinement = await api('/refinements/' + encodeURIComponent(refinement.id));
-		await render(refinement);
-	}
-}
-function kevScore(signals, text) {
-	const signal = list(signals?.criteria).find((criterion) => criterion.text === text);
-	if (!signal || signal.checkable === undefined || signal.checkable === null) return element('span', { class: 'fine' }, 'unscored');
-	return element('span', { class: 'badge ' + (signal.flagged ? 'warn' : 'good') }, signal.checkable.toFixed(2) + (signal.flagged ? ' flagged' : ''));
-}
-function refinementPanel(item, project, refinement, render) {
-	const start = (body) => run(async () => watchRefinement(await command('/projects/' + encodeURIComponent(project.id) + '/refinements', { workItemId: item.id, ...body }), render));
-	const intro = element('p', { class: 'check-text' }, 'A read-only agent proposes concrete criteria and at most three blocking questions, and the decision model scores the proposal. Nothing changes until you accept, and admission then freezes the result.');
-	if (!refinement || !['running', 'proposed'].includes(refinement.status)) {
-		const last = refinement ? element('p', { class: 'fine' }, 'Last refinement ' + human(refinement.status) + (refinement.error ? ': ' + refinement.error : '') + ' · ' + time(refinement.updatedAt)) : null;
-		return panel('Refine criteria', element('div', { class: 'panel-body' }, intro, last, element('div', { class: 'form-actions' }, button('Refine criteria', () => start({}), 'primary'))));
-	}
-	if (refinement.status === 'running') return panel('Refine criteria', element('div', { class: 'panel-body check-text' }, 'The refiner is reading the work item and repository. This usually takes under a minute.'), 'running');
-	const proposal = refinement.proposal;
-	const questions = list(proposal.questions);
-	const form = element('form', {});
-	form.append(formGrid(field('Criteria to accept, one per line', 'criteria', { type: 'textarea', full: true, rows: Math.max(4, list(proposal.criteria).length + 1), value: list(proposal.criteria).join('\n') }), ...questions.map((question, index) => field(question.question, 'answer' + index, { full: true, help: 'Unblocks: ' + question.unblocks }))));
-	const answers = () => { const values = data(form); return questions.map((question, index) => ({ question: question.question, answer: (values['answer' + index] || '').trim() })).filter((answer) => answer.answer); };
-	const accept = element('button', { type: 'submit', class: 'primary' }, 'Accept and update ticket');
-	form.append(element('div', { class: 'form-actions' }, accept, questions.length ? button('Refine again with answers', () => start({ previousId: refinement.id, answers: answers() })) : null, button('Reject', async () => render(await command('/refinements/' + encodeURIComponent(refinement.id) + '/reject', {})))));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const accepted = await command('/refinements/' + encodeURIComponent(refinement.id) + '/accept', { criteria: values.criteria.split('\n').map((criterion) => criterion.trim()).filter(Boolean), answers: answers() }); await render(accepted); notice('Ticket updated. Return to the project to re-check readiness before submitting.'); }, accept); });
-	const runNote = refinement.run ? [refinement.run.model, refinement.run.turns + ' turns', '$' + Number(refinement.run.costUsd || 0).toFixed(2)].filter(Boolean).join(' · ') : '';
-	return panel('Refine criteria', element('div', { class: 'panel-body' }, intro, table(['CURRENT CRITERION', 'KEV'], list(refinement.criteria).map((text) => [text, kevScore(refinement.before, text)])), table(['PROPOSED CRITERION', 'KEV'], list(proposal.criteria).map((text) => [text, kevScore(refinement.after, text)])), proposal.notes ? element('p', { class: 'fine' }, 'Notes: ' + proposal.notes) : null, form), runNote);
-}
-function submitForm(project, items, signals) {
-	const allowed = items.filter((item) => item.id && !item.identityAmbiguous && item.eligible && item.readiness === 'ready');
-	const form = element('form', {});
-	if (!allowed.length) form.append(element('div', { class: 'notice' }, 'No ready and eligible work items are available. Inspect the work-item readiness checks before submitting.'));
-	if (!list(project.policy.allowedExecutors).length) form.append(element('div', { class: 'notice' }, 'An administrator must allow an executor in project policy before submission.'));
-	form.append(formGrid(field('Work item', 'workItemId', { choices: allowed.map((item) => ({ value: item.id, label: (item.title || item.id) + ' · ' + human(item.readiness) + (item.eligible ? '' : ' · not eligible') })), required: true, full: true }), field('Base revision', 'baseRevision', { required: true, value: 'HEAD', help: 'The service resolves and retains the exact commit.' }), field('Executor', 'executorKey', { choices: list(project.policy.allowedExecutors).map((key) => ({ value: key, label: key })), required: true }), field('Repair limit', 'repairLimit', { type: 'number', min: 0, max: project.policy.maxRepairAttempts, value: 0, required: true }), field('Deadline', 'deadline', { type: 'datetime-local', required: true, value: localDate(new Date(Date.now() + Math.min(project.policy.maxJobDurationSeconds || 3600, 3600) * 1000)) })));
-	const flagged = allowed.map((item) => [item, (signals || {})[item.id]]).filter(([, signal]) => signal && signal.flaggedCount > 0);
-	if (flagged.length) form.append(element('div', { class: 'notice' }, flagged.map(([item, signal]) => (item.title || item.id) + ': ' + signal.flaggedCount + ' criteria may not name a checkable result (' + signal.model + ', advisory only). Inspect the item and use Refine criteria, or rewrite them, before admission freezes them: ' + list(signal.criteria).filter((criterion) => criterion.flagged).map((criterion) => '“' + criterion.text + '”').join('; ')).join(' ')));
-	form.append(element('div', { class: 'notice' }, 'Required checks: ' + (list(project.policy.requiredChecks).join(', ') || 'none configured') + '. Project policy owns these checks; submission cannot remove them.'), element('p', { class: 'fine' }, project.policy.fixture ? 'FIXTURE PROJECT. This flow tests platform behavior and does not claim model execution.' : 'Fixture executions cannot satisfy acceptance for this ordinary project.'));
-	const submit = element('button', { type: 'submit', class: 'primary', disabled: !allowed.length || !list(project.policy.allowedExecutors).length }, 'Admit and submit job');
-	form.append(element('div', { class: 'form-actions' }, submit));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const job = await command('/jobs', { projectId: project.id, workItemId: values.workItemId, baseRevision: values.baseRevision, executorKey: values.executorKey, repairLimit: Number(values.repairLimit), deadline: new Date(values.deadline).toISOString() }); await navigate('job/' + encodeURIComponent(job.id)); }, submit); });
-	return panel('Submit ready work', element('div', { class: 'panel-body' }, element('p', { class: 'check-text' }, 'The service refreshes complete context and readiness, checks your permission, and acquires one implementation claim before dispatch.'), form));
-}
-function localDate(value) { return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16); }
-async function jobPage(id, tab) {
-	const job = await api('/jobs/' + encodeURIComponent(id));
-	const capabilities = list(await api('/projects/' + encodeURIComponent(job.projectId) + '/capabilities'));
-	state.job = job; state.tab = tab; $('#breadcrumb').textContent = 'Job · ' + short(job.id);
-	const project = state.projects.find((entry) => entry.id === job.projectId);
-	const headline = pageHead(job.workItemId, 'Job ' + job.id + ' · version ' + job.version, [badge(job.status), ...(job.status === 'accepted' && job.acceptanceStatus !== 'valid' ? [badge(job.acceptanceStatus || 'unknown')] : []), ...(project?.policy.fixture ? [badge('fixture')] : []), button('↻ Refresh', route)]);
-	const content = [headline, tabs([['overview', 'Overview'], ['context', 'Requirements'], ['checks', 'Checks & evidence'], ['history', 'Event history'], ['reviews', 'Review & accept']], tab, (next) => navigate('job/' + encodeURIComponent(job.id) + '/' + next))];
-	if (tab === 'context') {
-		content.push(panel('Admitted context', element('div', {}, list(job.admission.sources).map((source) => element('details', { class: 'source' }, element('summary', {}, source.path), element('div', { class: 'fine mono' }, source.sha256), element('pre', {}, source.text)))), job.admission.contextComplete ? 'Complete captured sources' : 'INCOMPLETE'));
-		content.push(panel('Requirement identities', element('div', { class: 'panel-body' }, metadata([['Ticket', code(job.admission.ticketSHA256)], ['Criteria', code(job.admission.criteriaSHA256)], ['Context', code(job.admission.contextSHA256)], ['Fingerprint version', job.admission.fingerprintVersion]]))));
-	} else if (tab === 'checks') content.push(checksPanel(job));
-	else if (tab === 'history') content.push(historyPanel(job));
-	else if (tab === 'reviews') content.push(...reviewPanels(job, capabilities));
-	else {
-		const detail = element('div', {}, panel('Candidate & admission', element('div', { class: 'panel-body' }, metadata([['Candidate', code(job.candidateRevision)], ['Recorded base', code(job.admission.baseRevision)], ['Executor', job.admission.executorKey], ['Criterion signals', job.admission.criterionSignals ? job.admission.criterionSignals.flaggedCount + ' flagged by ' + job.admission.criterionSignals.model + ' (' + human(job.admission.criterionSignals.status) + ', advisory)' : 'Not observed'], ['Protected paths', list(job.admission.protectedPaths).join(', ') || 'None'], ['Coordinator', code(job.coordinatorId)], ['Repairs used', job.repairCount + ' / ' + job.admission.repairLimit], ['Deadline', time(job.admission.deadline)], ['Acceptance', job.acceptanceStatus || 'Not recorded'], ...(job.acceptanceRecordPath ? [['Record', code(job.acceptanceRecordPath)]] : [])]))), attemptsPanel(job));
-		const action = element('div', {}, actionsPanel(job, capabilities), panel('What comes next', element('div', { class: 'panel-body check-text' }, nextAction(job))), historyPanel({ ...job, events: list(job.events).slice(-4) }));
-		content.push(element('div', { class: 'two-columns' }, detail, action), checksPanel(job));
-	}
-	if (project?.policy.fixture) content.push(element('p', { class: 'section-note' }, 'Fixture execution is visible throughout this project. Its evidence demonstrates the offline platform flow only.'));
-	return content;
-}
-function nextAction(job) {
-	if (job.status === 'accepted' && job.acceptanceStatus !== 'valid') {
-		return job.acceptanceStatus === 'stale' ? 'Historical acceptance is retained, but current requirements or evidence no longer match it. Reassess the authored decision before relying on this work.' : 'Historical acceptance is retained, but its current decision or evidence cannot be validated. Restore the original decision and evidence together, or reassess the work.';
-	}
-	if (job.status === 'accepted') {
-		if (job.merge?.status === 'verifying') return 'The merge commit is being verified. Required checks run on it in clean worktrees, and the branch moves only if all of them pass.';
-		if (job.merge && job.merge.status !== 'failed') return 'Accepted and merged into ' + job.merge.branch + ' at ' + short(job.merge.revision) + '. Dependent work can build on it.';
-		return (job.merge ? 'The last merge failed: ' + job.merge.failure + ' ' : 'Accepted but not merged. ') + 'Merge the candidate so dependent work builds on it; until then the factory refuses to admit work that depends on this item.';
-	}
-	const descriptions = { queued: 'Waiting for an enrolled implementation worker to claim the recorded dispatch.', implementing: 'Implementation is active. Inspect its retained attempt or request cancellation.', implementation_unknown: 'The worker outcome is unknown. Keep the claim until an authorized reconciliation establishes what happened.', verifying: 'Waiting for an independent verification worker. Implementation success is not accepted evidence.', verification_failed: 'A required result has not passed. Inspect the original evidence before requesting a bounded repair.', ready_for_review: 'Independent checks passed. A different authorized reviewer must inspect this exact candidate.', ready_for_acceptance: 'A current independent review is recorded. An authorized acceptor can assess the exact candidate and requirements.', accepting: 'Acceptance publication is pending. The service must validate the authored record before declaring acceptance.', accepted: 'The authored acceptance record was validated. Its original revision and evidence remain inspectable.', cancel_requested: 'Stop requested. An acknowledgement or expired lease does not prove the execution stopped.', cancellation_unknown: 'Cancellation remains uncertain. No replacement should run while the old execution may still exist.', cancelled: 'The recorded execution is confirmed cancelled. Its workspace and observations remain retained.', failed: 'The job has a known failure. Inspect retained evidence and original requirements before new work.', stale: 'Requirements or candidate identity changed. Reassess before relying on previous checks or review.' };
-	return descriptions[job.status] || 'Inspect retained state and ask an authorized coordinator for the next action.';
-}
-function attemptsPanel(job) {
-	const rows = list(job.attempts).map((attempt) => {
-		const observations = element('div', {});
-		if (attempt.terminalReceipt) observations.append(element('details', {}, element('summary', {}, 'Execution receipt'), element('pre', { class: 'output' }, attempt.terminalReceipt)));
-		for (const artifact of list(attempt.artifacts)) observations.append(element('details', {}, element('summary', {}, artifact.name), element('div', { class: 'fine mono' }, artifact.sha256), element('pre', { class: 'output' }, artifact.content || 'No retained text')));
-		if (!observations.children.length) observations.append(element('span', { class: 'fine' }, 'No terminal observations yet'));
-		return [element('div', {}, human(attempt.stage), element('div', { class: 'subline' }, attempt.checkKey || 'Attempt ' + attempt.ordinal)), badge(attempt.status), element('div', { class: 'mono' }, attempt.nativeRunId || 'Awaiting native run', element('div', { class: 'subline mono' }, attempt.dispatchId)), code(attempt.workspacePath), observations];
-	});
-	return panel('Execution attempts', rows.length ? table(['STAGE', 'STATE', 'IDENTITY', 'WORKSPACE', 'OBSERVATIONS'], rows) : empty('No attempts yet', 'The service has not dispatched this job.'));
-}
-function checksPanel(job) {
-	const checks = list(job.checks); const required = list(job.admission.requiredChecks);
-	const rows = required.map((key) => {
-		const check = [...checks].reverse().find((item) => item.checkKey === key && item.candidateRevision === job.candidateRevision && item.requirementFingerprint === job.admission.ticketSHA256);
-		return [key, badge(check?.status || 'unknown'), code(short(check?.candidateRevision)), check?.environment || 'Not observed', check ? element('details', {}, element('summary', {}, 'Inspect evidence'), element('pre', { class: 'output' }, JSON.stringify(check, null, 2))) : 'Required result missing'];
-	});
-	const body = element('div', {}, rows.length ? table(['REQUIRED CHECK', 'RESULT', 'CANDIDATE', 'ENVIRONMENT', 'EVIDENCE'], rows) : empty('No required checks configured', 'The service still evaluates independent review and acceptance policy.'));
-	if (checks.length) body.append(element('details', { class: 'source' }, element('summary', {}, 'All retained check observations'), element('pre', {}, JSON.stringify(checks, null, 2))));
-	return panel('Checks & evidence', body, 'Missing, skipped, unavailable, and unknown results do not pass');
-}
-function historyPanel(job) {
-	return panel('Event history', list(job.events).length ? element('div', { class: 'panel-body' }, element('ol', { class: 'timeline' }, [...job.events].reverse().map((event) => element('li', {}, element('strong', {}, human(event.kind)), element('time', {}, '#' + event.sequence + ' · ' + time(event.createdAt)), element('details', {}, element('summary', { class: 'fine' }, 'Details'), element('pre', { class: 'output' }, JSON.stringify(event.data, null, 2))))))) : empty('No events recorded', 'Events appear after a durable service transition.'));
-}
-function actionsPanel(job, capabilities) {
-	const body = element('div', { class: 'panel-body action-stack' });
-	for (const kind of list(job.availableActions)) {
-		if (kind === 'resolve_execution') continue;
-		const title = { cancel: 'Request cancellation', repair: 'Request bounded repair', reconcile: 'Reconcile execution' }[kind] || human(kind);
-		body.append(button(title, async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/actions', { jobId: job.id, ifVersion: job.version, action: kind }); await route(); }, kind === 'cancel' ? 'danger' : ''));
-	}
-	if (capabilities.includes('review') || capabilities.includes('accept')) body.append(button('Review & acceptance', () => navigate('job/' + encodeURIComponent(job.id) + '/reviews'), 'primary'));
-	if (!body.children.length) body.append(element('p', { class: 'fine' }, 'No state actions are currently available to this account.'));
-	if (list(job.availableActions).includes('resolve_execution')) {
-		const form = element('form', {}, field('Uncertain attempt', 'attemptId', { choices: list(job.attempts).filter((attempt) => /unknown|running|assigned|registered|acknowledged/.test(attempt.status)).map((attempt) => ({ value: attempt.id, label: attempt.id })) }), field('Observed resolution', 'resolution', { choices: ['still_running', 'not_started', 'stopped_failed', 'stopped_cancelled'].map((value) => ({ value, label: human(value) })) }), field('Termination or execution evidence', 'evidence', { type: 'textarea', required: true }));
-		const submit = element('button', { type: 'submit' }, 'Record explicit resolution'); form.append(submit);
-		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/actions', { ...data(form), jobId: job.id, ifVersion: job.version, action: 'resolve_execution' }); await route(); }, submit); }); body.append(form);
-	}
-	return panel('Available actions', body);
-}
-function reviewPanels(job, capabilities) {
-	const reviews = list(job.reviews);
-	const result = [panel('Independent review history', reviews.length ? table(['REVIEWER', 'DECISION', 'CANDIDATE', 'SUMMARY'], reviews.map((review) => [code(review.reviewerId), element('div', { class: 'pill-row' }, badge(review.decision), ...(review.candidateRevision !== job.candidateRevision || review.requirementFingerprint !== job.admission.ticketSHA256 ? [badge('stale')] : [])), code(review.candidateRevision), review.summary])) : empty('Independent review is pending', 'An authorized reviewer must differ from the coordinating and implementation identities.'))];
-	const independent = state.me.userId !== job.implementerId && (state.me.userId !== job.coordinatorId || job.admission.allowCoordinatorReview);
-	if (capabilities.includes('review') && independent && job.candidateRevision && job.status === 'ready_for_review') {
-		const form = element('form', {}, formGrid(field('Decision', 'decision', { choices: [{ value: 'approved', label: 'Approve this candidate' }, { value: 'changes_requested', label: 'Request changes' }] }), field('Review summary', 'summary', { type: 'textarea', required: true, full: true })));
-		const submit = element('button', { type: 'submit', class: 'primary' }, 'Record independent review'); form.append(element('div', { class: 'form-actions' }, submit));
-		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/reviews', { ...data(form), jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256 }); await route(); }, submit); });
-		result.push(panel('Review exact candidate', element('div', { class: 'panel-body' }, metadata([['Candidate', code(job.candidateRevision)], ['Requirements', code(job.admission.ticketSHA256)]]), element('hr'), form)));
-	} else if (capabilities.includes('review') && !independent) result.push(element('div', { class: 'notice' }, 'This account coordinated or implemented the work. A different reviewer is required.'));
-	if (capabilities.includes('accept') && job.candidateRevision && job.status === 'ready_for_acceptance') {
-		const form = element('form', {}, field('Acceptance rationale', 'summary', { type: 'textarea', required: true }));
-		const submit = element('button', { type: 'submit', class: 'primary' }, 'Accept exact candidate'); form.append(element('p', { class: 'fine' }, 'The service rechecks current requirements, independent passing evidence, review, and exact candidate identity before publishing a real Acceptance record.'), element('div', { class: 'form-actions' }, submit));
-		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/acceptance', { ...data(form), jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256 }); await route(); }, submit); });
-		result.push(panel('Acceptance decision', element('div', { class: 'panel-body' }, metadata([['Exact candidate', code(job.candidateRevision)], ['Requirements', code(job.admission.ticketSHA256)]]), element('hr'), form)));
-	} else if (capabilities.includes('accept') && !['accepted', 'cancelled'].includes(job.status)) {
-		result.push(element('div', { class: 'notice' }, 'Acceptance is available after all required checks and an independent current approval pass. Current state: ' + human(job.status) + '.'));
-	}
-	if (job.status === 'accepted') result.push(mergePanel(job, capabilities));
 	return result;
 }
-function mergePanel(job, capabilities) {
-	const merge = job.merge;
-	if (merge && merge.status !== 'failed') {
-		const checks = list(job.attempts).filter((attempt) => attempt.purpose === 'merge' && attempt.candidateRevision === merge.revision);
-		const facts = metadata([['Status', badge(merge.status || 'merged')], ['Branch', merge.branch], ['Merge commit', code(merge.revision)], ['Previous tip', code(merge.previousTip)], ['Candidate', code(merge.candidateRevision)], ['Mode', human(merge.mode)], ['Approved by', code(merge.mergedBy)], ['Merged at', merge.mergedAt ? time(merge.mergedAt) : 'Not yet'], ['Ticket note', merge.ticketNote || 'Not recorded']]);
-		const checkTable = checks.length ? table(['MERGE CHECK', 'STATUS', 'RESULT'], checks.map((attempt) => [attempt.checkKey, badge(attempt.status), attempt.checkStatus ? badge(attempt.checkStatus) : '—'])) : null;
-		return panel(merge.status === 'verifying' ? 'Merge being verified' : 'Merge', element('div', { class: 'panel-body' }, facts, checkTable), merge.status || 'merged');
-	}
-	const failure = merge ? element('div', { class: 'notice' }, 'The last merge failed and no branch moved: ' + merge.failure) : null;
-	if (!capabilities.includes('merge')) return element('div', {}, failure, element('div', { class: 'notice' }, 'The candidate is accepted but not merged. Someone with merge access must merge it before dependent work can be admitted.'));
-	if (job.acceptanceStatus !== 'valid') return element('div', { class: 'notice' }, 'Merging needs a valid current acceptance. Current acceptance: ' + human(job.acceptanceStatus) + '.');
-	const form = element('form', {}, field('Target branch', 'targetBranch', { placeholder: 'Branch checked out in the project repository', help: 'Leave empty to merge into the branch checked out in the project repository.' }));
-	const submit = element('button', { type: 'submit', class: 'primary' }, merge ? 'Merge again' : 'Merge accepted candidate');
-	form.append(element('p', { class: 'fine' }, 'The service rechecks the acceptance and builds a merge commit that names this job and you. Independent workers run the required checks on that commit, and the branch moves only if every check passes.'), element('div', { class: 'form-actions' }, submit));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: (data(form).targetBranch || '').trim() }); await route(); }, submit); });
-	return panel('Merge into the project', element('div', { class: 'panel-body' }, failure, metadata([['Accepted candidate', code(job.candidateRevision)], ['Acceptance record', code(job.acceptanceRecordPath)]]), element('hr'), form), merge ? 'merge failed' : 'accepted, not merged');
+const FINDINGS = [['wrong_requirement', 'A requirement was wrong'], ['missing_test', 'A requirement had no test'], ['bug', 'A bug'], ['hard_to_read', 'Hard to read'], ['out_of_scope', 'Out of scope']];
+async function approveContent(jobId, mode) {
+	const job = await api('/jobs/' + e(jobId));
+	const [change, tests] = await Promise.all([api('/jobs/' + e(jobId) + '/change').catch(() => null), job.admission.expectationsId ? api('/expectations/' + e(job.admission.expectationsId)).catch(() => null) : null]);
+	const rows = tests && list(tests.criteria).length ? coverageOf(tests) : criteriaFromAdmission(job).map((text) => ({ text, tests: [] }));
+	const open = rows.filter((row) => !row.tests.length), covered = rows.filter((row) => row.tests.length);
+	const files = list(change?.files);
+	const added = files.reduce((sum, file) => sum + file.added, 0), removed = files.reduce((sum, file) => sum + file.removed, 0);
+	if (!['ready_for_review', 'ready_for_acceptance'].includes(job.status)) return [element('p', { class: 'lead' }, 'This change is no longer waiting for approval: ' + human(job.status) + '.'), link('Open the job', '#job/' + e(job.id))];
+	const independent = job.implementerId !== state.me.userId && (job.coordinatorId !== state.me.userId || job.admission.allowCoordinatorReview);
+	const findings = new Set();
+	const chips = FINDINGS.map(([key, label]) => element('button', { type: 'button', class: 'toggle-chip', 'aria-pressed': 'false', onclick: (event) => { if (findings.has(key)) findings.delete(key); else findings.add(key); event.currentTarget.setAttribute('aria-pressed', String(findings.has(key))); } }, label));
+	const mergeBox = element('input', { type: 'checkbox', checked: can('merge', job.projectId) });
+	const approve = async () => {
+		const merge = mergeBox.checked;
+		await command('/jobs/' + e(job.id) + '/approve', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256, findings: [...findings], merge });
+		if (mode === 'drawer') await decided(merge ? 'Approved. The checks run again on the combined version before main moves.' : 'Approved.');
+		else { await route(); notice('Approved.'); }
+	};
+	const fixText = element('textarea', { rows: 3, placeholder: 'What should change?', 'aria-label': 'What should change' });
+	const fixForm = element('div', { class: 'stack', hidden: true }, fixText, element('div', { class: 'actions' }, button('Send back for a fix', async () => {
+		const summary = fixText.value.trim();
+		if (!summary) throw new Error('Say what should change.');
+		const reviewed = await command('/jobs/' + e(job.id) + '/reviews', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256, decision: 'changes_requested', summary, findings: [...findings] });
+		if (list(reviewed.availableActions).includes('repair')) await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: reviewed.version, action: 'repair' });
+		await decided('Sent back for a fix.', mode === 'drawer' ? 'board' : 'job/' + e(job.id));
+	}, 'primary')));
+	let confirmReject = false;
+	const reject = button('Reject', async () => {
+		if (!confirmReject) { confirmReject = true; reject.textContent = 'Reject: click again to stop this build'; return; }
+		await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: job.version, action: 'cancel' });
+		await decided('The build was stopped.');
+	}, 'danger');
+	return [
+		element('p', { class: 'lead' }, (files.length ? 'Changes ' + plural(files.length, 'file', 'files') + ' (+' + added + ' −' + removed + '). ' : '') + 'Every required check passed in a fresh copy' + (tests ? ', and the locked tests were not touched.' : '.')),
+		open.length ? element('div', { class: 'callout warn' }, element('h3', { class: 'section' }, 'Check this yourself'), element('p', { class: 'fine' }, tests ? 'No locked test checks these, so they are left for you.' : 'This change has no locked tests, so check every requirement yourself.'), element('ul', { class: 'plain' }, open.map((row) => element('li', {}, rich(row.text))))) : element('div', { class: 'callout ok' }, element('p', {}, 'A locked test checks every requirement. Read the change if you want to; the checks already passed.')),
+		change ? fold('The change', mode === 'page' || open.length > 0, element('div', { class: 'files' }, files.map((file) => element('span', {}, file.path + '  ', element('span', { class: 'plus' }, '+' + file.added), ' ', element('span', { class: 'minus' }, '−' + file.removed)))), diffView(change.patch), change.truncated ? element('p', { class: 'fine' }, 'The change is longer than shown here.') : null) : null,
+		covered.length || list(job.admission.requiredChecks).length ? fold(element('span', {}, icon('check', 16), ' Already checked'), false, covered.map((row) => check(row.text, false, element('span', { class: 'chips' }, row.tests.map((test) => element('span', { class: 'chip' }, test))))), list(job.admission.requiredChecks).map((key) => check(key + ' passed in a fresh copy.'))) : null,
+		fold(element('span', {}, 'Anything the checks missed? ', element('span', { class: 'muted' }, 'Optional')), false, element('div', { class: 'chips', role: 'group', 'aria-label': 'What you caught' }, chips), element('p', { class: 'fine' }, 'Your answer helps the factory decide when it can ask you less.')),
+		independent ? null : element('div', { class: 'callout bad' }, element('p', {}, 'You submitted or built this work, so someone else has to approve it.')),
+		can('merge', job.projectId) ? element('label', { class: 'switch' }, mergeBox, element('span', {}, element('strong', {}, 'Merge after approving. '), element('span', { class: 'muted' }, 'The checks run again on the combined version, and main moves only if they pass.'))) : null,
+		element('div', { class: 'actions' }, element('button', { type: 'button', class: 'button primary', disabled: !independent, onclick: (event) => run(approve, event.currentTarget) }, can('merge', job.projectId) ? 'Approve and merge' : 'Approve'), button('Ask for a fix', () => { fixForm.hidden = !fixForm.hidden; if (!fixForm.hidden) fixText.focus(); }), reject),
+		fixForm,
+	].filter(Boolean);
 }
+
+// Work item and job pages
+
+function stagesElement(card) {
+	const position = { next: 0, plan: 0, build: 1, approve: 2, merge: 3, done: 4 }[card?.column] ?? 0;
+	const names = ['Plan', 'Build', 'Approve', 'Merged'];
+	return element('ol', { class: 'stages', 'aria-label': 'Progress' }, names.map((name, index) => {
+		if (index < position || position === 4) return element('li', { class: 'done' }, '✓ ' + name);
+		if (index === position) {
+			if (card?.state === 'needs_you') return element('li', { class: 'you' }, name + ' · needs you');
+			if (card?.state === 'running') return element('li', { class: 'auto' }, name + ' · running');
+		}
+		return element('li', {}, name);
+	}));
+}
+function pageHead(card, title) {
+	return element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', title), element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title)), stagesElement(card)));
+}
+function statusSurface(card) {
+	const eyebrow = card.state === 'needs_you' ? ['warn', 'Needs you'] : card.state === 'running' ? ['info', 'Automatic · nothing needs you'] : card.state === 'done' ? ['ok', 'Done'] : ['', 'Waiting'];
+	return surface(element('span', { class: 'eyebrow ' + eyebrow[0] }, eyebrow[1]), element('div', { class: 'row' }, element('strong', { class: 'lead' }, card.status), elapsed(card.since)), element('p', {}, card.line), card.progress ? element('p', { class: 'progress-note' }, card.progress) : null);
+}
+function howItWorks() {
+	return surface(element('h3', { class: 'section' }, 'After you agree'), element('ol', { class: 'requirements' }, element('li', {}, 'A separate agent writes locked tests and flags contradictions.'), element('li', {}, 'The build starts in its own copy, and checks run in a fresh one.'), element('li', {}, 'You approve the change, and it merges.')), element('p', { class: 'fine' }, element('a', { href: '#ask' }, 'Change when the factory asks you')));
+}
+async function itemPage(workItemId) {
+	const board = await loadBoard();
+	const card = cards(board).find((entry) => entry.workItemId === workItemId);
+	if (!card) throw new Error('This work item is not on the board.');
+	if (card.jobId) return jobPage(card.jobId);
+	const main = card.decision === 'plan' ? [element('span', { class: 'eyebrow warn' }, card.state === 'needs_you' ? 'Needs you · agree what done means' : 'Agree what done means'), ...(await planContent(card, 'page'))] : [statusSurface(card)];
+	return page('wide', pageHead(card, card.title), element('div', { class: 'columns' }, element('div', { class: 'main' }, main), element('div', { class: 'side' }, howItWorks())));
+}
+async function jobPage(id) {
+	const [job, board] = await Promise.all([api('/jobs/' + e(id)), loadBoard()]);
+	const card = cards(board).find((entry) => entry.jobId === job.id) || cards(board).find((entry) => entry.workItemId === job.workItemId);
+	const title = card?.title || job.workItemId;
+	let main;
+	if (['ready_for_review', 'ready_for_acceptance'].includes(job.status)) main = [element('span', { class: 'eyebrow warn' }, 'Needs you · approve the change'), ...(await approveContent(job.id, 'page'))];
+	else if (job.status === 'accepted') main = mergeSection(job);
+	else if (['verification_failed', 'failed', 'stale', 'implementation_unknown', 'cancellation_unknown'].includes(job.status)) main = fixSection(job);
+	else main = card ? [statusSurface(card)] : [surface(element('p', {}, human(job.status)))];
+	return page('wide', pageHead(card, title), element('div', { class: 'columns' }, element('div', { class: 'main' }, main), element('div', { class: 'side' }, jobSide(job, card))), technicalDetails(job));
+}
+function mergeSection(job) {
+	const merge = job.merge;
+	const step = (title, detail, kind, label) => element('li', {}, element('span', { class: 'step-dot ' + kind, 'aria-hidden': 'true' }, kind === 'done' ? '✓' : kind === 'failed' ? '!' : ''), element('div', { class: 'stack tight' }, element('div', { class: 'row spread' }, element('strong', {}, title), element('span', { class: 'eyebrow ' + (kind === 'done' ? 'ok' : kind === 'failed' ? 'bad' : kind === 'running' ? 'info' : '') }, label)), element('span', { class: 'muted' }, detail)));
+	if (!merge) {
+		return [surface(element('span', { class: 'eyebrow warn' }, 'Needs you'), element('p', { class: 'lead' }, 'Approved but not merged. Work that depends on it waits.'), can('merge', job.projectId) ? element('div', { class: 'actions' }, button('Merge now', () => mergeJob(job), 'primary')) : element('p', { class: 'fine' }, 'Someone with merge access has to merge it.'))];
+	}
+	if (merge.status === 'verifying') {
+		return [surface(element('span', { class: 'eyebrow info' }, 'Automatic · nothing needs you'), element('p', { class: 'lead' }, 'The factory is checking your approved change on top of the latest ' + merge.branch + '. It moves only if every check passes.'), element('ol', { class: 'steps' }, step('Combine with the latest ' + merge.branch, 'Your approved change on top of it.', 'done', 'Done'), step('Run the checks on the combined version', list(merge.checks).join(', ') || 'Required checks', 'running', 'Running'), step('Move ' + merge.branch, 'Only after every check passes.', '', 'Waiting')))];
+	}
+	if (merge.status === 'failed') {
+		return [surface(element('span', { class: 'eyebrow bad' }, 'Needs you · merge failed'), element('p', { class: 'lead' }, merge.failure || 'The merge failed.'), element('p', { class: 'fine' }, merge.branch + ' was left as it was. Your approval is kept.'), can('merge', job.projectId) ? element('div', { class: 'actions' }, button('Try the merge again', () => mergeJob(job, merge.branch), 'primary')) : null)];
+	}
+	const problem = element('textarea', { rows: 3, placeholder: 'What turned out wrong?', 'aria-label': 'What turned out wrong' });
+	return [
+		surface(element('span', { class: 'eyebrow ok' }, 'Done'), element('p', { class: 'lead' }, 'Merged into ' + merge.branch + (merge.mergedAt ? ' ' + ago(merge.mergedAt) : '') + '.'), delegatedApproval(job), element('ol', { class: 'steps' }, step('Combine with the latest ' + merge.branch, '', 'done', 'Done'), step('Run the checks on the combined version', merge.mode === 'contained' ? 'The branch already contained the change.' : 'Every check passed.', 'done', 'Passed'), step('Move ' + merge.branch, short(merge.revision), 'done', 'Done'))),
+		can('coordinate', job.projectId) ? fold('Found a problem later?', false, element('p', { class: 'fine' }, 'Reporting it resets the trust count and makes the factory ask one level more often.'), problem, element('div', { class: 'actions' }, button('Report a problem', async () => {
+			const summary = problem.value.trim();
+			if (!summary) throw new Error('Describe the problem.');
+			await command('/jobs/' + e(job.id) + '/problems', { jobId: job.id, summary });
+			await route(); notice('Problem reported.');
+		}))) : null,
+	].filter(Boolean);
+}
+// delegatedApproval says when the autopilot approved the change on a person's behalf.
+function delegatedApproval(job) {
+	const reason = [...list(job.events)].reverse().find((event) => event.kind === 'review_recorded')?.data?.delegated;
+	return reason ? element('p', { class: 'fine' }, sentence('The autopilot approved this for you: ' + reason.replace(/^autopilot: /, ''))) : null;
+}
+async function mergeJob(job, branch = '') {
+	await command('/jobs/' + e(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: branch });
+	await route();
+	notice('Merging. The checks run on the combined version first.');
+}
+function fixSection(job) {
+	const failed = list(job.checks).filter((result) => result.candidateRevision === job.candidateRevision && result.status !== 'passed').map((result) => result.checkKey + ' ' + result.status);
+	const reasons = { verification_failed: 'The checks failed' + (failed.length ? ': ' + [...new Set(failed)].join(', ') + '.' : '.'), failed: 'The build failed.', stale: 'The requirements changed after the build started.', implementation_unknown: 'The builder stopped reporting. Decide what happened before anything else runs.', cancellation_unknown: 'The build was asked to stop, and it is not yet clear that it did.' };
+	const actions = element('div', { class: 'actions' });
+	for (const kind of list(job.availableActions)) {
+		if (kind === 'resolve_execution') continue;
+		const label = { repair: 'Ask for a fix (' + job.repairCount + ' of ' + job.admission.repairLimit + ' used)', cancel: 'Stop and reject', reconcile: 'Check what happened' }[kind] || human(kind);
+		actions.append(button(label, async () => { await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: job.version, action: kind }); await route(); }, kind === 'repair' ? 'primary' : kind === 'cancel' ? 'danger' : ''));
+	}
+	const result = [surface(element('span', { class: 'eyebrow warn' }, 'Needs you'), element('p', { class: 'lead' }, reasons[job.status] || human(job.status)), actions.children.length ? actions : element('p', { class: 'fine' }, 'No action is available to you.'))];
+	if (list(job.availableActions).includes('resolve_execution')) {
+		const form = element('form', { class: 'stack' }, field('Uncertain attempt', 'attemptId', { choices: list(job.attempts).filter((attempt) => /unknown|running|assigned|registered|acknowledged/.test(attempt.status)).map((attempt) => ({ value: attempt.id, label: attempt.id })) }), field('What you observed', 'resolution', { choices: ['still_running', 'not_started', 'stopped_failed', 'stopped_cancelled'].map((value) => ({ value, label: human(value) })) }), field('Evidence', 'evidence', { type: 'textarea', required: true }));
+		const submit = element('button', { type: 'submit', class: 'button' }, 'Record what happened');
+		form.append(element('div', { class: 'actions' }, submit));
+		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + e(job.id) + '/actions', { ...data(form), jobId: job.id, ifVersion: job.version, action: 'resolve_execution' }); await route(); }, submit); });
+		result.push(fold('Resolve an uncertain run', true, form));
+	}
+	return result;
+}
+function jobSide(job, card) {
+	const tests = job.admission.expectationsId;
+	return [
+		surface(element('h3', { class: 'section' }, 'The build'), element('p', { class: 'muted' }, job.admission.executorKey + ' · ' + plural(job.repairCount, 'fix', 'fixes') + ' of ' + job.admission.repairLimit + ' used'), element('p', { class: 'fine' }, 'Started ' + ago(job.createdAt) + ' · deadline ' + when(job.admission.deadline)), card?.costUsd ? element('p', { class: 'fine' }, 'Agents have spent ' + money(card.costUsd) + ' on this item so far, planning included.') : null),
+		tests ? surface(element('h3', { class: 'section' }, 'Locked tests'), element('p', { class: 'muted' }, 'The build started from tests the builder could not change.')) : null,
+		element('p', { class: 'fine' }, element('a', { href: '#ask' }, 'Change when the factory asks you')),
+	].filter(Boolean);
+}
+function technicalDetails(job) {
+	const facts = element('dl', { class: 'stack tight' }, [['Job', job.id + ' · version ' + job.version], ['Candidate', job.candidateRevision || 'none yet'], ['Started from', job.admission.baseRevision], ['Requirements', job.admission.ticketSHA256], ['Acceptance record', job.acceptanceRecordPath || 'none'], ['Acceptance', job.acceptanceStatus]].map(([label, value]) => element('div', {}, element('dt', { class: 'eyebrow' }, label), element('dd', { class: 'mono fine' }, value))));
+	const attempts = table(['Stage', 'Status', 'Run', 'Finished'], list(job.attempts).map((attempt) => [human(attempt.purpose === 'merge' ? 'merge check' : attempt.stage) + (attempt.checkKey ? ' · ' + attempt.checkKey : ''), human(attempt.checkStatus || attempt.status), element('span', { class: 'mono' }, attempt.nativeRunId || 'waiting'), attempt.finishedAt ? when(attempt.finishedAt) : '']));
+	const events = element('ol', { class: 'timeline' }, [...list(job.events)].reverse().slice(0, 40).map((event) => element('li', {}, element('strong', {}, human(event.kind)), element('time', {}, '#' + event.sequence + ' · ' + when(event.createdAt)))));
+	return fold('Technical details', false, facts, element('h3', { class: 'section' }, 'Attempts'), attempts, element('h3', { class: 'section' }, 'History'), events);
+}
+
+// Insights and the ask policy
+
+async function insightsPage() {
+	const [metrics, board] = await Promise.all([api('/projects/' + e(state.project) + '/metrics'), loadBoard()]);
+	const tile = (label, value, note) => element('div', { class: 'tile' }, element('span', { class: 'label' }, label), element('span', { class: 'value' }, value), element('span', { class: 'fine' }, note));
+	const decisions = metrics.humanDecisions + metrics.delegatedDecisions;
+	const meter = element('div', { class: 'meter', 'aria-hidden': 'true' }, element('span', { class: 'human' }), element('span', { class: 'delegated' }));
+	meter.children[0].style.flex = String(metrics.humanDecisions || 0);
+	meter.children[1].style.flex = String(metrics.delegatedDecisions || 0);
+	const trust = element('div', { class: 'meter', 'aria-hidden': 'true' }, element('span'));
+	trust.children[0].style.width = Math.min(100, metrics.trustedMerges * 10) + '%';
+	const findings = FINDINGS.filter(([key]) => metrics.findings?.[key]);
+	return page('mid',
+		element('div', { class: 'stack tight' }, element('h1', { class: 'title' }, 'How it’s going'), element('p', { class: 'subtitle' }, 'From the factory’s own records. ' + plural(metrics.mergedJobs, 'change merged', 'changes merged') + (metrics.mergedJobs < 10 ? ' so far, so no trends yet.' : '.'))),
+		element('div', { class: 'tiles' },
+			tile('Passed the first time', metrics.acceptedJobs ? metrics.firstPassAccepted + ' of ' + metrics.acceptedJobs : '—', plural(metrics.repairs, 'fix', 'fixes') + ' needed'),
+			tile('Problems found after merge', String(metrics.problemsReported), 'Report one from a merged job'),
+			tile('Your decisions per change', metrics.mergedJobs ? metrics.humanDecisionsPerMerge.toFixed(1) : '—', metrics.delegatedDecisions ? 'The autopilot made ' + metrics.delegatedDecisions + ' more for you' : 'At most two with the new flow')),
+		decisions ? surface(element('h2', { class: 'section' }, 'Who decided'), meter, element('div', { class: 'legend' }, element('span', {}, 'You · ' + metrics.humanDecisions), element('span', { class: 'delegated' }, 'Autopilot, for you · ' + metrics.delegatedDecisions))) : null,
+		surface(element('h2', { class: 'section' }, 'What reviews caught'), findings.length ? element('ul', { class: 'plain' }, findings.map(([key, label]) => element('li', {}, label + ': ' + metrics.findings[key]))) : element('p', { class: 'fine' }, 'Nothing recorded yet. When you approve, you can tag what the checks missed.')),
+		surface(element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'Earning trust'), element('span', { class: 'mono' }, metrics.trustedMerges + ' of 10')), trust, element('p', { class: 'muted' }, 'Merges with no reported problem. At 10 you can let the factory merge without asking. A reported problem resets the count.')),
+		element('div', { class: 'row spread' }, element('span', { class: 'muted' }, 'Agent cost: ' + (metrics.mergedJobs ? money(metrics.costPerMergedJobUsd) + ' per change, ' : '') + money(metrics.totalCostUsd) + ' in total.'), element('a', { href: '#ask' }, 'Decide when the factory asks →')),
+		element('p', { class: 'fine' }, 'Measured ' + when(metrics.generatedAt) + '. Board refreshed ' + ago(board.generatedAt) + '.'));
+}
+async function askPage() {
+	const board = await loadBoard();
+	const ask = board.project.policy.ask || {};
+	const editable = can('project_admin');
+	const choice = { before: ask.beforeBuild || 'always', after: ask.afterBuild || 'always' };
+	const group = (key, when, title, what, options) => {
+		const buttons = options.map(([value, label, note, suggested, locked]) => element('button', { type: 'button', class: 'option', disabled: !editable || locked, 'aria-pressed': String(choice[key] === value), onclick: () => { choice[key] = value; buttons.forEach((entry, index) => entry.setAttribute('aria-pressed', String(options[index][0] === value))); } }, element('span', { class: 'radio' }), element('span', { class: 'grow' }, element('strong', {}, label), note ? element('span', { class: 'fine' }, note) : null), suggested ? element('span', { class: 'tag' }, 'Suggested') : null));
+		return surface(element('span', { class: 'eyebrow' }, when), element('h2', { class: 'section' }, title), element('p', { class: 'muted' }, what), element('div', { class: 'stack tight', role: 'group', 'aria-label': title }, buttons));
+	};
+	const trusted = board.trustedMerges;
+	const autopilot = element('input', { type: 'checkbox', checked: !!ask.autopilot, disabled: !editable });
+	const saved = ask.setBy ? 'Saved ' + ago(ask.setAt) + (ask.setBy === state.me.userId ? ' by you.' : '.') : 'Not saved yet, so the factory asks at every step and starts nothing by itself.';
+	return page('mid',
+		element('div', { class: 'stack tight' }, element('h1', { class: 'title' }, 'How much to ask you'), element('p', { class: 'subtitle' }, 'Every check still runs. These settings only decide when the factory stops and waits for you.')),
+		board.pilot ? null : element('div', { class: 'callout info' }, element('p', {}, 'The autopilot does not run on this installation, so nothing is skipped yet. Start the service with --pilot, or use solo mode.')),
+		group('before', 'Before the build', 'Agree what done means', 'You read the sharpened requirements and the locked tests, and answer any questions. Then the build starts.', [['always', 'Every time'], ['when_unclear', 'Only when requirements look vague or the agent has questions', '', true], ['never', 'Never. Start building straight away', 'Locked tests that raise a concern still stop for you.']]),
+		group('after', 'After the build', 'Approve the change', 'You check what tests can’t, and approve. Merging follows by itself.', [['always', 'Every time'], ['when_untested', 'Only when a requirement has no locked test'], ['never', 'Never. Merge when every check passes', trusted >= 10 ? 'Earned: ' + trusted + ' merges with no reported problem.' : 'Unlocks after 10 merges with no reported problem. ' + trusted + ' so far.', false, trusted < 10]]),
+		surface(element('label', { class: 'switch' }, autopilot, element('span', { class: 'stack tight' }, element('strong', {}, 'Run the autopilot'), element('span', { class: 'muted' }, 'Start ready work by itself, write locked tests, fix failed checks up to the limit, and retry a merge that failed without a failing check. It acts as you, and every step it takes is marked as delegated.')))),
+		element('div', { class: 'row spread' }, element('span', { class: 'fine' }, editable ? saved : saved + ' Only a project administrator can change it.'), editable ? button('Save', async () => { await command('/projects/' + e(state.project) + '/ask', { beforeBuild: choice.before, afterBuild: choice.after, autopilot: autopilot.checked }, 'PUT'); await route(); notice('Saved.'); }, 'primary') : null));
+}
+
+// Administration
+
 async function adminPage(tab) {
 	if (!state.me.installationAdmin) throw new Error('Installation administration access is required.');
-	$('#breadcrumb').textContent = 'Administration';
-	const head = [pageHead('Administration', 'Manage distinct identities, authorized project access, and fixed execution policy.'), tabs([['users', 'Users & tokens'], ['projects', 'Register project'], ['profiles', 'Executor & check profiles']], tab, (next) => navigate('admin/' + next))];
-	if (tab === 'projects') return [...head, registerProjectForm()];
-	if (tab === 'profiles') return [...head, ...(await profileForms())];
+	const tabs = element('nav', { class: 'segmented', 'aria-label': 'Administration' }, [['users', 'Users and tokens'], ['projects', 'Register a project'], ['profiles', 'Builders and checks']].map(([key, label]) => element('a', { href: '#admin/' + key, 'aria-current': tab === key ? 'page' : null }, label)), state.project ? element('a', { href: '#access' }, 'Project access') : null);
+	const head = element('div', { class: 'stack' }, element('h1', { class: 'title' }, 'Administration'), tabs);
+	if (tab === 'projects') return page('mid', head, registerProjectForm());
+	if (tab === 'profiles') return page('mid', head, ...(await profileForms()));
 	const users = list(await api('/users'));
-	const usersTable = table(['USER', 'KIND', 'ACCESS', 'STATUS', ''], users.map((user) => [element('div', {}, element('strong', {}, user.username), element('div', { class: 'subline mono' }, user.id)), user.kind, user.installationAdmin ? 'Installation admin' : 'Project grants', badge(user.disabled ? 'disabled' : 'enabled'), button(user.disabled ? 'Enable' : 'Disable', async () => { await command('/users/' + encodeURIComponent(user.id) + '/disabled', { userId: user.id, disabled: !user.disabled }, 'PUT'); await route(); })]));
-	const create = element('form', {}, formGrid(field('Username', 'username', { required: true }), field('Account kind', 'kind', { choices: [{ value: 'human', label: 'Human user' }, { value: 'worker', label: 'Worker identity' }] }), field('Installation administrator', 'admin', { choices: [{ value: 'false', label: 'No' }, { value: 'true', label: 'Yes, installation administrator' }] })));
-	const createButton = element('button', { type: 'submit', class: 'primary' }, 'Create user'); create.append(element('div', { class: 'form-actions' }, createButton));
+	const usersTable = table(['User', 'Kind', 'Access', 'Status', ''], users.map((user) => [element('div', { class: 'stack tight' }, element('strong', {}, user.username), element('span', { class: 'fine mono' }, user.id)), user.kind, user.installationAdmin ? 'Installation admin' : 'Project grants', user.disabled ? 'disabled' : 'enabled', button(user.disabled ? 'Enable' : 'Disable', async () => { await command('/users/' + e(user.id) + '/disabled', { userId: user.id, disabled: !user.disabled }, 'PUT'); await route(); }, 'small')]));
+	const create = element('form', { class: 'stack' }, formGrid(field('Username', 'username', { required: true }), field('Account kind', 'kind', { choices: [{ value: 'human', label: 'Person' }, { value: 'worker', label: 'Worker' }] }), field('Installation administrator', 'admin', { choices: [{ value: 'false', label: 'No' }, { value: 'true', label: 'Yes' }] })));
+	const createButton = element('button', { type: 'submit', class: 'button primary' }, 'Create user');
+	create.append(element('div', { class: 'actions' }, createButton));
 	create.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(create); await command('/users', { username: values.username, kind: values.kind, installationAdmin: values.admin === 'true' }); await route(); }, createButton); });
-	const token = element('form', {}, formGrid(field('User', 'userId', { choices: users.map((user) => ({ value: user.id, label: user.username })) }), field('Token label', 'label', { required: true, value: 'workspace' })));
-	const tokenButton = element('button', { type: 'submit' }, 'Issue token'); const tokenOutput = element('div', { 'aria-live': 'polite' }); token.append(element('div', { class: 'form-actions' }, tokenButton), tokenOutput);
-	token.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(token); const issued = await command('/users/' + encodeURIComponent(values.userId) + '/tokens', values); tokenOutput.replaceChildren(element('p', { class: 'fine' }, 'Save this token securely. Its plaintext is shown only in this response. Token ID: ' + issued.id), element('pre', { class: 'one-time-token' }, issued.token)); }, tokenButton); });
-	const revoke = element('form', {}, field('Token ID to revoke', 'tokenId', { required: true })); const revokeButton = element('button', { type: 'submit', class: 'danger' }, 'Revoke token'); revoke.append(element('div', { class: 'form-actions' }, revokeButton));
-	revoke.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(revoke); await command('/tokens/' + encodeURIComponent(values.tokenId) + '/revoke', values); revoke.reset(); notice('Token revoked.'); }, revokeButton); });
-	return [...head, panel('Installation users', usersTable), element('div', { class: 'two-columns' }, panel('Create distinct user', element('div', { class: 'panel-body' }, create)), panel('Issue a personal or worker token', element('div', { class: 'panel-body' }, token))), panel('Revoke a token', element('div', { class: 'panel-body' }, revoke))];
+	const token = element('form', { class: 'stack' }, formGrid(field('User', 'userId', { choices: users.map((user) => ({ value: user.id, label: user.username })) }), field('Token label', 'label', { required: true, value: 'workspace' })));
+	const tokenButton = element('button', { type: 'submit', class: 'button' }, 'Issue token');
+	const tokenOutput = element('div', { 'aria-live': 'polite' });
+	token.append(element('div', { class: 'actions' }, tokenButton), tokenOutput);
+	token.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(token); const issued = await command('/users/' + e(values.userId) + '/tokens', values); tokenOutput.replaceChildren(element('p', { class: 'fine' }, 'Save this token now. It is shown only once. Token ID: ' + issued.id), element('pre', { class: 'secret mono' }, issued.token)); }, tokenButton); });
+	const revoke = element('form', { class: 'stack' }, field('Token ID to revoke', 'tokenId', { required: true }));
+	const revokeButton = element('button', { type: 'submit', class: 'button danger' }, 'Revoke token');
+	revoke.append(element('div', { class: 'actions' }, revokeButton));
+	revoke.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(revoke); await command('/tokens/' + e(values.tokenId) + '/revoke', values); revoke.reset(); notice('Token revoked.'); }, revokeButton); });
+	return page('mid', head, surface(element('h2', { class: 'section' }, 'Users'), usersTable), surface(element('h2', { class: 'section' }, 'Create a user'), create), surface(element('h2', { class: 'section' }, 'Issue a token'), token), surface(element('h2', { class: 'section' }, 'Revoke a token'), revoke));
 }
-async function grantsForm(project) {
-	const grants = list(await api('/projects/' + encodeURIComponent(project.id) + '/grants'));
+async function accessPage() {
+	const project = state.projects.find((entry) => entry.id === state.project);
+	if (!can('project_admin')) throw new Error('Project administration access is required.');
+	const grants = list(await api('/projects/' + e(project.id) + '/grants'));
 	const choices = state.me.installationAdmin ? list(await api('/users')).map((user) => ({ value: user.id, label: user.username })) : null;
-	const form = element('form', {}, field('User ID', 'userId', choices ? { choices } : { required: true }), field('Capabilities, comma separated', 'capabilities', { value: 'read,coordinate', help: 'read, coordinate, verify, review, accept, merge, project_admin, worker_implement, worker_verify. Leave empty to revoke all project capabilities.' }));
-	const submit = element('button', { type: 'submit', class: 'primary' }, 'Save exact project grant'); form.append(element('p', { class: 'fine' }, 'Saving replaces this user’s capability set for this project.'), element('div', { class: 'form-actions' }, submit));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); await command('/projects/' + encodeURIComponent(project.id) + '/grants/' + encodeURIComponent(values.userId), { projectId: project.id, userId: values.userId, capabilities: split(values.capabilities) }, 'PUT'); await route(); }, submit); });
-	return panel('Project access', element('div', {}, grants.length ? table(['USER ID', 'CAPABILITIES'], grants.map((grant) => [code(grant.userId), list(grant.capabilities).join(', ')])) : empty('No explicit grants', 'Installation administrators retain installation access.'), element('div', { class: 'panel-body' }, form)));
+	const form = element('form', { class: 'stack' }, field('User', 'userId', choices ? { choices } : { required: true }), field('Capabilities, comma separated', 'capabilities', { value: 'read,coordinate', help: 'read, coordinate, verify, review, accept, merge, project_admin, worker_implement, worker_verify. Leave empty to remove all.' }));
+	const submit = element('button', { type: 'submit', class: 'button primary' }, 'Save access');
+	form.append(element('p', { class: 'fine' }, 'Saving replaces this user’s capabilities for the project.'), element('div', { class: 'actions' }, submit));
+	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); await command('/projects/' + e(project.id) + '/grants/' + e(values.userId), { projectId: project.id, userId: values.userId, capabilities: split(values.capabilities) }, 'PUT'); await route(); }, submit); });
+	return page('mid', element('h1', { class: 'title' }, 'Access to ' + project.title), surface(grants.length ? table(['User', 'Capabilities'], grants.map((grant) => [element('span', { class: 'mono' }, grant.userId), list(grant.capabilities).join(', ')])) : empty('No explicit grants', 'Installation administrators keep access.')), surface(form));
 }
-const split = (value) => String(value || '').split(',').map((item) => item.trim()).filter(Boolean);
 function registerProjectForm() {
-	const form = element('form', {}, formGrid(field('Existing OKF bundle path', 'bundlePath', { required: true, full: true, placeholder: '/absolute/path/to/records' }), field('Code repository path', 'repositoryPath', { required: true, full: true, placeholder: '/absolute/path/to/repository' }), field('Allowed source roots, one per line', 'allowedSourceRoots', { type: 'textarea', full: true, help: 'Supporting documents stay within these administrator-selected roots.' }), field('Required check profile keys', 'requiredChecks', { required: true, placeholder: 'go-test' }), field('Allowed executor profile keys', 'allowedExecutors', { required: true, placeholder: 'coding-agent' }), field('Protected paths, one per line', 'protectedPaths', { type: 'textarea', full: true, help: 'Tests and expectations an implementation may not change, such as tests/ or **/*_test.go.' }), field('Coordinator review', 'allowCoordinatorReview', { choices: [{ value: 'false', label: 'Require an independent reviewer' }, { value: 'true', label: 'Allow the submitter to review, for one person' }] }), field('Maximum repairs', 'maxRepairAttempts', { type: 'number', min: 0, max: 10, value: 1, required: true }), field('Maximum duration, seconds', 'maxJobDurationSeconds', { type: 'number', min: 60, value: 3600, required: true }), field('Execution mode', 'fixture', { choices: [{ value: 'false', label: 'Ordinary project, real execution required' }, { value: 'true', label: 'Fixture test project, visibly simulated' }] }), field('Reader file limit', 'maxFiles', { type: 'number', min: 0, value: 0, help: '0 uses the bounded service default.' }), field('Reader byte limit', 'maxBytes', { type: 'number', min: 0, value: 0 })));
-	const submit = element('button', { type: 'submit', class: 'primary' }, 'Register existing project'); form.append(element('div', { class: 'form-actions' }, submit), element('p', { class: 'fine' }, 'The service references the existing bundle and preserves Project and WorkItem identities. It does not copy a backlog.'));
-	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const project = await command('/projects', { bundlePath: values.bundlePath, repositoryPath: values.repositoryPath, allowedSourceRoots: values.allowedSourceRoots.split('\n').map((item) => item.trim()).filter(Boolean), readerLimits: { maxFiles: Number(values.maxFiles), maxBytes: Number(values.maxBytes) }, policy: { requiredChecks: split(values.requiredChecks), allowedExecutors: split(values.allowedExecutors), maxRepairAttempts: Number(values.maxRepairAttempts), maxJobDurationSeconds: Number(values.maxJobDurationSeconds), fixture: values.fixture === 'true', protectedPaths: values.protectedPaths.split('\n').map((item) => item.trim()).filter(Boolean), allowCoordinatorReview: values.allowCoordinatorReview === 'true' } }); await refreshProjects(); await navigate('project/' + encodeURIComponent(project.id)); }, submit); });
-	return panel('Register a project', element('div', { class: 'panel-body' }, form));
+	const form = element('form', { class: 'stack' }, formGrid(
+		field('Records folder', 'bundlePath', { required: true, full: true, placeholder: '/absolute/path/to/records' }),
+		field('Code repository', 'repositoryPath', { required: true, full: true, placeholder: '/absolute/path/to/repository' }),
+		field('Other allowed source folders, one per line', 'allowedSourceRoots', { type: 'textarea', full: true }),
+		field('Required checks', 'requiredChecks', { required: true, placeholder: 'go-test' }),
+		field('Allowed builders', 'allowedExecutors', { required: true, placeholder: 'claude-agent' }),
+		field('Locked test paths, one per line', 'protectedPaths', { type: 'textarea', full: true, help: 'Tests the builder may not change, such as tests/ or **/*_test.go. Locked tests need these.' }),
+		field('Who can approve', 'allowCoordinatorReview', { choices: [{ value: 'false', label: 'Someone other than the person who started the work' }, { value: 'true', label: 'Anyone, including the person who started it' }] }),
+		field('Most fixes per change', 'maxRepairAttempts', { type: 'number', min: 0, max: 10, value: 2, required: true }),
+		field('Longest build, seconds', 'maxJobDurationSeconds', { type: 'number', min: 60, value: 3600, required: true }),
+		field('Mode', 'fixture', { choices: [{ value: 'false', label: 'Real project' }, { value: 'true', label: 'Fixture test project' }] })));
+	const submit = element('button', { type: 'submit', class: 'button primary' }, 'Register the project');
+	form.append(element('div', { class: 'actions' }, submit), element('p', { class: 'fine' }, 'The factory reads the existing records in place and keeps their identities.'));
+	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const project = await command('/projects', { bundlePath: values.bundlePath, repositoryPath: values.repositoryPath, allowedSourceRoots: lines(values.allowedSourceRoots), readerLimits: { maxFiles: 0, maxBytes: 0 }, policy: { requiredChecks: split(values.requiredChecks), allowedExecutors: split(values.allowedExecutors), maxRepairAttempts: Number(values.maxRepairAttempts), maxJobDurationSeconds: Number(values.maxJobDurationSeconds), fixture: values.fixture === 'true', protectedPaths: lines(values.protectedPaths), allowCoordinatorReview: values.allowCoordinatorReview === 'true' } }); try { localStorage.setItem('waymark-project', project.id); } catch {} await refreshProjects(); await navigate('board'); }, submit); });
+	return surface(element('h2', { class: 'section' }, 'Register a project'), form);
 }
 async function profileForms() {
 	const [executors, checks] = await Promise.all([api('/executors'), api('/checks')]);
-	const result = [panel('Registered profiles', table(['TYPE', 'KEY', 'ARGUMENT ARRAY', 'MODE'], [...list(executors).map((profile) => ['Executor', profile.key, code(JSON.stringify(profile.command)), badge(profile.fixture ? 'fixture' : 'external')]), ...list(checks).map((profile) => ['Check', profile.key, code(JSON.stringify(profile.command)), badge(profile.fixture ? 'fixture' : 'external')])]))];
+	const result = [surface(element('h2', { class: 'section' }, 'Registered builders and checks'), table(['Type', 'Key', 'Command', 'Mode'], [...list(executors).map((profile) => ['Builder', profile.key, element('span', { class: 'mono' }, JSON.stringify(profile.command)), profile.fixture ? 'fixture' : 'real']), ...list(checks).map((profile) => ['Check', profile.key, element('span', { class: 'mono' }, JSON.stringify(profile.command)), profile.fixture ? 'fixture' : 'real'])]))];
 	for (const kind of ['executors', 'checks']) {
-		const form = element('form', {}, formGrid(field('Profile key', 'key', { required: true }), field('Display name', 'displayName', { required: true }), field('Fixed command argument array as JSON', 'command', { type: 'textarea', full: true, required: true, value: '["/absolute/path/to/program"]', help: kind === 'checks' ? 'Use a literal JSON argument array, with no shell. For a fixture check: ["/absolute/path/to/ctx","factory","fixture-check"]. The executable must exist on the worker host.' : 'Use a literal JSON argument array, with no shell. For a fixture executor: ["/absolute/path/to/ctx","factory","fixture"]. Fixture mode does not rewrite the command.' }), field('Execution mode', 'fixture', { choices: [{ value: 'false', label: 'External execution' }, { value: 'true', label: 'Offline fixture' }] }), ...(kind === 'checks' ? [field('Environment', 'environment', { required: true, value: 'local' })] : [])));
-		const submit = element('button', { type: 'submit', class: 'primary' }, kind === 'checks' ? 'Register required-check profile' : 'Register executor profile'); form.append(element('div', { class: 'form-actions' }, submit));
-		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const argv = JSON.parse(values.command); if (!Array.isArray(argv) || argv.some((arg) => typeof arg !== 'string')) throw new Error('Command must be a JSON array of strings.'); await command('/' + kind, { key: values.key, displayName: values.displayName, command: argv, fixture: values.fixture === 'true', ...(kind === 'checks' ? { environment: values.environment } : {}) }); await route(); }, submit); });
-		result.push(panel(kind === 'checks' ? 'Register check profile' : 'Register executor profile', element('div', { class: 'panel-body' }, form)));
+		const form = element('form', { class: 'stack' }, formGrid(field('Key', 'key', { required: true }), field('Display name', 'displayName', { required: true }), field('Command as a JSON array', 'command', { type: 'textarea', full: true, required: true, value: '["/absolute/path/to/program"]', help: 'A literal argument array, run without a shell.' }), field('Mode', 'fixture', { choices: [{ value: 'false', label: 'Real' }, { value: 'true', label: 'Fixture' }] }), kind === 'checks' ? field('Environment', 'environment', { required: true, value: 'local' }) : null));
+		const submit = element('button', { type: 'submit', class: 'button primary' }, kind === 'checks' ? 'Register the check' : 'Register the builder');
+		form.append(element('div', { class: 'actions' }, submit));
+		form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const argv = JSON.parse(values.command); if (!Array.isArray(argv) || argv.some((arg) => typeof arg !== 'string')) throw new Error('The command must be a JSON array of strings.'); await command('/' + kind, { key: values.key, displayName: values.displayName, command: argv, fixture: values.fixture === 'true', ...(kind === 'checks' ? { environment: values.environment } : {}) }); await route(); }, submit); });
+		result.push(surface(element('h2', { class: 'section' }, kind === 'checks' ? 'Register a check' : 'Register a builder'), form));
 	}
 	return result;
 }
 
-$('#signin-form').addEventListener('submit', (event) => { event.preventDefault(); const target = event.submitter; run(async () => { $('#signin-error').hidden = true; state.token = $('#token').value.trim(); try { await connect(); } catch (error) { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; } }, target); });
+// Wiring
+
+applyTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+$('#theme-toggle').addEventListener('click', () => {
+	state.theme = resolvedTheme() === 'dark' ? 'light' : 'dark';
+	try { localStorage.setItem('waymark-theme', state.theme); } catch {}
+	applyTheme();
+});
+$('#signin-form').addEventListener('submit', (event) => {
+	event.preventDefault();
+	run(async () => {
+		$('#signin-error').hidden = true;
+		state.token = $('#token').value.trim();
+		try { await connect(); } catch (error) { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; }
+	}, event.submitter);
+});
 $('#signout').addEventListener('click', signout);
-$('#nav-queue').addEventListener('click', () => navigate('queue'));
-$('#nav-admin').addEventListener('click', () => navigate('admin/users'));
-$('#refresh-projects').addEventListener('click', () => run(refreshProjects));
-window.addEventListener('hashchange', () => run(route));
+$('#project-select').addEventListener('change', (event) => {
+	state.project = event.target.value;
+	try { localStorage.setItem('waymark-project', state.project); } catch {}
+	navigate('board');
+});
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && state.drawer) closeDrawer(true); });
+window.addEventListener('hashchange', () => run(() => route()));
 if (state.token) connect().catch((error) => { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; });
+setInterval(() => {
+	for (const node of document.querySelectorAll('[data-since]')) node.textContent = clock((Date.now() - Date.parse(node.dataset.since)) / 1000);
+}, 1000);
 setInterval(async () => {
-	if (!state.me || document.hidden || mutationsInFlight || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
+	if (!state.me || !state.project || document.hidden || mutationsInFlight || state.drawer || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
+	if (!['board', 'list', 'item', 'job', ''].includes(state.view)) return;
 	try {
-		if (state.view === 'job' && state.tab === 'overview' && state.job) {
-			const current = await api('/jobs/' + encodeURIComponent(state.job.id));
-			if (current.version !== state.job.version || current.acceptanceStatus !== state.job.acceptanceStatus) await route();
-		} else if (state.view === 'queue') {
-			const jobs = list(await api('/jobs?limit=100'));
-			if (JSON.stringify(jobs.map((job) => [job.id, job.version])) !== state.queueVersion) await route();
-		}
+		const board = await api('/projects/' + e(state.project) + '/board');
+		if (boardKey(board) !== state.boardKey) await route(true);
 	} catch (error) { notice(error.message, true); }
-}, 5000);
+}, 3000);

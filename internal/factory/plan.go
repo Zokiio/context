@@ -104,11 +104,16 @@ func (s *Service) ApprovePlan(ctx context.Context, actor Principal, request Appr
 		}
 		result.Refinement = &accepted
 	case request.ExpectationID != "":
-		accepted, err := s.AcceptExpectations(ctx, current, DecideExpectationsRequest{RequestID: request.RequestID + "/accept-expectations", ExpectationID: request.ExpectationID})
+		expectation, err := s.GetExpectations(ctx, current, request.ExpectationID)
 		if err != nil {
 			return PlanResult{}, err
 		}
-		result.Expectation = &accepted
+		if expectation.Status != ExpectationAccepted {
+			if expectation, err = s.AcceptExpectations(ctx, current, DecideExpectationsRequest{RequestID: request.RequestID + "/accept-expectations", ExpectationID: request.ExpectationID}); err != nil {
+				return PlanResult{}, err
+			}
+		}
+		result.Expectation = &expectation
 	}
 	if result.Expectation == nil && s.canWriteExpectations(project) {
 		started, err := s.StartExpectations(ctx, current, StartExpectationsRequest{RequestID: request.RequestID + "/expectations", ProjectID: project.ID, WorkItemID: request.WorkItemID})

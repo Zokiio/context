@@ -167,8 +167,16 @@ func TestExpectationAuthorsMayOnlyWriteProtectedTests(t *testing.T) {
 		t.Fatalf("author writing outside protected paths = %+v", failed)
 	}
 	nothing := setupExpectations(t, fakeAuthor(t, nil), nil)
-	if failed := nothing.write(t, "nothing"); failed.Status != factory.ExpectationFailed || !strings.Contains(failed.Error, "no tests") {
+	failed := nothing.write(t, "nothing")
+	if failed.Status != factory.ExpectationFailed || !strings.Contains(failed.Error, "no tests") {
 		t.Fatalf("author writing nothing = %+v", failed)
+	}
+	// The person deciding what to do next needs the author's reasons and what it cost.
+	if failed.Notes != "Covered every criterion." || failed.Run == nil || failed.Run.CostUSD != 0.02 {
+		t.Fatalf("refused author's notes and run = %q, %+v", failed.Notes, failed.Run)
+	}
+	if card := cardFor(t, nothing.service, nothing.admin, nothing.project.ID, "work-test"); card.Status != "Writing tests failed" || card.Line != "The expectation author wrote no tests." || card.CostUSD != 0.02 {
+		t.Fatalf("failed tests card = %+v", card)
 	}
 	unprotected := setupExpectations(t, fakeAuthor(t, nil), func(policy *factory.ProjectPolicy) { policy.ProtectedPaths = nil })
 	if _, err := unprotected.service.StartExpectations(context.Background(), unprotected.admin, factory.StartExpectationsRequest{RequestID: "x", ProjectID: unprotected.project.ID, WorkItemID: "work-test"}); !isCode(err, factory.CodeNotReady) {

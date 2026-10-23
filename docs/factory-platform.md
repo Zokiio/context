@@ -266,9 +266,30 @@ The failure reason is kept, unclaimed checks are cancelled, and the merge can be
 
 Admission refuses work whose `Blocked by` prerequisite was accepted by a factory job that is not yet `merged`, or whose base revision does not contain that merge.
 
-## Inspect the same installation in the browser
+## Approve the change in one decision
+
+`jobs approve` reviews, accepts, and merges a verified candidate as one decision:
+
+```sh
+wm_admin jobs approve --job <job> --if-version <version> \
+	--candidate <commit> --requirements <fingerprint> --finding missing_test
+```
+
+The caller needs the review, accept, and merge capabilities. Unless the project allows coordinator review, the caller must not be the person who submitted the job. The service checks every capability before it records anything. It then records the review, the acceptance, and the merge in order. Each step keeps its own checks: acceptance rechecks the evidence, and the merge waits for the checks on the merge commit. Every record carries the same decision ID, so metrics count one decision. If a step fails, repeating the request with the same request ID finishes the remaining steps.
+
+`--no-merge` accepts without merging. `--finding` records what the checks missed: `wrong_requirement`, `missing_test`, `bug`, `hard_to_read`, or `out_of_scope`. A review sent through the API can carry the same `findings`.
+
+## Work from the board in the browser
 
 Open the service URL and sign in with a personal token from a private token file. The browser and CLI share projects, jobs, evidence, permissions, and lifecycle operations. Keep tokens out of URLs.
+
+The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. The header counts what needs you, and its button opens the first one. `projects board` prints the same projection.
+
+A change needs two decisions from a person, each made in a side panel:
+- **Agree what done means**, before the build. Answer the refiner's questions, read or edit the sharpened requirements, or read the locked tests next to the requirement each one checks. The test author's concerns and any requirement without a test come first.
+- **Approve the change**, after the checks pass. The panel shows the diff, the requirements no test covers, and a merge switch. Ask for a fix or reject from the same panel.
+
+Agents write the tests, build, and repair the change; workers verify and merge it. None of those steps needs a decision. Insights shows the [measured numbers](#measure-the-factory), and How much to ask you holds the [ask policy](#decide-how-often-the-factory-asks-you). The theme follows the system setting and can be switched to light or dark.
 
 The browser retains the token in tab session storage. Sign out to remove it. Browser session restore can retain the credential.
 
@@ -306,7 +327,7 @@ Claude Code runs in print mode with `acceptEdits`, so it can edit files in the w
 
 Run the worker with a normal login environment. A worker started from inside another agent session inherits that session's variables. Register required executable checks through `checks register`. Project policy selects permitted executors and mandatory checks.
 
-Any other executable can still serve as an executor. Each command receives the assignment JSON on standard input. `CTX_FACTORY_ASSIGNMENT` names its retained assignment file, `CTX_FACTORY_CONTEXT` names the admitted source snapshot, and `CTX_FACTORY_ATTEMPT` identifies the attempt. The command must leave a clean candidate commit in its assigned worktree. It may append one-line notes, such as a finished checkpoint, to the file named by `CTX_FACTORY_PROGRESS`. The worker sends the latest note with each heartbeat, and the job history records each change as a `worker_progress` event. Progress is an observation for operators, not evidence.
+Any other executable can still serve as an executor. Each command receives the assignment JSON on standard input, and absolute paths in its environment. `CTX_FACTORY_ASSIGNMENT` names its retained assignment file, `CTX_FACTORY_CONTEXT` names the admitted source snapshot, and `CTX_FACTORY_ATTEMPT` identifies the attempt. The command must leave a clean candidate commit in its assigned worktree. It may append one-line notes, such as a finished checkpoint, to the file named by `CTX_FACTORY_PROGRESS`. The worker sends the latest note with each heartbeat, and the job history records each change as a `worker_progress` event. Progress is an observation for operators, not evidence.
 
 Waymark passes literal argv without a shell. It retains a supervised command identity, actual exit observations, bounded logs, and the candidate commit. The identity does not prove a provider account or native agent session. Executables retain the worker process's operating-system permissions, environment, filesystem access, and network access. Configure those permissions for the trusted tool you intend to run.
 
@@ -332,7 +353,7 @@ ollama pull kev:0.8b-mxfp8   # kev:0.8b-q8_0 on NVIDIA
 
 Project orientation then includes `criterionSignals` for open work items: each criterion's probability of naming a checkable result and whether it falls below `--decision-threshold`. The default is 0.25. Rewrite flagged criteria before admission freezes them. Answers are cached by model, question version, and input digest, and admission copies the cached answers into the job without calling the model.
 
-The signals are advisory. They never affect readiness, admission, or acceptance, and an unreachable model is reported as `unavailable`. The probabilities are uncalibrated. In trials, Kev 0.8B separated 37 real criteria from 6 vague controls well, at about 60 ms per criterion on an M4, but its absolute values were low. Compare criteria with each other rather than trusting a single number.
+The signals are advisory. They never affect readiness, admission, or acceptance, and an unreachable model is reported as `unavailable`. The probabilities are uncalibrated. In trials, Kev 0.8B separated 37 real criteria from 6 vague controls well, at about 60 ms per criterion on an M4, but its absolute values were low. Compare criteria with each other rather than trusting a single number. In a later trial, vague criteria scored 0.27 to 0.30 and the trial ran with `--decision-threshold 0.32`.
 
 ## Refine criteria before admission
 
@@ -345,11 +366,11 @@ wm_admin refine start --project "$wm_project_id" --work-item "$wm_work_id" \
 wm_admin refine accept --id ref_... --criterion "..." --criterion "..." --answer "..."
 ```
 
-The refiner reads the ticket, its context, the decision model's flags, the protected paths, and any earlier proposal and answers. It returns rewritten criteria and at most three blocking questions, each saying what its answer unblocks. `ctx factory refiner` runs Claude Code with only the Read, Grep, and Glob tools and schema-checked JSON output, so it cannot edit anything. The decision model scores the current criteria before and the proposal after.
+The refiner reads the ticket, its context, the decision model's flags, the protected paths, and any earlier proposal and answers. It returns rewritten criteria and at most three blocking questions. Each question says what its answer unblocks and offers two to four likely answers, best guess first. `ctx factory refiner` runs Claude Code with only the Read, Grep, and Glob tools and schema-checked JSON output, so it cannot edit anything. The decision model scores the current criteria before and the proposal after.
 
 Answer the questions and refine again, reject the proposal, or edit and accept it. Acceptance rewrites the Acceptance criteria section and appends who accepted, which refiner proposed it, and the answers under Comments. The write is an expected-revision write: if the ticket changed after the refinement started, the refinement becomes `stale` and the ticket is left alone. Refinement is refused while an active job holds the work item, one refinement runs at a time per work item, and a run interrupted by shutdown is recorded as failed.
 
-Configure a refiner with `serve --refiner-command-file` (a JSON argv that reads a `RefinerInput` on stdin and writes a `RefinerOutput` on stdout). Solo mode uses read-only Claude Code when it is installed: `--refiner-model` (default `sonnet`) and `--refiner-budget-usd` (default 0.50) tune it, and `--no-refiner` disables it. In the web workspace, open a work item and use Refine criteria.
+Configure a refiner with `serve --refiner-command-file` (a JSON argv that reads a `RefinerInput` on stdin and writes a `RefinerOutput` on stdout). Solo mode uses read-only Claude Code when it is installed: `--refiner-model` (default `sonnet`) and `--refiner-budget-usd` (default 0.50) tune it, and `--no-refiner` disables it. In the browser, open the item's card on the board.
 
 In a trial on a ticket whose criteria read "Add a palindrome helper", "handle unicode properly", and "be fast", the first pass took 27 s and $0.47 and turned them into seven checkable criteria with two questions. After answers, a second pass took 36 s and $0.09. It also found that an earlier accepted candidate had never been merged, which its holdout test needed. Kev scored the original criteria 0.27 to 0.29, above the 0.25 default threshold, so it did not flag them. The proposed criteria scored 0.37 to 0.64. Use the scores to compare criteria rather than relying on the flag alone.
 
@@ -365,9 +386,11 @@ wm_admin jobs submit --project "$wm_project_id" --work-item "$wm_work_id" --expe
 	--executor claude-sonnet --deadline "$wm_deadline"
 ```
 
-The author runs in a temporary worktree at the base revision; nothing in your checkout changes. The service keeps its work only if it changed at least one file and every changed file matches a protected path. It then commits the files and pins them under `refs/waymark/expectations/<id>`.
+The author runs in a temporary worktree at the base revision; nothing in your checkout changes. The service keeps its work only if it changed at least one file and every changed file matches a protected path. It then commits the files and pins them under `refs/waymark/expectations/<id>`. When the service refuses the work, the failed record still keeps the author's notes and cost, so the person can see why.
 
 Read the patch, then accept it (a human decision) or reject it. Acceptance is refused if the criteria changed after the tests were written.
+
+The author also reports which tests check each criterion, and any concerns about the criteria themselves. A concern might be a criterion that no test can check, or an example that contradicts its own rule. Criteria without a test are what the reviewer checks by hand after the build. The browser lists them, and the concerns, before the tests.
 
 A job submitted with `--expectations` starts from that commit:
 - the implementer is told the holdout tests exist and must pass;
@@ -377,20 +400,60 @@ A job submitted with `--expectations` starts from that commit:
 
 Register a project with `--require-expectations` to admit jobs only this way. `ctx factory expectation-author` runs Claude Code with edit access, an optional allowlist of test commands, and a spending cap. Solo mode uses it when Claude Code is installed: `--expectation-model` (default `sonnet`) and `--expectation-budget-usd` (default 1) tune it, and `--no-expectations` disables it. Configure another author with `serve --expectation-command-file`.
 
+## Agree what done means in one step
+
+`POST /v1/projects/{id}/plan` records the decision before the build, which is what the browser's plan panel sends. Depending on what the item has, it does one of the following:
+- sends answers back to the refiner;
+- accepts a refinement, or criteria the person edited;
+- accepts locked tests.
+
+It then starts the next step. That step is locked tests when the project has a test author, and otherwise the build.
+
+With `continue`, the person also lets the factory go on to the build without asking again. The [autopilot](#decide-how-often-the-factory-asks-you) carries the go-ahead out and acts as that person. The go-ahead stops at anything new: another question, a requirement the decision model still flags, or a concern from the test author. The board then says why it stopped. Rejecting the refinement or the tests withdraws the go-ahead.
+
+## Decide how often the factory asks you
+
+A project administrator chooses when the factory stops for a person:
+
+```sh
+wm_admin projects ask --project "$wm_project_id" \
+	--before-build when_unclear --after-build when_untested --autopilot
+```
+
+| Setting | Values |
+| --- | --- |
+| `--autopilot` | Starts ready work and takes the steps that need no decision: sharpening, writing tests, building, repairing after a failed check, and retrying a merge that failed for a reason other than a check, at most twice. |
+| `--before-build` | `always` asks to agree every plan. `when_unclear` asks only when a requirement looks vague or cannot be scored, the refiner has a question, or the test author raises a concern. `never` asks only for refiner questions, requirements that still look vague after sharpening, and test-author concerns. Both take effect through `--autopilot`. |
+| `--after-build` | `always` asks to approve every change. `when_untested` approves and merges a change when every requirement has a locked test, and asks otherwise. `never` approves and merges every change that passes its checks. |
+
+Every value except `always` delegates decisions, so the person saving the policy must hold the capabilities those decisions need. The autopilot acts as that person and marks each record `delegated` with its reason. `--after-build never` unlocks after 10 merges with no reported problem; the board shows the count.
+
+The autopilot runs in `solo` by default (`--no-pilot` turns it off) and in `serve` with `--pilot`. It starts one build per project at a time. When a step fails, the card shows why, and the autopilot does not retry that step until the card changes.
+
+Report merged work that turned out wrong:
+
+```sh
+wm_admin jobs report-problem --job "$wm_job_id" --summary 'Truncate splits flags.'
+```
+
+A report resets the trust count and lowers `--after-build` one level, from `never` to `when_untested` or from `when_untested` to `always`.
+
 ## Measure the factory
 
 ```sh
 wm_admin projects metrics --project "$wm_project_id"
 ```
 
-The Metrics tab shows the same numbers, all measured from the installation's own records:
+Insights shows the same numbers, all measured from the installation's own records:
 - jobs by outcome;
 - first-pass acceptance, meaning accepted without repair;
 - repairs and protected-path rejections;
 - merge checks and merge failures;
 - median time from admission to acceptance and from acceptance to merge;
-- human decisions, and decisions per merged job;
+- human decisions, and decisions per merged job, counting one decision per click however many records it writes;
+- decisions the autopilot made for a person;
 - refinement and expectation decisions;
+- reviewer findings by kind, reported problems, and merges since the last problem;
 - agent cost in total and per merged job.
 
 Implementation cost comes from `agent-result.json`, which the agent adapter writes to `CTX_FACTORY_RESULT` and the worker attaches to the attempt. Refinement and expectation costs come from their own run records.
@@ -403,7 +466,7 @@ Implementation cost comes from `agent-result.json`, which the agent adapter writ
 ctx factory solo --data-dir ~/.waymark/factory --decision-model kev:0.8b-mxfp8
 ```
 
-The first start creates an `operator` administrator and two worker identities, and keeps their tokens under `solo/` in the data directory. Workers are enrolled in every registered project automatically. When `claude` or `codex` is installed, solo mode registers `claude-agent` (capped at $2 an attempt) and `codex-agent` executor profiles. A project must still allow one before it runs. Register the project with `--solo-review` so the operator can review jobs they submitted. The reviewer must still be human and never the implementer. Solo mode refuses non-loopback listeners. Use `serve` with TLS for shared access.
+The first start creates an `operator` administrator and two worker identities, and keeps their tokens under `solo/` in the data directory. Workers are enrolled in every registered project automatically. When `claude` or `codex` is installed, solo mode registers `claude-agent` (capped at $2 an attempt) and `codex-agent` executor profiles. A project must still allow one before it runs. Register the project with `--solo-review` so the operator can review jobs they submitted. The autopilot runs unless `--no-pilot` is given, and it acts only on a go-ahead or a saved ask policy. The reviewer must still be human and never the implementer. Solo mode refuses non-loopback listeners. Use `serve` with TLS for shared access.
 
 The bundled fixture proves only the offline outcomes it executes. The agent adapter was exercised once with Claude Code against a disposable Go repository. Codex was exercised only through argument construction.
 

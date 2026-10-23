@@ -25,7 +25,7 @@ const maxRefinerContextRunes = 150_000
 const refinerInstruction = "Refine the work item described in the input. Reply only with the JSON object the schema asks for."
 
 // RefinerSchema is the structured output the refiner must return.
-const RefinerSchema = `{"type":"object","properties":{"criteria":{"type":"array","minItems":1,"maxItems":20,"items":{"type":"string"}},"questions":{"type":"array","maxItems":3,"items":{"type":"object","properties":{"question":{"type":"string"},"unblocks":{"type":"string"}},"required":["question","unblocks"],"additionalProperties":false}},"notes":{"type":"string"}},"required":["criteria","questions","notes"],"additionalProperties":false}`
+const RefinerSchema = `{"type":"object","properties":{"criteria":{"type":"array","minItems":1,"maxItems":20,"items":{"type":"string"}},"questions":{"type":"array","maxItems":3,"items":{"type":"object","properties":{"question":{"type":"string"},"unblocks":{"type":"string"},"options":{"type":"array","maxItems":4,"items":{"type":"string"}}},"required":["question","unblocks","options"],"additionalProperties":false}},"notes":{"type":"string"}},"required":["criteria","questions","notes"],"additionalProperties":false}`
 
 // Refiner reads a RefinerInput on in, asks Claude Code for a proposal with read-only
 // tools, and writes a RefinerOutput on out. It never edits files: the only tools the
@@ -116,7 +116,7 @@ func RefinerPrompt(input factory.RefinerInput) string {
 	b.WriteString("- You can read the repository and the context below. You cannot edit anything.\n")
 	b.WriteString("- Rewrite each criterion so it names a concrete result someone could check as met or not met: a command and its outcome, an output, a behaviour, or a file.\n")
 	b.WriteString("- Keep the work item's intent and scope. Do not add features, drop requirements, or weaken a criterion. Where intent is unclear, write the most likely concrete reading and ask about it.\n")
-	fmt.Fprintf(&b, "- Ask at most %d questions, and only ones whose answer would change the criteria or the implementation. Say what each answer unblocks. Zero questions is better than filler.\n", input.MaxQuestions)
+	fmt.Fprintf(&b, "- Ask at most %d questions, and only ones whose answer would change the criteria or the implementation. Say what each answer unblocks, and offer two to four likely answers as options, your best guess first. Zero questions is better than filler.\n", input.MaxQuestions)
 	b.WriteString("- Record any assumption you made in notes.\n")
 	if len(input.ProtectedPaths) > 0 {
 		fmt.Fprintf(&b, "- The implementer may not change files matching %s. Criteria may rely on those tests as they are.\n", strings.Join(input.ProtectedPaths, ", "))

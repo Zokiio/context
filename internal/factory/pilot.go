@@ -185,7 +185,7 @@ func (s *Service) pilotStep(ctx context.Context, project Project, in boardInputs
 				return err
 			})
 		case job.Status == JobAccepted && job.Merge != nil && job.Merge.Status == MergeStatusFailed && retryableMerge(job.Merge.Failure) && mergeFailures(*job) < 2 && byPolicy && policy.Autopilot:
-			return act("trying the merge again because main moved", *policy.SetBy, func(ctx context.Context, p Principal) error {
+			return act("trying the merge again: it failed without a failing check", *policy.SetBy, func(ctx context.Context, p Principal) error {
 				_, err := s.Merge(ctx, p, MergeRequest{RequestID: fmt.Sprintf("pilot/merge/%s/%d", job.ID, mergeFailures(*job)), JobID: job.ID, IfVersion: job.Version, CandidateRevision: job.CandidateRevision, TargetBranch: job.Merge.Branch})
 				return err
 			})
