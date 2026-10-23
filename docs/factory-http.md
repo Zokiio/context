@@ -25,6 +25,10 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/tokens/{id}/revoke` | POST `RevokeTokenRequest` |
 | `/v1/projects` | GET accessible projects, POST `RegisterProjectRequest` |
 | `/v1/projects/{id}/orientation` | GET current reader result, project policy, and advisory `criterionSignals` when a decision model is configured |
+| `/v1/projects/{id}/metrics` | GET measured outcomes, lead times, human decisions, and agent cost |
+| `/v1/projects/{id}/expectations` | GET a project's holdout expectations, optionally `?workItemId=`, POST `StartExpectationsRequest` |
+| `/v1/expectations/{id}` | GET one suite with its files, patch, and notes |
+| `/v1/expectations/{id}/accept`, `/v1/expectations/{id}/reject` | POST `DecideExpectationsRequest`; accepting requires a human |
 | `/v1/projects/{id}/capabilities` | GET caller's capabilities |
 | `/v1/projects/{id}/grants` | GET project grants for an authorized administrator |
 | `/v1/projects/{id}/grants/{user}` | PUT `GrantProjectRequest` |
@@ -35,7 +39,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/jobs/{id}/artifacts/{artifact}` | GET an artifact attached to that job's implementation or verification attempt |
 | `/v1/jobs/{id}/actions` | POST `JobActionRequest` for cancel, repair, reconcile, or explicit resolution |
 | `/v1/jobs/{id}/reviews` | POST `ReviewRequest` for an exact candidate and requirement fingerprint |
-| `/v1/jobs/{id}/merge` | POST `MergeRequest` for the exact accepted candidate and job version; requires a human with `merge` |
+| `/v1/jobs/{id}/merge` | POST `MergeRequest` for the exact accepted candidate and job version; requires a human with `merge`. The merge is `verifying` until the required checks pass on the merge commit |
 | `/v1/jobs/{id}/acceptance` | POST `AcceptRequest`; the core validates and publishes the authored record |
 | `/v1/projects/{id}/refinements` | GET a project's refinements, optionally `?workItemId=`, POST `StartRefinementRequest` |
 | `/v1/refinements/{id}` | GET one refinement with its proposal and before and after scores |

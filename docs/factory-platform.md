@@ -248,13 +248,23 @@ wm_admin jobs merge --job "$wm_job_id" --if-version "$(wm_admin jobs show --job 
 	--candidate "$(wm_admin jobs show --job "$wm_job_id" | wm_json candidateRevision)"
 ```
 
-Merging requires a human with the `merge` capability, and installation administrators have it. The service rechecks that the acceptance is still valid and that the version and candidate match. It then merges with `--no-ff` and a commit that names the job, candidate, requirements, acceptance record, and approver. The target is the branch checked out in the project repository unless `--target-branch` names another.
+Merging requires a human with the `merge` capability, and installation administrators have it. The service rechecks that the acceptance is still valid and that the version and candidate match. It then builds a `--no-ff` merge commit in a temporary worktree. The commit names the job, candidate, requirements, acceptance record, and approver, and it is pinned under `refs/waymark/merges/<job>`.
 
-- **checkout:** the target branch is checked out in the project repository, so the merge happens there. A conflict, or local changes the merge would overwrite, aborts the merge and leaves the working tree as it was. The job records a `merge_failed` event.
-- **ref:** no worktree has the target branch checked out. The merge is built in a temporary worktree, and the branch moves only if it still points at the tip the merge was built on.
-- **contained:** the branch already contains the candidate, for example after a merge by hand. The service records that branch tip instead of merging again.
+The merge is `verifying` until the project's required checks pass **on the merge commit**. Verification workers run them in clean worktrees, exactly as they verify candidates. These merge checks never change the job's own status, and they run even after the job's admission deadline. When every check passes, the branch moves:
 
-The job keeps its `accepted` status and gains a merge record and a `job_merged` event, and the ticket gains a note under Comments. Comments are outside the requirement fingerprints, so the acceptance stays valid. Admission refuses work whose `Blocked by` prerequisite was accepted by a factory job that is not yet merged, or whose base revision does not contain that merge.
+- **checkout:** the target branch is checked out in the project repository, so it is fast-forwarded there from the tip the merge was built on.
+- **ref:** no worktree has the target branch checked out, so the branch moves by compare-and-swap.
+- **contained:** the branch already contains the candidate, for example after a merge by hand. The service records that tip at once, without checks.
+
+Several things fail the merge and leave every branch as it was:
+- a failed or unknown merge check;
+- an expired lease, or a controller restart during a check;
+- the branch moving during verification;
+- local changes that block the fast-forward.
+
+The failure reason is kept, unclaimed checks are cancelled, and the merge can be retried. A retry can rebuild an identical commit, so only the latest generation of checks decides it. A successful merge adds a `job_merged` event and a note under the ticket's Comments; Comments are outside the requirement fingerprints, so the acceptance stays valid.
+
+Admission refuses work whose `Blocked by` prerequisite was accepted by a factory job that is not yet `merged`, or whose base revision does not contain that merge.
 
 ## Inspect the same installation in the browser
 
@@ -342,6 +352,48 @@ Answer the questions and refine again, reject the proposal, or edit and accept i
 Configure a refiner with `serve --refiner-command-file` (a JSON argv that reads a `RefinerInput` on stdin and writes a `RefinerOutput` on stdout). Solo mode uses read-only Claude Code when it is installed: `--refiner-model` (default `sonnet`) and `--refiner-budget-usd` (default 0.50) tune it, and `--no-refiner` disables it. In the web workspace, open a work item and use Refine criteria.
 
 In a trial on a ticket whose criteria read "Add a palindrome helper", "handle unicode properly", and "be fast", the first pass took 27 s and $0.47 and turned them into seven checkable criteria with two questions. After answers, a second pass took 36 s and $0.09. It also found that an earlier accepted candidate had never been merged, which its holdout test needed. Kev scored the original criteria 0.27 to 0.29, above the 0.25 default threshold, so it did not flag them. The proposed criteria scored 0.37 to 0.64. Use the scores to compare criteria rather than relying on the flag alone.
+
+## Write holdout expectations
+
+Holdout expectations are tests written from a work item's criteria, before implementation, by an author that never implements the work. They live under the project's protected paths, so the implementer cannot change them:
+
+```sh
+wm_admin expectations start --project "$wm_project_id" --work-item "$wm_work_id" --wait
+wm_admin expectations show --id exp_...
+wm_admin expectations accept --id exp_...
+wm_admin jobs submit --project "$wm_project_id" --work-item "$wm_work_id" --expectations exp_... \
+	--executor claude-sonnet --deadline "$wm_deadline"
+```
+
+The author runs in a temporary worktree at the base revision; nothing in your checkout changes. The service keeps its work only if it changed at least one file and every changed file matches a protected path. It then commits the files and pins them under `refs/waymark/expectations/<id>`.
+
+Read the patch, then accept it (a human decision) or reject it. Acceptance is refused if the criteria changed after the tests were written.
+
+A job submitted with `--expectations` starts from that commit:
+- the implementer is told the holdout tests exist and must pass;
+- any candidate that changes them is rejected;
+- verification runs them;
+- they reach a branch only together with the implementation, through the verified merge, so no branch carries tests for work that does not exist yet.
+
+Register a project with `--require-expectations` to admit jobs only this way. `ctx factory expectation-author` runs Claude Code with edit access, an optional allowlist of test commands, and a spending cap. Solo mode uses it when Claude Code is installed: `--expectation-model` (default `sonnet`) and `--expectation-budget-usd` (default 1) tune it, and `--no-expectations` disables it. Configure another author with `serve --expectation-command-file`.
+
+## Measure the factory
+
+```sh
+wm_admin projects metrics --project "$wm_project_id"
+```
+
+The Metrics tab shows the same numbers, all measured from the installation's own records:
+- jobs by outcome;
+- first-pass acceptance, meaning accepted without repair;
+- repairs and protected-path rejections;
+- merge checks and merge failures;
+- median time from admission to acceptance and from acceptance to merge;
+- human decisions, and decisions per merged job;
+- refinement and expectation decisions;
+- agent cost in total and per merged job.
+
+Implementation cost comes from `agent-result.json`, which the agent adapter writes to `CTX_FACTORY_RESULT` and the worker attaches to the attempt. Refinement and expectation costs come from their own run records.
 
 ## Run everything for one person
 

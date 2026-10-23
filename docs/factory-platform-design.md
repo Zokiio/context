@@ -56,11 +56,19 @@ An optional local decision model answers bounded questions in one forward pass, 
 
 ## Merging is a separate human decision
 
-Acceptance binds a decision to an exact candidate, and merging moves a branch. They stay separate so a person decides when accepted work reaches a branch. A merge rechecks the acceptance, names the job and approver in its commit, and is recorded as checkout, ref, or contained. Admission treats an accepted but unmerged factory prerequisite as unmet, so dependent work cannot start from a base that lacks it. Prerequisites accepted outside the factory are left to the reader's checks.
+Acceptance binds a decision to an exact candidate, and merging moves a branch. They stay separate so a person decides when accepted work reaches a branch. A merge rechecks the acceptance and builds a merge commit that names the job and approver. Verification workers then run the required checks on that commit, and the branch moves only when they pass, by fast-forward or compare-and-swap. A merge is recorded as checkout, ref, or contained. Merge checks are tagged on their attempts and never change the job's own status. Any failed, unknown, expired, or interrupted check fails the merge without moving a branch. Admission treats an accepted but unmerged factory prerequisite as unmet, so dependent work cannot start from a base that lacks it. Prerequisites accepted outside the factory are left to the reader's checks.
+
+## Holdout expectations stay outside the implementer's reach
+
+An expectation author writes tests from the criteria before implementation. It may change only protected paths, and a person accepts the result. A job started from accepted expectations uses their commit as its base, so the protected-path check keeps the implementer from changing them. The tests reach a branch only with the implementation, through the verified merge.
 
 ## Refinement precedes admission
 
 A refinement proposes rewritten criteria and at most three blocking questions for one work item before admission freezes it. The refiner only reads; a person answers, edits, and accepts. Acceptance changes the authored ticket through an expected-revision write and records the answers under Comments, so the record shows how its criteria were shaped. The decision model scores criteria before and after as an advisory comparison. Refinement is refused while an active job holds the work item, because that job's requirements are already frozen.
+
+## Metrics are measured, not estimated
+
+Project metrics are computed from jobs, attempts, events, artifacts, refinements, and expectations. They report outcomes, rework, lead times, human decisions, and agent cost as observed. An agent's reported cost is an observation it made about itself.
 
 ## Shared access uses one policy
 
