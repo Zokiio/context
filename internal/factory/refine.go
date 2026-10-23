@@ -638,21 +638,27 @@ func rewriteCriteria(raw []byte, path string, criteria []string, comment string)
 	block.WriteString("\n")
 	start, end := offset+section.ContentStart, offset+section.End
 	updated := append(append(append([]byte{}, raw[:start]...), block.String()...), raw[end:]...)
+	return appendComment(updated, path, comment)
+}
 
-	document, err = recordread.ParseDocument(updated)
-	if err != nil || !bytes.HasSuffix(updated, document.Body) {
-		return nil, fault(CodeInternal, "rewritten work item cannot be parsed", err)
+// appendComment adds an entry at the end of the last Comments section, creating the
+// section when the record has none. Comments are outside requirement fingerprints, so
+// the entry does not change the ticket's identity.
+func appendComment(raw []byte, path, comment string) ([]byte, error) {
+	document, err := recordread.ParseDocument(raw)
+	if err != nil || !bytes.HasSuffix(raw, document.Body) {
+		return nil, fault(CodeInternal, "work item cannot be parsed for a comment", err)
 	}
-	offset = len(updated) - len(document.Body)
+	offset := len(raw) - len(document.Body)
 	comments := recordread.Sections(document.Body, path, map[string]string{"Comments": "comments"}).Sections
 	if len(comments) == 0 {
-		trimmed := bytes.TrimRight(updated, "\n")
-		return append(append(trimmed, "\n\n## Comments\n\n"...), comment...), nil
+		trimmed := bytes.TrimRight(raw, "\n")
+		return append(append(append([]byte{}, trimmed...), "\n\n## Comments\n\n"...), comment...), nil
 	}
 	last := comments[len(comments)-1]
 	insert := offset + last.End
-	before := bytes.TrimRight(updated[:insert], "\n")
-	after := updated[insert:]
+	before := bytes.TrimRight(raw[:insert], "\n")
+	after := raw[insert:]
 	result := append(append(append([]byte{}, before...), "\n\n"...), comment...)
 	if len(after) > 0 {
 		result = append(append(result, '\n'), after...)

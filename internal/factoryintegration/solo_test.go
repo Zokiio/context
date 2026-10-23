@@ -88,6 +88,16 @@ func TestSoloModeRunsOnePersonsWholeFlow(t *testing.T) {
 	if job.Status != factory.JobAccepted || job.AcceptanceStatus != "valid" {
 		t.Fatalf("solo job = %s acceptance %s", job.Status, job.AcceptanceStatus)
 	}
+	job = call[factory.Job](t, operator, "POST", jobPath+"/merge", factory.MergeRequest{RequestID: "merge", JobID: job.ID, IfVersion: job.Version, CandidateRevision: job.CandidateRevision})
+	if job.Merge == nil || job.Merge.Mode != factory.MergeModeCheckout || job.Merge.TicketNote != "recorded" {
+		t.Fatalf("solo merge = %+v", job.Merge)
+	}
+	if _, err := os.Stat(filepath.Join(repository, "waymark-fixture.txt")); err != nil {
+		t.Fatalf("merged candidate is not in the project checkout: %v", err)
+	}
+	if tip := strings.TrimSpace(git(t, repository, "rev-parse", "HEAD")); tip != job.Merge.Revision {
+		t.Fatalf("checkout HEAD %s is not the merge %s", tip, job.Merge.Revision)
+	}
 }
 
 func waitFor(t *testing.T, timeout time.Duration, ready func() bool, describe func() string) {

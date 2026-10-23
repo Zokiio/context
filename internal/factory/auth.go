@@ -518,7 +518,7 @@ func normalizeCapabilities(input []Capability) ([]Capability, error) {
 }
 
 func allCapabilities() []Capability {
-	return []Capability{CapabilityRead, CapabilityCoordinate, CapabilityVerify, CapabilityReview, CapabilityAccept, CapabilityProjectAdmin, CapabilityImplementWorker, CapabilityVerifyWorker}
+	return []Capability{CapabilityRead, CapabilityCoordinate, CapabilityVerify, CapabilityReview, CapabilityAccept, CapabilityProjectAdmin, CapabilityImplementWorker, CapabilityVerifyWorker, CapabilityMerge}
 }
 
 func hasCapability(capabilities []Capability, wanted Capability) bool {

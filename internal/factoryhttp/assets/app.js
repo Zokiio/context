@@ -254,6 +254,7 @@ function nextAction(job) {
 	if (job.status === 'accepted' && job.acceptanceStatus !== 'valid') {
 		return job.acceptanceStatus === 'stale' ? 'Historical acceptance is retained, but current requirements or evidence no longer match it. Reassess the authored decision before relying on this work.' : 'Historical acceptance is retained, but its current decision or evidence cannot be validated. Restore the original decision and evidence together, or reassess the work.';
 	}
+	if (job.status === 'accepted') return job.merge ? 'Accepted and merged into ' + job.merge.branch + ' at ' + short(job.merge.revision) + '. Dependent work can build on it.' : 'Accepted but not merged. Merge the candidate so dependent work builds on it; until then the factory refuses to admit work that depends on this item.';
 	const descriptions = { queued: 'Waiting for an enrolled implementation worker to claim the recorded dispatch.', implementing: 'Implementation is active. Inspect its retained attempt or request cancellation.', implementation_unknown: 'The worker outcome is unknown. Keep the claim until an authorized reconciliation establishes what happened.', verifying: 'Waiting for an independent verification worker. Implementation success is not accepted evidence.', verification_failed: 'A required result has not passed. Inspect the original evidence before requesting a bounded repair.', ready_for_review: 'Independent checks passed. A different authorized reviewer must inspect this exact candidate.', ready_for_acceptance: 'A current independent review is recorded. An authorized acceptor can assess the exact candidate and requirements.', accepting: 'Acceptance publication is pending. The service must validate the authored record before declaring acceptance.', accepted: 'The authored acceptance record was validated. Its original revision and evidence remain inspectable.', cancel_requested: 'Stop requested. An acknowledgement or expired lease does not prove the execution stopped.', cancellation_unknown: 'Cancellation remains uncertain. No replacement should run while the old execution may still exist.', cancelled: 'The recorded execution is confirmed cancelled. Its workspace and observations remain retained.', failed: 'The job has a known failure. Inspect retained evidence and original requirements before new work.', stale: 'Requirements or candidate identity changed. Reassess before relying on previous checks or review.' };
 	return descriptions[job.status] || 'Inspect retained state and ask an authorized coordinator for the next action.';
 }
@@ -299,7 +300,7 @@ function actionsPanel(job, capabilities) {
 function reviewPanels(job, capabilities) {
 	const reviews = list(job.reviews);
 	const result = [panel('Independent review history', reviews.length ? table(['REVIEWER', 'DECISION', 'CANDIDATE', 'SUMMARY'], reviews.map((review) => [code(review.reviewerId), element('div', { class: 'pill-row' }, badge(review.decision), ...(review.candidateRevision !== job.candidateRevision || review.requirementFingerprint !== job.admission.ticketSHA256 ? [badge('stale')] : [])), code(review.candidateRevision), review.summary])) : empty('Independent review is pending', 'An authorized reviewer must differ from the coordinating and implementation identities.'))];
-	const independent = state.me.userId !== job.coordinatorId && state.me.userId !== job.implementerId;
+	const independent = state.me.userId !== job.implementerId && (state.me.userId !== job.coordinatorId || job.admission.allowCoordinatorReview);
 	if (capabilities.includes('review') && independent && job.candidateRevision && job.status === 'ready_for_review') {
 		const form = element('form', {}, formGrid(field('Decision', 'decision', { choices: [{ value: 'approved', label: 'Approve this candidate' }, { value: 'changes_requested', label: 'Request changes' }] }), field('Review summary', 'summary', { type: 'textarea', required: true, full: true })));
 		const submit = element('button', { type: 'submit', class: 'primary' }, 'Record independent review'); form.append(element('div', { class: 'form-actions' }, submit));
@@ -314,7 +315,18 @@ function reviewPanels(job, capabilities) {
 	} else if (capabilities.includes('accept') && !['accepted', 'cancelled'].includes(job.status)) {
 		result.push(element('div', { class: 'notice' }, 'Acceptance is available after all required checks and an independent current approval pass. Current state: ' + human(job.status) + '.'));
 	}
+	if (job.status === 'accepted') result.push(mergePanel(job, capabilities));
 	return result;
+}
+function mergePanel(job, capabilities) {
+	if (job.merge) return panel('Merge', element('div', { class: 'panel-body' }, metadata([['Branch', job.merge.branch], ['Merge commit', code(job.merge.revision)], ['Previous tip', code(job.merge.previousTip)], ['Candidate', code(job.merge.candidateRevision)], ['Mode', human(job.merge.mode)], ['Merged by', code(job.merge.mergedBy)], ['Merged at', time(job.merge.mergedAt)], ['Ticket note', job.merge.ticketNote || 'Not recorded']])), 'merged');
+	if (!capabilities.includes('merge')) return element('div', { class: 'notice' }, 'The candidate is accepted but not merged. Someone with merge access must merge it before dependent work can be admitted.');
+	if (job.acceptanceStatus !== 'valid') return element('div', { class: 'notice' }, 'Merging needs a valid current acceptance. Current acceptance: ' + human(job.acceptanceStatus) + '.');
+	const form = element('form', {}, field('Target branch', 'targetBranch', { placeholder: 'Branch checked out in the project repository', help: 'Leave empty to merge into the branch checked out in the project repository.' }));
+	const submit = element('button', { type: 'submit', class: 'primary' }, 'Merge accepted candidate');
+	form.append(element('p', { class: 'fine' }, 'The service rechecks the acceptance, merges the exact candidate with a commit that names this job and you, and aborts cleanly on a conflict.'), element('div', { class: 'form-actions' }, submit));
+	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: (data(form).targetBranch || '').trim() }); await route(); }, submit); });
+	return panel('Merge into the project', element('div', { class: 'panel-body' }, metadata([['Accepted candidate', code(job.candidateRevision)], ['Acceptance record', code(job.acceptanceRecordPath)]]), element('hr'), form), 'accepted, not merged');
 }
 async function adminPage(tab) {
 	if (!state.me.installationAdmin) throw new Error('Installation administration access is required.');
@@ -337,7 +349,7 @@ async function adminPage(tab) {
 async function grantsForm(project) {
 	const grants = list(await api('/projects/' + encodeURIComponent(project.id) + '/grants'));
 	const choices = state.me.installationAdmin ? list(await api('/users')).map((user) => ({ value: user.id, label: user.username })) : null;
-	const form = element('form', {}, field('User ID', 'userId', choices ? { choices } : { required: true }), field('Capabilities, comma separated', 'capabilities', { value: 'read,coordinate', help: 'read, coordinate, verify, review, accept, project_admin, worker_implement, worker_verify. Leave empty to revoke all project capabilities.' }));
+	const form = element('form', {}, field('User ID', 'userId', choices ? { choices } : { required: true }), field('Capabilities, comma separated', 'capabilities', { value: 'read,coordinate', help: 'read, coordinate, verify, review, accept, merge, project_admin, worker_implement, worker_verify. Leave empty to revoke all project capabilities.' }));
 	const submit = element('button', { type: 'submit', class: 'primary' }, 'Save exact project grant'); form.append(element('p', { class: 'fine' }, 'Saving replaces this user’s capability set for this project.'), element('div', { class: 'form-actions' }, submit));
 	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); await command('/projects/' + encodeURIComponent(project.id) + '/grants/' + encodeURIComponent(values.userId), { projectId: project.id, userId: values.userId, capabilities: split(values.capabilities) }, 'PUT'); await route(); }, submit); });
 	return panel('Project access', element('div', {}, grants.length ? table(['USER ID', 'CAPABILITIES'], grants.map((grant) => [code(grant.userId), list(grant.capabilities).join(', ')])) : empty('No explicit grants', 'Installation administrators retain installation access.'), element('div', { class: 'panel-body' }, form)));

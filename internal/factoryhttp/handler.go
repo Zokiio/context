@@ -110,6 +110,13 @@ func NewHandler(service *factory.Service) http.Handler {
 		respond(w, 200, v, err)
 	})
 	mutation(mux, service, "POST /v1/jobs", 202, service.Submit)
+	mutationPath(mux, service, "POST /v1/jobs/{job}/merge", 200, func(ctx context.Context, p factory.Principal, q factory.MergeRequest, r *http.Request) (factory.Job, error) {
+		if err := bindID(r.PathValue("job"), string(q.JobID)); err != nil {
+			return factory.Job{}, err
+		}
+		q.JobID = factory.JobID(r.PathValue("job"))
+		return service.Merge(ctx, p, q)
+	})
 	mutationPath(mux, service, "POST /v1/projects/{project}/refinements", 202, func(ctx context.Context, p factory.Principal, q factory.StartRefinementRequest, r *http.Request) (factory.Refinement, error) {
 		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
 			return factory.Refinement{}, err

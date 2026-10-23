@@ -34,6 +34,7 @@ const (
 	CapabilityProjectAdmin    Capability = "project_admin"
 	CapabilityImplementWorker Capability = "worker_implement"
 	CapabilityVerifyWorker    Capability = "worker_verify"
+	CapabilityMerge           Capability = "merge"
 )
 
 type Stage string
@@ -486,6 +487,7 @@ type Job struct {
 	AvailableActions     []ActionKind  `json:"availableActions"`
 	AcceptanceRecordPath string        `json:"acceptanceRecordPath,omitempty"`
 	AcceptanceStatus     string        `json:"acceptanceStatus"`
+	Merge                *MergeRecord  `json:"merge,omitempty"`
 	CreatedAt            time.Time     `json:"createdAt"`
 	UpdatedAt            time.Time     `json:"updatedAt"`
 }

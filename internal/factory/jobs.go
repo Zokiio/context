@@ -116,6 +116,16 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 		return Job{}, fault(CodeStale, "project identity changed during admission", nil)
 	}
 
+	prerequisites := []string{}
+	for _, edge := range selected.Dependencies {
+		if edge.To.ID != nil {
+			prerequisites = append(prerequisites, *edge.To.ID)
+		}
+	}
+	if err := s.requireMergedPrerequisites(ctx, s.state.db, project, prerequisites, base); err != nil {
+		return Job{}, err
+	}
+
 	sources, diagnostics, contextDigest, err := admissionContext(contextResult)
 	if err != nil {
 		return Job{}, fault(CodeInternal, "retain admission context", err)
@@ -515,10 +525,10 @@ func (s *Service) workspacePath(jobID JobID, attemptID AttemptID) string {
 
 func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
 	var job Job
-	var admissionJSON, created, updated string
+	var admissionJSON, mergeJSON, created, updated string
 	var implementer sql.NullString
-	err := q.QueryRowContext(ctx, `SELECT id, version, project_id, work_item_id, coordinator_id, implementer_id, status, admission_json, candidate_revision, repair_count, acceptance_record_path, acceptance_status, created_at, updated_at FROM jobs WHERE id=?`, jobID).Scan(
-		&job.ID, &job.Version, &job.ProjectID, &job.WorkItemID, &job.CoordinatorID, &implementer, &job.Status, &admissionJSON, &job.CandidateRevision, &job.RepairCount, &job.AcceptanceRecordPath, &job.AcceptanceStatus, &created, &updated,
+	err := q.QueryRowContext(ctx, `SELECT id, version, project_id, work_item_id, coordinator_id, implementer_id, status, admission_json, candidate_revision, repair_count, acceptance_record_path, acceptance_status, merge_json, created_at, updated_at FROM jobs WHERE id=?`, jobID).Scan(
+		&job.ID, &job.Version, &job.ProjectID, &job.WorkItemID, &job.CoordinatorID, &implementer, &job.Status, &admissionJSON, &job.CandidateRevision, &job.RepairCount, &job.AcceptanceRecordPath, &job.AcceptanceStatus, &mergeJSON, &created, &updated,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return Job{}, fault(CodeNotFound, "job not found", nil)
@@ -532,6 +542,12 @@ func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
 	}
 	if err := json.Unmarshal([]byte(admissionJSON), &job.Admission); err != nil {
 		return Job{}, fault(CodeInternal, "decode admission", err)
+	}
+	if mergeJSON != "" {
+		job.Merge = &MergeRecord{}
+		if err := json.Unmarshal([]byte(mergeJSON), job.Merge); err != nil {
+			return Job{}, fault(CodeInternal, "decode merge", err)
+		}
 	}
 	job.CreatedAt, _ = parseTime(created)
 	job.UpdatedAt, _ = parseTime(updated)

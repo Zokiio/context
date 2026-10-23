@@ -248,6 +248,14 @@ func jobsCommand(out io.Writer) *cli.Command {
 			return call(ctx, c, out, http.MethodPost, "/v1/jobs/"+esc(id)+"/acceptance", r)
 		}})
 	}
+	commands = append(commands, &cli.Command{Name: "merge", Usage: "Merge an accepted candidate into a branch after human approval", Flags: append(jobMutationFlags(), &cli.StringFlag{Name: "candidate", Required: true}, &cli.StringFlag{Name: "target-branch", Usage: "Defaults to the branch checked out in the project repository"}), Action: func(ctx context.Context, c *cli.Command) error {
+		id, e := jobID(c)
+		if e != nil {
+			return e
+		}
+		r := factory.MergeRequest{RequestID: reqID(c), JobID: factory.JobID(id), IfVersion: c.Int64("if-version"), CandidateRevision: c.String("candidate"), TargetBranch: c.String("target-branch")}
+		return call(ctx, c, out, http.MethodPost, "/v1/jobs/"+esc(id)+"/merge", r)
+	}})
 	return &cli.Command{Name: "jobs", Usage: "Submit, inspect, and coordinate factory jobs", Commands: commands}
 }
 func workerCommand(out, stderr io.Writer) *cli.Command {
