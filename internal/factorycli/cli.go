@@ -29,7 +29,7 @@ func Command(stdout, stderr io.Writer) *cli.Command {
 			return errors.New("expected a factory subcommand; see ctx factory --help")
 		}}
 	root.Commands = []*cli.Command{
-		initCommand(stdout), serveCommand(stderr), soloCommand(stdout, stderr), agentCommand(stdout),
+		initCommand(stdout), serveCommand(stderr), soloCommand(stdout, stderr), agentCommand(stdout), refineCommand(stdout), refinerCommand(stdout, stderr),
 		{Name: "me", Usage: "Inspect the authenticated identity", Action: request(stdout, http.MethodGet, "/v1/me", nil)},
 		usersCommand(stdout), projectsCommand(stdout), profilesCommand(stdout, false), profilesCommand(stdout, true), jobsCommand(stdout), workerCommand(stdout, stderr),
 		{Name: "fixture", Usage: "Run the offline fixture implementation from assignment stdin", Hidden: true, Flags: []cli.Flag{&cli.DurationFlag{Name: "delay"}, &cli.BoolFlag{Name: "fail"}}, Action: func(ctx context.Context, c *cli.Command) error {

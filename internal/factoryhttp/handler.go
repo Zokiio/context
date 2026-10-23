@@ -110,6 +110,35 @@ func NewHandler(service *factory.Service) http.Handler {
 		respond(w, 200, v, err)
 	})
 	mutation(mux, service, "POST /v1/jobs", 202, service.Submit)
+	mutationPath(mux, service, "POST /v1/projects/{project}/refinements", 202, func(ctx context.Context, p factory.Principal, q factory.StartRefinementRequest, r *http.Request) (factory.Refinement, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.Refinement{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.StartRefinement(ctx, p, q)
+	})
+	get("/v1/projects/{project}/refinements", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.Refinements(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.URL.Query().Get("workItemId"))
+		respond(w, 200, v, err)
+	})
+	get("/v1/refinements/{refinement}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.GetRefinement(r.Context(), p, factory.ID(r.PathValue("refinement")))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/refinements/{refinement}/accept", 200, func(ctx context.Context, p factory.Principal, q factory.AcceptRefinementRequest, r *http.Request) (factory.Refinement, error) {
+		if err := bindID(r.PathValue("refinement"), string(q.RefinementID)); err != nil {
+			return factory.Refinement{}, err
+		}
+		q.RefinementID = factory.ID(r.PathValue("refinement"))
+		return service.AcceptRefinement(ctx, p, q)
+	})
+	mutationPath(mux, service, "POST /v1/refinements/{refinement}/reject", 200, func(ctx context.Context, p factory.Principal, q factory.RejectRefinementRequest, r *http.Request) (factory.Refinement, error) {
+		if err := bindID(r.PathValue("refinement"), string(q.RefinementID)); err != nil {
+			return factory.Refinement{}, err
+		}
+		q.RefinementID = factory.ID(r.PathValue("refinement"))
+		return service.RejectRefinement(ctx, p, q)
+	})
 	get("/v1/jobs/{job}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.GetJob(r.Context(), p, factory.JobID(r.PathValue("job")))
 		respond(w, 200, v, err)

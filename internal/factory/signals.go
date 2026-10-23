@@ -85,20 +85,34 @@ func signalKey(title, criterion string) string {
 // criterionSignals answers the checkability question for each criterion of one work
 // item. With observe false it only copies cached answers and never calls the model.
 func (s *Service) criterionSignals(ctx context.Context, title *string, source string, observe bool) *CriterionSignals {
-	client := s.state.decision
-	if client == nil {
+	if s.state.decision == nil {
 		return nil
 	}
 	name := ""
 	if title != nil {
 		name = *title
 	}
-	result := &CriterionSignals{Model: client.Model, Question: decision.CheckableQuestion, Threshold: s.state.decisionThreshold, Criteria: []CriterionSignal{}, ObservedAt: s.state.now().UTC(), AdvisoryOnly: true}
 	criteria, err := acceptanceCriteria(source)
 	if err != nil {
+		result := s.emptySignals()
 		result.Status, result.Message = SignalsUnavailable, "acceptance criteria could not be read"
 		return result
 	}
+	return s.scoreCriteria(ctx, name, criteria, observe)
+}
+
+func (s *Service) emptySignals() *CriterionSignals {
+	return &CriterionSignals{Model: s.state.decision.Model, Question: decision.CheckableQuestion, Threshold: s.state.decisionThreshold, Criteria: []CriterionSignal{}, ObservedAt: s.state.now().UTC(), AdvisoryOnly: true}
+}
+
+// scoreCriteria answers the checkability question for criterion texts, from the cache
+// first. With observe false it never calls the model.
+func (s *Service) scoreCriteria(ctx context.Context, name string, criteria []string, observe bool) *CriterionSignals {
+	client := s.state.decision
+	if client == nil {
+		return nil
+	}
+	result := s.emptySignals()
 	observed, failed := 0, 0
 	var lastErr error
 	for _, text := range criteria {

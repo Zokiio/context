@@ -28,6 +28,8 @@ func TestFactoryFixtureProcess(t *testing.T) {
 			err = factoryworker.Fixture(context.Background(), os.Stdin, os.Stdout, 0, false)
 		case "factory-fixture-verify":
 			err = factoryworker.FixtureCheck(os.Stdin, os.Stdout)
+		case "factory-fixture-refine":
+			err = fixtureRefine(os.Stdin, os.Stdout)
 		default:
 			continue
 		}

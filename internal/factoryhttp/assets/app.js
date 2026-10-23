@@ -158,7 +158,7 @@ async function projectPage(id, tab) {
 	} else if (tab === 'jobs') content.push(panel('Project jobs', jobsTable(list(await api('/jobs?projectId=' + encodeURIComponent(id))))));
 	else if (tab === 'access') { if (!can('project_admin')) throw new Error('Project administration access is required.'); content.push(await grantsForm(project)); }
 	else {
-		content.push(panel('Work items', items.length ? table(['WORK ITEM', 'READINESS', 'ELIGIBILITY', 'EXECUTION', ''], items.map((item) => [element('div', {}, element('strong', {}, item.title || item.id || 'Unidentified item'), element('div', { class: 'subline mono' }, item.id || item.source)), badge(item.readiness), item.eligible ? badge('eligible') : badge('not eligible'), human(item.execution), button('Inspect', () => inspectItem(item, project, can('coordinate')))])) : empty('No work items found', 'The project bundle has no visible work items.')));
+		content.push(panel('Work items', items.length ? table(['WORK ITEM', 'READINESS', 'ELIGIBILITY', 'EXECUTION', 'KEV', ''], items.map((item) => [element('div', {}, element('strong', {}, item.title || item.id || 'Unidentified item'), element('div', { class: 'subline mono' }, item.id || item.source)), badge(item.readiness), item.eligible ? badge('eligible') : badge('not eligible'), human(item.execution), kevCell((view.criterionSignals || {})[item.id]), button('Inspect', () => inspectItem(item, project, can('coordinate')))])) : empty('No work items found', 'The project bundle has no visible work items.')));
 		content.push(panel('Project policy', element('div', { class: 'panel-body' }, metadata([['Required checks', list(project.policy.requiredChecks).join(', ') || 'None configured'], ['Allowed executors', list(project.policy.allowedExecutors).join(', ') || 'None configured'], ['Repair maximum', project.policy.maxRepairAttempts], ['Job duration', project.policy.maxJobDurationSeconds + ' seconds'], ['Protected paths', list(project.policy.protectedPaths).join(', ') || 'None, so an implementer can change the tests verification runs'], ['Coordinator review', project.policy.allowCoordinatorReview ? 'Allowed, for a single-person project' : 'Independent reviewer required'], ['Execution mode', project.policy.fixture ? 'Fixture project, simulated workers are labelled' : 'Ordinary project, fixture acceptance prohibited']]))));
 		if (list(view.result.diagnostics).length) content.push(panel('Reader diagnostics', element('div', { class: 'panel-body' }, list(view.result.diagnostics).map((diagnostic) => element('p', { class: 'check-text' }, diagnostic.code + ': ' + diagnostic.message)))));
 	}
@@ -168,7 +168,51 @@ function inspectItem(item, project, canSubmit) {
 	const root = $('#content');
 	root.replaceChildren(pageHead(item.title || item.id, 'Current work readiness and selected requirement identities.', [button('Back to project', route)]), panel('Work item', element('div', { class: 'panel-body' }, metadata([['Stable ID', code(item.id)], ['Source', code(item.source)], ['Readiness', badge(item.readiness)], ['Eligible', String(item.eligible)], ['Ticket fingerprint', code(item.ticketSHA256)], ['Criteria fingerprint', code(item.criteriaSHA256)]]))), panel('Readiness checks', table(['CHECK', 'STATUS', 'REASONS'], list(item.checks).map((check) => [human(check.name), badge(check.status), list(check.reasons).map((reason) => reason.message).join(' · ')]))));
 	if (list(item.exclusionReasons).length) root.append(element('div', { class: 'notice' }, item.exclusionReasons.map((reason) => reason.message).join(' ')));
+	if (canSubmit && item.id) root.append(refineSection(item, project));
 	if (canSubmit && item.eligible && item.readiness === 'ready') root.append(submitForm(project, [item]));
+}
+function kevCell(signals) {
+	if (!signals) return element('span', { class: 'fine' }, 'Not observed');
+	if (signals.status === 'unavailable') return badge('unavailable');
+	return signals.flaggedCount ? element('span', { class: 'badge warn' }, signals.flaggedCount + ' flagged') : element('span', { class: 'badge good' }, 'checkable');
+}
+function refineSection(item, project) {
+	const holder = element('div', {}, panel('Refine criteria', element('div', { class: 'panel-body check-text' }, 'Loading refinements…')));
+	const render = async (refinement) => { holder.replaceChildren(refinementPanel(item, project, refinement, render)); };
+	run(async () => { const found = list(await api('/projects/' + encodeURIComponent(project.id) + '/refinements?workItemId=' + encodeURIComponent(item.id))); await render(found[0] || null); if (found[0]?.status === 'running') await watchRefinement(found[0], render); });
+	return holder;
+}
+async function watchRefinement(refinement, render) {
+	await render(refinement);
+	while (refinement.status === 'running') {
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		refinement = await api('/refinements/' + encodeURIComponent(refinement.id));
+		await render(refinement);
+	}
+}
+function kevScore(signals, text) {
+	const signal = list(signals?.criteria).find((criterion) => criterion.text === text);
+	if (!signal || signal.checkable === undefined || signal.checkable === null) return element('span', { class: 'fine' }, 'unscored');
+	return element('span', { class: 'badge ' + (signal.flagged ? 'warn' : 'good') }, signal.checkable.toFixed(2) + (signal.flagged ? ' flagged' : ''));
+}
+function refinementPanel(item, project, refinement, render) {
+	const start = (body) => run(async () => watchRefinement(await command('/projects/' + encodeURIComponent(project.id) + '/refinements', { workItemId: item.id, ...body }), render));
+	const intro = element('p', { class: 'check-text' }, 'A read-only agent proposes concrete criteria and at most three blocking questions, and the decision model scores the proposal. Nothing changes until you accept, and admission then freezes the result.');
+	if (!refinement || !['running', 'proposed'].includes(refinement.status)) {
+		const last = refinement ? element('p', { class: 'fine' }, 'Last refinement ' + human(refinement.status) + (refinement.error ? ': ' + refinement.error : '') + ' · ' + time(refinement.updatedAt)) : null;
+		return panel('Refine criteria', element('div', { class: 'panel-body' }, intro, last, element('div', { class: 'form-actions' }, button('Refine criteria', () => start({}), 'primary'))));
+	}
+	if (refinement.status === 'running') return panel('Refine criteria', element('div', { class: 'panel-body check-text' }, 'The refiner is reading the work item and repository. This usually takes under a minute.'), 'running');
+	const proposal = refinement.proposal;
+	const questions = list(proposal.questions);
+	const form = element('form', {});
+	form.append(formGrid(field('Criteria to accept, one per line', 'criteria', { type: 'textarea', full: true, rows: Math.max(4, list(proposal.criteria).length + 1), value: list(proposal.criteria).join('\n') }), ...questions.map((question, index) => field(question.question, 'answer' + index, { full: true, help: 'Unblocks: ' + question.unblocks }))));
+	const answers = () => { const values = data(form); return questions.map((question, index) => ({ question: question.question, answer: (values['answer' + index] || '').trim() })).filter((answer) => answer.answer); };
+	const accept = element('button', { type: 'submit', class: 'primary' }, 'Accept and update ticket');
+	form.append(element('div', { class: 'form-actions' }, accept, questions.length ? button('Refine again with answers', () => start({ previousId: refinement.id, answers: answers() })) : null, button('Reject', async () => render(await command('/refinements/' + encodeURIComponent(refinement.id) + '/reject', {})))));
+	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const accepted = await command('/refinements/' + encodeURIComponent(refinement.id) + '/accept', { criteria: values.criteria.split('\n').map((criterion) => criterion.trim()).filter(Boolean), answers: answers() }); await render(accepted); notice('Ticket updated. Return to the project to re-check readiness before submitting.'); }, accept); });
+	const runNote = refinement.run ? [refinement.run.model, refinement.run.turns + ' turns', '$' + Number(refinement.run.costUsd || 0).toFixed(2)].filter(Boolean).join(' · ') : '';
+	return panel('Refine criteria', element('div', { class: 'panel-body' }, intro, table(['CURRENT CRITERION', 'KEV'], list(refinement.criteria).map((text) => [text, kevScore(refinement.before, text)])), table(['PROPOSED CRITERION', 'KEV'], list(proposal.criteria).map((text) => [text, kevScore(refinement.after, text)])), proposal.notes ? element('p', { class: 'fine' }, 'Notes: ' + proposal.notes) : null, form), runNote);
 }
 function submitForm(project, items, signals) {
 	const allowed = items.filter((item) => item.id && !item.identityAmbiguous && item.eligible && item.readiness === 'ready');
@@ -177,7 +221,7 @@ function submitForm(project, items, signals) {
 	if (!list(project.policy.allowedExecutors).length) form.append(element('div', { class: 'notice' }, 'An administrator must allow an executor in project policy before submission.'));
 	form.append(formGrid(field('Work item', 'workItemId', { choices: allowed.map((item) => ({ value: item.id, label: (item.title || item.id) + ' · ' + human(item.readiness) + (item.eligible ? '' : ' · not eligible') })), required: true, full: true }), field('Base revision', 'baseRevision', { required: true, value: 'HEAD', help: 'The service resolves and retains the exact commit.' }), field('Executor', 'executorKey', { choices: list(project.policy.allowedExecutors).map((key) => ({ value: key, label: key })), required: true }), field('Repair limit', 'repairLimit', { type: 'number', min: 0, max: project.policy.maxRepairAttempts, value: 0, required: true }), field('Deadline', 'deadline', { type: 'datetime-local', required: true, value: localDate(new Date(Date.now() + Math.min(project.policy.maxJobDurationSeconds || 3600, 3600) * 1000)) })));
 	const flagged = allowed.map((item) => [item, (signals || {})[item.id]]).filter(([, signal]) => signal && signal.flaggedCount > 0);
-	if (flagged.length) form.append(element('div', { class: 'notice' }, flagged.map(([item, signal]) => (item.title || item.id) + ': ' + signal.flaggedCount + ' criteria may not name a checkable result (' + signal.model + ', advisory only). Rewrite them before admission freezes them: ' + list(signal.criteria).filter((criterion) => criterion.flagged).map((criterion) => '“' + criterion.text + '”').join('; ')).join(' ')));
+	if (flagged.length) form.append(element('div', { class: 'notice' }, flagged.map(([item, signal]) => (item.title || item.id) + ': ' + signal.flaggedCount + ' criteria may not name a checkable result (' + signal.model + ', advisory only). Inspect the item and use Refine criteria, or rewrite them, before admission freezes them: ' + list(signal.criteria).filter((criterion) => criterion.flagged).map((criterion) => '“' + criterion.text + '”').join('; ')).join(' ')));
 	form.append(element('div', { class: 'notice' }, 'Required checks: ' + (list(project.policy.requiredChecks).join(', ') || 'none configured') + '. Project policy owns these checks; submission cannot remove them.'), element('p', { class: 'fine' }, project.policy.fixture ? 'FIXTURE PROJECT. This flow tests platform behavior and does not claim model execution.' : 'Fixture executions cannot satisfy acceptance for this ordinary project.'));
 	const submit = element('button', { type: 'submit', class: 'primary', disabled: !allowed.length || !list(project.policy.allowedExecutors).length }, 'Admit and submit job');
 	form.append(element('div', { class: 'form-actions' }, submit));

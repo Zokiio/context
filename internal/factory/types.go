@@ -185,6 +185,10 @@ type Options struct {
 	DecisionModel     string
 	DecisionURL       string
 	DecisionThreshold float64
+	// RefinerCommand is the argv run to propose refined acceptance criteria. It reads a
+	// RefinerInput on stdin and writes a RefinerOutput on stdout. Empty disables
+	// refinement.
+	RefinerCommand []string
 }
 
 // DefaultDecisionThreshold flags criteria whose checkable probability falls below it.

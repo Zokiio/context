@@ -57,13 +57,22 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			&cli.StringFlag{Name: "data-dir", Required: true},
 			&cli.StringFlag{Name: "listen", Value: "127.0.0.1:8741"},
 			&cli.DurationFlag{Name: "poll", Value: 2 * time.Second},
-		}, decisionFlags()...),
+			&cli.StringFlag{Name: "refiner-model", Value: "sonnet", Usage: "Model for the read-only Claude Code refiner"},
+			&cli.Float64Flag{Name: "refiner-budget-usd", Value: 0.5, Usage: "Spending cap for one refinement"},
+			&cli.BoolFlag{Name: "no-refiner", Usage: "Disable refinement"},
+		}, append(decisionFlags(), refinerFlags()...)...),
 		Action: func(ctx context.Context, c *cli.Command) error {
 			address := c.String("listen")
 			if host, _, err := net.SplitHostPort(address); err != nil || !isLoopback(host) {
 				return errors.New("solo mode listens on loopback only; use serve with TLS for shared access")
 			}
-			service, err := factory.Open(c.String("data-dir"), serviceOptions(c))
+			options := serviceOptions(c)
+			refiner, err := soloRefiner(c)
+			if err != nil {
+				return err
+			}
+			options.RefinerCommand = refiner
+			service, err := factory.Open(c.String("data-dir"), options)
 			if err != nil {
 				return err
 			}
@@ -139,6 +148,25 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			}
 			return err
 		}}
+}
+
+// soloRefiner uses an explicit refiner command, or read-only Claude Code when it is
+// installed.
+func soloRefiner(c *cli.Command) ([]string, error) {
+	if c.Bool("no-refiner") {
+		return nil, nil
+	}
+	if argv, err := refinerCommandFile(c); err != nil || argv != nil {
+		return argv, err
+	}
+	if _, err := exec.LookPath("claude"); err != nil {
+		return nil, nil
+	}
+	self, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	return []string{self, "factory", "refiner", "--model", c.String("refiner-model"), "--max-budget-usd", fmt.Sprint(c.Float64("refiner-budget-usd"))}, nil
 }
 
 func isLoopback(host string) bool {
