@@ -23,7 +23,7 @@ const time = (value) => value ? new Date(value).toLocaleString() : 'Not recorded
 const human = (value) => String(value || 'unknown').replaceAll('_', ' ');
 function badge(status) {
 	let kind = '';
-	if (['accepted', 'passed', 'ready', 'approved', 'succeeded'].includes(status)) kind = 'good';
+	if (['accepted', 'passed', 'ready', 'approved', 'succeeded', 'merged'].includes(status)) kind = 'good';
 	if (/unknown|pending|queued|requested|implementing|verifying|stale|unavailable/.test(status)) kind = 'warn';
 	if (/failed|rejected|changes_requested/.test(status)) kind = 'bad';
 	if (status === 'fixture') kind = 'fixture';
