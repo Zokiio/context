@@ -283,11 +283,15 @@ The caller needs the review, accept, and merge capabilities. Unless the project 
 
 Open the service URL and sign in with a personal token from a private token file. The browser and CLI share projects, jobs, evidence, permissions, and lifecycle operations. Keep tokens out of URLs.
 
-The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. It shows that state, a few short facts such as "3 questions" or "Checks passed", and a bar for its six steps: plan, agree, build, checks, approve, and merge. The header counts what needs you, and its button opens the first one. Add work writes a new work item, as described in [Add and edit work items](#add-and-edit-work-items). An item's Run tab draws its run as a graph of steps: sharpen, locked tests, your agreement, build, checks, your approval, merge, and the fix loop. Each step shows who or what did it, its status, and the model, turns, time and cost the records hold. Solid arrows show the path the run took, and dashed ones the paths it can still take. The Graph view draws the same cards by their `Blocked by` links: each group of connected work is a row, left to right in dependency order, with dashed arrows for dependencies that are still open. `projects board` prints the same projection.
+The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. It shows that state, a few short facts such as "3 questions" or "Checks passed", and its progress through the factory. Add work opens a full-page editor and saves an unqueued draft, as described in [Add and edit work items](#add-and-edit-work-items). The Graph view draws tasks by their `Blocked by` links. `projects board` prints the same projection.
 
-A change needs two decisions from a person, each made in a side panel:
+Open a task to move between **Task**, **Run**, and **History**. Task keeps the editor and formatted preview alongside its criteria, dependencies, and source links. Run shows the stage path and the selected step's activity, output, checks, and actions. Follow active step keeps up with execution; turn it off to inspect a previous step. Activity refreshes independently while you edit. History includes earlier jobs, cancelled runs, repair attempts, proposals, decisions, and their admitted revisions.
+
+The page shows its last successful refresh and connection failures. Worker progress comes from actual heartbeat reports. Logs and usage may arrive only when an attempt finishes; unavailable data is identified instead of presented as live. Authorized controls include stop, repair, reconciliation, review, and merge retry when the current state permits them.
+
+A change normally needs two decisions from a person:
 - **Agree what done means**, before the build. Answer the refiner's questions, read or edit the sharpened requirements, or read the locked tests next to the requirement each one checks. The test author's concerns and any requirement without a test come first.
-- **Approve the change**, after the checks pass. The panel shows the diff, the requirements no test covers, and a merge switch. Ask for a fix or reject from the same panel.
+- **Approve the change**, after the checks pass. The review shows the diff, the requirements no test covers, and a merge switch. Ask for a fix or reject from the same view.
 
 Agents write the tests, build, and repair the change; workers verify and merge it. None of those steps needs a decision. Insights shows the [measured numbers](#measure-the-factory), How much to ask you holds the [ask policy](#decide-how-often-the-factory-asks-you), and Agents holds [each agent's instructions](#tell-the-agents-more-about-the-project). The theme follows the system setting and can be switched to light or dark.
 
@@ -299,7 +303,7 @@ Restart `factory serve` with the same `--data-dir`. Preserve the worker's `--rec
 
 A repeated mutation needs the same `--request-id` and unchanged payload. A new decision needs a new request ID and the current `--if-version`. The service rejects stale versions and conflicting reuse.
 
-For a running job, use `jobs cancel --job <id> --if-version <version>`. A cancellation acknowledgement means that the wrapper received the request. Inspect the terminal outcome before treating the execution as stopped.
+For a running job, use `jobs cancel --job <id> --if-version <version>`, or Stop in the task's Run view. A cancellation acknowledgement means that the wrapper received the request. Inspect the terminal outcome before treating the execution as stopped. An explicit stop also holds the task against automatic pickup. Once execution is known to have stopped, queue the task explicitly to release that hold.
 
 An unfinished receipt, lost contact, or an unsupported native reconciliation produces `unknown`. The generic command adapter keeps cancellation unknown when it cannot establish that external agent work stopped. The controlled offline fixture can confirm its own stopped execution. A missed heartbeat does not authorize another execution.
 
@@ -444,14 +448,51 @@ Work items are Markdown records in the project's repository; the board reads the
 
 ```sh
 wm_admin work add --project "$wm_project_id" --title 'Sort words by length' \
+	--draft \
 	--description 'The preview lists headings with their shortest words first.' \
 	--criterion 'SortByLength([]string{"ccc", "a"}) is []string{"a", "ccc"}.' \
 	--blocked-by "$wm_work_id"
 ```
 
-Waymark writes a new record next to the project's other work items. It has a new ID, `triage: ready-for-agent` and `execution: unstarted`, the description as prose before the first section, and the Acceptance criteria, Blocked by, Blocked by decisions and Acceptance sections. Waymark also lists the record under the project's Current commitments, so it becomes ready work once its dependencies are done. Dependencies must be work items in the same project. Waymark never commits; commit the new files with your other changes.
+Waymark writes a new record next to the project's other work items. It has a new ID, `triage: ready-for-agent` and `execution: unstarted`, the description and authored relationship sections. Browser creation and `work add --draft` leave it outside Current commitments, so saving cannot start an agent. For compatibility, `work add` without `--draft` still queues the record. Dependencies must be work items in the same project. Waymark never commits these edits; commit the files with your other changes.
 
-`work show` prints a work item's title, description, requirements and dependencies, and `work edit` rewrites them; a flag left out keeps its current value. An edit changes only those parts, keeps every other section, and adds a line under Comments saying who edited it. The write is an expected-revision write: an edit made from an older copy of the record is refused. While a build holds the work item, its requirements are frozen and edits are refused. On an item's page in the browser, Edit changes the same fields in place. As you type, the decision model marks each requirement as checkable or vague.
+`work list` includes drafts and archives. `work show` prints the editable fields and disposition. `work edit` changes the title, Markdown description, criteria, dependencies, and repeated `--spec` or `--context` paths; a flag left out keeps its current value, and `--spec ''` or `--context ''` clears those links. Other record sections remain intact. An edit made from an older revision is refused. The browser retains that local draft and lets you compare the latest version before reapplying changes. Active or uncertain refinement, test authoring, implementation, and verification freeze requirement changes. Earlier runs retain the requirements they admitted.
+
+Queueing adds the task to Current commitments and makes it available to the project's existing ask policy and autopilot. Start still enforces readiness and authorization. Unqueue removes a task from future pickup. Archive removes it from the queue while preserving its ID, relationships, and history; restore returns it as an unqueued task. The page shows affected dependents. Delete is available only for unreferenced, never-run drafts. None of these actions can remove work while an agent may still be using it.
+
+```sh
+wm_admin work queue --project "$wm_project_id" --work-item "$wm_work_id"
+wm_admin work unqueue --project "$wm_project_id" --work-item "$wm_work_id"
+wm_admin work archive --project "$wm_project_id" --work-item "$wm_work_id"
+wm_admin work restore --project "$wm_project_id" --work-item "$wm_work_id"
+wm_admin work activity --project "$wm_project_id" --work-item "$wm_work_id"
+```
+
+Disposition commands read the current revision unless `--if-ticket-sha256` is supplied. Use a stable `--request-id` to retry an uncertain request unchanged. Changes involving both the task file and project commitments have a retained publication plan, so interruption does not silently leave half a task operation applied. Restart resumes a pending save when the files still match its retained before or after contents. If another editor changed a destination, the project remains frozen until that conflict is resolved. Use Resume pending save or `work reconcile --project "$wm_project_id"` to finish it; reconciliation never overwrites divergent contents.
+
+### Verify the task workspace locally
+
+The Go suite covers service authorization, lifecycle, recovery, and execution. Two reusable browser checks require Node, Playwright, and its Chromium installation:
+
+```sh
+node internal/factoryhttp/workspace_browser_test.cjs
+```
+
+This first check uses controlled API responses to exercise editing, late scoring replies, stale saves, polling, inspection state, and narrow layouts. For the complete service and real Git loop, start this fixture in one terminal:
+
+```sh
+wm_browser_dir=$(mktemp -d)
+WAYMARK_BROWSER_FIXTURE_DIR="$wm_browser_dir" go test ./internal/factoryintegration \
+	-run '^TestWorkspaceBrowserFixture$' -count=1 -timeout=30m
+```
+
+In another terminal, pass that same private directory:
+
+```sh
+node internal/factoryintegration/testdata/workspace-browser.cjs /path/to/private/directory
+```
+
+The driver creates a task, verifies safe draft/edit/remove behavior, runs a controlled failed check and repair, approves a verified merge, confirms a stop, and checks disconnect/reconnect. It writes screenshots and results under the private directory's `evidence/` and shuts down the fixture on success. Workers run deterministic offline commands; this does not establish compatibility with a model provider. The directory also contains private fixture credentials and service state, so retain only the evidence when sharing results.
 
 ## Tell the agents more about the project
 

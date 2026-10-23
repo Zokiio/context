@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/rand"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -26,11 +27,13 @@ const (
 // section as it is.
 type WorkItemDraft struct {
 	Title string `json:"title"`
-	// Description is the prose before the record's first section; every agent reads it.
+	// Description is authored Markdown retained in a delimited body block; every agent reads it.
 	Description string   `json:"description,omitempty"`
 	Criteria    []string `json:"criteria"`
 	// BlockedBy names work items in the same project that must be done first.
 	BlockedBy []string `json:"blockedBy,omitempty"`
+	Spec      []string `json:"spec"`
+	Context   []string `json:"context"`
 }
 
 // WorkItemRecord is a work item as the person editing it sees it.
@@ -42,13 +45,27 @@ type WorkItemRecord struct {
 	TicketSHA256 string        `json:"ticketSHA256"`
 	Draft        WorkItemDraft `json:"draft"`
 	// Frozen means an active build holds the item, so it cannot change.
-	Frozen bool `json:"frozen"`
+	Frozen             bool                `json:"frozen"`
+	Execution          string              `json:"execution,omitempty"`
+	Readiness          string              `json:"readiness"`
+	Eligible           bool                `json:"eligible"`
+	PublicationPending bool                `json:"publicationPending"`
+	FrozenReason       string              `json:"frozenReason,omitempty"`
+	Queued             bool                `json:"queued"`
+	Archived           bool                `json:"archived"`
+	Stopped            bool                `json:"stopped"`
+	CanDelete          bool                `json:"canDelete"`
+	DeleteReason       string              `json:"deleteReason,omitempty"`
+	Deleted            bool                `json:"deleted,omitempty"`
+	Dependents         []WorkItemReference `json:"dependents"`
+	Actions            []string            `json:"actions"`
 }
 
 type CreateWorkItemRequest struct {
 	RequestID string        `json:"requestId"`
 	ProjectID ProjectID     `json:"projectId"`
 	Draft     WorkItemDraft `json:"draft"`
+	Queue     *bool         `json:"queue,omitempty"`
 }
 
 type UpdateWorkItemRequest struct {
@@ -76,162 +93,104 @@ func (s *Service) GetWorkItem(ctx context.Context, actor Principal, projectID Pr
 	if err != nil {
 		return WorkItemRecord{}, err
 	}
-	raw, err := os.ReadFile(work.Source)
+	record, err := s.workItemRecord(ctx, s.state.db, project, result, work)
 	if err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "read work item", err)
+		return record, err
 	}
-	criteria, err := acceptanceCriteria(work.Source)
-	if err != nil {
-		return WorkItemRecord{}, fault(CodeInvalid, "read acceptance criteria", err)
+	if _, err := authorizeProject(ctx, s.state.db, actor, projectID, CapabilityCoordinate); err != nil {
+		record.Actions = []string{}
 	}
-	draft := WorkItemDraft{Description: ticketDescription(raw), Criteria: criteria}
-	if work.Title != nil {
-		draft.Title = *work.Title
-	}
-	for _, edge := range work.Dependencies {
-		if edge.To.ID != nil {
-			draft.BlockedBy = append(draft.BlockedBy, *edge.To.ID)
-		}
-	}
-	frozen := requireNoActiveJob(ctx, s.state.db, projectID, workItemID) != nil
-	return WorkItemRecord{ProjectID: projectID, WorkItemID: workItemID, Path: relativeRecord(project.BundlePath, work.Source), TicketSHA256: digestBytes(raw), Draft: draft, Frozen: frozen}, nil
+	return record, nil
 }
 
-// CreateWorkItem writes a new work item record next to the project's others and lists
-// it under the project's current commitments, so it is ready work once it is clear.
+// CreateWorkItem saves a record. Omitting Queue retains the original committed
+// creation behavior; an explicit false saves a draft without authorizing pickup.
 func (s *Service) CreateWorkItem(ctx context.Context, actor Principal, request CreateWorkItemRequest) (WorkItemRecord, error) {
-	if err := requireRequestID(request.RequestID); err != nil {
-		return WorkItemRecord{}, err
-	}
-	s.state.mutations.Lock()
-	defer s.state.mutations.Unlock()
-	tx, err := s.state.db.BeginTx(ctx, nil)
-	if err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "start work item", err)
-	}
-	defer tx.Rollback()
-	current, err := authorizeProject(ctx, tx, actor, request.ProjectID, CapabilityCoordinate)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	saved, ok, hash, err := receipt[WorkItemRecord](ctx, tx, current.UserID, "create_work_item", request.RequestID, request)
-	if err != nil || ok {
-		return saved, err
-	}
-	project, err := readProject(ctx, tx, request.ProjectID)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	result, err := s.orientProject(ctx, project)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	if result.Project == nil {
-		return WorkItemRecord{}, fault(CodeNotReady, "the project record is unavailable, so new work cannot be listed in it", nil)
-	}
-	works := workItemsByID(result)
-	draft, err := normalizeDraft(request.Draft, works, "")
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	id, err := newRecordID()
-	if err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "create work item identity", err)
-	}
-	directory := project.BundlePath
-	if len(result.WorkItems) > 0 {
-		directory = filepath.Dir(result.WorkItems[0].Source)
-	}
-	path, err := freeRecordPath(directory, slugOf(draft.Title))
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	content := newWorkItemRecord(id, draft, path, works)
-	if err := writeNewFile(path, content); err != nil {
-		return WorkItemRecord{}, err
-	}
-	if err := listCommitment(result.Project.Source, draft.Title, path); err != nil {
-		_ = os.Remove(path)
-		return WorkItemRecord{}, err
-	}
-	record := WorkItemRecord{ProjectID: project.ID, WorkItemID: id, Path: relativeRecord(project.BundlePath, path), TicketSHA256: digestBytes(content), Draft: draft}
-	now := s.state.now().UTC()
-	if err := saveReceipt(ctx, tx, current.UserID, "create_work_item", request.RequestID, hash, record, false, now); err != nil {
-		return WorkItemRecord{}, err
-	}
-	if err := tx.Commit(); err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "commit work item", err)
-	}
-	return record, nil
+	return s.writeWorkItem(ctx, actor, request.ProjectID, "create_work_item", request.RequestID, request, func(tx *sql.Tx, current Principal, project Project) (workItemPublication, error) {
+		result, err := s.orientProject(ctx, project)
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		if !result.InventoryComplete || result.Project == nil {
+			return workItemPublication{}, fault(CodeNotReady, "the complete project inventory is required before adding work", nil)
+		}
+		works := workItemsByID(result)
+		draft, err := normalizeDraft(request.Draft, works, "")
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		id, err := newRecordID()
+		if err != nil {
+			return workItemPublication{}, fault(CodeInternal, "create work item identity", err)
+		}
+		directory := project.BundlePath
+		if len(result.WorkItems) > 0 {
+			directory = filepath.Dir(result.WorkItems[0].Source)
+		}
+		path, err := freeRecordPath(directory, slugOf(draft.Title))
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		if err := validateWorkLinks(project, path, draft); err != nil {
+			return workItemPublication{}, err
+		}
+		content := newWorkItemRecord(id, draft, path, works)
+		queued := request.Queue == nil || *request.Queue
+		publication := workItemPublication{ProjectID: project.ID, WorkItemID: id, Files: []workFileChange{{Path: path, After: content}}, Result: WorkItemRecord{ProjectID: project.ID, WorkItemID: id}}
+		if queued {
+			change, err := commitmentChange(result.Project.Source, draft.Title, path, true, project)
+			if err != nil {
+				return workItemPublication{}, err
+			}
+			publication.Files = append(publication.Files, change)
+		}
+		return publication, nil
+	})
 }
 
-// UpdateWorkItem rewrites a work item's title, description, requirements and
-// dependencies through an expected-revision write. A build freezes the item.
+// UpdateWorkItem changes the authored requirements only after active work has
+// stopped. Existing runs keep their original admitted source snapshots.
 func (s *Service) UpdateWorkItem(ctx context.Context, actor Principal, request UpdateWorkItemRequest) (WorkItemRecord, error) {
-	if err := requireRequestID(request.RequestID); err != nil {
-		return WorkItemRecord{}, err
-	}
-	s.state.mutations.Lock()
-	defer s.state.mutations.Unlock()
-	tx, err := s.state.db.BeginTx(ctx, nil)
-	if err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "start work item edit", err)
-	}
-	defer tx.Rollback()
-	current, err := authorizeProject(ctx, tx, actor, request.ProjectID, CapabilityCoordinate)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	saved, ok, hash, err := receipt[WorkItemRecord](ctx, tx, current.UserID, "update_work_item", request.RequestID, request)
-	if err != nil || ok {
-		return saved, err
-	}
-	project, err := readProject(ctx, tx, request.ProjectID)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	result, err := s.orientProject(ctx, project)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	work, err := selectWork(result, request.WorkItemID)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	if err := requireNoActiveJob(ctx, tx, project.ID, request.WorkItemID); err != nil {
-		return WorkItemRecord{}, err
-	}
-	works := workItemsByID(result)
-	draft, err := normalizeDraft(request.Draft, works, request.WorkItemID)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	raw, err := os.ReadFile(work.Source)
-	if err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "read work item", err)
-	}
-	if digestBytes(raw) != request.IfTicketSHA256 {
-		return WorkItemRecord{}, fault(CodeStale, "the work item changed since you opened it; reload it and edit again", nil)
-	}
-	now := s.state.now().UTC()
-	updated, err := rewriteWorkItem(raw, work.Source, draft, works)
-	if err != nil {
-		return WorkItemRecord{}, err
-	}
-	if updated, err = appendComment(updated, work.Source, fmt.Sprintf("- %s: %s edited the work item in Waymark.\n", now.Format("2006-01-02"), current.Username)); err != nil {
-		return WorkItemRecord{}, err
-	}
-	if err := writeFileCAS(work.Source, raw, updated); err != nil {
-		return WorkItemRecord{}, err
-	}
-	record := WorkItemRecord{ProjectID: project.ID, WorkItemID: request.WorkItemID, Path: relativeRecord(project.BundlePath, work.Source), TicketSHA256: digestBytes(updated), Draft: draft}
-	if err := saveReceipt(ctx, tx, current.UserID, "update_work_item", request.RequestID, hash, record, false, now); err != nil {
-		return WorkItemRecord{}, err
-	}
-	if err := tx.Commit(); err != nil {
-		return WorkItemRecord{}, fault(CodeInternal, "commit work item edit", err)
-	}
-	return record, nil
+	return s.writeWorkItem(ctx, actor, request.ProjectID, "update_work_item", request.RequestID, request, func(tx *sql.Tx, current Principal, project Project) (workItemPublication, error) {
+		result, err := s.orientProject(ctx, project)
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		work, err := selectWork(result, request.WorkItemID)
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		if workArchived(work) {
+			return workItemPublication{}, fault(CodeConflict, "restore the archived work item before editing it", nil)
+		}
+		if err := requireNoTaskActivity(ctx, tx, project.ID, request.WorkItemID); err != nil {
+			return workItemPublication{}, err
+		}
+		works := workItemsByID(result)
+		draft, err := normalizeDraft(request.Draft, works, request.WorkItemID)
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		if err := validateWorkLinks(project, work.Source, draft); err != nil {
+			return workItemPublication{}, err
+		}
+		raw, err := os.ReadFile(work.Source)
+		if err != nil {
+			return workItemPublication{}, fault(CodeInternal, "read work item", err)
+		}
+		if digestBytes(raw) != request.IfTicketSHA256 {
+			return workItemPublication{}, fault(CodeStale, "the work item changed since you opened it; compare the latest record with your draft", nil)
+		}
+		updated, err := rewriteWorkItem(raw, work.Source, draft, works)
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		updated, err = appendComment(updated, work.Source, fmt.Sprintf("- %s: %s edited the work item in Waymark.\n", s.state.now().UTC().Format("2006-01-02"), current.Username))
+		if err != nil {
+			return workItemPublication{}, err
+		}
+		return workItemPublication{ProjectID: project.ID, WorkItemID: request.WorkItemID, Files: []workFileChange{{Path: work.Source, Before: raw, After: updated}}, Result: WorkItemRecord{ProjectID: project.ID, WorkItemID: request.WorkItemID}}, nil
+	})
 }
 
 // ScoreDraftCriteria asks the decision model whether requirements a person is still
@@ -278,11 +237,10 @@ func normalizeDraft(draft WorkItemDraft, works map[string]orientation.WorkItem, 
 	if utf8.RuneCountInString(cleaned.Description) > maxWorkItemDescriptionRunes {
 		return WorkItemDraft{}, fault(CodeInvalid, fmt.Sprintf("the description is limited to %d characters", maxWorkItemDescriptionRunes), nil)
 	}
-	for _, line := range strings.Split(cleaned.Description, "\n") {
-		if strings.HasPrefix(strings.TrimSpace(line), "#") {
-			return WorkItemDraft{}, fault(CodeInvalid, "the description cannot contain headings, which would start sections of the record", nil)
-		}
+	if err := validateDescription(cleaned.Description); err != nil {
+		return WorkItemDraft{}, err
 	}
+	cleaned.Spec, cleaned.Context = draft.Spec, draft.Context
 	for _, criterion := range draft.Criteria {
 		if criterion = joinLines(criterion); criterion != "" {
 			if utf8.RuneCountInString(criterion) > maxRefinementRunes {
@@ -315,7 +273,7 @@ func newWorkItemRecord(id string, draft WorkItemDraft, path string, works map[st
 	var b strings.Builder
 	fmt.Fprintf(&b, "---\ntype: WorkItem\nid: %s\ntitle: %s\ntriage: ready-for-agent\nexecution: unstarted\n---\n\n", id, yamlString(draft.Title))
 	if draft.Description != "" {
-		b.WriteString(draft.Description + "\n\n")
+		b.WriteString(descriptionBlock(draft.Description))
 	}
 	b.WriteString("## Acceptance criteria\n\n")
 	for _, criterion := range draft.Criteria {
@@ -323,6 +281,14 @@ func newWorkItemRecord(id string, draft WorkItemDraft, path string, works map[st
 	}
 	b.WriteString("\n## Blocked by\n\n" + strings.Join(blockerLines(draft.BlockedBy, path, works), "\n") + "\n")
 	b.WriteString("\n## Blocked by decisions\n\nNone\n\n## Acceptance\n")
+	for _, section := range []struct {
+		name  string
+		paths []string
+	}{{"Spec", draft.Spec}, {"Context", draft.Context}} {
+		if section.paths != nil {
+			b.WriteString("\n## " + section.name + "\n\n" + strings.Join(documentLinkLines(section.paths), "\n") + "\n")
+		}
+	}
 	return []byte(b.String())
 }
 
@@ -370,7 +336,22 @@ func rewriteWorkItem(raw []byte, path string, draft WorkItemDraft, works map[str
 	if updated, err = replaceSection(updated, path, "Acceptance criteria", criteria); err != nil {
 		return nil, err
 	}
-	return replaceSection(updated, path, "Blocked by", blockerLines(draft.BlockedBy, path, works))
+	updated, err = replaceSection(updated, path, "Blocked by", blockerLines(draft.BlockedBy, path, works))
+	if err != nil {
+		return nil, err
+	}
+	for _, section := range []struct {
+		name  string
+		paths []string
+	}{{"Spec", draft.Spec}, {"Context", draft.Context}} {
+		if section.paths != nil {
+			updated, err = rewriteDocumentLinks(updated, path, section.name, section.paths)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return updated, nil
 }
 
 func setFrontmatterTitle(raw []byte, title string) ([]byte, error) {
@@ -389,29 +370,29 @@ func setFrontmatterTitle(raw []byte, title string) ([]byte, error) {
 	return nil, fault(CodeInvalid, "work item has no title to rewrite; edit it by hand", nil)
 }
 
-// ticketDescription is the prose between a record's front matter and its first heading.
+// ticketDescription reads the managed Markdown block, or a legacy record's prose before its first heading.
 func ticketDescription(raw []byte) string {
 	document, err := recordread.ParseDocument(raw)
 	if err != nil {
 		return ""
 	}
+	if start, end, ok := descriptionRange(document.Body); ok {
+		return strings.TrimSpace(string(document.Body[start:end]))
+	}
 	return strings.TrimSpace(string(document.Body[:firstHeading(document.Body)]))
 }
-
 func setDescription(raw []byte, description string) ([]byte, error) {
 	document, err := recordread.ParseDocument(raw)
 	if err != nil || !bytes.HasSuffix(raw, document.Body) {
 		return nil, fault(CodeInvalid, "work item cannot be parsed for rewriting", err)
 	}
 	offset := len(raw) - len(document.Body)
-	end := offset + firstHeading(document.Body)
-	prose := "\n"
-	if description != "" {
-		prose = "\n" + description + "\n\n"
+	end := firstHeading(document.Body)
+	if _, last, ok := descriptionRange(document.Body); ok {
+		end = last + len(descriptionEnd)
 	}
-	return append(append(append([]byte{}, raw[:offset]...), prose...), raw[end:]...), nil
+	return append(append(append([]byte{}, raw[:offset]...), descriptionBlock(description)...), document.Body[end:]...), nil
 }
-
 func firstHeading(body []byte) int {
 	position := 0
 	for _, line := range bytes.SplitAfter(body, []byte("\n")) {
@@ -437,56 +418,6 @@ func replaceSection(raw []byte, path, name string, lines []string) ([]byte, erro
 	start, end := offset+sections[0].ContentStart, offset+sections[0].End
 	block := "\n" + strings.Join(lines, "\n") + "\n\n"
 	return append(append(append([]byte{}, raw[:start]...), block...), raw[end:]...), nil
-}
-
-// listCommitment adds the new record to the project's Current commitments section,
-// creating the section when the project has none.
-func listCommitment(manifest, title, path string) error {
-	raw, err := os.ReadFile(manifest)
-	if err != nil {
-		return fault(CodeInternal, "read the project record", err)
-	}
-	document, err := recordread.ParseDocument(raw)
-	if err != nil || !bytes.HasSuffix(raw, document.Body) {
-		return fault(CodeInvalid, "the project record cannot be parsed", err)
-	}
-	line := "- [" + escapeLinkText(title) + "](" + relativeLink(manifest, path) + ")"
-	offset := len(raw) - len(document.Body)
-	sections := recordread.Sections(document.Body, manifest, map[string]string{"Current commitments": "commitment"}).Sections
-	var updated []byte
-	switch len(sections) {
-	case 0:
-		updated = append(append([]byte{}, bytes.TrimRight(raw, "\n")...), "\n\n## Current commitments\n\n"+line+"\n"...)
-	case 1:
-		section := sections[0]
-		content := strings.TrimSpace(section.Content)
-		block := line
-		if content != "" && !strings.EqualFold(content, "none") {
-			block = content + "\n" + line
-		}
-		start, end := offset+section.ContentStart, offset+section.End
-		updated = append(append(append([]byte{}, raw[:start]...), "\n"+block+"\n\n"...), raw[end:]...)
-	default:
-		return fault(CodeInvalid, "the project record has more than one Current commitments section; list the work by hand", nil)
-	}
-	return writeFileCAS(manifest, raw, updated)
-}
-
-func writeNewFile(path string, content []byte) error {
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
-	if err != nil {
-		return fault(CodeConflict, "write the new work item", err)
-	}
-	if _, err := file.Write(content); err != nil {
-		file.Close()
-		_ = os.Remove(path)
-		return fault(CodeInternal, "write the new work item", err)
-	}
-	if err := file.Close(); err != nil {
-		_ = os.Remove(path)
-		return fault(CodeInternal, "write the new work item", err)
-	}
-	return nil
 }
 
 func freeRecordPath(directory, slug string) (string, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Zokiio/context/internal/factory"
 )
@@ -68,5 +69,66 @@ func TestTheRunGraphFollowsAnItemThroughItsSteps(t *testing.T) {
 	mergeAndVerify(t, h.jobHarness, accepted, "merge", "")
 	if merge := run().Steps[6]; merge.Status != factory.RunDone || !strings.HasPrefix(merge.Title, "Merge into ") {
 		t.Fatalf("merge step = %+v", merge)
+	}
+}
+
+func TestRunGraphRetainsStoppedExecution(t *testing.T) {
+	t.Parallel()
+	for _, phase := range []string{"queued", "building", "checked"} {
+		t.Run(phase, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			h := setupJob(t)
+			job := h.job
+			var assignment factory.Assignment
+			if phase == "building" {
+				assignment = startActivityAttempt(t, h, "stopped-graph")
+				var err error
+				job, err = h.service.GetJob(ctx, h.coordinator, job.ID)
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if phase == "checked" {
+				job, _ = passVerificationForTest(t, h, "stopped-graph")
+			}
+			job, err := h.service.Action(ctx, h.coordinator, factory.JobActionRequest{RequestID: "stop-graph", JobID: job.ID, IfVersion: job.Version, Action: factory.ActionCancel})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if phase == "building" {
+				pending, err := h.service.WorkItemRun(ctx, h.coordinator, h.project.ID, "work-test")
+				if err != nil || pending.JobID != job.ID || pending.Steps[3].Status != factory.RunRunning || !strings.Contains(pending.Steps[3].Summary, "Stop requested") {
+					t.Fatalf("stop request lost live execution: %+v, %v", pending, err)
+				}
+				job, err = h.service.Report(ctx, h.implementer, factory.WorkerReportRequest{RequestID: "stopped-graph-terminal", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: "stopped-graph", Outcome: factory.OutcomeCancelled, TerminalReceipt: "process exited after stop"})
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			if job.Status != factory.JobCancelled {
+				t.Fatalf("stop was not confirmed: %+v", job)
+			}
+			run, err := h.service.WorkItemRun(ctx, h.coordinator, h.project.ID, "work-test")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if run.JobID != job.ID || run.Steps[2].Status != factory.RunDone {
+				t.Fatalf("stopped run lost its admission and agreement: %+v", run)
+			}
+			buildStatus, checkStatus := factory.RunSkipped, factory.RunSkipped
+			if phase == "building" {
+				buildStatus = factory.RunFailed
+			} else if phase == "checked" {
+				buildStatus, checkStatus = factory.RunDone, factory.RunDone
+			}
+			if run.Steps[3].Status != buildStatus || run.Steps[4].Status != checkStatus || run.Steps[5].Status != factory.RunSkipped || run.Steps[6].Status != factory.RunSkipped {
+				t.Fatalf("stopped run rewrote completed or skipped stages: %+v", run.Steps)
+			}
+			for _, step := range run.Steps {
+				if step.Status == factory.RunRunning || step.Status == factory.RunNeedsYou {
+					t.Fatalf("confirmed stop still advertises active work: %+v", step)
+				}
+			}
+		})
 	}
 }

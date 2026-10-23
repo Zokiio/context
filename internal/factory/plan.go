@@ -73,6 +73,9 @@ func (s *Service) ApprovePlan(ctx context.Context, actor Principal, request Appr
 	if err != nil {
 		return PlanResult{}, err
 	}
+	if err := s.requireTaskQueued(ctx, s.state.db, project, request.WorkItemID); err != nil {
+		return PlanResult{}, err
+	}
 	consent := planConsent{GivenBy: current.UserID, Build: request.Build, Decision: note.ID, CreatedAt: s.state.now().UTC()}
 	remember := func() error {
 		if request.Continue {
@@ -190,6 +193,13 @@ func (s *Service) saveConsent(ctx context.Context, projectID ProjectID, workItem
 	}
 	s.state.mutations.Lock()
 	defer s.state.mutations.Unlock()
+	project, err := readProject(ctx, s.state.db, projectID)
+	if err != nil {
+		return err
+	}
+	if err := s.requireTaskQueued(ctx, s.state.db, project, workItemID); err != nil {
+		return err
+	}
 	if _, err := s.state.db.ExecContext(ctx, `INSERT INTO plan_consents(project_id, work_item_id, data_json, created_at) VALUES(?,?,?,?) ON CONFLICT(project_id, work_item_id) DO UPDATE SET data_json=excluded.data_json, created_at=excluded.created_at`, projectID, workItemID, encoded, formatTime(consent.CreatedAt)); err != nil {
 		return fault(CodeInternal, "save consent", err)
 	}

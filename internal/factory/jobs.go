@@ -83,6 +83,9 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 	if err != nil {
 		return Job{}, err
 	}
+	if err := s.requireTaskQueued(ctx, s.state.db, project, request.WorkItemID); err != nil {
+		return Job{}, err
+	}
 	if err := prepareAcceptanceSection(work.Source); err != nil {
 		return Job{}, err
 	}
@@ -541,6 +544,12 @@ func (s *Service) workspacePath(jobID JobID, attemptID AttemptID) string {
 }
 
 func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
+	return loadJobRecord(ctx, q, jobID, true)
+}
+
+// Activity polling reads artifact metadata without loading every retained log.
+// Full job and artifact reads continue to return the original contents.
+func loadJobRecord(ctx context.Context, q queryer, jobID JobID, artifactContents bool) (Job, error) {
 	var job Job
 	var admissionJSON, mergeJSON, created, updated string
 	var implementer sql.NullString
@@ -568,11 +577,11 @@ func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
 	}
 	job.CreatedAt, _ = parseTime(created)
 	job.UpdatedAt, _ = parseTime(updated)
-	job.Attempts, err = loadAttempts(ctx, q, jobID)
+	job.Attempts, err = loadAttempts(ctx, q, jobID, artifactContents)
 	if err != nil {
 		return Job{}, err
 	}
-	job.Checks, err = loadChecks(ctx, q, jobID, job.Admission.RequiredChecks, job.CandidateRevision, job.Admission.TicketSHA256)
+	job.Checks, err = loadChecks(ctx, q, jobID, job.Admission.RequiredChecks, job.CandidateRevision, job.Admission.TicketSHA256, artifactContents)
 	if err != nil {
 		return Job{}, err
 	}
@@ -584,8 +593,8 @@ func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
 	return job, err
 }
 
-func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error) {
-	rows, err := q.QueryContext(ctx, `SELECT id, job_id, stage, ordinal, check_key, dispatch_id, worker_id, native_run_id, workspace_path, input_revision, candidate_revision, status, outcome, check_status, lease_expires_at, last_heartbeat_at, started_at, finished_at, cancellation_requested, summary, terminal_receipt, purpose FROM attempts WHERE job_id=? ORDER BY ordinal, stage, check_key`, jobID)
+func loadAttempts(ctx context.Context, q queryer, jobID JobID, artifactContents bool) ([]Attempt, error) {
+	rows, err := q.QueryContext(ctx, `SELECT id, job_id, stage, ordinal, check_key, dispatch_id, worker_id, native_run_id, workspace_path, input_revision, candidate_revision, status, outcome, check_status, lease_expires_at, last_heartbeat_at, started_at, finished_at, cancellation_requested, summary, terminal_receipt, purpose, progress FROM attempts WHERE job_id=? ORDER BY ordinal, stage, check_key`, jobID)
 	if err != nil {
 		return nil, fault(CodeInternal, "read attempts", err)
 	}
@@ -593,7 +602,7 @@ func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error
 	for rows.Next() {
 		var attempt Attempt
 		var worker, lease, heartbeat, started, finished sql.NullString
-		if err := rows.Scan(&attempt.ID, &attempt.JobID, &attempt.Stage, &attempt.Ordinal, &attempt.CheckKey, &attempt.DispatchID, &worker, &attempt.NativeRunID, &attempt.WorkspacePath, &attempt.InputRevision, &attempt.CandidateRevision, &attempt.Status, &attempt.Outcome, &attempt.CheckStatus, &lease, &heartbeat, &started, &finished, &attempt.CancellationRequested, &attempt.Summary, &attempt.TerminalReceipt, &attempt.Purpose); err != nil {
+		if err := rows.Scan(&attempt.ID, &attempt.JobID, &attempt.Stage, &attempt.Ordinal, &attempt.CheckKey, &attempt.DispatchID, &worker, &attempt.NativeRunID, &attempt.WorkspacePath, &attempt.InputRevision, &attempt.CandidateRevision, &attempt.Status, &attempt.Outcome, &attempt.CheckStatus, &lease, &heartbeat, &started, &finished, &attempt.CancellationRequested, &attempt.Summary, &attempt.TerminalReceipt, &attempt.Purpose, &attempt.Progress); err != nil {
 			rows.Close()
 			return nil, fault(CodeInternal, "decode attempt", err)
 		}
@@ -611,7 +620,7 @@ func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error
 		return nil, err
 	}
 	for index := range attempts {
-		attempts[index].Artifacts, err = loadArtifacts(ctx, q, jobID, &attempts[index].ID)
+		attempts[index].Artifacts, err = loadArtifacts(ctx, q, jobID, &attempts[index].ID, artifactContents)
 		if err != nil {
 			return nil, err
 		}
@@ -619,7 +628,7 @@ func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error
 	return attempts, nil
 }
 
-func loadChecks(ctx context.Context, q queryer, jobID JobID, required []string, candidate, requirement string) ([]CheckResult, error) {
+func loadChecks(ctx context.Context, q queryer, jobID JobID, required []string, candidate, requirement string, artifactContents bool) ([]CheckResult, error) {
 	rows, err := q.QueryContext(ctx, `SELECT id, check_key, status, candidate_revision, requirement_fingerprint, observer_id, attempt_id, command_json, environment, observed_at FROM check_results WHERE job_id=? ORDER BY created_at, id`, jobID)
 	if err != nil {
 		return nil, fault(CodeInternal, "read check results", err)
@@ -656,7 +665,7 @@ func loadChecks(ctx context.Context, q queryer, jobID JobID, required []string, 
 		return nil, err
 	}
 	for index := range results {
-		results[index].Artifacts, err = loadArtifacts(ctx, q, jobID, results[index].AttemptID)
+		results[index].Artifacts, err = loadArtifacts(ctx, q, jobID, results[index].AttemptID, artifactContents)
 		if err != nil {
 			return nil, err
 		}
@@ -669,8 +678,12 @@ func loadChecks(ctx context.Context, q queryer, jobID JobID, required []string, 
 	return results, nil
 }
 
-func loadArtifacts(ctx context.Context, q queryer, jobID JobID, attemptID *AttemptID) ([]Artifact, error) {
-	query := `SELECT id, name, media_type, sha256, byte_count, content, created_at FROM artifacts WHERE job_id=?`
+func loadArtifacts(ctx context.Context, q queryer, jobID JobID, attemptID *AttemptID, includeContents bool) ([]Artifact, error) {
+	contentColumn := "''"
+	if includeContents {
+		contentColumn = "content"
+	}
+	query := `SELECT id, name, media_type, sha256, byte_count, ` + contentColumn + `, created_at FROM artifacts WHERE job_id=?`
 	args := []any{jobID}
 	if attemptID != nil {
 		query += ` AND attempt_id=?`
@@ -782,7 +795,7 @@ func availableActions(job Job) []ActionKind {
 	case JobVerificationFailed:
 		return []ActionKind{ActionRepair, ActionCancel}
 	case JobImplementationUnknown, JobCancellationUnknown:
-		return []ActionKind{ActionReconcile, ActionResolve}
+		return []ActionKind{ActionCancel, ActionReconcile, ActionResolve}
 	case JobCancelRequested:
 		return []ActionKind{ActionReconcile}
 	default:

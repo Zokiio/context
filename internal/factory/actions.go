@@ -45,10 +45,20 @@ func (s *Service) Action(ctx context.Context, actor Principal, request JobAction
 		switch request.Action {
 		case ActionCancel:
 			err = s.cancelJob(ctx, tx, job, now)
+			if err == nil {
+				err = holdWorkItem(ctx, tx, job.ProjectID, job.WorkItemID, now)
+			}
 		case ActionRepair:
-			err = s.repairJob(ctx, tx, job, now)
+			var held bool
+			held, err = workItemHeld(ctx, tx, job.ProjectID, job.WorkItemID)
+			if err == nil && held {
+				err = fault(CodeConflict, "queue the stopped task before starting another attempt", nil)
+			}
+			if err == nil {
+				err = s.repairJob(ctx, tx, job, now)
+			}
 		case ActionReconcile:
-			if job.Status != JobImplementationUnknown && job.Status != JobCancellationUnknown {
+			if job.Status != JobImplementationUnknown && job.Status != JobCancellationUnknown && job.Status != JobCancelRequested {
 				err = fault(CodeConflict, "job has no uncertain execution to reconcile", nil)
 			} else {
 				_, err = appendEvent(ctx, tx, job.ID, &current.UserID, "reconciliation_requested", map[string]any{}, now)
@@ -87,10 +97,12 @@ func (s *Service) cancelJob(ctx context.Context, tx *sql.Tx, job Job, now time.T
 		return fault(CodeConflict, "job is already terminal", nil)
 	}
 	live := []AttemptID{}
+	uncertain := false
 	for _, attempt := range job.Attempts {
 		switch attempt.Status {
 		case AttemptUnknown:
-			return fault(CodeUncertain, "uncertain execution must be resolved before cancellation can complete", nil)
+			uncertain = true
+			live = append(live, attempt.ID)
 		case AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged:
 			live = append(live, attempt.ID)
 		}
@@ -112,7 +124,11 @@ func (s *Service) cancelJob(ctx context.Context, tx *sql.Tx, job Job, now time.T
 			return fault(CodeInternal, "request attempt cancellation", err)
 		}
 	}
-	if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, JobCancelRequested, formatTime(now), job.ID); err != nil {
+	status := JobCancelRequested
+	if uncertain {
+		status = JobCancellationUnknown
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, status, formatTime(now), job.ID); err != nil {
 		return fault(CodeInternal, "request job cancellation", err)
 	}
 	return nil
@@ -191,6 +207,15 @@ func (s *Service) resolveExecution(ctx context.Context, tx *sql.Tx, job Job, req
 		}
 		_, err = tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, status, formatTime(now), job.ID)
 	case ResolutionNotStarted:
+		// Resolving an explicit stop never launches a replacement. A fresh attempt
+		// requires a new deliberate queue/start after all uncertainty is resolved.
+		if attempt.CancellationRequested {
+			if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,finished_at=? WHERE id=?`, AttemptCancelled, OutcomeCancelled, formatTime(now), attempt.ID); err != nil {
+				return fault(CodeInternal, "seal stopped unstarted attempt", err)
+			}
+			err = s.updateJobAfterResolvedCancellation(ctx, tx, job, attempt, now)
+			break
+		}
 		newAttempt, idErr := newID("att_")
 		if idErr != nil {
 			return fault(CodeInternal, "create replacement attempt", idErr)
@@ -222,11 +247,15 @@ func (s *Service) resolveExecution(ctx context.Context, tx *sql.Tx, job Job, req
 		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,finished_at=? WHERE id=?`, AttemptFailed, OutcomeFailed, formatTime(now), attempt.ID); err != nil {
 			return fault(CodeInternal, "resolve failed attempt", err)
 		}
-		status := JobFailed
-		if attempt.Stage == StageVerification {
-			status = JobVerificationFailed
+		if attempt.CancellationRequested {
+			err = s.updateJobAfterResolvedCancellation(ctx, tx, job, attempt, now)
+		} else {
+			status := JobFailed
+			if attempt.Stage == StageVerification {
+				status = JobVerificationFailed
+			}
+			_, err = tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, status, formatTime(now), job.ID)
 		}
-		_, err = tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, status, formatTime(now), job.ID)
 	case ResolutionCancelled:
 		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,finished_at=? WHERE id=?`, AttemptCancelled, OutcomeCancelled, formatTime(now), attempt.ID); err != nil {
 			return fault(CodeInternal, "resolve cancelled attempt", err)

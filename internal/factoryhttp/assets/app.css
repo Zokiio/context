@@ -484,3 +484,89 @@ tr:last-child td { border-bottom: 0; }
 .run-facts { flex: 1 1 260px; margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; align-content: start; }
 .run-facts dt { color: var(--ink-3); }
 .run-facts dd { margin: 0; font: 500 13px "JetBrains Mono", ui-monospace, monospace; overflow-wrap: anywhere; }
+
+/* The task document and its live run keep separate, persistent DOM regions. */
+.task-workspace { max-width: 1440px; margin-inline: auto; gap: 28px; }
+.workspace-header { border-bottom: 1px solid var(--line); padding-bottom: 22px; }
+.workspace-header .title { max-width: 900px; overflow-wrap: anywhere; }
+.workspace-header .page-head { align-items: start; }
+.workspace-header .crumbs { display: flex; gap: 10px; }
+.workspace-navigation { gap: 16px; }
+.task-actions { justify-content: flex-end; max-width: 500px; }
+.task-tabs { flex-shrink: 0; }
+.task-tabs a { min-width: 78px; text-align: center; }
+.freshness { color: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.freshness.disconnected { color: var(--warn); }
+.task-document { max-width: 1120px; width: 100%; margin-inline: auto; padding: 32px 40px; }
+.task-document .work-form { max-width: none; }
+.task-document .work-form input, .task-document .work-form textarea { width: 100%; }
+.task-document .work-form textarea { line-height: 1.65; resize: vertical; }
+.task-document .work-form > .field > textarea { min-height: 300px; font-family: inherit; font-size: 15px; }
+.description-preview { min-height: 300px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.markdown { color: var(--ink-2); line-height: 1.75; font-size: 15px; overflow-wrap: anywhere; }
+.markdown > :first-child { margin-top: 0; }
+.markdown > :last-child { margin-bottom: 0; }
+.markdown p { white-space: pre-line; margin: 0 0 1em; }
+.markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 { color: var(--ink); line-height: 1.35; margin: 1.5em 0 .6em; }
+.markdown h2 { font-size: 24px; } .markdown h3 { font-size: 20px; } .markdown h4 { font-size: 17px; }
+.markdown ul, .markdown ol { margin: .5em 0 1em; padding-left: 1.6em; }
+.markdown li { margin: .3em 0; }
+.markdown code { font-family: "JetBrains Mono", monospace; font-size: .86em; border-radius: 4px; padding: .12em .3em; background: var(--surface-2); }
+.markdown pre, .code.output { white-space: pre; overflow: auto; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); max-height: 480px; }
+.markdown pre code { padding: 0; background: transparent; }
+.markdown blockquote { border-left: 3px solid var(--line-strong); padding-left: 18px; margin: 16px 0; color: var(--ink-3); }
+.task-document .requirements { line-height: 1.7; }
+.task-document .requirements li + li { margin-top: 14px; }
+.reference-path { display: block; padding: 10px 12px; background: var(--surface-2); border-radius: 6px; overflow-wrap: anywhere; }
+.stale-comparison { border: 1px solid var(--warn-line); background: var(--warn-surface); border-radius: 10px; padding: 24px; }
+.task-inventory { max-width: 1120px; margin-top: 24px; }
+.task-inventory select { max-width: 220px; }
+.stage-path { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.stage-step { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; cursor: pointer; color: var(--ink); }
+.stage-step strong { font-size: 14px; }
+.stage-step[aria-pressed="true"] { outline: 2px solid var(--action); outline-offset: 1px; background: var(--action-soft); }
+.stage-step .stage-status { font-size: 12px; color: var(--ink-3); }
+.stage-step.running .stage-status { color: var(--info); }
+.stage-step.needs_you .stage-status, .stage-step.failed .stage-status { color: var(--warn); }
+.stage-step.done .stage-status { color: var(--ok); }
+.run-columns { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.4fr); gap: 24px; align-items: start; }
+.stage-details { position: sticky; top: 24px; min-width: 0; }
+.run-summary-line { display: flex; flex-direction: column; gap: 10px; }
+.live-activity { min-width: 0; }
+.attempt { border-bottom: 1px solid var(--line); padding: 18px 0; }
+.attempt:first-of-type { padding-top: 0; }
+.attempt:last-of-type { border-bottom: 0; }
+.attempt .row { flex-wrap: wrap; gap: 8px; }
+.attempt .row strong { font-size: 14px; }
+.run-metadata { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 12px; color: var(--ink-3); }
+.history-entry > summary { cursor: pointer; font-weight: 650; font-size: 15px; padding-block: 4px; }
+.history-entry[open] > summary { margin-bottom: 24px; }
+.history-identities { display: grid; grid-template-columns: minmax(120px, auto) 1fr; gap: 8px 24px; font-size: 12px; }
+.history-identities dt { color: var(--ink-3); }
+.history-identities dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.history-entry .code { overflow: auto; max-height: 500px; }
+.history-entry .timeline details, .live-activity .timeline details { margin-top: 8px; }
+.timeline pre { white-space: pre-wrap; word-break: break-word; }
+.artifact > summary { overflow-wrap: anywhere; }
+.task-workspace [hidden] { display: none !important; }
+@media (min-width: 1450px) { .stage-path { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+@media (max-width: 850px) {
+	.workspace-header .page-head { flex-direction: column; gap: 20px; }
+	.task-actions { justify-content: flex-start; max-width: none; }
+	.task-document { padding: 24px; }
+	.run-columns { grid-template-columns: 1fr; }
+	.stage-details { position: static; }
+	.stage-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.workspace-navigation { flex-wrap: wrap; }
+}
+@media (max-width: 540px) {
+	.task-document { padding: 18px; }
+	.task-document .requirement-row { grid-template-columns: 24px minmax(0, 1fr); }
+	.task-document .requirement-side { grid-column: 2; flex-direction: row; }
+	.task-workspace .form-grid { grid-template-columns: 1fr; }
+	.task-workspace .row { flex-wrap: wrap; }
+	.history-identities { grid-template-columns: 1fr; gap: 4px; }
+	.history-identities dd { margin-bottom: 10px; }
+	.task-tabs a { min-width: 62px; }
+}
+.stage-details .run-facts { flex: none; }

@@ -239,6 +239,19 @@ func (s *Service) StartExpectations(ctx context.Context, actor Principal, reques
 	if saved, ok, hash, err := receipt[Expectation](ctx, tx, current.UserID, "start_expectations", request.RequestID, request); err != nil || ok {
 		return saved, err
 	} else {
+		if _, err := authorizeProject(ctx, tx, actor, project.ID, CapabilityCoordinate); err != nil {
+			return Expectation{}, err
+		}
+		if err := s.requireTaskQueued(ctx, tx, project, request.WorkItemID); err != nil {
+			return Expectation{}, err
+		}
+		if err := requireNoActiveJob(ctx, tx, project.ID, request.WorkItemID); err != nil {
+			return Expectation{}, err
+		}
+		latest, readErr := os.ReadFile(work.Source)
+		if readErr != nil || digestBytes(latest) != digestBytes(raw) {
+			return Expectation{}, fault(CodeStale, "work item changed before test authoring started", readErr)
+		}
 		if err := saveExpectation(ctx, tx, expectation, true); err != nil {
 			return Expectation{}, err
 		}
@@ -428,6 +441,9 @@ func (s *Service) decideExpectations(ctx context.Context, actor Principal, reque
 	if decision == ExpectationAccepted {
 		project, err := readProject(ctx, s.state.db, expectation.ProjectID)
 		if err != nil {
+			return Expectation{}, err
+		}
+		if err := s.requireTaskQueued(ctx, s.state.db, project, expectation.WorkItemID); err != nil {
 			return Expectation{}, err
 		}
 		if _, digest, err := s.currentWorkItem(ctx, project, expectation.WorkItemID); err != nil {

@@ -2,7 +2,9 @@ package factory
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -72,6 +74,32 @@ func (s *Service) WorkItemRun(ctx context.Context, actor Principal, projectID Pr
 	}
 	if in == nil {
 		return ItemRun{}, fault(CodeNotFound, "work item not found", nil)
+	}
+	// The board omits cancelled jobs so an explicitly requeued task can be
+	// dispatched again. A run graph describes retained execution instead: stopping
+	// must not make its completed agreement, attempts, or checks disappear.
+	var latestID JobID
+	err = s.state.db.QueryRowContext(ctx, `SELECT id FROM jobs WHERE project_id=? AND work_item_id=? ORDER BY created_at DESC, id DESC LIMIT 1`, projectID, workItemID).Scan(&latestID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return ItemRun{}, fault(CodeInternal, "read latest work item run", err)
+	}
+	if err == nil && (in.job == nil || in.job.ID != latestID) {
+		job, err := loadJob(ctx, s.state.db, latestID)
+		if err != nil {
+			return ItemRun{}, err
+		}
+		if in.job != nil {
+			in.cost -= implementationCost(*in.job)
+		}
+		in.job, in.jobTests = &job, nil
+		in.cost += implementationCost(job)
+		if job.Admission.ExpectationsID != "" {
+			tests, err := loadExpectation(ctx, s.state.db, job.Admission.ExpectationsID)
+			if err != nil {
+				return ItemRun{}, err
+			}
+			in.jobTests = &tests
+		}
 	}
 	card, _ := deriveCard(*in)
 	refinements, err := s.Refinements(ctx, actor, projectID, workItemID)
@@ -279,8 +307,21 @@ func buildStep(job *Job, change string) RunStep {
 		step.Notes = append(step.Notes, "The builder said: “"+truncateRunes(strings.TrimSpace(message), 600)+"”")
 	}
 	switch {
+	case first.Status == AttemptUnknown:
+		step.Status, step.Summary = RunNeedsYou, "Execution outcome unknown"
+		if first.CancellationRequested {
+			step.Summary = "Stop outcome unknown"
+		}
+	case first.Status == AttemptCancelled:
+		step.Status, step.Summary = RunFailed, "Build stopped before completion"
+		if first.StartedAt == nil {
+			step.Status, step.Summary = RunSkipped, "Stopped before the build started"
+		}
 	case first.FinishedAt == nil:
 		step.Status, step.Summary = RunRunning, "Building"
+		if first.CancellationRequested {
+			step.Summary = "Stop requested; waiting for the builder"
+		}
 	case first.CandidateRevision != "":
 		step.Status, step.Summary = RunDone, change
 		if step.Summary == "" {
@@ -328,10 +369,14 @@ func checksStep(job *Job) RunStep {
 			step.Seconds += attemptSeconds(attempt)
 			status := string(attempt.CheckStatus)
 			if status == "" {
-				status = "running"
+				status = string(attempt.Status)
 			}
 			step.Notes = append(step.Notes, key+": "+status)
 		}
+	}
+	if job.Status == JobCancelRequested || job.Status == JobCancellationUnknown || job.Status == JobCancelled {
+		step.Status, step.Summary = stoppedChecks(job, keys, latest)
+		return step
 	}
 	switch job.Status {
 	case JobQueued, JobImplementing:
@@ -350,12 +395,41 @@ func checksStep(job *Job) RunStep {
 	return step
 }
 
+func stoppedChecks(job *Job, keys []string, latest map[string]Attempt) (string, string) {
+	passed := 0
+	for _, key := range keys {
+		attempt, ok := latest[key]
+		if !ok {
+			continue
+		}
+		if attempt.CheckStatus == CheckPassed {
+			passed++
+			continue
+		}
+		if attempt.Status == AttemptUnknown {
+			return RunNeedsYou, "Check stop outcome unknown"
+		}
+		if attempt.Status != AttemptCancelled && attempt.FinishedAt == nil && job.Status != JobCancelled {
+			return RunRunning, "Stop requested; waiting for checks"
+		}
+	}
+	if passed == len(keys) && len(keys) > 0 {
+		return RunDone, "Passed in a clean copy"
+	}
+	if len(latest) > 0 {
+		return RunFailed, "Stopped before all checks passed"
+	}
+	return RunSkipped, "Stopped before the checks"
+}
+
 func approveStep(job *Job, card BoardCard, name func(*UserID, string) string) RunStep {
 	step := RunStep{Key: "approve", Kind: "you", Title: "Approve the change", Status: RunNext}
 	if job == nil {
 		return step
 	}
 	switch job.Status {
+	case JobCancelRequested, JobCancellationUnknown, JobCancelled:
+		step.Status, step.Summary = RunSkipped, "Stopped before approval"
 	case JobReadyForReview, JobReadyForAcceptance:
 		step.Status, step.Summary = RunNeedsYou, "Checks passed"
 		if card.State == CardRunning {
@@ -398,6 +472,10 @@ func delegatedReview(job *Job, reviewID ID) string {
 
 func mergeStep(job *Job) RunStep {
 	step := RunStep{Key: "merge", Kind: "automatic", Title: "Merge into main", Status: RunNext, Summary: "Checks rerun on the merge"}
+	if job != nil && (job.Status == JobCancelRequested || job.Status == JobCancellationUnknown || job.Status == JobCancelled) {
+		step.Status, step.Summary = RunSkipped, "Stopped before merging"
+		return step
+	}
 	if job == nil || job.Status != JobAccepted {
 		return step
 	}
@@ -427,6 +505,19 @@ func repairStep(job *Job, card BoardCard) RunStep {
 		step.Model, step.Turns, step.CostUSD, step.Seconds = model, step.Turns+turns, step.CostUSD+cost, step.Seconds+attemptSeconds(attempt)
 	}
 	switch {
+	case job.RepairCount > 0 && (job.Status == JobCancelRequested || job.Status == JobCancellationUnknown || job.Status == JobCancelled):
+		attempts := buildAttempts(job)
+		last := attempts[len(attempts)-1]
+		switch {
+		case last.CandidateRevision != "":
+			step.Status, step.Summary = RunDone, plural(job.RepairCount, "fix", "fixes")
+		case last.Status == AttemptUnknown:
+			step.Status, step.Summary = RunNeedsYou, "Fix stop outcome unknown"
+		case job.Status != JobCancelled && last.FinishedAt == nil:
+			step.Status, step.Summary = RunRunning, "Stop requested; waiting for the fix"
+		default:
+			step.Status, step.Summary = RunFailed, "Fix stopped before completion"
+		}
 	case job.Status == JobImplementing && job.RepairCount > 0:
 		step.Status, step.Summary = RunRunning, fmt.Sprintf("Fix %d of %d", job.RepairCount, job.Admission.RepairLimit)
 	case job.Status == JobVerificationFailed && card.State == CardNeedsYou:

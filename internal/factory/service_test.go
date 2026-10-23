@@ -363,6 +363,7 @@ func TestCancellationAcknowledgementAndRestartRemainUncertainUntilResolved(t *te
 	if err != nil || job.Status != factory.JobCancelRequested {
 		t.Fatalf("cancel = %+v, %v", job, err)
 	}
+	assertActivityBoardStatus(t, harness, "Stop requested", "")
 	heartbeat, err := harness.service.Heartbeat(ctx, harness.implementer, factory.HeartbeatRequest{RequestID: "heartbeat", AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID})
 	if err != nil || heartbeat.Directive != factory.DirectiveCancel {
 		t.Fatalf("heartbeat = %+v, %v", heartbeat, err)
@@ -390,6 +391,7 @@ func TestCancellationAcknowledgementAndRestartRemainUncertainUntilResolved(t *te
 	if job.Status != factory.JobCancellationUnknown || job.Attempts[len(job.Attempts)-1].Status != factory.AttemptUnknown {
 		t.Fatalf("restart did not preserve uncertainty: %+v", job)
 	}
+	assertActivityBoardStatus(t, harness, "Stop outcome unknown", factory.CardDecisionFix)
 	if _, err := reopened.Claim(ctx, harness.implementer, factory.WorkerClaimRequest{RequestID: "claim-after-restart", Stages: []factory.Stage{factory.StageImplementation}, ProjectID: &harness.project.ID}); factory.ErrorCodeOf(err) != factory.CodeUncertain {
 		t.Fatalf("claim after restart error = %v, want uncertain", err)
 	}
@@ -397,15 +399,12 @@ func TestCancellationAcknowledgementAndRestartRemainUncertainUntilResolved(t *te
 	if err != nil {
 		t.Fatal(err)
 	}
-	if job.Status != factory.JobQueued || len(job.Attempts) != 2 || job.Attempts[0].Status != factory.AttemptCancelled || job.Attempts[1].Status != factory.AttemptPending || job.Attempts[1].ID == assignment.AttemptID {
+	if job.Status != factory.JobCancelled || len(job.Attempts) != 1 || job.Attempts[0].Status != factory.AttemptCancelled {
 		t.Fatalf("resolved job = %+v", job)
 	}
-	replacement, err := reopened.Claim(ctx, harness.implementer, factory.WorkerClaimRequest{RequestID: "replacement-claim", Stages: []factory.Stage{factory.StageImplementation}, ProjectID: &harness.project.ID})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if replacement.AttemptID == assignment.AttemptID || replacement.DispatchID == assignment.DispatchID {
-		t.Fatalf("replacement reused immutable worker receipt identity: %+v", replacement)
+	assertActivityBoardStatus(t, harness, "Stopped", "")
+	if _, err := reopened.Claim(ctx, harness.implementer, factory.WorkerClaimRequest{RequestID: "replacement-claim", Stages: []factory.Stage{factory.StageImplementation}, ProjectID: &harness.project.ID}); factory.ErrorCodeOf(err) != factory.CodeNoWork {
+		t.Fatalf("explicitly stopped execution dispatched a replacement: %v", err)
 	}
 }
 

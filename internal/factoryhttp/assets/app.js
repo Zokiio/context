@@ -19,7 +19,7 @@ function element(tag, attributes = {}, ...children) {
 		else if (name in result) result[name] = value;
 		else result.setAttribute(name, value);
 	}
-	for (const child of children.flat()) if (child !== null && child !== undefined && child !== false) result.append(child instanceof Node ? child : document.createTextNode(String(child)));
+	for (const child of children.flat(Infinity)) if (child !== null && child !== undefined && child !== false) result.append(child instanceof Node ? child : document.createTextNode(String(child)));
 	return result;
 }
 const ICONS = {
@@ -162,7 +162,7 @@ function applyTheme() {
 
 function navigate(fragment) { if (location.hash === '#' + fragment) return route(); location.hash = fragment; }
 function signout() {
-	state.token = ''; state.me = null; state.board = null; state.generation++; pending.clear();
+	state.token = ''; state.me = null; state.board = null; state.workspace = null; state.generation++; pending.clear(); taskSpaces.clear();
 	try { sessionStorage.removeItem('waymark-token'); } catch {}
 	closeDrawer(false);
 	$('#workspace').hidden = true; $('#signin').hidden = false; $('#signin-error').hidden = true; $('#token').value = '';
@@ -190,23 +190,34 @@ async function refreshProjects() {
 }
 async function route(quiet = false) {
 	if (!state.me) return;
-	const generation = ++state.generation;
 	const parts = location.hash.slice(1).split('/').map(decodeURIComponent);
+	const nextId = parts[0] === 'new' ? 'new' : ['item', 'run', 'history', 'decision'].includes(parts[0]) ? parts[1] : null;
+	const sameTask = state.workspace && nextId === state.workspace.id && state.project === state.workspace.project;
+	if (!quiet && state.workspace && !sameTask && !canLeaveWorkspace()) {
+		history.replaceState(null, '', state.routeHash || '#board');
+		return;
+	}
+	if (!quiet && ['board', 'list', 'graph'].includes(state.view) && nextId) state.boardReturn = { hash: state.routeHash || '#board', view: state.view, top: window.scrollY, left: document.querySelector('.board-scroll')?.scrollLeft || 0 };
+	if (!sameTask) state.workspace = null;
+	const generation = ++state.generation;
 	state.view = parts[0] || 'board';
+	state.routeHash = location.hash || '#board';
 	const scroll = window.scrollY;
+	const horizontal = document.querySelector('.board-scroll')?.scrollLeft || 0;
 	if (!quiet) { closeDrawer(false); notice(state.flash); state.flash = ''; }
-	const area = { board: 'board', list: 'board', graph: 'board', run: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask', agents: 'agents' }[state.view] || '';
+	const area = { board: 'board', list: 'board', graph: 'board', run: 'board', history: 'board', decision: 'board', new: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask', agents: 'agents' }[state.view] || '';
 	for (const anchor of document.querySelectorAll('[data-nav]')) {
 		if (anchor.dataset.nav === area) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
 	}
-	if (!quiet) $('#content').replaceChildren(element('p', { class: 'loading' }, 'Loading…'));
+	if (!quiet && !sameTask) $('#content').replaceChildren(element('p', { class: 'loading' }, 'Loading…'));
 	try {
 		let content;
 		if (state.view === 'admin') content = await adminPage(parts[1] || 'users');
 		else if (!state.project) content = noProjects();
 		else if (state.view === 'list') content = await listPage();
 		else if (state.view === 'graph') content = await graphPage();
-		else if (state.view === 'run') content = await runPage(parts[1] || '');
+		else if (state.view === 'new') content = await taskWorkspace('new');
+		else if (['run', 'history', 'decision'].includes(state.view)) content = await taskWorkspace(parts[1] || '', state.view);
 		else if (state.view === 'item') content = await itemPage(parts[1] || '');
 		else if (state.view === 'job') content = await jobPage(parts[1] || '');
 		else if (state.view === 'insights') content = await insightsPage();
@@ -215,8 +226,11 @@ async function route(quiet = false) {
 		else if (state.view === 'access') content = await accessPage();
 		else content = await boardPage();
 		if (generation !== state.generation) return;
-		$('#content').replaceChildren(content);
-		if (quiet) window.scrollTo(0, scroll);
+		if ($('#content').firstChild !== content) $('#content').replaceChildren(content);
+		if (nextId) state.workspace = taskSpaces.get(taskKey(state.project, nextId));
+		if (quiet) { window.scrollTo(0, scroll); const boardScroll = document.querySelector('.board-scroll'); if (boardScroll) boardScroll.scrollLeft = horizontal; }
+		else if (state.boardReturn?.hash === location.hash) { window.scrollTo(0, state.boardReturn.top); const boardScroll = document.querySelector('.board-scroll'); if (boardScroll) boardScroll.scrollLeft = state.boardReturn.left; }
+		else if (!sameTask) window.scrollTo(0, 0);
 	} catch (error) {
 		if (generation !== state.generation) return;
 		$('#content').replaceChildren(page('narrow', element('h1', { class: 'title' }, 'This view could not open'), element('p', { class: 'alert bad', role: 'alert' }, error.message), element('div', { class: 'actions' }, button('Try again', () => route()))));
@@ -251,7 +265,7 @@ function boardHead(board, view) {
 	const line = [plural(board.running, 'agent working', 'agents working'), board.mergedToday + ' merged today', autopilotLine(board)].join(' · ');
 	const views = element('nav', { class: 'segmented', 'aria-label': 'View' }, element('a', { href: '#board', 'aria-current': view === 'board' ? 'page' : null }, 'Board'), element('a', { href: '#list', 'aria-current': view === 'list' ? 'page' : null }, 'List'), element('a', { href: '#graph', 'aria-current': view === 'graph' ? 'page' : null }, 'Graph'));
 	const add = can('coordinate') ? button('Add work', () => openWorkSheet()) : null;
-	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, add, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
+	return element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title), element('p', { class: 'subtitle' }, line)), element('div', { class: 'row' }, views, add, board.publicationPending && can('coordinate') ? button('Resume pending save', async () => { await command('/projects/' + e(state.project) + '/work-items/reconcile', {}); await route(); }) : null, needs.length ? button('Next: ' + needs[0].title, () => openCard(needs[0]), 'primary') : null));
 }
 function who(key, board) {
 	const ask = board.project.policy.ask || {};
@@ -302,14 +316,22 @@ function cardElement(card) {
 		card.state === 'running' && card.progress ? element('span', { class: 'progress-note' }, card.progress) : null,
 		bar, action ? element('span', { class: 'card-action' }, action, icon('arrow', 16)) : null);
 }
-function openCard(card) {
-	if (card.decision === 'plan' || (card.decision === 'approve' && card.jobId)) return openDrawer(card);
-	if (card.jobId) return navigate('job/' + e(card.jobId));
-	return navigate('item/' + e(card.workItemId));
-}
+function openCard(card) { return navigate('item/' + e(card.workItemId)); }
 async function boardPage() {
 	const board = await loadBoard();
-	return page('', boardHead(board, 'board'), element('div', { class: 'board-scroll' }, element('div', { class: 'board' }, COLUMNS.map(([key, name]) => columnElement(board, key, name)))));
+	return page('', boardHead(board, 'board'), element('div', { class: 'board-scroll' }, element('div', { class: 'board' }, COLUMNS.map(([key, name]) => columnElement(board, key, name)))), await taskInventory());
+}
+async function taskInventory() {
+	const records = list(await api('/projects/' + e(state.project) + '/work-items'));
+	const rows = element('div', { class: 'stack tight' });
+	const filter = element('select', { 'aria-label': 'Task filter', onchange: () => { state.taskFilter = filter.value; draw(); } }, [['drafts', 'Unqueued drafts'], ['archived', 'Archived'], ['all', 'All tasks']].map(([value, label]) => element('option', { value }, label)));
+	filter.value = state.taskFilter || 'drafts';
+	const draw = () => {
+		const selected = records.filter((record) => filter.value === 'all' || (filter.value === 'archived' ? record.archived : !record.queued && !record.archived));
+		rows.replaceChildren(...(selected.length ? selected.map((record) => element('a', { class: 'list-row', href: '#item/' + e(record.workItemId) }, element('strong', { class: 'grow' }, record.draft.title), element('span', { class: 'tag' }, record.archived ? 'Archived' : record.queued ? 'Queued' : 'Draft'))) : [element('p', { class: 'fine' }, 'No tasks match this filter.')]));
+	};
+	draw();
+	return element('section', { class: 'surface stack task-inventory' }, element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'Task library'), filter), rows);
 }
 async function listPage() {
 	const board = await loadBoard();
@@ -324,217 +346,432 @@ async function listPage() {
 		element('div', { class: 'row' }, element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow' }, 'Up next · ' + next.length), element('span', { class: 'fine' }, next.map((card) => card.title).join(', ') || 'Nothing waiting.')), element('div', { class: 'surface compact stack tight' }, element('span', { class: 'eyebrow ok' }, 'Merged today · ' + done.length), element('span', { class: 'fine' }, done.map((card) => card.title).join(', ') || 'Nothing yet.'))));
 }
 
-// Adding and editing work items
+// Task editing and workspace
 
-// workForm edits a work item's title, description, requirements and dependencies, and
-// asks the decision model about each requirement while the person types.
-function workForm(board, draft, selfId) {
-	const values = { title: draft.title || '', description: draft.description || '', criteria: list(draft.criteria).length ? [...draft.criteria] : [''], blockedBy: [...list(draft.blockedBy)] };
-	const title = element('input', { type: 'text', value: values.title, maxLength: 200, required: true, oninput: (event) => { values.title = event.target.value; score(); } });
-	const description = element('textarea', { rows: 3, value: values.description, oninput: (event) => { values.description = event.target.value; } });
-	const rows = element('div', { class: 'stack tight' });
-	const vague = element('div', { class: 'callout warn', hidden: true });
-	const others = cards(board).filter((card) => card.workItemId !== selfId);
-	const deps = element('div', { class: 'dep-row' });
-	let signals = null, timer = 0;
-	const badgeFor = (index) => {
-		if (!signals || signals.status !== 'observed' || !values.criteria[index].trim()) return null;
-		const position = values.criteria.slice(0, index).filter((text) => text.trim()).length;
-		const signal = list(signals.criteria)[position];
-		if (!signal) return null;
-		return element('span', { class: 'card-fact ' + (signal.flagged ? 'warn' : 'ok') }, signal.flagged ? 'Looks vague' : 'Checkable');
-	};
-	const drawRows = () => {
-		rows.replaceChildren(...values.criteria.map((text, index) => element('div', { class: 'requirement-row' },
-			element('span', { class: 'requirement-number', 'aria-hidden': 'true' }, String(index + 1)),
-			element('textarea', { rows: 2, value: text, 'aria-label': 'Requirement ' + (index + 1), placeholder: 'A result someone could check as met or not', oninput: (event) => { values.criteria[index] = event.target.value; score(); } }),
-			element('span', { class: 'requirement-side' }, badgeFor(index), values.criteria.length > 1 ? element('button', { type: 'button', class: 'button quiet', 'aria-label': 'Remove requirement ' + (index + 1), onclick: () => { values.criteria.splice(index, 1); drawRows(); score(); } }, 'Remove') : null))));
-		const flagged = signals && signals.status === 'observed' ? list(signals.criteria).filter((signal) => signal.flagged).length : 0;
-		vague.hidden = !flagged;
-		vague.replaceChildren(element('p', {}, plural(flagged, 'requirement looks', 'requirements look') + ' vague. You can save anyway: an agent sharpens it and asks you before anything is built.'));
-	};
-	const drawDeps = () => {
-		const chosen = values.blockedBy.map((id) => others.find((card) => card.workItemId === id) || { workItemId: id, title: id });
-		const picker = element('select', { 'aria-label': 'Add a dependency', onchange: (event) => { if (event.target.value) { values.blockedBy.push(event.target.value); drawDeps(); } } },
-			element('option', { value: '' }, 'Add a dependency'), others.filter((card) => !values.blockedBy.includes(card.workItemId)).map((card) => element('option', { value: card.workItemId }, card.title)));
-		deps.replaceChildren(...chosen.map((card) => element('span', { class: 'dep-chip' }, card.title, element('button', { type: 'button', 'aria-label': 'Remove the dependency on ' + card.title, onclick: () => { values.blockedBy = values.blockedBy.filter((id) => id !== card.workItemId); drawDeps(); } }, icon('close', 14)))), picker);
-	};
+// Markdown is built entirely with text nodes. Raw HTML remains visible text, and
+// links accept only HTTP(S), mailto, fragments and relative references.
+function markdownInline(text) {
+	const result = [];
+	const pattern = /(`[^`\n]+`|\[[^\]\n]+\]\([^\s)]+\)|\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g;
+	let cursor = 0;
+	for (const match of String(text).matchAll(pattern)) {
+		result.push(text.slice(cursor, match.index));
+		const part = match[0];
+		if (part.startsWith('`')) result.push(element('code', {}, part.slice(1, -1)));
+		else if (part.startsWith('[')) {
+			const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+			const destination = link[2];
+			const safe = !/[\u0000-\u0020\u007f]/.test(destination) && !destination.startsWith('//') && !destination.includes('\\') && (!/^[\w+.-]+:/.test(destination) || /^(https?:|mailto:)/i.test(destination));
+			result.push(safe ? element('a', { href: destination, target: destination.startsWith('#') ? null : '_blank', rel: 'noopener noreferrer' }, link[1]) : link[1]);
+		} else result.push(element(part.startsWith('**') ? 'strong' : 'em', {}, part.slice(part.startsWith('**') ? 2 : 1, part.startsWith('**') ? -2 : -1)));
+		cursor = match.index + part.length;
+	}
+	result.push(text.slice(cursor));
+	return result;
+}
+function markdown(text) {
+	const root = element('div', { class: 'markdown' });
+	const source = String(text || '').replaceAll('\r\n', '\n').split('\n');
+	let index = 0;
+	while (index < source.length) {
+		const line = source[index];
+		if (!line.trim()) { index++; continue; }
+		const fence = line.match(/^\s*(```+|~~~+)(.*)$/);
+		if (fence) {
+			const body = []; index++;
+			while (index < source.length && !source[index].trim().startsWith(fence[1])) body.push(source[index++]);
+			index++;
+			root.append(element('pre', {}, element('code', {}, body.join('\n'))));
+			continue;
+		}
+		const heading = line.match(/^(#{1,6})\s+(.*)$/);
+		if (heading) { root.append(element('h' + Math.min(6, heading[1].length + 1), {}, markdownInline(heading[2]))); index++; continue; }
+		if (/^\s*(?:[-*+] |\d+[.)] )/.test(line)) {
+			const ordered = /^\s*\d/.test(line), items = element(ordered ? 'ol' : 'ul');
+			while (index < source.length && (ordered ? /^\s*\d+[.)] / : /^\s*[-*+] /).test(source[index])) {
+				items.append(element('li', {}, markdownInline(source[index++].replace(/^\s*(?:[-*+]|\d+[.)])\s+/, ''))));
+			}
+			root.append(items); continue;
+		}
+		if (/^>\s?/.test(line)) {
+			const quote = []; while (index < source.length && /^>\s?/.test(source[index])) quote.push(source[index++].replace(/^>\s?/, ''));
+			root.append(element('blockquote', {}, markdown(quote.join('\n')))); continue;
+		}
+		const paragraph = [line]; index++;
+		while (index < source.length && source[index].trim() && !/^(#{1,6}\s|\s*```|\s*~~~|>\s?|\s*[-*+] |\s*\d+[.)] )/.test(source[index])) paragraph.push(source[index++]);
+		root.append(element('p', {}, markdownInline(paragraph.join('\n'))));
+	}
+	return root;
+}
+function normalizedDraft(draft) {
+	return { title: draft.title || '', description: draft.description || '', criteria: list(draft.criteria).filter((text) => text.trim()), blockedBy: [...list(draft.blockedBy)], spec: [...list(draft.spec)], context: [...list(draft.context)] };
+}
+function workForm(board, draft, selfId, onChange = () => {}) {
+	const projectId = state.project, values = normalizedDraft(draft);
+	if (!values.criteria.length) values.criteria.push('');
+	let timer = 0, scoreGeneration = 0, disposed = false;
+	const changed = () => onChange(normalizedDraft(values));
+	const title = element('input', { type: 'text', value: values.title, maxLength: 200, required: true, 'aria-label': 'Title', oninput: (event) => { values.title = event.target.value; changed(); score(); } });
+	const description = element('textarea', { rows: 12, value: values.description, 'aria-label': 'What and why', oninput: (event) => { values.description = event.target.value; changed(); preview.replaceChildren(markdown(values.description)); } });
+	const preview = element('div', { class: 'description-preview', hidden: true }, markdown(values.description));
+	const writing = element('button', { type: 'button', 'aria-pressed': 'true', onclick: () => { description.hidden = false; preview.hidden = true; writing.setAttribute('aria-pressed', 'true'); reading.setAttribute('aria-pressed', 'false'); description.focus(); } }, 'Write');
+	const reading = element('button', { type: 'button', 'aria-pressed': 'false', onclick: () => { description.hidden = true; preview.hidden = false; reading.setAttribute('aria-pressed', 'true'); writing.setAttribute('aria-pressed', 'false'); } }, 'Preview');
+	const rows = element('div', { class: 'stack tight' }), vague = element('p', { class: 'fine', role: 'status' });
 	const score = () => {
-		clearTimeout(timer);
+		clearTimeout(timer); const generation = ++scoreGeneration;
 		timer = setTimeout(async () => {
 			const criteria = values.criteria.filter((text) => text.trim());
-			if (!criteria.length) { signals = null; drawRows(); return; }
-			try { signals = await api('/projects/' + e(state.project) + '/criteria/score', { method: 'POST', body: { title: values.title, criteria } }); } catch { signals = null; }
-			drawRows();
+			if (!criteria.length) { vague.textContent = ''; return; }
+			let signals;
+			try { signals = await api('/projects/' + e(projectId) + '/criteria/score', { method: 'POST', body: { title: values.title, criteria } }); } catch { signals = null; }
+			if (disposed || generation !== scoreGeneration) return;
+			let position = 0;
+			for (const [index, row] of [...rows.children].entries()) {
+				const signal = values.criteria[index]?.trim() ? list(signals?.criteria)[position++] : null;
+				const badge = row.querySelector('[data-score]');
+				badge.textContent = signals?.status === 'observed' && signal ? signal.flagged ? 'Looks vague' : 'Checkable' : '';
+				badge.className = 'card-fact ' + (signal?.flagged ? 'warn' : 'ok');
+			}
+			const flagged = list(signals?.criteria).filter((item) => item.flagged).length;
+			vague.textContent = flagged ? plural(flagged, 'requirement looks', 'requirements look') + ' vague. You can save and refine it before starting.' : '';
 		}, 600);
 	};
-	drawRows(); drawDeps(); score();
-	const titleId = 'work-title-' + crypto.randomUUID(), descriptionId = 'work-description-' + crypto.randomUUID();
-	title.id = titleId; description.id = descriptionId;
-	const form = element('div', { class: 'stack loose work-form' },
-		element('div', { class: 'field' }, element('label', { htmlFor: titleId }, 'Title'), title),
-		element('div', { class: 'field' }, element('label', { htmlFor: descriptionId }, 'What and why ', element('span', { class: 'fine' }, 'optional')), description),
-		element('fieldset', { class: 'stack' }, element('legend', {}, 'Done when'), element('p', { class: 'fine' }, 'One result per line that someone could check as met or not. The locked tests are written from these.'), rows,
-			element('button', { type: 'button', class: 'add-work inline', onclick: () => { values.criteria.push(''); drawRows(); rows.querySelector('.requirement-row:last-child textarea')?.focus(); } }, icon('plus', 16), 'Add a requirement'), vague),
-		element('div', { class: 'stack tight' }, element('span', { class: 'field-label' }, 'Depends on'), deps, element('span', { class: 'fine' }, 'It waits in Up next until these are merged.')));
-	return { form, draft: () => ({ title: values.title, description: values.description, criteria: values.criteria.filter((text) => text.trim()), blockedBy: values.blockedBy }) };
-}
-// openWorkSheet adds a work item from a side panel over the board.
-async function openWorkSheet() {
-	const board = state.board || await loadBoard();
-	closeDrawer(false);
-	state.drawer = { sheet: 'add' };
-	state.drawerReturn = document.activeElement;
-	const { form, draft } = workForm(board, {}, '');
-	const problem = element('p', { class: 'alert bad', role: 'alert', hidden: true });
-	const save = async (start) => {
-		problem.hidden = true;
-		try {
-			const record = await command('/projects/' + e(state.project) + '/work-items', { draft: draft() });
-			closeDrawer(false);
-			state.flash = 'Added ' + record.draft.title + ' to Up next.';
-			await navigate('board');
-			const card = cards(await loadBoard()).find((entry) => entry.workItemId === record.workItemId);
-			if (start && card) openCard(card);
-		} catch (error) { problem.textContent = error.message; problem.hidden = false; }
+	const addRow = (text) => {
+		const textarea = element('textarea', { rows: 2, value: text, placeholder: 'A result someone could check', oninput: () => { values.criteria[[...rows.children].indexOf(row)] = textarea.value; changed(); score(); } });
+		const row = element('div', { class: 'requirement-row' }, element('span', { class: 'requirement-number', 'aria-hidden': 'true' }), textarea, element('span', { class: 'requirement-side' }, element('span', { 'data-score': '' }), element('button', { type: 'button', class: 'button quiet', onclick: () => { const index = [...rows.children].indexOf(row); values.criteria.splice(index, 1); row.remove(); numberRows(); changed(); score(); } }, 'Remove')));
+		rows.append(row); numberRows(); return textarea;
 	};
-	const close = element('button', { type: 'button', class: 'icon-button', 'aria-label': 'Close', onclick: () => closeDrawer(true) }, icon('close'));
-	const drawer = element('aside', { class: 'drawer', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Add work' },
-		element('div', { class: 'drawer-head' }, element('div', {}, element('span', { class: 'eyebrow' }, 'New work item · ' + board.project.title), element('h2', {}, 'Add work')), close),
-		element('div', { class: 'stack loose' }, form, problem,
-			element('p', { class: 'fine' }, 'Waymark writes a Markdown file next to your other work items and lists it in the project. Commit it with your other changes.'),
-			element('div', { class: 'actions' }, button('Add to Up next', () => save(false), 'primary'), button('Add and agree what done means', () => save(true)), element('button', { type: 'button', class: 'button quiet', onclick: () => closeDrawer(true) }, 'Cancel'))));
-	$('#drawer-root').replaceChildren(element('button', { type: 'button', class: 'scrim', tabIndex: -1, 'aria-label': 'Close the panel', onclick: () => closeDrawer(true) }), drawer);
-	drawer.querySelector('input')?.focus();
-}
-// workDetails shows a work item's record on its page, with editing in place.
-async function workDetails(workItemId, board) {
-	const record = await api('/projects/' + e(state.project) + '/work-items/' + e(workItemId));
-	const box = element('section', { class: 'surface stack' });
-	const view = () => {
-		const depends = list(record.draft.blockedBy).map((id) => cards(board).find((card) => card.workItemId === id)?.title || id);
-		box.replaceChildren(
-			element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'The work item'), can('coordinate') && !record.frozen ? button('Edit', edit) : null),
-			record.draft.description ? element('p', {}, record.draft.description) : null,
-			element('h3', { class: 'eyebrow' }, 'Done when'),
-			element('ol', { class: 'requirements' }, list(record.draft.criteria).map((text) => element('li', {}, rich(text)))),
-			depends.length ? element('p', { class: 'fine' }, 'Depends on ' + depends.join(', ') + '.') : null,
-			element('p', { class: 'fine' }, record.frozen ? 'A build holds it, so it cannot change until the build ends.' : 'You can edit it until its build starts. The file is ', record.frozen ? null : element('code', { class: 'inline' }, record.path), record.frozen ? null : '.'));
+	const numberRows = () => [...rows.children].forEach((row, index) => { row.querySelector('.requirement-number').textContent = index + 1; row.querySelector('textarea').setAttribute('aria-label', 'Requirement ' + (index + 1)); row.querySelector('button').setAttribute('aria-label', 'Remove requirement ' + (index + 1)); });
+	values.criteria.forEach(addRow);
+	const deps = element('div', { class: 'dep-row' });
+	const others = cards(board).filter((card) => card.workItemId !== selfId);
+	const drawDeps = () => {
+		deps.replaceChildren(...values.blockedBy.map((id) => element('span', { class: 'dep-chip' }, others.find((card) => card.workItemId === id)?.title || id, element('button', { type: 'button', 'aria-label': 'Remove dependency ' + id, onclick: () => { values.blockedBy = values.blockedBy.filter((value) => value !== id); drawDeps(); changed(); } }, icon('close', 14)))), element('select', { 'aria-label': 'Add a dependency', onchange: (event) => { if (event.target.value) { values.blockedBy.push(event.target.value); drawDeps(); changed(); } } }, element('option', { value: '' }, 'Add a dependency'), others.filter((card) => !values.blockedBy.includes(card.workItemId)).map((card) => element('option', { value: card.workItemId }, card.title))));
 	};
-	const edit = () => {
-		const { form, draft } = workForm(board, record.draft, workItemId);
-		const problem = element('p', { class: 'alert bad', role: 'alert', hidden: true });
-		box.replaceChildren(element('h2', { class: 'section' }, 'Edit the work item'), form, problem,
-			element('div', { class: 'actions' }, button('Save changes', async () => {
-				problem.hidden = true;
-				try {
-					const saved = await command('/projects/' + e(state.project) + '/work-items/' + e(workItemId), { workItemId, ifTicketSHA256: record.ticketSHA256, draft: draft() }, 'PUT');
-					Object.assign(record, saved);
-					view();
-					notice('Saved.');
-				} catch (error) { problem.textContent = error.message; problem.hidden = false; }
-			}, 'primary'), element('button', { type: 'button', class: 'button quiet', onclick: view }, 'Cancel')));
-		box.querySelector('input')?.focus();
-	};
-	view();
-	return box;
+	drawDeps(); score();
+	const links = (key, label) => field(label, key, { type: 'textarea', rows: 3, value: values[key].join('\n'), help: 'One document path per line, relative to the task record.', oninput: (event) => { values[key] = lines(event.target.value); changed(); } });
+	const form = element('div', { class: 'stack loose work-form' }, element('label', { class: 'field' }, element('span', { class: 'field-label' }, 'Title'), title), element('div', { class: 'field' }, element('div', { class: 'row spread' }, element('span', { class: 'field-label' }, 'What and why'), element('div', { class: 'segmented', 'aria-label': 'Description mode' }, writing, reading)), description, preview, element('span', { class: 'fine' }, 'Markdown supports headings, lists, links and code blocks.')), element('fieldset', { class: 'stack' }, element('legend', {}, 'Done when'), rows, button('Add a requirement', () => { values.criteria.push(''); addRow('').focus(); changed(); score(); }, 'quiet'), vague), element('div', { class: 'stack tight' }, element('span', { class: 'field-label' }, 'Depends on'), deps), formGrid(links('spec', 'Specification links'), links('context', 'Context links')));
+	return { form, draft: () => normalizedDraft(values), dispose: () => { disposed = true; clearTimeout(timer); } };
 }
+function openWorkSheet() { return navigate('new'); }
 
-// One item's run
-
-// RUN_LAYOUT places each step on the run graph: x and y of the node's top left corner.
-const RUN_LAYOUT = { sharpen: [48, 40], tests: [48, 232], agree: [312, 232], build: [576, 232], checks: [840, 232], approve: [1104, 232], merge: [1368, 232], repair: [840, 440] };
-const RUN_NODE = { width: 192, height: 128 };
+const taskSpaces = new Map();
 const RUN_KIND = { agent: 'Agent', you: 'You', check: 'Check', automatic: 'Automatic' };
 const RUN_STATUS = { done: 'Done', running: 'Running', needs_you: 'Needs you', next: 'Next', idle: 'Idle', skipped: 'Skipped', failed: 'Failed' };
-const RUN_ICON = { agent: 'spark', you: 'person', check: 'terminal', automatic: 'merge' };
-async function runPage(workItemId) {
-	const [run, board] = await Promise.all([api('/projects/' + e(state.project) + '/work-items/' + e(workItemId) + '/run'), loadBoard()]);
-	const card = cards(board).find((entry) => entry.workItemId === workItemId);
-	const steps = Object.fromEntries(list(run.steps).map((step) => [step.key, step]));
-	const waiting = list(run.steps).find((step) => step.status === 'needs_you');
-	let selected = (waiting || list(run.steps).find((step) => step.status === 'running') || list(run.steps).filter((step) => step.status === 'done').pop() || run.steps[0]).key;
-	const detail = element('section', { class: 'surface run-detail', 'aria-live': 'polite' });
-	const nodes = {};
-	const select = (key) => {
-		selected = key;
-		for (const [name, node] of Object.entries(nodes)) node.setAttribute('aria-pressed', String(name === key));
-		const step = steps[key];
-		const facts = [['Model', step.model], ['Turns', step.turns || ''], ['Time', step.seconds ? Math.round(step.seconds) + ' s' : ''], ['Cost', step.costUsd ? money(step.costUsd) : ''], ['By', step.by]].filter(([, value]) => value);
-		const action = step.status === 'needs_you' ? runAction(step, card, run) : null;
-		detail.replaceChildren(
-			element('div', { class: 'stack' }, element('span', { class: 'eyebrow' }, RUN_KIND[step.kind] + ' · ' + RUN_STATUS[step.status]), element('h2', {}, step.title), step.summary ? element('p', { class: 'lead' }, step.summary) : null,
-				list(step.notes).map((note) => element('p', { class: 'run-note' }, rich(note))), action),
-			facts.length ? element('dl', { class: 'run-facts' }, facts.map(([label, value]) => [element('dt', {}, label), element('dd', {}, String(value))])) : null);
-	};
-	const host = element('div', { class: 'run-host' }, runEdges(steps));
-	for (const [key, [x, y]] of Object.entries(RUN_LAYOUT)) {
-		const step = steps[key];
-		if (!step) continue;
-		const meta = [(step.model || '').replace(/^claude-/, ''), step.turns ? plural(step.turns, 'turn', 'turns') : '', step.seconds ? Math.round(step.seconds) + ' s' : ''].filter(Boolean).join(' · ');
-		const node = element('button', { type: 'button', class: 'run-node ' + step.status.replace('_', '-'), 'aria-pressed': 'false', onclick: () => select(key) },
-			element('span', { class: 'run-icon ' + step.kind, 'aria-hidden': 'true' }, icon(RUN_ICON[step.kind], 16)),
-			element('span', { class: 'run-text' },
-				element('span', { class: 'run-top' }, element('span', {}, RUN_KIND[step.kind]), element('span', { class: 'run-status' }, RUN_STATUS[step.status])),
-				element('strong', {}, step.title),
-				element('span', { class: 'run-summary' }, step.summary || ' '),
-				element('span', { class: 'run-meta' }, element('span', {}, meta || step.by || ''), step.costUsd ? element('span', {}, money(step.costUsd)) : null)));
-		node.style.left = x + 'px';
-		node.style.top = y + 'px';
-		nodes[key] = node;
-		host.append(node);
-	}
-	const branch = steps.merge?.title.replace('Merge into ', '') || 'main';
-	const end = element('span', { class: 'run-end' + (steps.merge?.status === 'done' ? ' done' : '') }, icon('merge', 14), branch);
-	host.append(end);
-	for (const [text, x, y, width, align] of [['sharpened', 156, 191, 72, 'left'], ['ready', 252, 272, 48], ['agreed', 512, 272, 56], ['built', 780, 272, 48], ['passed', 1040, 272, 56], ['approved', 1300, 272, 64], ['passed', 1568, 272, 56], ['fail', 980, 391, 32, 'left'], ['fixed', 852, 391, 40, 'right'], ['ask for a fix', 1071, 516, 90]]) {
-		const label = element('span', { class: 'run-label' }, text);
-		label.style.left = x + 'px';
-		label.style.top = y + 'px';
-		label.style.width = width + 'px';
-		label.style.textAlign = align || 'center';
-		host.append(label);
-	}
-	select(selected);
-	const chips = element('div', { class: 'card-facts' },
-		card ? element('span', { class: 'state-chip ' + ({ needs_you: 'need', running: 'running' }[card.state] || '') }, card.state === 'needs_you' ? 'Needs you' : card.status) : null,
-		run.costUsd ? element('span', { class: 'card-fact' }, money(run.costUsd) + ' so far') : null,
-		run.repairLimit ? element('span', { class: 'card-fact' }, run.repairs + ' of ' + run.repairLimit + ' fixes used') : null);
-	return page('run-page',
-		element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', run.title), element('div', { class: 'page-head' }, element('div', { class: 'stack tight' }, element('h1', { class: 'title' }, run.title), chips), itemTabs(workItemId, 'run'))),
-		element('div', { class: 'run-scroll' }, host),
-		element('p', { class: 'fine' }, 'Solid arrows show what happened; dashed ones what can still happen. Select a step to see its details.'),
-		detail);
-}
-// runEdges draws the arrows between the steps, solid where the run went and dashed
-// where it can still go.
-function runEdges(steps) {
-	const status = (key) => steps[key]?.status || 'next';
-	const done = (key) => status(key) === 'done';
-	const kind = (from, to) => status(to) === 'needs_you' && done(from) ? 'wait' : done(from) && status(to) !== 'next' ? 'met' : 'open';
-	const lines = [
-		['M144 168 L144 228', done('sharpen') ? 'met' : 'open'],
-		['M240 296 L308 296', kind('tests', 'agree')], ['M504 296 L572 296', kind('agree', 'build')], ['M768 296 L836 296', kind('build', 'checks')],
-		['M1032 296 L1100 296', kind('checks', 'approve')], ['M1296 296 L1364 296', kind('approve', 'merge')], ['M1560 296 L1628 296', done('merge') ? 'met' : 'open'],
-		['M968 360 L968 436', ['done', 'running', 'needs_you'].includes(status('repair')) ? 'met' : 'open'],
-		['M904 440 L904 364', done('repair') ? 'met' : 'open'],
-		['M1200 360 L1200 504 L1036 504', 'open'],
-	];
-	return svg('svg', { class: 'run-edges', width: 1768, height: 600, viewBox: '0 0 1768 600', 'aria-hidden': 'true' },
-		svg('defs', {}, ['met', 'wait', 'open'].map((name) => svg('marker', { id: 'run-arrow-' + name, viewBox: '0 0 8 8', refX: '7', refY: '4', markerWidth: '8', markerHeight: '8', orient: 'auto' }, svg('path', { d: 'M0,0 L8,4 L0,8 z', class: 'arrow ' + name })))),
-		lines.map(([d, name]) => svg('path', { d, class: 'edge ' + name, 'marker-end': 'url(#run-arrow-' + name + ')' })));
-}
-function runAction(step, card, run) {
-	if (!card) return null;
-	if (step.key === 'agree' || step.key === 'sharpen') return button(card.questions ? 'Answer the questions' : 'Agree what done means', () => openCard(card), 'primary');
-	if (step.key === 'approve') return button('Review the change', () => openCard(card), 'primary');
-	if (run.jobId) return link('Open the build', '#job/' + e(run.jobId), 'primary');
-	return null;
-}
+const taskKey = (project, id) => project + '/' + id;
+const taskURL = (space) => '/projects/' + e(space.project) + '/work-items/' + e(space.id);
+const latestJob = (space) => list(space.activity?.jobs)[0];
+const independentReview = (job) => job.implementerId !== state.me.userId && (job.coordinatorId !== state.me.userId || job.admission.allowCoordinatorReview);
+const canReviewJob = (job) => !!job && job.status === 'ready_for_review' && state.me?.kind === 'human' && can('review', job.projectId) && independentReview(job);
+const canApproveJob = (job) => !!job && state.me?.kind === 'human' && can('accept', job.projectId) && (job.status === 'ready_for_acceptance' || canReviewJob(job));
+const canRejectJob = (job) => !!job && can('coordinate', job.projectId) && list(job.availableActions).includes('cancel');
+const canPlan = (projectId = state.project) => state.me?.kind === 'human' && can('coordinate', projectId);
+const canOpenResultDecision = (job) => canApproveJob(job) || canReviewJob(job) || canRejectJob(job);
+
+function dirtyWorkspace() { return state.workspace?.editor && state.workspace.dirty; }
+function canLeaveWorkspace() { return !dirtyWorkspace() || confirm('Leave this task with unsaved changes? Your draft stays in this tab.'); }
 function itemTabs(workItemId, current) {
-	return element('nav', { class: 'segmented', 'aria-label': 'Work item' },
-		element('a', { href: '#item/' + e(workItemId), 'aria-current': current === 'details' ? 'page' : null }, 'Details'),
-		element('a', { href: '#run/' + e(workItemId), 'aria-current': current === 'run' ? 'page' : null }, 'Run'));
+	return element('nav', { class: 'segmented task-tabs', 'aria-label': 'Task workspace' }, ['task', 'run', 'history'].map((tab) => element('a', { href: '#' + (tab === 'task' ? 'item' : tab) + '/' + e(workItemId), 'aria-current': tab === current ? 'page' : null }, tab[0].toUpperCase() + tab.slice(1))));
+}
+function taskDescription(record) {
+	const draft = record.draft || {};
+	return element('div', { class: 'stack loose' }, draft.description ? markdown(draft.description) : element('p', { class: 'muted' }, 'No description yet.'), element('section', { class: 'stack' }, element('h2', { class: 'section' }, 'Done when'), element('ol', { class: 'requirements' }, list(draft.criteria).map((text) => element('li', {}, markdown(text))))), list(draft.blockedBy).length ? element('section', { class: 'stack tight' }, element('h2', { class: 'section' }, 'Dependencies'), list(draft.blockedBy).map((id) => element('a', { href: '#item/' + e(id) }, cards(state.board || {}).find((card) => card.workItemId === id)?.title || id))) : null, ['spec', 'context'].map((key) => list(draft[key]).length ? element('section', { class: 'stack tight' }, element('h2', { class: 'section' }, key === 'spec' ? 'Specification links' : 'Context links'), list(draft[key]).map((path) => element('code', { class: 'reference-path' }, path))) : null));
+}
+function patchRegion(target, identity, build) {
+	if (target.dataset.snapshot === identity) return;
+	const opened = new Map([...target.querySelectorAll('details[data-key]')].map((node) => [node.dataset.key, node.open]));
+	const scrolls = [...target.querySelectorAll('[data-scroll]')].map((node) => [node.dataset.scroll, node.scrollTop, node.scrollLeft]);
+	target.replaceChildren(...[build()].flat(Infinity).filter(Boolean)); target.dataset.snapshot = identity;
+	for (const node of target.querySelectorAll('details[data-key]')) if (opened.has(node.dataset.key)) node.open = opened.get(node.dataset.key);
+	for (const [key, top, left] of scrolls) { const node = [...target.querySelectorAll('[data-scroll]')].find((item) => item.dataset.scroll === key); if (node) { node.scrollTop = top; node.scrollLeft = left; } }
+}
+async function taskWorkspace(id, tab = 'task') {
+	const key = taskKey(state.project, id), project = state.project;
+	let space = taskSpaces.get(key);
+	if (!space) {
+		const board = state.board?.project.id === project ? state.board : await loadBoard();
+		const [record, inventory] = await Promise.all([id === 'new' ? { draft: normalizedDraft({}), workItemId: 'new', actions: [] } : api('/projects/' + e(project) + '/work-items/' + e(id)), api('/projects/' + e(project) + '/work-items')]);
+		space = { id, project, record, board, inventory: list(inventory), tab, follow: true, selected: '', dirty: false, editor: null, artifactNodes: new Map(), lastSuccess: null, error: '', refreshSequence: 0 };
+		taskSpaces.set(key, space); buildWorkspace(space);
+		if (id === 'new') editTask(space);
+	}
+	setWorkspaceTab(space, tab);
+	if (id !== 'new') refreshWorkspace(space);
+	return space.root;
+}
+function buildWorkspace(space) {
+	space.title = element('h1', { class: 'title' }, space.id === 'new' ? 'New task' : space.record.draft.title);
+	space.status = element('span', { class: 'state-chip' }); space.dirtyLabel = element('span', { class: 'fine' });
+	space.freshness = element('span', { class: 'freshness', role: 'status' });
+	space.tabs = space.id === 'new' ? null : itemTabs(space.id, space.tab);
+	space.task = element('section', { class: 'task-panel stack loose', 'aria-label': 'Task' });
+	space.run = element('section', { class: 'stack loose', hidden: true, 'aria-label': 'Run' });
+	space.history = element('section', { class: 'stack loose', hidden: true, 'aria-label': 'History' });
+	space.decisionNotice = element('div', { class: 'callout warn stack', hidden: true, role: 'status' });
+	space.decisionContent = element('div', { class: 'stack loose' });
+	space.decisionContent.addEventListener('input', () => { space.decisionDirty = true; });
+	space.decisionContent.addEventListener('change', () => { space.decisionDirty = true; });
+	space.decisionContent.addEventListener('click', (event) => { if (event.target.closest('button[aria-pressed]')) space.decisionDirty = true; });
+	space.decision = element('section', { class: 'surface stack loose', hidden: true, 'aria-label': 'Decision' }, space.decisionNotice, space.decisionContent);
+	space.actions = element('div', { class: 'actions task-actions' });
+	space.root = page('task-workspace', element('div', { class: 'workspace-header stack' }, element('div', { class: 'crumbs' }, element('a', { href: state.boardReturn?.hash || '#board' }, 'Back to ' + (state.boardReturn?.view || 'board')), element('span', {}, '/'), element('span', {}, space.id === 'new' ? 'New task' : 'Task')), element('div', { class: 'page-head' }, element('div', { class: 'stack tight' }, space.title, element('div', { class: 'row' }, space.status, space.dirtyLabel)), space.actions), element('div', { class: 'row spread workspace-navigation' }, space.tabs, space.freshness)), space.task, space.run, space.history, space.decision);
+	space.stagePath = element('div', { class: 'stage-path', 'aria-label': 'Run stages' });
+	space.stageDetails = element('section', { class: 'surface stack stage-details' });
+	space.live = element('section', { class: 'surface stack live-activity', 'aria-label': 'Activity' });
+	space.runSummary = element('div', { class: 'run-summary-line' });
+	const follow = element('input', { type: 'checkbox', checked: true, onchange: () => { space.follow = follow.checked; renderRun(space); } });
+	space.followControl = follow;
+	space.run.append(element('div', { class: 'row spread' }, space.runSummary, element('label', { class: 'switch' }, follow, 'Follow active step')), space.stagePath, element('div', { class: 'run-columns' }, space.stageDetails, space.live));
+	space.taskContent = element('section', { class: 'surface stack loose task-document' });
+	space.task.append(space.taskContent);
+	renderTask(space); renderWorkspaceHead(space);
+}
+function setWorkspaceTab(space, tab) {
+	space.tab = tab;
+	for (const [name, node] of [['task', space.task], ['run', space.run], ['history', space.history], ['decision', space.decision]]) node.hidden = name !== tab;
+	for (const anchor of space.tabs?.querySelectorAll('a') || []) anchor.setAttribute('aria-current', anchor.hash.startsWith('#' + (tab === 'task' ? 'item' : tab) + '/') ? 'page' : 'false');
+	if (tab === 'decision' && (!space.decisionLoaded || (!space.decisionDirty && !space.dirty))) loadDecision(space);
+	else if (tab === 'decision') checkDecisionFreshness(space);
+}
+function renderTask(space) {
+	if (space.editor) return;
+	const edit = can('coordinate', space.project) ? button('Edit task', () => editTask(space)) : null;
+	if (edit) edit.disabled = !!space.record.frozen || !!space.record.archived;
+	space.taskContent.replaceChildren(...[element('div', { class: 'row spread' }, element('h2', { class: 'section' }, 'Task'), edit), space.record.frozen ? element('p', { class: 'callout warn' }, space.record.frozenReason || 'Requirements are frozen while execution is active or uncertain.') : null, taskDescription(space.record), element('p', { class: 'fine mono' }, space.record.path || 'Save this draft before queueing it.'), list(space.record.dependents).length ? element('section', { class: 'stack tight' }, element('h3', { class: 'section' }, 'Tasks depending on this'), list(space.record.dependents).map((item) => element('a', { href: '#item/' + e(item.id) }, item.title))) : null, space.record.deleteReason ? element('p', { class: 'fine' }, 'Permanent deletion is unavailable: ' + space.record.deleteReason) : null].filter(Boolean));
+}
+function editTask(space) {
+	if (space.editor) return;
+	space.baseSHA = space.record.ticketSHA256; space.baseDraft = JSON.stringify(normalizedDraft(space.record.draft));
+	const changed = (draft) => { space.dirty = JSON.stringify(draft) !== space.baseDraft; renderWorkspaceHead(space); };
+	const dependencyCards = new Map(cards(space.board).map((card) => [card.workItemId, card]));
+	for (const record of space.inventory) if (!record.archived) dependencyCards.set(record.workItemId, { workItemId: record.workItemId, title: record.draft.title });
+	space.editor = workForm({ ...space.board, cards: [...dependencyCards.values()] }, space.record.draft, space.id, changed);
+	space.editorProblem = element('div', { class: 'stack', role: 'status' });
+	space.saveButton = button(space.id === 'new' ? 'Save draft' : 'Save changes', () => saveTask(space), 'primary');
+	space.taskContent.replaceChildren(element('div', { class: 'row spread' }, element('h2', { class: 'section' }, space.id === 'new' ? 'Write a task' : 'Edit task'), element('span', { class: 'fine' }, 'Changes are saved only when you choose Save.')), space.editor.form, space.editorProblem, element('div', { class: 'actions' }, space.saveButton, button('Discard changes', () => { if (space.dirty && !confirm('Discard your unsaved changes?')) return; space.editor.dispose(); space.editor = null; space.dirty = false; if (space.id === 'new') { taskSpaces.delete(taskKey(space.project, 'new')); navigate('board'); } else { renderTask(space); renderWorkspaceHead(space); } }, 'quiet')));
+	space.editor.form.querySelector('input')?.focus();
+}
+async function saveTask(space) {
+	space.editorProblem.replaceChildren();
+	space.refreshSequence++;
+	const draft = space.editor.draft();
+	if (!draft.title.trim() || !draft.criteria.length) { space.editorProblem.append(element('p', { class: 'alert bad' }, 'Add a title and at least one requirement.')); return; }
+	try {
+		const saved = space.id === 'new' ? await command('/projects/' + e(space.project) + '/work-items', { draft, queue: false }) : await command(taskURL(space), { workItemId: space.id, ifTicketSHA256: space.baseSHA, draft }, 'PUT');
+		space.editor.dispose(); space.editor = null; space.dirty = false; space.record = saved;
+		if (space.id === 'new') { taskSpaces.delete(taskKey(space.project, 'new')); state.flash = 'Draft saved. Queue it when it is ready to run.'; await navigate('item/' + e(saved.workItemId)); }
+		else { renderTask(space); renderWorkspaceHead(space); notice('Task saved.'); await refreshWorkspace(space); }
+	} catch (error) {
+		space.editorProblem.append(element('p', { class: 'alert bad' }, error.message + ' Your draft is still here.'));
+		if (error.status === 409 || /stale|conflict/i.test(error.code || '')) {
+			try {
+				const latest = await api(taskURL(space));
+				space.editorProblem.append(element('div', { class: 'stale-comparison stack' }, element('h3', {}, 'Latest saved task'), taskDescription(latest), button('Keep my draft and use this revision', () => { space.baseSHA = latest.ticketSHA256; space.record = latest; space.editorProblem.replaceChildren(element('p', { class: 'callout info' }, 'Your writing is unchanged. Review it against the latest record, then save to apply it.')); renderWorkspaceHead(space); })));
+			} catch (latestError) { space.editorProblem.append(element('p', { class: 'fine' }, 'Could not load the latest record. ' + latestError.message)); }
+		}
+	}
+}
+function renderWorkspaceHead(space) {
+	space.title.textContent = space.id === 'new' ? 'New task' : space.record.draft.title;
+	space.dirtyLabel.textContent = space.dirty ? 'Unsaved changes' : space.editor ? 'Editing' : '';
+	const record = space.record, job = latestJob(space);
+	space.status.textContent = space.id === 'new' ? 'Draft' : record.archived ? 'Archived' : record.queued ? 'Queued' : 'Unqueued';
+	if (job?.status === 'cancel_requested') space.status.textContent = 'Stop requested';
+	if (job?.status === 'cancellation_unknown') space.status.textContent = 'Stop outcome unknown';
+	if (job?.status === 'cancelled' && (record.stopped || space.activity?.held)) space.status.textContent = 'Stopped';
+	if (record.frozen && space.editor) space.dirtyLabel.textContent += ' · ' + (record.frozenReason || 'Requirements are frozen during execution');
+	if (space.saveButton) space.saveButton.disabled = !!record.frozen || !!record.archived;
+	const identity = JSON.stringify([record.actions, record.ticketSHA256, record.queued, record.archived, space.dirty, space.card?.decision, space.card?.state, job?.version]);
+	patchRegion(space.actions, identity, () => {
+		const actions = [];
+		if (space.id === 'new') return actions;
+		if (list(record.actions).includes('reconcile')) actions.push(button('Resume pending save', async () => { await command('/projects/' + e(space.project) + '/work-items/reconcile', {}); await refreshWorkspace(space); }));
+		for (const action of list(record.actions)) {
+			if (!['queue', 'unqueue', 'archive', 'restore', 'delete'].includes(action)) continue;
+			const node = button({ queue: 'Queue task', unqueue: 'Remove from queue', archive: 'Archive', restore: 'Restore as draft', delete: 'Delete draft' }[action], () => disposition(space, action), action === 'queue' ? 'primary' : action === 'delete' ? 'danger' : 'quiet');
+			node.disabled = space.dirty; actions.push(node);
+		}
+		if (space.card?.decision && record.queued && !record.archived && !record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) actions.unshift(link(space.card.decision === 'approve' ? 'Review result' : space.card.state === 'needs_you' ? 'Review next step' : 'Start task', '#decision/' + e(space.id), 'primary'));
+		return actions;
+	});
+}
+async function disposition(space, action) {
+	const dependents = list(space.record.dependents).map((item) => item.title || item.id);
+	const impact = dependents.length ? '\nReferenced by: ' + dependents.join(', ') + '. References and history remain.' : '';
+	const explanation = { queue: 'Queue this task? It becomes a current commitment. ' + sentence(autopilotLine(space.board)) + ' The project ask policy still applies.', unqueue: 'Remove this task from the queue? It will not be picked up automatically.', archive: 'Archive this task? It leaves the queue and remains available in history.', restore: 'Restore this task as an unqueued draft?', delete: 'Permanently delete this never-run draft? This cannot be undone.' }[action];
+	if (!confirm(explanation + impact)) return;
+	space.refreshSequence++;
+	const saved = await command(taskURL(space) + '/disposition', { workItemId: space.id, ifTicketSHA256: space.record.ticketSHA256, action });
+	if (saved.deleted) { taskSpaces.delete(taskKey(space.project, space.id)); state.workspace = null; state.flash = 'Draft deleted.'; return navigate('board'); }
+	space.record = saved; renderTask(space); renderWorkspaceHead(space); await refreshWorkspace(space);
+}
+async function refreshWorkspace(space) {
+	if (space.id === 'new') return;
+	if (space.refreshPromise) return space.refreshPromise;
+	space.refreshPromise = (async () => {
+		const sequence = ++space.refreshSequence;
+		const results = await Promise.allSettled([api(taskURL(space)), api(taskURL(space) + '/run'), api(taskURL(space) + '/activity'), api('/projects/' + e(space.project) + '/board')]);
+		if (sequence !== space.refreshSequence) return;
+		const errors = [];
+		for (const [index, result] of results.entries()) {
+			if (result.status === 'rejected') { errors.push(result.reason.message); continue; }
+			if (index === 0) {
+				const changed = result.value.ticketSHA256 !== space.record.ticketSHA256 || result.value.frozen !== space.record.frozen || result.value.archived !== space.record.archived;
+				space.record = result.value;
+				if (changed && !space.editor) renderTask(space);
+				if (space.editor && space.baseSHA !== space.record.ticketSHA256 && !space.editorProblem.children.length) space.editorProblem.append(element('p', { class: 'callout warn' }, 'The saved task changed while you were writing. Your draft is preserved. Saving will show the latest record for comparison.'));
+			} else if (index === 1) space.graph = result.value;
+			else if (index === 2) space.activity = result.value;
+			else { space.board = result.value; space.card = cards(result.value).find((card) => card.workItemId === space.id); }
+		}
+		space.error = errors[0] || ''; if (!errors.length) space.lastSuccess = new Date().toISOString();
+		renderWorkspaceHead(space); renderFreshness(space); renderRun(space); renderHistory(space); checkDecisionFreshness(space);
+	})().finally(() => { space.refreshPromise = null; });
+	return space.refreshPromise;
+}
+function renderFreshness(space) {
+	if (space.id === 'new') { space.freshness.textContent = 'Draft save starts no agents'; return; }
+	const old = space.lastSuccess && Date.now() - Date.parse(space.lastSuccess) > 15000;
+	space.freshness.className = 'freshness' + (space.error || old ? ' disconnected' : '');
+	space.freshness.textContent = space.error ? 'Disconnected · last received ' + (space.lastSuccess ? when(space.lastSuccess) : 'never') + ' · retrying' : space.lastSuccess ? (old ? 'Updates delayed' : 'Connected') + ' · updated ' + ago(space.lastSuccess) : 'Connecting…';
+	space.freshness.title = space.error;
+}
+async function stopRun(space, jobId) {
+	for (let attempt = 0; attempt < 2; attempt++) {
+		const current = await api('/jobs/' + e(jobId));
+		if (['cancel_requested', 'cancellation_unknown', 'cancelled'].includes(current.status)) { await refreshWorkspace(space); return; }
+		if (!list(current.availableActions).includes('cancel')) { await refreshWorkspace(space); throw new Error('This run changed and can no longer be stopped. Its current state is ' + human(current.status) + '.'); }
+		try {
+			const stopped = await command('/jobs/' + e(jobId) + '/actions', { jobId, ifVersion: current.version, action: 'cancel' });
+			space.refreshSequence++;
+			if (space.activity) space.activity.jobs = list(space.activity.jobs).map((job) => job.id === jobId ? stopped : job);
+			renderWorkspaceHead(space); renderRun(space); renderHistory(space);
+			await refreshWorkspace(space);
+			return;
+		} catch (error) {
+			if (attempt === 0 && error.status === 409) continue;
+			await refreshWorkspace(space);
+			throw error;
+		}
+	}
+}
+function runControls(space, job) {
+	const controls = element('div', { class: 'actions' });
+	for (const action of list(job?.availableActions)) {
+		if (!['cancel', 'repair', 'reconcile'].includes(action)) continue;
+		controls.append(button({ cancel: 'Stop run', repair: 'Request repair', reconcile: 'Check what happened' }[action], async () => {
+			if (action === 'cancel' && !confirm('Request this run to stop? The factory will keep checking until workers are confirmed stopped. Automatic pickup remains off until you queue the task again.')) return;
+			if (action === 'cancel') return stopRun(space, job.id);
+			await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: job.version, action });
+			await refreshWorkspace(space);
+		}, action === 'cancel' ? 'danger' : ''));
+	}
+	if (job && list(job.availableActions).includes('resolve_execution')) controls.append(link('Resolve uncertain execution', '#job/' + e(job.id)));
+	if (job?.status === 'accepted' && (!job.merge || job.merge.status === 'failed') && can('merge', space.project)) controls.append(button(job.merge ? 'Retry merge' : 'Merge', async () => { await command('/jobs/' + e(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: '' }); await refreshWorkspace(space); }));
+	if (space.card?.decision && space.record.queued && !space.record.archived && !space.record.stopped && space.card.state !== 'running' && (space.card.decision === 'approve' || space.card.state === 'needs_you' || list(space.record.actions).includes('start')) && (space.card.decision === 'approve' ? canOpenResultDecision(latestJob(space)) : canPlan(space.project))) controls.append(link('Open decision', '#decision/' + e(space.id), 'primary'));
+	return controls;
+}
+function artifactView(space, job, artifact, context) {
+	const key = context + '/' + job.id + '/' + artifact.id;
+	if (space.artifactNodes.has(key)) return space.artifactNodes.get(key);
+	const content = element('div', { class: 'stack tight' });
+	let loaded = false;
+	const details = element('details', { class: 'fold artifact', 'data-key': 'artifact-' + key, ontoggle: async () => {
+		if (!details.open || loaded) return;
+		loaded = true; content.replaceChildren(element('p', { class: 'fine' }, 'Loading output…'));
+		try { const value = await api('/jobs/' + e(job.id) + '/artifacts/' + e(artifact.id)); content.replaceChildren(element('pre', { class: 'code output', 'data-scroll': key }, value.content || 'This artifact is empty.')); }
+		catch (error) { loaded = false; content.replaceChildren(element('p', { class: 'alert bad' }, error.message)); }
+	} }, element('summary', {}, artifact.name + ' · ' + artifact.bytes + ' bytes'), content);
+	space.artifactNodes.set(key, details); return details;
+}
+function attemptView(space, job, attempt, context = 'run') {
+	const timing = attempt.startedAt ? (attempt.finishedAt ? clock((Date.parse(attempt.finishedAt) - Date.parse(attempt.startedAt)) / 1000) : elapsed(attempt.startedAt)) : 'Not started';
+	return element('article', { class: 'attempt stack', 'data-key': attempt.id }, element('div', { class: 'row spread' }, element('strong', {}, human(attempt.purpose === 'merge' ? 'Merge check' : attempt.stage) + (attempt.checkKey ? ' · ' + attempt.checkKey : '') + ' · attempt ' + attempt.ordinal), element('span', { class: 'tag' }, human(attempt.checkStatus || attempt.status))), element('div', { class: 'run-metadata' }, element('span', {}, timing), element('span', {}, attempt.lastHeartbeatAt ? 'Last contact ' + when(attempt.lastHeartbeatAt) : 'No heartbeat recorded')), attempt.progress ? markdown(attempt.progress) : null, attempt.summary ? markdown(attempt.summary) : null, element('p', { class: 'fine mono' }, 'Input ' + short(attempt.inputRevision) + ' · candidate ' + short(attempt.candidateRevision)), list(attempt.artifacts).map((artifact) => artifactView(space, job, artifact, context)), !list(attempt.artifacts).length ? element('p', { class: 'fine' }, 'Full output is available after the worker reports its result. Heartbeat notes appear above when reported.') : null);
+}
+function renderRun(space) {
+	const steps = list(space.graph?.steps), job = latestJob(space);
+	const stopped = job && ['cancel_requested', 'cancellation_unknown', 'cancelled'].includes(job.status);
+	const active = steps.find((step) => step.status === 'needs_you') || steps.find((step) => step.status === 'running') || [...steps].reverse().find((step) => step.status === 'done') || steps[0];
+	if ((space.follow || !space.selected) && active) space.selected = active.key;
+	const summary = stopped ? { cancel_requested: 'Stop requested. Waiting for workers to confirm termination.', cancellation_unknown: 'Stop outcome unknown. Reconcile the run before starting anything else.', cancelled: 'Run stopped. Queue this task explicitly to allow another run.' }[job.status] : job ? human(job.status) : 'No implementation run yet';
+	patchRegion(space.runSummary, JSON.stringify([job, space.graph?.costUsd, space.card?.decision, space.card?.state]), () => [element('strong', {}, summary), element('p', { class: 'fine' }, space.graph?.costUsd ? money(space.graph.costUsd) + ' reported by completed agent calls. Live usage is unavailable.' : 'No reported cost yet. Live usage is unavailable.'), runControls(space, job)]);
+	patchRegion(space.stagePath, JSON.stringify([steps.map((step) => [step.key, step.title, step.status]), space.selected, stopped]), () => steps.length ? steps.map((step) => element('button', { type: 'button', class: 'stage-step ' + step.status, 'aria-pressed': String(step.key === space.selected), onclick: () => { space.selected = step.key; space.follow = false; space.followControl.checked = false; renderRun(space); } }, element('span', { class: 'fine' }, RUN_KIND[step.kind] || step.kind), element('strong', {}, step.title), element('span', { class: 'stage-status' }, stopped && step.status === 'running' ? 'Last observed: running' : RUN_STATUS[step.status] || human(step.status)))) : empty('No run yet', 'Queue the task, then start it when its requirements are ready.'));
+	const selected = steps.find((step) => step.key === space.selected);
+	patchRegion(space.stageDetails, JSON.stringify([selected, job?.version]), () => selected ? [element('span', { class: 'eyebrow' }, (RUN_KIND[selected.kind] || '') + ' · ' + (RUN_STATUS[selected.status] || human(selected.status))), element('h2', { class: 'section' }, selected.title), markdown(selected.summary), list(selected.notes).map(markdown), element('dl', { class: 'run-facts' }, [['Model', selected.model], ['Reported turns', selected.turns], ['Reported duration', selected.seconds ? Math.round(selected.seconds) + ' s' : ''], ['Reported cost', selected.costUsd ? money(selected.costUsd) : ''], ['Decision by', selected.by]].filter(([, value]) => value).map(([label, value]) => [element('dt', {}, label), element('dd', {}, String(value))]))] : [empty('Select a stage', 'Stage details appear here.')]);
+	patchRegion(space.live, JSON.stringify([job, space.activity?.refinements, space.activity?.expectations]), () => [element('h2', { class: 'section' }, 'Activity'), job ? [element('p', { class: 'fine' }, 'Job ' + short(job.id) + ' · updated ' + when(job.updatedAt)), [...list(job.attempts)].reverse().map((attempt) => attemptView(space, job, attempt)), checkResults(job), eventTimeline(space, job)] : planningActivity(space)]);
+}
+function checkResults(job) {
+	if (!list(job.checks).length) return null;
+	return element('section', { class: 'stack' }, element('h3', { class: 'section' }, 'Check results'), table(['Check', 'Result', 'Tested revision', 'Requirements'], list(job.checks).map((check) => [check.checkKey, human(check.status), element('code', { title: check.candidateRevision }, short(check.candidateRevision)), element('code', { title: check.requirementFingerprint }, short(check.requirementFingerprint))])));
+}
+function planningActivity(space) {
+	const entries = [['Refinement', list(space.activity?.refinements)[0]], ['Test authoring', list(space.activity?.expectations)[0]]].filter(([, entry]) => entry);
+	return entries.length ? entries.map(([name, entry]) => element('article', { class: 'attempt stack' }, element('strong', {}, name + ' · ' + human(entry.status)), element('p', { class: 'fine' }, 'Started ' + when(entry.createdAt)), entry.error ? element('p', { class: 'alert bad' }, entry.error) : null, entry.notes ? markdown(entry.notes) : null, entry.run ? runNote(entry.run) : element('p', { class: 'fine' }, 'No worker output or live usage has been reported for this stage.'))) : empty('No worker activity yet', 'Activity appears when planning or a run starts.');
+}
+function actorName(space, id) { return list(space.activity?.actors).find((actor) => actor.id === id)?.username || id || 'Controller'; }
+function eventTimeline(space, job) {
+	return element('ol', { class: 'timeline' }, [...list(job.events)].reverse().map((event) => element('li', {}, element('strong', {}, human(event.kind)), element('time', {}, '#' + event.sequence + ' · ' + when(event.createdAt) + ' · ' + actorName(space, event.actorId)), event.data?.delegated ? element('p', { class: 'fine' }, 'Delegated authority: ' + event.data.delegated) : null, Object.keys(event.data || {}).length ? element('details', { 'data-key': 'event-' + job.id + '-' + event.sequence }, element('summary', {}, 'Decision and event details'), element('pre', { class: 'code' }, JSON.stringify(event.data, null, 2))) : null)));
+}
+function renderHistory(space) {
+	const { generatedAt, ...snapshot } = space.activity || {};
+	patchRegion(space.history, JSON.stringify(snapshot), () => {
+		const entries = [];
+		for (const job of list(space.activity?.jobs)) entries.push({ at: job.createdAt, node: element('details', { class: 'surface history-entry', 'data-key': 'job-' + job.id, open: job.id === latestJob(space)?.id }, element('summary', {}, 'Implementation · ' + human(job.status) + ' · ' + when(job.createdAt)), element('div', { class: 'stack loose' }, element('dl', { class: 'history-identities' }, [['Job', job.id], ['Admitted requirements', job.admission.ticketSHA256], ['Started from', job.admission.baseRevision], ['Candidate', job.candidateRevision || 'None'], ['Merge revision', job.merge?.revision || 'None']].map(([label, value]) => [element('dt', {}, label), element('dd', {}, element('code', {}, value))])), element('details', { class: 'fold', 'data-key': 'requirements-' + job.id }, element('summary', {}, 'Original requirements and context'), list(job.admission.sources).map((source) => element('section', { class: 'stack' }, element('h3', { class: 'section mono' }, source.path), element('pre', { class: 'code' }, source.text)))), list(job.attempts).map((attempt) => attemptView(space, job, attempt, 'history')), checkResults(job), list(job.reviews).map((review) => element('section', { class: 'stack' }, element('strong', {}, 'Review · ' + human(review.decision)), element('p', { class: 'fine' }, 'By ' + actorName(space, review.reviewerId) + ' · ' + when(review.createdAt)), markdown(review.summary), element('p', { class: 'fine mono' }, 'Candidate ' + review.candidateRevision + ' · requirements ' + review.requirementFingerprint))), eventTimeline(space, job))) });
+		for (const [name, values] of [['Refinement', space.activity?.refinements], ['Test proposal', space.activity?.expectations]]) for (const proposal of list(values)) entries.push({ at: proposal.createdAt, node: element('details', { class: 'surface history-entry', 'data-key': name + '-' + proposal.id }, element('summary', {}, name + ' · ' + human(proposal.status) + ' · ' + when(proposal.createdAt)), element('div', { class: 'stack' }, proposal.error ? element('p', { class: 'alert bad' }, proposal.error) : null, markdown(proposal.notes || proposal.proposal?.summary || ''), list(proposal.criteria).length ? element('section', {}, element('h3', { class: 'section' }, 'Original requirements'), element('ol', { class: 'requirements' }, list(proposal.criteria).map((text) => element('li', {}, markdown(text))))) : null, proposal.proposal?.criteria ? element('section', {}, element('h3', { class: 'section' }, 'Proposed requirements'), element('ol', { class: 'requirements' }, list(proposal.proposal.criteria).map((text) => element('li', {}, markdown(text))))) : null, proposal.patch ? diffView(proposal.patch) : null, element('details', { 'data-key': 'record-' + proposal.id }, element('summary', {}, 'Record, answers and execution details'), element('pre', { class: 'code' }, JSON.stringify(proposal, null, 2))))) });
+		entries.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
+		return [element('h2', { class: 'section' }, 'History'), space.activity?.truncated ? element('p', { class: 'callout warn' }, 'This view shows the newest 100 entries of each kind. Older records remain in the service.') : null, entries.length ? entries.map((entry) => entry.node) : empty('No execution history yet', 'Jobs, attempts, decisions and proposals remain here after the task changes.')];
+	});
+}
+function decisionIdentity(space) {
+	const job = latestJob(space), card = space.card;
+	return JSON.stringify([space.record.ticketSHA256, space.record.queued, space.record.archived, space.record.stopped, card?.decision, card?.refinementId, card?.expectationId, card?.jobId, job?.id, job?.version, job?.status, job?.candidateRevision, list(space.activity?.refinements)[0], list(space.activity?.expectations)[0]]);
+}
+function disableDecisionActions(space) {
+	space.decisionDisabled ||= new Map();
+	for (const control of space.decisionContent.querySelectorAll('button')) {
+		if (!space.decisionDisabled.has(control)) space.decisionDisabled.set(control, control.disabled);
+		control.disabled = true;
+	}
+}
+function checkDecisionFreshness(space) {
+	if (!space.decisionLoaded || space.decisionLoading) return;
+	if (space.dirty) {
+		space.decisionTaskBlocked = true; space.decisionNotice.hidden = false;
+		space.decisionNotice.replaceChildren(element('p', {}, 'Save or discard your task edits before deciding. Your decision input is preserved.'), link('Return to task edits', '#item/' + e(space.id)));
+		disableDecisionActions(space); return;
+	}
+	if (space.decisionTaskBlocked) {
+		space.decisionTaskBlocked = false;
+		if (!space.decisionStale) {
+			space.decisionNotice.hidden = true;
+			for (const [control, disabled] of space.decisionDisabled || []) control.disabled = disabled;
+			space.decisionDisabled = null;
+		} else space.decisionStale = false;
+	}
+	if (space.decisionStale || space.decisionIdentity === decisionIdentity(space)) return;
+	space.decisionStale = true;
+	space.decisionNotice.hidden = false;
+	space.decisionNotice.replaceChildren(element('strong', {}, 'Decision changed; reload to continue'), element('p', {}, 'The task or run changed after you opened this decision. Your input is still here. Reload to review the latest state before deciding.'), button('Reload decision', () => loadDecision(space, true)));
+	disableDecisionActions(space);
+}
+async function loadDecision(space, reload = false) {
+	if (space.decisionLoading) return;
+	if (reload && space.decisionDirty && !confirm('Reload this decision and discard its unsaved input?')) return;
+	if (space.dirty) { space.decisionContent.replaceChildren(element('p', { class: 'callout warn' }, 'Save or discard your task edits before making a decision. The run uses the saved requirements.'), link('Return to your edits', '#item/' + e(space.id))); return; }
+	space.decisionLoading = true;
+	space.decisionContent.replaceChildren(element('p', { class: 'fine' }, 'Loading decision…'));
+	space.decisionNotice.hidden = true;
+	try {
+		await refreshWorkspace(space);
+		const identity = decisionIdentity(space), card = space.card;
+		let content;
+		if (card?.decision === 'approve' && card.jobId) content = await approveContent(card.jobId, 'page');
+		else if (card?.decision === 'plan' && space.record.queued && !space.record.stopped && !space.record.archived) content = canPlan(space.project) ? await planContent(card, 'page', space.board) : [element('p', {}, 'You can read this task, but making planning decisions requires coordinate access and a human account.')];
+		else content = [element('p', {}, 'No decision is waiting for you.'), link('Open run', '#run/' + e(space.id))];
+		space.decisionContent.replaceChildren(element('h2', { class: 'section' }, card?.decision === 'approve' ? 'Review the result' : 'Agree what done means'), ...content);
+		space.decisionIdentity = identity; space.decisionLoaded = true; space.decisionDirty = false; space.decisionStale = false; space.decisionDisabled = null; space.decisionTaskBlocked = false;
+	} catch (error) { space.decisionContent.replaceChildren(element('p', { class: 'alert bad' }, error.message), button('Try again', () => loadDecision(space))); }
+	finally { space.decisionLoading = false; checkDecisionFreshness(space); }
 }
 
 // The work graph
@@ -641,7 +878,9 @@ function closeDrawer(restore) {
 	$('#drawer-root').replaceChildren();
 	if (restore && state.drawerReturn?.isConnected) state.drawerReturn.focus();
 }
-async function decided(message, fragment = 'board') {
+async function decided(message, fragment = '') {
+	if (state.workspace) state.workspace.decisionDirty = false;
+	if (!fragment) fragment = state.workspace && state.workspace.id !== 'new' ? 'run/' + e(state.workspace.id) : 'board';
 	closeDrawer(false);
 	state.flash = message;
 	await navigate(fragment);
@@ -662,12 +901,13 @@ async function plan(card, body) {
 	const result = await command('/projects/' + e(state.project) + '/plan', { workItemId: card.workItemId, ...body });
 	await decided(result.job ? 'The build has started.' : (result.waiting || 'Saved.'));
 }
-async function planContent(card, mode) {
-	const board = state.board || await loadBoard();
+async function planContent(card, mode, currentBoard = null) {
+	if (!canPlan()) return [element('p', {}, 'Making planning decisions requires coordinate access and a human account.')];
+	const board = currentBoard || state.board || await loadBoard();
 	const [refinement, expectation] = await Promise.all([card.refinementId ? api('/refinements/' + e(card.refinementId)) : null, card.expectationId ? api('/expectations/' + e(card.expectationId)) : null]);
 	if (expectation?.status === 'proposed') return testsDecision(card, expectation, board, mode);
 	if (expectation?.status === 'accepted') return startDecision(card, expectation);
-	if (expectation && ['failed', 'rejected'].includes(expectation.status)) return [...retryDecision(card, expectation.error || 'The tests were rejected.', 'Write the tests again', () => plan(card, {})), expectation.notes ? fold('The author’s note', true, element('p', {}, rich(expectation.notes))) : null, runNote(expectation.run)].filter(Boolean);
+	if (expectation && ['failed', 'rejected'].includes(expectation.status)) return [...retryDecision(card, expectation.error || 'The tests were rejected.', 'Write the tests again', () => plan(card, {})), expectation.notes ? fold('The author’s note', true, markdown(expectation.notes)) : null, runNote(expectation.run)].filter(Boolean);
 	if (refinement?.status === 'proposed') return refineDecision(card, refinement, board, mode);
 	if (refinement?.status === 'failed') return retryDecision(card, refinement.error || 'Sharpening failed.', 'Sharpen again', () => sharpen(card));
 	return agreeDecision(card, board, refinement);
@@ -752,7 +992,7 @@ function testsDecision(card, expectation, board, mode) {
 		concerns.length ? element('div', { class: 'callout warn' }, element('h3', { class: 'section' }, 'The test author found ' + plural(concerns.length, 'problem', 'problems')), element('ul', { class: 'plain' }, concerns.map((text) => element('li', {}, text)))) : null,
 		rows.length ? surface(element('h3', { class: 'section' }, 'Each requirement and the test that checks it'), rows.map((row) => check(row.text, !row.tests.length, row.tests.length ? element('span', { class: 'chips' }, row.tests.map((test) => element('span', { class: 'chip' }, test))) : element('span', { class: 'tag warn' }, 'You check this')))) : null,
 		fold('See the tests', mode === 'page', element('p', { class: 'fine mono' }, list(expectation.files).join(', ')), diffView(expectation.patch)),
-		expectation.notes ? fold('The author’s note', false, element('p', {}, rich(expectation.notes))) : null,
+		expectation.notes ? fold('The author’s note', false, markdown(expectation.notes)) : null,
 		element('p', { class: 'fine' }, buildDefaults(board.project)),
 		element('div', { class: 'actions' },
 			button('Approve and build', () => plan(card, { expectationId: expectation.id }), 'primary'),
@@ -810,7 +1050,7 @@ async function approveContent(jobId, mode) {
 	const files = list(change?.files);
 	const added = files.reduce((sum, file) => sum + file.added, 0), removed = files.reduce((sum, file) => sum + file.removed, 0);
 	if (!['ready_for_review', 'ready_for_acceptance'].includes(job.status)) return [element('p', { class: 'lead' }, 'This change is no longer waiting for approval: ' + human(job.status) + '.'), link('Open the job', '#job/' + e(job.id))];
-	const independent = job.implementerId !== state.me.userId && (job.coordinatorId !== state.me.userId || job.admission.allowCoordinatorReview);
+	const independent = independentReview(job), mayApprove = canApproveJob(job), mayReview = canReviewJob(job);
 	const findings = new Set();
 	const chips = FINDINGS.map(([key, label]) => element('button', { type: 'button', class: 'toggle-chip', 'aria-pressed': 'false', onclick: (event) => { if (findings.has(key)) findings.delete(key); else findings.add(key); event.currentTarget.setAttribute('aria-pressed', String(findings.has(key))); } }, label));
 	const mergeBox = element('input', { type: 'checkbox', checked: can('merge', job.projectId) });
@@ -818,21 +1058,21 @@ async function approveContent(jobId, mode) {
 		const merge = mergeBox.checked;
 		await command('/jobs/' + e(job.id) + '/approve', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256, findings: [...findings], merge });
 		if (mode === 'drawer') await decided(merge ? 'Approved. The checks run again on the combined version before main moves.' : 'Approved.');
-		else { await route(); notice('Approved.'); }
+		else { if (state.workspace) state.workspace.decisionDirty = false; await navigate('run/' + e(job.workItemId)); notice('Approved.'); }
 	};
 	const fixText = element('textarea', { rows: 3, placeholder: 'What should change?', 'aria-label': 'What should change' });
 	const fixForm = element('div', { class: 'stack', hidden: true }, fixText, element('div', { class: 'actions' }, button('Send back for a fix', async () => {
 		const summary = fixText.value.trim();
 		if (!summary) throw new Error('Say what should change.');
 		const reviewed = await command('/jobs/' + e(job.id) + '/reviews', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, requirementFingerprint: job.admission.ticketSHA256, decision: 'changes_requested', summary, findings: [...findings] });
-		if (list(reviewed.availableActions).includes('repair')) await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: reviewed.version, action: 'repair' });
-		await decided('Sent back for a fix.', mode === 'drawer' ? 'board' : 'job/' + e(job.id));
+		if (can('coordinate', job.projectId) && list(reviewed.availableActions).includes('repair')) await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: reviewed.version, action: 'repair' });
+		await decided('Sent back for a fix.', mode === 'drawer' ? 'board' : 'run/' + e(job.workItemId));
 	}, 'primary')));
 	let confirmReject = false;
 	const reject = button('Reject', async () => {
 		if (!confirmReject) { confirmReject = true; reject.textContent = 'Reject: click again to stop this build'; return; }
 		await command('/jobs/' + e(job.id) + '/actions', { jobId: job.id, ifVersion: job.version, action: 'cancel' });
-		await decided('The build was stopped.');
+		await decided('Stop requested. Check the run for confirmed termination.', 'run/' + e(job.workItemId));
 	}, 'danger');
 	return [
 		element('p', { class: 'lead' }, (files.length ? 'Changes ' + plural(files.length, 'file', 'files') + ' (+' + added + ' −' + removed + '). ' : '') + 'Every required check passed in a fresh copy' + (tests ? ', and the locked tests were not touched.' : '.')),
@@ -840,10 +1080,11 @@ async function approveContent(jobId, mode) {
 		change ? fold('The change', mode === 'page' || open.length > 0, element('div', { class: 'files' }, files.map((file) => element('span', {}, file.path + '  ', element('span', { class: 'plus' }, '+' + file.added), ' ', element('span', { class: 'minus' }, '−' + file.removed)))), diffView(change.patch), change.truncated ? element('p', { class: 'fine' }, 'The change is longer than shown here.') : null) : null,
 		covered.length || list(job.admission.requiredChecks).length ? fold(element('span', {}, icon('check', 16), ' Already checked'), false, covered.map((row) => check(row.text, false, element('span', { class: 'chips' }, row.tests.map((test) => element('span', { class: 'chip' }, test))))), list(job.admission.requiredChecks).map((key) => check(key + ' passed in a fresh copy.'))) : null,
 		fold(element('span', {}, 'Anything the checks missed? ', element('span', { class: 'muted' }, 'Optional')), false, element('div', { class: 'chips', role: 'group', 'aria-label': 'What you caught' }, chips), element('p', { class: 'fine' }, 'Your answer helps the factory decide when it can ask you less.')),
-		independent ? null : element('div', { class: 'callout bad' }, element('p', {}, 'You submitted or built this work, so someone else has to approve it.')),
-		can('merge', job.projectId) ? element('label', { class: 'switch' }, mergeBox, element('span', {}, element('strong', {}, 'Merge after approving. '), element('span', { class: 'muted' }, 'The checks run again on the combined version, and main moves only if they pass.'))) : null,
-		element('div', { class: 'actions' }, element('button', { type: 'button', class: 'button primary', disabled: !independent, onclick: (event) => run(approve, event.currentTarget) }, can('merge', job.projectId) ? 'Approve and merge' : 'Approve'), button('Ask for a fix', () => { fixForm.hidden = !fixForm.hidden; if (!fixForm.hidden) fixText.focus(); }), reject),
-		fixForm,
+		job.status !== 'ready_for_review' || independent ? null : element('div', { class: 'callout bad' }, element('p', {}, 'You submitted or built this work, so someone else has to approve it.')),
+		mayApprove && can('merge', job.projectId) ? element('label', { class: 'switch' }, mergeBox, element('span', {}, element('strong', {}, 'Merge after approving. '), element('span', { class: 'muted' }, 'The checks run again on the combined version, and main moves only if they pass.'))) : null,
+		element('div', { class: 'actions' }, mayApprove ? element('button', { type: 'button', class: 'button primary', onclick: (event) => run(approve, event.currentTarget) }, job.status === 'ready_for_acceptance' ? (can('merge', job.projectId) ? 'Accept and merge' : 'Accept result') : (can('merge', job.projectId) ? 'Approve and merge' : 'Approve')) : null, mayReview ? button('Ask for a fix', () => { fixForm.hidden = !fixForm.hidden; if (!fixForm.hidden) fixText.focus(); }) : null, canRejectJob(job) ? reject : null),
+		!mayApprove ? element('p', { class: 'fine' }, job.status === 'ready_for_acceptance' ? 'Accepting this reviewed result requires accept access and a human account.' : 'Approving requires review and accept access, and an independent human reviewer.') : null,
+		mayReview ? fixForm : null,
 	].filter(Boolean);
 }
 
@@ -862,7 +1103,7 @@ function stagesElement(card) {
 	}));
 }
 function pageHead(card, title) {
-	return element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', title), element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title)), element('div', { class: 'row' }, card ? itemTabs(card.workItemId, 'details') : null, stagesElement(card))));
+	return element('div', { class: 'stack tight' }, element('div', { class: 'crumbs' }, element('a', { href: '#board' }, 'Board'), ' / ', title), element('div', { class: 'page-head' }, element('div', {}, element('h1', { class: 'title' }, title)), element('div', { class: 'row' }, card ? itemTabs(card.workItemId, 'task') : null, stagesElement(card))));
 }
 function statusSurface(card) {
 	const eyebrow = card.state === 'needs_you' ? ['warn', 'Needs you'] : card.state === 'running' ? ['info', 'Automatic · nothing needs you'] : card.state === 'done' ? ['ok', 'Done'] : ['', 'Waiting'];
@@ -871,15 +1112,7 @@ function statusSurface(card) {
 function howItWorks() {
 	return surface(element('h3', { class: 'section' }, 'After you agree'), element('ol', { class: 'requirements' }, element('li', {}, 'A separate agent writes locked tests and flags contradictions.'), element('li', {}, 'The build starts in its own copy, and checks run in a fresh one.'), element('li', {}, 'You approve the change, and it merges.')), element('p', { class: 'fine' }, element('a', { href: '#ask' }, 'Change when the factory asks you')));
 }
-async function itemPage(workItemId) {
-	const board = await loadBoard();
-	const card = cards(board).find((entry) => entry.workItemId === workItemId);
-	if (!card) throw new Error('This work item is not on the board.');
-	if (card.jobId) return jobPage(card.jobId);
-	const main = card.decision === 'plan' ? [element('span', { class: 'eyebrow warn' }, card.state === 'needs_you' ? 'Needs you · agree what done means' : 'Agree what done means'), ...(await planContent(card, 'page'))] : [statusSurface(card)];
-	main.unshift(await workDetails(workItemId, board));
-	return page('wide', pageHead(card, card.title), element('div', { class: 'columns' }, element('div', { class: 'main' }, main), element('div', { class: 'side' }, howItWorks())));
-}
+async function itemPage(workItemId) { return taskWorkspace(workItemId, 'task'); }
 async function jobPage(id) {
 	const [job, board] = await Promise.all([api('/jobs/' + e(id)), loadBoard()]);
 	const card = cards(board).find((entry) => entry.jobId === job.id) || cards(board).find((entry) => entry.workItemId === job.workItemId);
@@ -954,7 +1187,7 @@ function jobSide(job, card) {
 function technicalDetails(job) {
 	const facts = element('dl', { class: 'stack tight' }, [['Job', job.id + ' · version ' + job.version], ['Candidate', job.candidateRevision || 'none yet'], ['Started from', job.admission.baseRevision], ['Requirements', job.admission.ticketSHA256], ['Acceptance record', job.acceptanceRecordPath || 'none'], ['Acceptance', job.acceptanceStatus]].map(([label, value]) => element('div', {}, element('dt', { class: 'eyebrow' }, label), element('dd', { class: 'mono fine' }, value))));
 	const attempts = table(['Stage', 'Status', 'Run', 'Finished'], list(job.attempts).map((attempt) => [human(attempt.purpose === 'merge' ? 'merge check' : attempt.stage) + (attempt.checkKey ? ' · ' + attempt.checkKey : ''), human(attempt.checkStatus || attempt.status), element('span', { class: 'mono' }, attempt.nativeRunId || 'waiting'), attempt.finishedAt ? when(attempt.finishedAt) : '']));
-	const events = element('ol', { class: 'timeline' }, [...list(job.events)].reverse().slice(0, 40).map((event) => element('li', {}, element('strong', {}, human(event.kind)), element('time', {}, '#' + event.sequence + ' · ' + when(event.createdAt)))));
+	const events = element('ol', { class: 'timeline' }, [...list(job.events)].reverse().slice(0, 40).map((event) => element('li', {}, element('strong', {}, human(event.kind)), element('time', {}, '#' + event.sequence + ' · ' + when(event.createdAt) + ' · ' + actorName(space, event.actorId)))));
 	return fold('Technical details', false, facts, element('h3', { class: 'section' }, 'Attempts'), attempts, element('h3', { class: 'section' }, 'History'), events);
 }
 
@@ -1125,21 +1358,27 @@ $('#signin-form').addEventListener('submit', (event) => {
 		try { await connect(); } catch (error) { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; }
 	}, event.submitter);
 });
-$('#signout').addEventListener('click', signout);
+$('#signout').addEventListener('click', () => { if (![...taskSpaces.values()].some((space) => space.dirty) || confirm('Sign out and discard all unsaved task drafts?')) signout(); });
 $('#project-select').addEventListener('change', (event) => {
+	if (!canLeaveWorkspace()) { event.target.value = state.project; return; }
+	state.workspace = null; state.board = null; state.boardReturn = null;
 	state.project = event.target.value;
 	try { localStorage.setItem('waymark-project', state.project); } catch {}
 	navigate('board');
 });
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && state.drawer) closeDrawer(true); });
 window.addEventListener('hashchange', () => run(() => route()));
+window.addEventListener('beforeunload', (event) => { if ([...taskSpaces.values()].some((space) => space.dirty)) { event.preventDefault(); event.returnValue = ''; } });
 if (state.token) connect().catch((error) => { signout(); $('#signin-error').textContent = error.message; $('#signin-error').hidden = false; });
 setInterval(() => {
 	for (const node of document.querySelectorAll('[data-since]')) node.textContent = clock((Date.now() - Date.parse(node.dataset.since)) / 1000);
+	if (state.workspace) renderFreshness(state.workspace);
 }, 1000);
 setInterval(async () => {
-	if (!state.me || !state.project || document.hidden || mutationsInFlight || state.drawer || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
-	if (!['board', 'list', 'graph', 'run', 'item', 'job', ''].includes(state.view)) return;
+	if (!state.me || !state.project || document.hidden || mutationsInFlight) return;
+	if (state.workspace) { await refreshWorkspace(state.workspace); return; }
+	if (state.drawer || /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '')) return;
+	if (!['board', 'list', 'graph', 'job', ''].includes(state.view)) return;
 	try {
 		const board = await api('/projects/' + e(state.project) + '/board');
 		if (boardKey(board) !== state.boardKey) await route(true);

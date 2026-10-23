@@ -91,10 +91,11 @@ type ProjectBoard struct {
 	TrustedMerges int         `json:"trustedMerges"`
 	// Pilot reports whether the autopilot runs on this installation, and CanRefine and
 	// CanTest whether it can sharpen requirements and write locked tests for this project.
-	Pilot       bool      `json:"pilot"`
-	CanRefine   bool      `json:"canRefine"`
-	CanTest     bool      `json:"canTest"`
-	GeneratedAt time.Time `json:"generatedAt"`
+	Pilot              bool      `json:"pilot"`
+	CanRefine          bool      `json:"canRefine"`
+	CanTest            bool      `json:"canTest"`
+	GeneratedAt        time.Time `json:"generatedAt"`
+	PublicationPending bool      `json:"publicationPending"`
 }
 
 // boardInputs is everything one card is derived from.
@@ -115,6 +116,8 @@ type boardInputs struct {
 	requireTests bool
 	// ticketFile is the digest of the ticket file as it is now, the identity
 	// refinements record.
+	stopped    bool
+	publishing bool
 	ticketFile string
 }
 
@@ -131,7 +134,7 @@ func (s *Service) Board(ctx context.Context, actor Principal, projectID ProjectI
 		return ProjectBoard{}, err
 	}
 	now := s.state.now().UTC()
-	board := ProjectBoard{Project: project, Cards: []BoardCard{}, Pilot: s.state.pilot, CanRefine: len(s.state.refiner) > 0, CanTest: s.canWriteExpectations(project), GeneratedAt: now}
+	board := ProjectBoard{PublicationPending: requireNoTaskPublication(ctx, s.state.db, project.ID) != nil, Project: project, Cards: []BoardCard{}, Pilot: s.state.pilot, CanRefine: len(s.state.refiner) > 0, CanTest: s.canWriteExpectations(project), GeneratedAt: now}
 	if board.TrustedMerges, err = trustedMerges(ctx, s.state.db, projectID); err != nil {
 		return ProjectBoard{}, err
 	}
@@ -198,7 +201,11 @@ func (s *Service) boardSnapshot(ctx context.Context, project Project) ([]boardIn
 			continue
 		}
 		id := *work.ID
-		inputs := boardInputs{work: work, policy: project.Policy.Ask, pilot: s.state.pilot, cost: refinementCost[id] + expectationCost[id], canRefine: len(s.state.refiner) > 0, canTest: s.canWriteExpectations(project), requireTests: project.Policy.RequireExpectations}
+		held, err := workItemHeld(ctx, s.state.db, project.ID, id)
+		if err != nil {
+			return nil, err
+		}
+		inputs := boardInputs{stopped: held, publishing: requireNoTaskPublication(ctx, s.state.db, project.ID) != nil, work: work, policy: project.Policy.Ask, pilot: s.state.pilot, cost: refinementCost[id] + expectationCost[id], canRefine: len(s.state.refiner) > 0, canTest: s.canWriteExpectations(project), requireTests: project.Policy.RequireExpectations}
 		if job := jobs[id]; job != nil {
 			inputs.job = job
 			inputs.cost += implementationCost(*job)
@@ -334,7 +341,7 @@ func blockers(work orientation.WorkItem, titles map[string]string, jobs map[stri
 // records, so the board, the list view, and the autopilot agree.
 func deriveCard(in boardInputs) (BoardCard, bool) {
 	work := in.work
-	if work.Execution != nil && *work.Execution == "cancelled" {
+	if workArchived(work) || (work.Execution != nil && *work.Execution == "cancelled") {
 		return BoardCard{}, false
 	}
 	card := BoardCard{WorkItemID: *work.ID, Title: *work.ID, CostUSD: in.cost}
@@ -348,6 +355,28 @@ func deriveCard(in boardInputs) (BoardCard, bool) {
 	}
 	if in.signals != nil {
 		card.Flagged = in.signals.FlaggedCount
+	}
+	if in.publishing {
+		waiting(&card, ColumnNext, "Publication pending", "Retry the pending task change to finish publication before work continues.")
+		return card, true
+	}
+	if in.stopped {
+		waiting(&card, ColumnNext, "Stopped", "Queue this task again when you want work to resume.")
+		if in.job != nil {
+			card.JobID, card.JobVersion = in.job.ID, in.job.Version
+			switch in.job.Status {
+			case JobCancellationUnknown, JobImplementationUnknown:
+				needs(&card, ColumnBuild, CardDecisionFix, "Stop outcome unknown", "Inspect the run and reconcile whether external work stopped. Automatic restart is held.")
+			case JobCancelled, JobFailed, JobStale, JobAccepted:
+			default:
+				waiting(&card, ColumnBuild, "Stop requested", "Waiting for confirmation that the existing run stopped. Automatic restart is held.")
+			}
+		}
+		return card, true
+	}
+	if !workQueued(work) && in.job == nil {
+		waiting(&card, ColumnNext, "Draft", "Saved outside the queue. Queue it when you want the factory to work on it.")
+		return card, true
 	}
 	if in.job != nil {
 		jobCard(&card, in)

@@ -127,6 +127,12 @@ func cardKey(card BoardCard) string {
 func (s *Service) pilotStep(ctx context.Context, project Project, in boardInputs, card BoardCard, busy *pilotBusy) error {
 	policy := project.Policy.Ask
 	workItemID := *in.work.ID
+	if in.stopped || in.publishing || workArchived(in.work) || !workQueued(in.work) {
+		return nil
+	}
+	if err := s.requireTaskQueued(ctx, s.state.db, project, workItemID); err != nil {
+		return err
+	}
 	byConsent := in.consent != nil
 	byPolicy := policy.SetBy != nil
 	act := func(reason string, byPerson UserID, step func(context.Context, Principal) error) error {

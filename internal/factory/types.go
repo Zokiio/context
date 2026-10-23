@@ -458,8 +458,10 @@ type Attempt struct {
 	FinishedAt            *time.Time    `json:"finishedAt,omitempty"`
 	CancellationRequested bool          `json:"cancellationRequested"`
 	Summary               string        `json:"summary,omitempty"`
-	TerminalReceipt       string        `json:"terminalReceipt,omitempty"`
-	Artifacts             []Artifact    `json:"artifacts"`
+	// Progress is the latest reported worker note, not a command result or evidence.
+	Progress        string     `json:"progress,omitempty"`
+	TerminalReceipt string     `json:"terminalReceipt,omitempty"`
+	Artifacts       []Artifact `json:"artifacts"`
 }
 
 type CheckResult struct {

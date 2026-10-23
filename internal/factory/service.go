@@ -159,6 +159,7 @@ func Open(dataDir string, options Options) (*Service, error) {
 	}
 	cleanupLock, closeDB = false, false
 	service := &Service{state: state}
+	service.recoverWorkItemPublications(context.Background())
 	if state.pilot {
 		state.refiners.Add(1)
 		go service.runPilot()
@@ -362,6 +363,22 @@ CREATE TABLE IF NOT EXISTS plan_consents (
   data_json TEXT NOT NULL,
   created_at TEXT NOT NULL,
   PRIMARY KEY(project_id, work_item_id)
+);
+CREATE TABLE IF NOT EXISTS work_item_holds (
+  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  work_item_id TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY(project_id, work_item_id)
+);
+CREATE TABLE IF NOT EXISTS work_item_writes (
+  actor_id TEXT NOT NULL,
+  operation TEXT NOT NULL,
+  request_id TEXT NOT NULL,
+  project_id TEXT NOT NULL,
+  request_hash TEXT NOT NULL,
+  plan_json TEXT NOT NULL,
+  state TEXT NOT NULL,
+  PRIMARY KEY(actor_id, operation, request_id)
 );
 CREATE TABLE IF NOT EXISTS criterion_signals (
   model TEXT NOT NULL,

@@ -3,7 +3,7 @@
 Proposal, 2026-10-23. This plan describes the end state if Waymark grows from a project-context CLI into a full software factory. It deliberately looks past the current milestone and the vision's deferral of agent execution. The [vision revisions](#what-this-changes-in-the-vision) section lists every commitment it would change. Nothing here is adopted until those revisions are decided.
 
 Inputs:
-- The [software factory research note](https://github.com/Zokiio/context/pull/44), which covers StrongDM's Attractor and factory site, Fabro, Lightspeed, Superplane, Open-Inspect, CodeAF, and SWE-AF.
+- The [software factory research note](../.scratch/workflow-improvements/software-factory-research.md), which covers StrongDM's Attractor and factory site, Fabro, Lightspeed, Superplane, Open-Inspect, CodeAF, and SWE-AF.
 - Local decision-model trials run on 2026-10-22 and 2026-10-23 (Laya, Kev, and Qwen 3.5 through Ollama).
 
 ## The bet

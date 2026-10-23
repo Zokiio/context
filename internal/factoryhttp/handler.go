@@ -147,6 +147,29 @@ func NewHandler(service *factory.Service) http.Handler {
 		v, err := service.WorkItemRun(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
 		respond(w, 200, v, err)
 	})
+	get("/v1/projects/{project}/work-items", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.ListWorkItems(r.Context(), p, factory.ProjectID(r.PathValue("project")))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/work-items/reconcile", 200, func(ctx context.Context, p factory.Principal, q struct {
+		RequestID string `json:"requestId"`
+	}, r *http.Request) ([]factory.WorkItemRecord, error) {
+		return service.ReconcileWorkItemPublications(ctx, p, factory.ProjectID(r.PathValue("project")))
+	})
+	get("/v1/projects/{project}/work-items/{item}/activity", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.WorkItemActivity(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/work-items/{item}/disposition", 200, func(ctx context.Context, p factory.Principal, q factory.SetWorkItemDispositionRequest, r *http.Request) (factory.WorkItemRecord, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.WorkItemRecord{}, err
+		}
+		if err := bindID(r.PathValue("item"), q.WorkItemID); err != nil {
+			return factory.WorkItemRecord{}, err
+		}
+		q.ProjectID, q.WorkItemID = factory.ProjectID(r.PathValue("project")), r.PathValue("item")
+		return service.SetWorkItemDisposition(r.Context(), p, q)
+	})
 	get("/v1/projects/{project}/work-items/{item}", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.GetWorkItem(r.Context(), p, factory.ProjectID(r.PathValue("project")), r.PathValue("item"))
 		respond(w, 200, v, err)

@@ -234,6 +234,16 @@ func (s *Service) StartRefinement(ctx context.Context, actor Principal, request 
 	if saved, ok, hash, err := receipt[Refinement](ctx, tx, current.UserID, "start_refinement", request.RequestID, request); err != nil || ok {
 		return saved, err
 	} else {
+		if _, err := authorizeProject(ctx, tx, actor, project.ID, CapabilityCoordinate); err != nil {
+			return Refinement{}, err
+		}
+		if err := s.requireTaskQueued(ctx, tx, project, request.WorkItemID); err != nil {
+			return Refinement{}, err
+		}
+		latest, readErr := os.ReadFile(work.Source)
+		if readErr != nil || digestBytes(latest) != refinement.TicketSHA256 {
+			return Refinement{}, fault(CodeStale, "work item changed before refinement started", readErr)
+		}
 		if err := requireNoActiveJob(ctx, tx, project.ID, request.WorkItemID); err != nil {
 			return Refinement{}, err
 		}
@@ -354,6 +364,13 @@ func (s *Service) AcceptRefinement(ctx context.Context, actor Principal, request
 	}
 	if refinement.Status != RefinementProposed {
 		return Refinement{}, fault(CodeConflict, "only a current proposal can be accepted", nil)
+	}
+	project, err := readProject(ctx, tx, refinement.ProjectID)
+	if err != nil {
+		return Refinement{}, err
+	}
+	if err := s.requireTaskQueued(ctx, tx, project, refinement.WorkItemID); err != nil {
+		return Refinement{}, err
 	}
 	if err := requireNoActiveJob(ctx, tx, refinement.ProjectID, refinement.WorkItemID); err != nil {
 		return Refinement{}, err

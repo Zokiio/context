@@ -20,6 +20,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Manage tasks and observe factory runs from a permanent workspace](factory-task-workspace/issues/01-task-control-and-live-runs.md)
+
 - [Persist factory jobs and enforce their lifecycle](factory-platform/issues/01-durable-controller.md)
 - [Execute scoped assignments in isolated workspaces](factory-platform/issues/02-workspace-workers.md)
 - [Expose one authenticated factory service](factory-platform/issues/03-authenticated-service.md)
@@ -36,6 +38,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 - [Decide an implementer's open questions before review](workflow-feedback/issues/07-decide-open-questions.md)
 
 ## Commitment notes
+
+2026-10-23: The user approved the task workspace plan: explicit drafts and queue control, archive and safe deletion, spacious formatted editing, live run activity, and retained history. Deliver this milestone together in one pull request.
 
 2026-10-22: The user selected the complete factory platform, including the core, service, CLI, web workspace and shared multi-user access. Gups pilot work follows whole-platform acceptance. Earlier commitments are preserved.
 
