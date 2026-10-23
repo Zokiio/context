@@ -2,6 +2,7 @@ package factorycli
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -63,6 +65,7 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			&cli.StringFlag{Name: "expectation-model", Value: "sonnet", Usage: "Model for the Claude Code expectation author"},
 			&cli.Float64Flag{Name: "expectation-budget-usd", Value: 1, Usage: "Spending cap for one expectation suite"},
 			&cli.BoolFlag{Name: "no-expectations", Usage: "Disable the expectation author"},
+			&cli.StringFlag{Name: "agent-model", Value: "sonnet", Usage: "Model for the Claude Code builder"},
 			&cli.BoolFlag{Name: "no-pilot", Usage: "Do not run the autopilot, even for projects whose ask policy enables it"},
 			&cli.DurationFlag{Name: "pilot-interval", Value: 5 * time.Second},
 		}, append(append(decisionFlags(), refinerFlags()...), expectationFlags()...)...),
@@ -102,7 +105,7 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 				}
 				workers[stage] = token
 			}
-			registerAgentExecutors(ctx, service, operator, stderr)
+			registerAgentExecutors(ctx, service, operator, stderr, c.String("agent-model"))
 
 			listener, err := net.Listen("tcp", address)
 			if err != nil {
@@ -286,7 +289,7 @@ func syncSoloGrants(ctx context.Context, service *factory.Service, operator fact
 
 // registerAgentExecutors offers Claude Code and Codex executor profiles when their
 // CLIs are installed. A project still has to allow a profile before it can run.
-func registerAgentExecutors(ctx context.Context, service *factory.Service, operator factory.Principal, stderr io.Writer) {
+func registerAgentExecutors(ctx context.Context, service *factory.Service, operator factory.Principal, stderr io.Writer, claudeModel string) {
 	self, err := os.Executable()
 	if err != nil {
 		return
@@ -298,14 +301,35 @@ func registerAgentExecutors(ctx context.Context, service *factory.Service, opera
 		key := harness + "-agent"
 		command := []string{self, "factory", "agent", "--harness", harness}
 		if harness == "claude" {
-			command = append(command, "--max-budget-usd", "2")
+			// The builder may run the project's tests and vet, as the test author can.
+			command = append(command, "--model", claudeModel, "--max-budget-usd", "2", "--allow-tool", "Bash(go test:*)", "--allow-tool", "Bash(go vet:*)")
 		}
 		request := factory.RegisterExecutorRequest{RequestID: "solo-executor-" + key, Key: key, DisplayName: strings.ToUpper(harness[:1]) + harness[1:] + " agent", Command: command}
 		if _, err := service.RegisterExecutor(ctx, operator, request); err != nil {
 			var fault *factory.Error
 			if !errors.As(err, &fault) || fault.Code != factory.CodeConflict {
 				fmt.Fprintf(stderr, "solo: register %s: %v\n", key, err)
+			} else {
+				warnOlderProfile(ctx, service, operator, stderr, key, command)
 			}
 		}
+	}
+}
+
+// warnOlderProfile says when a profile registered earlier runs another command than
+// solo would register now. Profiles never change, so switching takes a new key.
+func warnOlderProfile(ctx context.Context, service *factory.Service, operator factory.Principal, stderr io.Writer, key string, command []string) {
+	profiles, err := service.ListExecutors(ctx, operator)
+	if err != nil {
+		return
+	}
+	for _, profile := range profiles {
+		// The executable path can move between builds; the arguments decide what runs.
+		if profile.Key != key || len(profile.Command) == 0 || slices.Equal(profile.Command[1:], command[1:]) {
+			continue
+		}
+		registered, _ := json.Marshal(profile.Command[1:])
+		current, _ := json.Marshal(command[1:])
+		fmt.Fprintf(stderr, "solo: %s keeps the command it was registered with: %s\nsolo: profiles never change; to run %s, register it under a new key with executors register --command-file and allow that key in the project\n", key, registered, current)
 	}
 }
