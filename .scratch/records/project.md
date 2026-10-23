@@ -20,6 +20,7 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Give requirement refinement the configured test ownership](factory-task-workspace/issues/02-refiner-test-ownership.md)
 - [Manage tasks and observe factory runs from a permanent workspace](factory-task-workspace/issues/01-task-control-and-live-runs.md)
 
 - [Persist factory jobs and enforce their lifecycle](factory-platform/issues/01-durable-controller.md)

@@ -370,7 +370,9 @@ wm_admin refine start --project "$wm_project_id" --work-item "$wm_work_id" \
 wm_admin refine accept --id ref_... --criterion "..." --criterion "..." --answer "..."
 ```
 
-The refiner reads the ticket, its context, the decision model's flags, the protected paths, and any earlier proposal and answers. It returns rewritten criteria and at most three blocking questions. Each question says what its answer unblocks and offers two to four likely answers, best guess first. `ctx factory refiner` runs Claude Code with only the Read, Grep, and Glob tools and schema-checked JSON output, so it cannot edit anything. The decision model scores the current criteria before and the proposal after.
+The refiner reads the ticket, its context, the decision model's flags, the protected paths, test-author availability, and any earlier proposal and answers. When an author command and protected paths are configured, a separate test author writes new protected acceptance tests before the build. The implementer cannot create, edit, rename, or delete files matching those paths. The refiner receives this division of responsibility so it can ask about intended behavior without asking the person to assign protected tests to the implementer.
+
+The refiner returns rewritten criteria and at most three blocking questions. Each question says what its answer unblocks and offers two to four likely answers, best guess first. `ctx factory refiner` runs Claude Code with only the Read, Grep, and Glob tools and schema-checked JSON output, so it cannot edit anything. The decision model scores the current criteria before and the proposal after.
 
 Answer the questions and refine again, reject the proposal, or edit and accept it. Acceptance rewrites the Acceptance criteria section and appends who accepted, which refiner proposed it, and the answers under Comments. The write is an expected-revision write: if the ticket changed after the refinement started, the refinement becomes `stale` and the ticket is left alone. Refinement is refused while an active job holds the work item, one refinement runs at a time per work item, and a run interrupted by shutdown is recorded as failed.
 

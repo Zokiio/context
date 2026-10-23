@@ -124,19 +124,20 @@ type RejectRefinementRequest struct {
 
 // RefinerInput is written to the refiner command's standard input.
 type RefinerInput struct {
-	RefinementID     ID                  `json:"refinementId"`
-	WorkItemID       string              `json:"workItemId"`
-	Title            string              `json:"title"`
-	TicketPath       string              `json:"ticketPath"`
-	Ticket           string              `json:"ticket"`
-	Criteria         []string            `json:"criteria"`
-	Signals          *CriterionSignals   `json:"signals,omitempty"`
-	Context          []ContextSource     `json:"context"`
-	ProtectedPaths   []string            `json:"protectedPaths,omitempty"`
-	PreviousProposal *RefinementProposal `json:"previousProposal,omitempty"`
-	PreviousAnswers  []RefinementAnswer  `json:"previousAnswers,omitempty"`
-	MaxQuestions     int                 `json:"maxQuestions"`
-	Instructions     string              `json:"instructions,omitempty"`
+	RefinementID        ID                  `json:"refinementId"`
+	WorkItemID          string              `json:"workItemId"`
+	Title               string              `json:"title"`
+	TicketPath          string              `json:"ticketPath"`
+	Ticket              string              `json:"ticket"`
+	Criteria            []string            `json:"criteria"`
+	Signals             *CriterionSignals   `json:"signals,omitempty"`
+	Context             []ContextSource     `json:"context"`
+	ProtectedPaths      []string            `json:"protectedPaths,omitempty"`
+	TestAuthorAvailable bool                `json:"testAuthorAvailable"`
+	PreviousProposal    *RefinementProposal `json:"previousProposal,omitempty"`
+	PreviousAnswers     []RefinementAnswer  `json:"previousAnswers,omitempty"`
+	MaxQuestions        int                 `json:"maxQuestions"`
+	Instructions        string              `json:"instructions,omitempty"`
 }
 
 // RefinerOutput is the single JSON object a refiner command writes to standard output.
@@ -219,7 +220,7 @@ func (s *Service) StartRefinement(ctx context.Context, actor Principal, request 
 	}
 	now := s.state.now().UTC()
 	refinement := Refinement{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, TicketSHA256: digestBytes(raw), Status: RefinementRunning, RequestedBy: current.UserID, PreviousID: request.PreviousID, PreviousAnswers: answers, Criteria: criteria, Instructions: project.Policy.Instructions.Refiner, Before: s.scoreCriteria(ctx, title, criteria, true), CreatedAt: now, UpdatedAt: now}
-	input := RefinerInput{RefinementID: refinement.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Signals: refinement.Before, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, PreviousAnswers: answers, MaxQuestions: MaxRefinementQuestions, Instructions: refinement.Instructions}
+	input := RefinerInput{RefinementID: refinement.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Signals: refinement.Before, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, TestAuthorAvailable: s.canWriteExpectations(project), PreviousAnswers: answers, MaxQuestions: MaxRefinementQuestions, Instructions: refinement.Instructions}
 	if previous != nil {
 		input.PreviousProposal = previous.Proposal
 	}

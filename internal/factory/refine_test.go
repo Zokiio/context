@@ -44,11 +44,21 @@ type refineHarness struct {
 
 func setupRefine(t *testing.T, refiner []string) refineHarness {
 	t.Helper()
+	return setupRefineConfigured(t, refiner, nil)
+}
+
+func setupRefineConfigured(t *testing.T, refiner []string, configure func(*factory.Options, *factory.ProjectPolicy)) refineHarness {
+	t.Helper()
 	ctx := context.Background()
 	var calls atomic.Int64
 	server := fakeDecisionModel(t, &calls)
 	dataDir := t.TempDir()
-	service, err := factory.Open(dataDir, factory.Options{DecisionModel: "kev:0.8b-mxfp8", DecisionURL: server.URL, RefinerCommand: refiner})
+	options := factory.Options{DecisionModel: "kev:0.8b-mxfp8", DecisionURL: server.URL, RefinerCommand: refiner}
+	policy := factory.ProjectPolicy{RequiredChecks: []string{"go-test"}, AllowedExecutors: []string{"fixture-agent"}, MaxRepairAttempts: 1, MaxJobDurationSeconds: 7200, Fixture: true, ProtectedPaths: []string{"**/*_test.go"}}
+	if configure != nil {
+		configure(&options, &policy)
+	}
+	service, err := factory.Open(dataDir, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +87,7 @@ func setupRefine(t *testing.T, refiner []string) refineHarness {
 	if err := os.WriteFile(ticket, []byte(updated), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	project, err := service.RegisterProject(ctx, admin, factory.RegisterProjectRequest{RequestID: "project", BundlePath: bundle, RepositoryPath: repository, AllowedSourceRoots: []string{repository}, Policy: factory.ProjectPolicy{RequiredChecks: []string{"go-test"}, AllowedExecutors: []string{"fixture-agent"}, MaxRepairAttempts: 1, MaxJobDurationSeconds: 7200, Fixture: true, ProtectedPaths: []string{"**/*_test.go"}}})
+	project, err := service.RegisterProject(ctx, admin, factory.RegisterProjectRequest{RequestID: "project", BundlePath: bundle, RepositoryPath: repository, AllowedSourceRoots: []string{repository}, Policy: policy})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,6 +184,49 @@ func TestRefinementProposesScoresAndRewritesTheTicket(t *testing.T) {
 	}
 	if _, err := h.service.AcceptRefinement(ctx, h.admin, factory.AcceptRefinementRequest{RequestID: "accept-again", RefinementID: refinement.ID, Criteria: criteria}); !isCode(err, factory.CodeConflict) {
 		t.Fatalf("second acceptance = %v", err)
+	}
+}
+
+func TestRefinementReceivesConfiguredTestAuthorAvailability(t *testing.T) {
+	t.Parallel()
+	for _, tc := range []struct {
+		name                              string
+		author, protected, required, want bool
+	}{
+		{name: "optional tests with author", author: true, protected: true, want: true},
+		{name: "required tests with author", author: true, protected: true, required: true, want: true},
+		{name: "protected paths without author", protected: true},
+		{name: "author without protected paths", author: true},
+		{name: "neither author nor protected paths"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			refiner, dump := fakeRefiner(t, "")
+			h := setupRefineConfigured(t, refiner, func(options *factory.Options, policy *factory.ProjectPolicy) {
+				if tc.author {
+					options.ExpectationCommand = fakeAuthor(t, nil)
+				}
+				if !tc.protected {
+					policy.ProtectedPaths = nil
+				}
+				policy.RequireExpectations = tc.required
+			})
+			if result := h.start(t, factory.StartRefinementRequest{RequestID: "ownership"}); result.Status != factory.RefinementProposed {
+				t.Fatalf("refinement = %+v", result)
+			}
+			raw, err := os.ReadFile(dump)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var input struct {
+				TestAuthorAvailable *bool `json:"testAuthorAvailable"`
+			}
+			if err := json.Unmarshal(raw, &input); err != nil {
+				t.Fatal(err)
+			}
+			if input.TestAuthorAvailable == nil || *input.TestAuthorAvailable != tc.want {
+				t.Fatalf("refiner subprocess testAuthorAvailable = %v, want explicit %t", input.TestAuthorAvailable, tc.want)
+			}
+		})
 	}
 }
 

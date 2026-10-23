@@ -119,7 +119,12 @@ func RefinerPrompt(input factory.RefinerInput) string {
 	fmt.Fprintf(&b, "- Ask at most %d questions, and only ones whose answer would change the criteria or the implementation. Say what each answer unblocks, and offer two to four likely answers as options, your best guess first. Zero questions is better than filler.\n", input.MaxQuestions)
 	b.WriteString("- Record any assumption you made in notes.\n")
 	if len(input.ProtectedPaths) > 0 {
-		fmt.Fprintf(&b, "- The implementer may not change files matching %s. Criteria may rely on those tests as they are.\n", strings.Join(input.ProtectedPaths, ", "))
+		fmt.Fprintf(&b, "- The implementer must not create, edit, rename, or delete files matching these protected paths: %s. This applies to new files as well as existing files; do not ask for permission to bypass this policy.\n", strings.Join(input.ProtectedPaths, ", "))
+	}
+	if input.TestAuthorAvailable {
+		b.WriteString("- A separate test author is available to create or update acceptance tests under the protected paths before implementation. That author owns new protected tests. Do not assign that work to the implementer or ask for permission for the implementer to write protected tests. Refine the intended behavior without adding requirements about who writes tests.\n")
+	} else {
+		b.WriteString("- No separate test author is available for this project. Do not promise that one will run or supply new protected tests. Keep verification requirements within the stated task and existing project capabilities.\n")
 	}
 	if section := projectInstructions(input.Instructions); section != "" {
 		b.WriteString("\n" + section)

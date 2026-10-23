@@ -84,3 +84,45 @@ func TestRefinerFallsBackToResultTextAndReportsErrors(t *testing.T) {
 		t.Fatalf("error result = %v", err)
 	}
 }
+
+func TestRefinerAdapterExplainsProtectedTestOwnership(t *testing.T) {
+	for _, available := range []bool{true, false} {
+		name := "unavailable"
+		if available {
+			name = "available"
+		}
+		t.Run(name, func(t *testing.T) {
+			binary, dir := fakeRefinerClaude(t, `{"structured_output":{"criteria":["Reverse returns code points in reverse order."],"questions":[],"notes":""}}`)
+			encoded, _ := json.Marshal(refinerInput())
+			var input map[string]any
+			if err := json.Unmarshal(encoded, &input); err != nil {
+				t.Fatal(err)
+			}
+			input["testAuthorAvailable"] = available
+			encoded, _ = json.Marshal(input)
+			var output, log bytes.Buffer
+			if err := Refiner(context.Background(), bytes.NewReader(encoded), &output, &log, RefinerOptions{Binary: binary}); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := os.ReadFile(filepath.Join(dir, "prompt.txt"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			prompt := string(raw)
+			for _, want := range []string{"must not create, edit, rename, or delete", "**/*_test.go", "do not ask for permission to bypass this policy", "Keep the work item's intent and scope", "Q: Bytes?", "A: Code points."} {
+				if !strings.Contains(prompt, want) {
+					t.Errorf("refiner subprocess prompt lacks %q", want)
+				}
+			}
+			if available {
+				for _, want := range []string{"A separate test author is available", "That author owns new protected tests", "Do not assign that work to the implementer", "without adding requirements about who writes tests"} {
+					if !strings.Contains(prompt, want) {
+						t.Errorf("refiner subprocess prompt lacks %q", want)
+					}
+				}
+			} else if !strings.Contains(prompt, "No separate test author is available") || strings.Contains(prompt, "A separate test author is available") {
+				t.Error("refiner subprocess prompt misrepresented unavailable test author")
+			}
+		})
+	}
+}
