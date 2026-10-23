@@ -66,6 +66,10 @@ func NewHandler(service *factory.Service) http.Handler {
 		v, err := service.Orientation(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)
 	})
+	get("/v1/projects/{project}/metrics", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.Metrics(r.Context(), p, factory.ProjectID(r.PathValue("project")))
+		respond(w, 200, v, err)
+	})
 	get("/v1/projects/{project}/grants", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
 		v, err := service.ListProjectGrants(r.Context(), p, factory.ProjectID(r.PathValue("project")))
 		respond(w, 200, v, err)

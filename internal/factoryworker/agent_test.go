@@ -66,6 +66,8 @@ func runAgent(t *testing.T, binary string, assignment factory.Assignment) (strin
 func TestAgentCommitsTheAgentsChangesAsTheCandidate(t *testing.T) {
 	progress := filepath.Join(t.TempDir(), "progress.txt")
 	t.Setenv("CTX_FACTORY_PROGRESS", progress)
+	resultPath := filepath.Join(t.TempDir(), "result.json")
+	t.Setenv("CTX_FACTORY_RESULT", resultPath)
 	binary, prompt := fakeClaude(t, true, false)
 	workspace, assignment := agentWorkspace(t)
 	out, err := runAgent(t, binary, assignment)
@@ -95,6 +97,9 @@ func TestAgentCommitsTheAgentsChangesAsTheCandidate(t *testing.T) {
 		if !strings.Contains(string(input), want) {
 			t.Fatalf("prompt lacks %q:\n%s", want, input)
 		}
+	}
+	if result, err := os.ReadFile(resultPath); err != nil || !strings.Contains(string(result), `"costUsd":0.01`) {
+		t.Fatalf("agent result file = %q, %v", result, err)
 	}
 	if !strings.Contains(out, `"costUsd":0.01`) || !strings.Contains(out, `"turns":2`) {
 		t.Fatalf("result summary missing: %s", out)

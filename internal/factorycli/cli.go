@@ -101,6 +101,9 @@ func projectsCommand(out io.Writer) *cli.Command {
 		{Name: "work-items", Usage: "Inspect the authoritative work-item inventory and readiness", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
 			return inspectProject(ctx, c, out)
 		}},
+		{Name: "metrics", Usage: "Measured first-pass rate, lead times, human decisions and agent cost", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
+			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/metrics", nil)
+		}},
 		{Name: "grants", Usage: "List project access", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
 			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/grants", nil)
 		}},

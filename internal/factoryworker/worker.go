@@ -138,6 +138,9 @@ func (w *Worker) Once(ctx context.Context) (Receipt, error) {
 	for i, o := range receipt.Observations {
 		final.Artifacts = append(final.Artifacts, factory.ArtifactInput{Name: fmt.Sprintf("command-%d.log", i+1), MediaType: "text/plain", Content: o.Log})
 	}
+	if result, err := os.ReadFile(w.Process.resultPath(string(a.AttemptID))); err == nil && len(result) <= 64<<10 && json.Valid(result) {
+		final.Artifacts = append(final.Artifacts, factory.ArtifactInput{Name: "agent-result.json", MediaType: "application/json", Content: string(result)})
+	}
 	if a.Stage == factory.StageVerification {
 		final.CandidateRevision = a.CandidateRevision
 		final.CheckStatus = factory.CheckUnknown

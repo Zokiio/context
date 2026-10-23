@@ -151,11 +151,12 @@ async function projectPage(id, tab) {
 	const [view, capabilities] = await Promise.all([api('/projects/' + encodeURIComponent(id) + '/orientation'), api('/projects/' + encodeURIComponent(id) + '/capabilities')]);
 	const project = view.project; const items = list(view.result.workItems); const can = (capability) => list(capabilities).includes(capability);
 	$('#breadcrumb').textContent = project.title;
-	const content = [pageHead(project.title, 'Authoritative records stay in the project bundle. The factory coordinates their execution.', [button('↻ Refresh', route), project.policy.fixture ? badge('fixture') : null].filter(Boolean)), tabs([['work', 'Work items'], ['jobs', 'Project jobs'], ...(can('coordinate') ? [['submit', 'Submit a job']] : []), ...(can('project_admin') ? [['access', 'Project access']] : [])], tab, (next) => navigate('project/' + encodeURIComponent(id) + '/' + next))];
+	const content = [pageHead(project.title, 'Authoritative records stay in the project bundle. The factory coordinates their execution.', [button('↻ Refresh', route), project.policy.fixture ? badge('fixture') : null].filter(Boolean)), tabs([['work', 'Work items'], ['jobs', 'Project jobs'], ['metrics', 'Metrics'], ...(can('coordinate') ? [['submit', 'Submit a job']] : []), ...(can('project_admin') ? [['access', 'Project access']] : [])], tab, (next) => navigate('project/' + encodeURIComponent(id) + '/' + next))];
 	if (tab === 'submit') {
 		if (!can('coordinate')) throw new Error('Coordination access is required to submit work.');
 		content.push(submitForm(project, items, view.criterionSignals));
-	} else if (tab === 'jobs') content.push(panel('Project jobs', jobsTable(list(await api('/jobs?projectId=' + encodeURIComponent(id))))));
+	} else if (tab === 'metrics') content.push(metricsPanel(await api('/projects/' + encodeURIComponent(id) + '/metrics')));
+	else if (tab === 'jobs') content.push(panel('Project jobs', jobsTable(list(await api('/jobs?projectId=' + encodeURIComponent(id))))));
 	else if (tab === 'access') { if (!can('project_admin')) throw new Error('Project administration access is required.'); content.push(await grantsForm(project)); }
 	else {
 		content.push(panel('Work items', items.length ? table(['WORK ITEM', 'READINESS', 'ELIGIBILITY', 'EXECUTION', 'KEV', ''], items.map((item) => [element('div', {}, element('strong', {}, item.title || item.id || 'Unidentified item'), element('div', { class: 'subline mono' }, item.id || item.source)), badge(item.readiness), item.eligible ? badge('eligible') : badge('not eligible'), human(item.execution), kevCell((view.criterionSignals || {})[item.id]), button('Inspect', () => inspectItem(item, project, can('coordinate')))])) : empty('No work items found', 'The project bundle has no visible work items.')));
@@ -207,6 +208,16 @@ function expectationsPanel(item, project, expectation, render) {
 	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { const values = data(form); const job = await command('/jobs', { projectId: project.id, workItemId: item.id, expectationsId: expectation.id, executorKey: values.executorKey, repairLimit: Number(values.repairLimit), deadline: new Date(values.deadline).toISOString() }); await navigate('job/' + encodeURIComponent(job.id)); }, submit); });
 	body.push(element('hr'), form);
 	return panel('Holdout expectations', element('div', { class: 'panel-body' }, body), runNote || 'accepted');
+}
+function metricsPanel(m) {
+	const percent = (value) => Math.round(value * 100) + '%';
+	const minutes = (seconds) => seconds ? (seconds < 120 ? Math.round(seconds) + ' s' : Math.round(seconds / 60) + ' min') : '—';
+	const dollars = (value) => '$' + Number(value || 0).toFixed(2);
+	const tiles = (entries) => element('div', { class: 'stat-grid' }, entries.map(([label, value]) => element('div', { class: 'stat' }, element('div', { class: 'stat-label' }, label), element('div', { class: 'stat-value' }, value))));
+	return element('div', {}, panel('Outcomes', element('div', { class: 'panel-body' }, tiles([['First-pass acceptance', m.acceptedJobs ? percent(m.firstPassRate) : '—'], ['Merged jobs', m.mergedJobs + ' of ' + m.jobs], ['Repairs', m.repairs], ['Protected-path rejections', m.protectedRejections]]))),
+		panel('Time and people', element('div', { class: 'panel-body' }, tiles([['Admission to acceptance', minutes(m.medianAdmitToAcceptSeconds)], ['Acceptance to merge', minutes(m.medianAcceptToMergeSeconds)], ['Human decisions', m.humanDecisions], ['Decisions per merged job', m.mergedJobs ? m.humanDecisionsPerMerge.toFixed(1) : '—']]))),
+		panel('Verification and cost', element('div', { class: 'panel-body' }, tiles([['Merge checks passed', m.mergeChecksPassed + ' / ' + (m.mergeChecksPassed + m.mergeChecksFailed)], ['Agent cost', dollars(m.totalCostUsd)], ['Cost per merged job', m.mergedJobs ? dollars(m.costPerMergedJobUsd) : '—'], ['Refinements · expectations', m.refinements.accepted + '/' + m.refinements.total + ' · ' + m.expectations.accepted + '/' + m.expectations.total]]))),
+		element('p', { class: 'fine' }, 'Measured from this installation’s jobs, events, artifacts, refinements, and expectations at ' + time(m.generatedAt) + '. Cost covers implementation, refinement, and expectation runs that reported it.'));
 }
 function kevCell(signals) {
 	if (!signals) return element('span', { class: 'fine' }, 'Not observed');

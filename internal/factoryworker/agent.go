@@ -89,6 +89,9 @@ func Agent(ctx context.Context, in io.Reader, out io.Writer, options AgentOption
 	waitErr := command.Wait()
 	summary, _ := json.Marshal(result)
 	fmt.Fprintf(out, "waymark agent result: %s\n", summary)
+	if path := os.Getenv("CTX_FACTORY_RESULT"); path != "" {
+		_ = os.WriteFile(path, summary, 0o600)
+	}
 	if waitErr != nil {
 		return fmt.Errorf("%s exited: %w", options.Harness, waitErr)
 	}
