@@ -151,7 +151,7 @@ func TestAutopilotRunsTheLoopAndAsksOnlyWhereThePolicySays(t *testing.T) {
 	if job.Status != factory.JobVerificationFailed {
 		t.Fatalf("job after a failed check = %s", job.Status)
 	}
-	if card := cardFor(t, h.service, h.admin, h.project.ID, "work-test"); card.Status != "Fixing failed checks" || card.State != factory.CardRunning {
+	if card := cardFor(t, h.service, h.admin, h.project.ID, "work-test"); card.Status != "Fixing" || card.State != factory.CardRunning {
 		t.Fatalf("failed check under the autopilot = %+v", card)
 	}
 	h.service.PilotOnce(ctx)
@@ -165,7 +165,7 @@ func TestAutopilotRunsTheLoopAndAsksOnlyWhereThePolicySays(t *testing.T) {
 		t.Fatalf("job after the fix = %s", job.Status)
 	}
 	// Every requirement has a locked test, so the policy approves and merges.
-	if card := cardFor(t, h.service, h.admin, h.project.ID, "work-test"); card.Status != "Approving by your rules" || card.Unchecked != 0 {
+	if card := cardFor(t, h.service, h.admin, h.project.ID, "work-test"); card.Status != "Approving for you" || card.Unchecked != 0 {
 		t.Fatalf("covered job under when_untested = %+v", card)
 	}
 	h.service.PilotOnce(ctx)

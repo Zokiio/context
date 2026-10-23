@@ -3,6 +3,7 @@ package factory_test
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strings"
 	"testing"
 
@@ -176,13 +177,17 @@ func TestBoardFollowsAJobFromBuildToDone(t *testing.T) {
 	ctx := context.Background()
 	h := setupJob(t)
 	card := cardFor(t, h.service, h.admin, h.project.ID, "work-test")
-	if card.Column != factory.ColumnBuild || card.State != factory.CardRunning || card.Status != "Waiting for a builder" || card.Since == nil {
+	if card.Column != factory.ColumnBuild || card.State != factory.CardRunning || card.Status != "Waiting for a builder" || card.Since == nil || card.Step != 2 {
 		t.Fatalf("queued card = %+v", card)
 	}
 	job, _ := passVerificationForTest(t, h, "board")
 	card = cardFor(t, h.service, h.admin, h.project.ID, "work-test")
-	if card.Column != factory.ColumnApprove || card.State != factory.CardNeedsYou || card.Decision != factory.CardDecisionApprove || card.JobVersion != job.Version {
+	if card.Column != factory.ColumnApprove || card.State != factory.CardNeedsYou || card.Decision != factory.CardDecisionApprove || card.JobVersion != job.Version || card.Step != 4 {
 		t.Fatalf("card ready for approval = %+v", card)
+	}
+	// The card says it in short facts rather than a sentence.
+	if !slices.Equal(card.Facts, []factory.CardFact{{Text: "Checks passed", Tone: "ok"}, {Text: "No locked tests", Tone: "warn"}}) {
+		t.Fatalf("approval facts = %+v", card.Facts)
 	}
 	accepted, err := h.service.Approve(ctx, h.admin, approveRequest(job, "accept", false))
 	if err != nil {
@@ -197,7 +202,7 @@ func TestBoardFollowsAJobFromBuildToDone(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(board.Cards) != 1 || board.Cards[0].Column != factory.ColumnDone || board.MergedToday != 1 || board.NeedsYou != 0 {
+	if len(board.Cards) != 1 || board.Cards[0].Column != factory.ColumnDone || board.Cards[0].Step != 6 || board.MergedToday != 1 || board.NeedsYou != 0 {
 		t.Fatalf("merged board = %+v", board)
 	}
 }
@@ -219,7 +224,7 @@ func TestPlanDecisionStartsTestsThenBuildsFromThem(t *testing.T) {
 	}
 	expectation := h.waitExpectation(t, started.Expectation.ID)
 	card = cardFor(t, h.service, h.admin, h.project.ID, "work-test")
-	if card.Column != factory.ColumnPlan || card.State != factory.CardNeedsYou || card.Status != "Read the locked tests" || card.ExpectationID != expectation.ID {
+	if card.Column != factory.ColumnPlan || card.State != factory.CardNeedsYou || card.Status != "Read the locked tests" || card.ExpectationID != expectation.ID || card.Step != 1 || !slices.Contains(card.Facts, factory.CardFact{Text: "1 test"}) {
 		t.Fatalf("proposed tests card = %+v", card)
 	}
 	built, err := h.service.ApprovePlan(ctx, h.admin, factory.ApprovePlanRequest{RequestID: "tests", ProjectID: h.project.ID, WorkItemID: "work-test", ExpectationID: expectation.ID})

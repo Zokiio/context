@@ -271,22 +271,38 @@ details.fold > :not(summary) { margin-top: 12px; }
 .who { text-align: right; font-size: 11px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-3); border-radius: 6px; padding: 2px 6px; }
 .who.you { color: var(--warn); background: var(--warn-tint); }
 .column-empty { padding: 14px 6px; font-size: 13px; line-height: 20px; color: var(--ink-3); }
-.card { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+.card { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; box-shadow: var(--shadow); }
 .card:hover { border-color: var(--line-strong); }
-.card.need { border-color: var(--warn-line); background: var(--warn-surface); box-shadow: var(--shadow); }
-.card.running { box-shadow: var(--shadow); }
-.card.waiting { border-style: dashed; border-color: var(--line-strong); background: transparent; }
-.card-title { font-size: 15px; line-height: 22px; font-weight: 700; overflow-wrap: anywhere; }
-.card.waiting .card-title { font-weight: 600; color: var(--ink-2); }
+.card.need { border-color: var(--warn-line); background: var(--warn-surface); }
+.card.waiting { border-style: dashed; border-color: var(--line-strong); background: transparent; box-shadow: none; }
+.card.done { gap: 4px; padding: 12px 14px; box-shadow: none; }
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-title { font-size: 16px; line-height: 22px; font-weight: 700; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card.waiting .card-title { color: var(--ink-2); }
+.card.done .card-title { font-size: 15px; }
+.state-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-size: 12px; line-height: 16px; font-weight: 700; }
+.state-chip.need { background: var(--warn-tint); color: var(--warn); }
+.state-chip.running { background: var(--info-tint); color: var(--info); }
+.chip-dot { width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+.card-facts { display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px; }
+.card-fact { font-size: 12px; line-height: 20px; padding: 0 8px; border-radius: 6px; background: var(--surface-2); color: var(--ink-2); font-weight: 600; }
+.card-fact.warn { background: var(--warn-tint); color: var(--warn); }
+.card-fact.ok { background: var(--ok-tint); color: var(--ok); }
+.card-fact.bad { background: var(--bad-tint); color: var(--bad); }
+.step-bar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; }
+.step-seg { height: 4px; border-radius: 2px; background: var(--line); }
+.step-seg.done { background: var(--ok); }
+.step-seg.need { background: var(--warn); }
+.step-seg.running { background: var(--info); }
+.step-seg.waiting { background: var(--line-strong); }
+.card-done { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 18px; font-weight: 700; color: var(--ok); }
+.card-done .card-meta { font: inherit; font-weight: 500; color: var(--ink-3); }
 .card-line { font-size: 13px; line-height: 20px; color: var(--ink-2); }
-.card.waiting .card-line, .card.done .card-line { color: var(--ink-3); }
+.card-action { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--action-text); }
 .card-status { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; font-weight: 700; color: var(--info); }
 .card-status.ok { color: var(--ok); }
-.card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 4px; }
-.card-action { font-size: 13px; font-weight: 700; color: var(--action-text); }
 .card-meta, .elapsed { font: 500 12px "JetBrains Mono", ui-monospace, monospace; color: var(--ink-3); }
-.elapsed { margin-left: auto; color: var(--ink-2); }
-.progress-note { font: 400 12px/18px "JetBrains Mono", ui-monospace, monospace; color: var(--ink-3); overflow-wrap: anywhere; }
+.progress-note { font: 400 12px/18px "JetBrains Mono", ui-monospace, monospace; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 999px; background: var(--info); animation: breathe 1.6s ease-in-out infinite; }
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 

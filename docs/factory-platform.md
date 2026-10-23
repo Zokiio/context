@@ -283,7 +283,7 @@ The caller needs the review, accept, and merge capabilities. Unless the project 
 
 Open the service URL and sign in with a personal token from a private token file. The browser and CLI share projects, jobs, evidence, permissions, and lifecycle operations. Keep tokens out of URLs.
 
-The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. The header counts what needs you, and its button opens the first one. The Graph view draws the same cards by their `Blocked by` links: each group of connected work is a row, left to right in dependency order, with dashed arrows for dependencies that are still open. `projects board` prints the same projection.
+The board places every open work item in one column: Up next, Plan, Build, Approve, Merge, or Done. A card either needs you, is running, or waits for something named on it. It shows that state, a few short facts such as "3 questions" or "Checks passed", and a bar for its six steps: plan, agree, build, checks, approve, and merge. The header counts what needs you, and its button opens the first one. The Graph view draws the same cards by their `Blocked by` links: each group of connected work is a row, left to right in dependency order, with dashed arrows for dependencies that are still open. `projects board` prints the same projection.
 
 A change needs two decisions from a person, each made in a side panel:
 - **Agree what done means**, before the build. Answer the refiner's questions, read or edit the sharpened requirements, or read the locked tests next to the requirement each one checks. The test author's concerns and any requirement without a test come first.

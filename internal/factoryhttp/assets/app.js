@@ -270,16 +270,28 @@ function cardAction(card) {
 	if (card.decision === 'approve') return 'Review';
 	return 'Open';
 }
+const STEPS = ['Plan', 'Agree', 'Build', 'Checks', 'Approve', 'Merge'];
+// cardElement shows a card as a few scannable parts: a state chip, the title, short
+// facts, the six-step bar, and an action only when it needs you.
 function cardElement(card) {
 	const kind = { needs_you: 'need', running: 'running', waiting: 'waiting', done: 'done' }[card.state];
 	const title = element('span', { class: 'card-title' }, card.title);
-	const cost = card.costUsd ? element('span', { class: 'card-meta' }, money(card.costUsd)) : null;
-	let body;
-	if (card.state === 'needs_you') body = [element('span', { class: 'eyebrow warn' }, card.status), title, element('span', { class: 'card-line' }, card.line), element('span', { class: 'card-foot' }, element('span', { class: 'card-action' }, cardAction(card) + ' →'), cost)];
-	else if (card.state === 'running') body = [element('span', { class: 'card-status' }, element('span', { class: 'dot', 'aria-hidden': 'true' }), element('span', {}, card.status), elapsed(card.since)), title, element('span', { class: 'card-line' }, card.line), card.progress ? element('span', { class: 'progress-note' }, card.progress) : null, cost];
-	else if (card.state === 'waiting') body = [title, element('span', { class: 'eyebrow' }, card.status), element('span', { class: 'card-line' }, card.line), card.decision ? element('span', { class: 'card-action' }, cardAction(card) + ' →') : null];
-	else body = [element('span', { class: 'card-status ok' }, icon('check', 14), card.status), title, element('span', { class: 'card-line' }, [card.line, card.since ? ago(card.since) : ''].filter(Boolean).join(' · '))];
-	return element('button', { type: 'button', class: 'card ' + kind, onclick: () => openCard(card) }, body);
+	if (card.state === 'done') {
+		return element('button', { type: 'button', class: 'card done', onclick: () => openCard(card) }, title, element('span', { class: 'card-done' }, icon('check', 13), card.status, card.since ? element('span', { class: 'card-meta' }, '· ' + ago(card.since)) : null));
+	}
+	const blocked = card.state === 'waiting' && card.status.startsWith('Waits for');
+	const chip = element('span', { class: 'state-chip ' + kind },
+		card.state === 'running' ? element('span', { class: 'dot', 'aria-hidden': 'true' }) : card.state === 'needs_you' ? element('span', { class: 'chip-dot', 'aria-hidden': 'true' }) : null,
+		card.state === 'needs_you' ? 'Needs you' : blocked ? 'Waiting' : card.status);
+	const meta = card.state === 'running' ? elapsed(card.since) : card.costUsd ? element('span', { class: 'card-meta' }, money(card.costUsd)) : null;
+	const facts = list(card.facts).length ? element('span', { class: 'card-facts' }, list(card.facts).map((item) => element('span', { class: 'card-fact' + (item.tone ? ' ' + item.tone : '') }, item.text))) : null;
+	const step = Math.min(card.step || 0, STEPS.length - 1);
+	const bar = element('span', { class: 'step-bar', role: 'img', 'aria-label': 'Step ' + (step + 1) + ' of ' + STEPS.length + ': ' + STEPS[step] }, STEPS.map((name, index) => element('span', { class: 'step-seg' + (index < step ? ' done' : index === step ? ' ' + kind : '') })));
+	const action = card.state === 'needs_you' ? card.status : card.decision ? cardAction(card) : '';
+	return element('button', { type: 'button', class: 'card ' + kind, onclick: () => openCard(card) },
+		element('span', { class: 'card-top' }, chip, meta), title, facts,
+		card.state === 'running' && card.progress ? element('span', { class: 'progress-note' }, card.progress) : null,
+		bar, action ? element('span', { class: 'card-action' }, action, icon('arrow', 16)) : null);
 }
 function openCard(card) {
 	if (card.decision === 'plan' || (card.decision === 'approve' && card.jobId)) return openDrawer(card);

@@ -55,6 +55,11 @@ type BoardCard struct {
 	Line   string `json:"line"`
 	// BlockedBy lists the work items this one depends on, done or not, for the work graph.
 	BlockedBy []string `json:"blockedBy,omitempty"`
+	// Facts are a few short labels for the card, such as "3 questions" or "Checks passed".
+	Facts []CardFact `json:"facts,omitempty"`
+	// Step is where the item is among its six steps: 0 plan, 1 agree, 2 build, 3 checks,
+	// 4 approve, 5 merge, and 6 once it is done.
+	Step int `json:"step"`
 	// Since is when the current activity started, for an elapsed timer.
 	Since    *time.Time `json:"since,omitempty"`
 	Progress string     `json:"progress,omitempty"`
@@ -69,6 +74,12 @@ type BoardCard struct {
 	// Unchecked counts the requirements no locked test checks, so a person must.
 	Unchecked int       `json:"unchecked,omitempty"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// CardFact is one short label on a card. Tone is "warn", "ok", "bad", or empty.
+type CardFact struct {
+	Text string `json:"text"`
+	Tone string `json:"tone,omitempty"`
 }
 
 type ProjectBoard struct {
@@ -343,7 +354,7 @@ func deriveCard(in boardInputs) (BoardCard, bool) {
 		return card, true
 	}
 	if work.Execution != nil && *work.Execution == "completed" {
-		card.Column, card.State, card.Status, card.Line = ColumnDone, CardDone, "Done", "Recorded as done in the project."
+		card.Column, card.State, card.Status, card.Line, card.Step = ColumnDone, CardDone, "Done", "Recorded as done in the project.", 6
 		return card, true
 	}
 	if in.expectation != nil && work.CriteriaSHA256 != nil && in.expectation.CriteriaSHA256 == *work.CriteriaSHA256 && expectationsCard(&card, in) {
@@ -354,6 +365,10 @@ func deriveCard(in boardInputs) (BoardCard, bool) {
 	}
 	readyCard(&card, in)
 	return card, true
+}
+
+func fact(card *BoardCard, tone, text string) {
+	card.Facts = append(card.Facts, CardFact{Text: text, Tone: tone})
 }
 
 func needs(card *BoardCard, column BoardColumn, decision, status, line string) {
@@ -383,29 +398,36 @@ func autopilotFor(in boardInputs, policyAllows bool) bool {
 
 func jobCard(card *BoardCard, in boardInputs) {
 	job := in.job
-	card.JobID, card.JobVersion, card.UpdatedAt = job.ID, job.Version, job.UpdatedAt
+	card.JobID, card.JobVersion, card.UpdatedAt, card.Step = job.ID, job.Version, job.UpdatedAt, 2
 	switch job.Status {
 	case JobAccepted:
+		card.Step = 5
 		switch {
 		case job.Merge.Merged():
-			card.Column, card.State, card.Status = ColumnDone, CardDone, "Merged"
+			card.Column, card.State, card.Status, card.Step = ColumnDone, CardDone, "Merged", 6
 			card.Line, card.Since = "Passed the first time.", job.Merge.MergedAt
 			if job.RepairCount > 0 {
 				card.Line = "Passed after " + plural(job.RepairCount, "fix.", "fixes.")
 			}
 		case job.Merge != nil && job.Merge.Status == MergeStatusVerifying:
 			at := job.Merge.RequestedAt
-			running(card, ColumnMerge, "Checking the combined version", "main moves only when every check passes on it.", &at)
+			running(card, ColumnMerge, "Merging", "main moves only when every check passes on it.", &at)
+			fact(card, "", "Checks on the merge")
 		case job.Merge != nil:
 			needs(card, ColumnMerge, CardDecisionMerge, "Merge failed", sentence(firstSentence(job.Merge.Failure, "Main was left as it was.")))
+			fact(card, "bad", "Main unchanged")
 		default:
 			needs(card, ColumnMerge, CardDecisionMerge, "Ready to merge", "Approved but not merged. Work that depends on it waits.")
+			fact(card, "ok", "Approved")
 		}
 	case JobAccepting:
+		card.Step = 4
 		running(card, ColumnApprove, "Recording the approval", "The acceptance record is being written.", &job.UpdatedAt)
 	case JobReadyForReview, JobReadyForAcceptance:
+		card.Step = 4
 		line := "Checks passed. No locked tests, so check every requirement yourself."
-		if in.jobTests != nil && len(in.jobTests.Criteria) > 0 {
+		tested := in.jobTests != nil && len(in.jobTests.Criteria) > 0
+		if tested {
 			card.Unchecked = len(in.jobTests.Uncovered())
 			if card.Unchecked == 0 {
 				line = "Checks passed, and a locked test checks every requirement."
@@ -413,8 +435,15 @@ func jobCard(card *BoardCard, in boardInputs) {
 				line = "Checks passed. " + plural(card.Unchecked, "requirement only you can check.", "requirements only you can check.")
 			}
 		}
+		fact(card, "ok", "Checks passed")
+		switch {
+		case !tested:
+			fact(card, "warn", "No locked tests")
+		case card.Unchecked > 0:
+			fact(card, "warn", plural(card.Unchecked, "for you to check", "for you to check"))
+		}
 		if approvesByPolicy(in) {
-			running(card, ColumnApprove, "Approving by your rules", line, &job.UpdatedAt)
+			running(card, ColumnApprove, "Approving for you", line, &job.UpdatedAt)
 			return
 		}
 		needs(card, ColumnApprove, CardDecisionApprove, "Approve the change", line)
@@ -424,16 +453,20 @@ func jobCard(card *BoardCard, in boardInputs) {
 		attempt := latestAttempt(*job, StageImplementation)
 		status := "Building"
 		if job.RepairCount > 0 {
-			status = fmt.Sprintf("Fixing failed checks · try %d of %d", job.RepairCount, job.Admission.RepairLimit)
+			status = "Fixing"
+			fact(card, "", fmt.Sprintf("Fix %d of %d", job.RepairCount, job.Admission.RepairLimit))
 		}
 		running(card, ColumnBuild, status, "An agent is writing the change in its own copy.", attemptStart(attempt, job.UpdatedAt))
 		card.Progress = latestProgress(*job)
 	case JobVerifying:
+		card.Step = 3
 		running(card, ColumnBuild, "Running checks", "The checks run in a fresh copy, not the agent's.", attemptStart(latestAttempt(*job, StageVerification), job.UpdatedAt))
 	case JobVerificationFailed:
+		card.Step = 3
 		left := job.RepairCount < job.Admission.RepairLimit
 		if left && autopilotFor(in, true) {
-			running(card, ColumnBuild, "Fixing failed checks", fmt.Sprintf("Fix %d of %d starts by itself.", job.RepairCount+1, job.Admission.RepairLimit), &job.UpdatedAt)
+			running(card, ColumnBuild, "Fixing", fmt.Sprintf("Fix %d of %d starts by itself.", job.RepairCount+1, job.Admission.RepairLimit), &job.UpdatedAt)
+			fact(card, "", fmt.Sprintf("Fix %d of %d", job.RepairCount+1, job.Admission.RepairLimit))
 			return
 		}
 		line := "No fixes are left."
@@ -441,8 +474,11 @@ func jobCard(card *BoardCard, in boardInputs) {
 			line = fmt.Sprintf("%d of %d fixes used. Ask for a fix or reject it.", job.RepairCount, job.Admission.RepairLimit)
 		}
 		needs(card, ColumnBuild, CardDecisionFix, "Checks failed", line)
+		fact(card, "bad", "Checks failed")
+		fact(card, "", fmt.Sprintf("%d of %d fixes used", job.RepairCount, job.Admission.RepairLimit))
 	case JobFailed:
 		needs(card, ColumnBuild, CardDecisionFix, "Failed", "The build failed. Open it to see why.")
+		fact(card, "bad", "Build failed")
 	case JobStale:
 		needs(card, ColumnBuild, CardDecisionFix, "Requirements changed", "The requirements changed after the build started.")
 	case JobImplementationUnknown, JobCancellationUnknown:
@@ -488,15 +524,26 @@ func expectationsCard(card *BoardCard, in boardInputs) bool {
 	case ExpectationRunning:
 		running(card, ColumnPlan, "Writing locked tests", "A separate agent writes tests the builder cannot change.", &expectation.CreatedAt)
 	case ExpectationProposed:
+		card.Step = 1
+		if len(expectation.Concerns) > 0 {
+			fact(card, "warn", plural(len(expectation.Concerns), "concern", "concerns"))
+		}
+		fact(card, "", plural(tests, "test", "tests"))
+		if card.Unchecked > 0 {
+			fact(card, "warn", plural(card.Unchecked, "untested", "untested"))
+		}
 		line := plural(tests, "locked test", "locked tests") + " for " + plural(len(expectation.Criteria), "requirement.", "requirements.")
 		if len(expectation.Concerns) > 0 {
 			line = "The test author found " + plural(len(expectation.Concerns), "problem", "problems") + " in the requirements."
 		} else if autopilotFor(in, in.policy.Before() != AskBeforeAlways && (itemClear(in) || in.policy.Before() == AskBeforeNever)) {
+			card.Step = 2
 			running(card, ColumnPlan, "Starting the build", line, &expectation.UpdatedAt)
 			return true
 		}
 		needs(card, ColumnPlan, CardDecisionPlan, "Read the locked tests", line)
 	case ExpectationAccepted:
+		card.Step = 1
+		fact(card, "ok", "Tests agreed")
 		if len(in.blockers) > 0 {
 			waiting(card, ColumnPlan, "Waits for "+strings.Join(in.blockers, ", "), "The build starts once that is merged.")
 		} else if autopilotFor(in, in.policy.Before() != AskBeforeAlways) {
@@ -542,12 +589,19 @@ func refinementCard(card *BoardCard, in boardInputs) bool {
 		}
 		card.Questions = questions
 		flagged := refinement.After != nil && refinement.After.FlaggedCount > 0
+		if questions > 0 {
+			fact(card, "warn", plural(questions, "question", "questions"))
+		}
+		if flagged {
+			fact(card, "warn", plural(refinement.After.FlaggedCount, "still vague", "still vague"))
+		}
+		fact(card, "", plural(proposed, "requirement", "requirements"))
 		line := "Your " + plural(len(refinement.Criteria), "requirement was", "requirements were") + " too vague to test. The agent rewrote them as " + fmt.Sprint(proposed) + "."
 		if flagged && questions == 0 {
 			line = "Rewritten as " + fmt.Sprint(proposed) + " requirements, but " + plural(refinement.After.FlaggedCount, "still looks", "still look") + " vague, so it stopped for you."
 		}
 		if questions == 0 && !flagged && autopilotFor(in, in.policy.Before() == AskBeforeNever) {
-			running(card, ColumnPlan, "Agreeing the sharpened requirements", line, &refinement.UpdatedAt)
+			running(card, ColumnPlan, "Agreeing for you", line, &refinement.UpdatedAt)
 			return true
 		}
 		status := "Read the sharpened requirements"
@@ -558,6 +612,8 @@ func refinementCard(card *BoardCard, in boardInputs) bool {
 	case refinement.Status == RefinementFailed && refinement.TicketSHA256 == ticket:
 		needs(card, ColumnPlan, CardDecisionPlan, "Sharpening failed", sentence(firstSentence(refinement.Error, "Try again or edit the requirements.")))
 	case refinement.Status == RefinementAccepted && refinement.UpdatedTicketSHA256 == ticket:
+		card.Step = 1
+		fact(card, "ok", "Requirements agreed")
 		next := in.canTest || (!in.policyRequiresTests() && (in.consent != nil || in.policy.Before() != AskBeforeAlways))
 		if next && autopilotFor(in, in.policy.Autopilot) {
 			status := "Starting the build"
@@ -578,6 +634,7 @@ func readyCard(card *BoardCard, in boardInputs) {
 	work := in.work
 	if len(in.blockers) > 0 {
 		waiting(card, ColumnNext, "Waits for "+strings.Join(in.blockers, ", "), "It starts once that is done.")
+		fact(card, "", "After "+strings.Join(in.blockers, ", "))
 		return
 	}
 	if !work.Eligible {
@@ -590,6 +647,15 @@ func readyCard(card *BoardCard, in boardInputs) {
 		}
 		waiting(card, ColumnNext, "Not ready", reason)
 		return
+	}
+	if in.signals != nil && len(in.signals.Criteria) > 0 {
+		fact(card, "", plural(len(in.signals.Criteria), "requirement", "requirements"))
+	}
+	switch {
+	case card.Flagged > 0:
+		fact(card, "warn", plural(card.Flagged, "looks vague", "look vague"))
+	case itemClear(in):
+		fact(card, "ok", "All checkable")
 	}
 	vague := plural(card.Flagged, "requirement looks", "requirements look") + " vague"
 	if startsByItself(in, card.Flagged) {
