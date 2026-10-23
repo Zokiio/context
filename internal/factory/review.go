@@ -12,6 +12,14 @@ func (s *Service) Review(ctx context.Context, actor Principal, request ReviewReq
 	if request.Decision != ReviewApproved && request.Decision != ReviewChangesRequested {
 		return Job{}, fault(CodeInvalid, "review decision must be approved or changes_requested", nil)
 	}
+	findings, err := normalizeFindings(request.Findings)
+	if err != nil {
+		return Job{}, err
+	}
+	findingsJSON, err := marshal(findings)
+	if err != nil {
+		return Job{}, fault(CodeInternal, "encode review findings", err)
+	}
 	s.state.mutations.Lock()
 	defer s.state.mutations.Unlock()
 	tx, err := s.state.db.BeginTx(ctx, nil)
@@ -60,7 +68,7 @@ func (s *Service) Review(ctx context.Context, actor Principal, request ReviewReq
 			return Job{}, fault(CodeInternal, "create review identity", err)
 		}
 		now := s.state.now().UTC()
-		if _, err := tx.ExecContext(ctx, `INSERT INTO reviews(id,job_id,reviewer_id,candidate_revision,requirement_fingerprint,decision,summary,created_at) VALUES(?,?,?,?,?,?,?,?)`, id, job.ID, current.UserID, request.CandidateRevision, request.RequirementFingerprint, request.Decision, strings.TrimSpace(request.Summary), formatTime(now)); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO reviews(id,job_id,reviewer_id,candidate_revision,requirement_fingerprint,decision,summary,findings_json,created_at) VALUES(?,?,?,?,?,?,?,?,?)`, id, job.ID, current.UserID, request.CandidateRevision, request.RequirementFingerprint, request.Decision, strings.TrimSpace(request.Summary), findingsJSON, formatTime(now)); err != nil {
 			return Job{}, fault(CodeInternal, "record review", err)
 		}
 		status := JobReadyForAcceptance
@@ -70,7 +78,7 @@ func (s *Service) Review(ctx context.Context, actor Principal, request ReviewReq
 		if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?,version=version+1,updated_at=? WHERE id=?`, status, formatTime(now), job.ID); err != nil {
 			return Job{}, fault(CodeInternal, "update reviewed job", err)
 		}
-		if _, err := appendEvent(ctx, tx, job.ID, &current.UserID, "review_recorded", map[string]any{"reviewId": id, "decision": request.Decision, "candidateRevision": request.CandidateRevision}, now); err != nil {
+		if _, err := appendEvent(ctx, tx, job.ID, &current.UserID, "review_recorded", map[string]any{"reviewId": id, "decision": request.Decision, "candidateRevision": request.CandidateRevision, "findings": findings}, now); err != nil {
 			return Job{}, err
 		}
 		job, err = loadJob(ctx, tx, job.ID)

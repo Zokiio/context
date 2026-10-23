@@ -158,6 +158,9 @@ func (s *Service) RegisterProject(ctx context.Context, actor Principal, request 
 		return Project{}, err
 	}
 	request.Policy.ProtectedPaths = protected
+	// When the factory may skip asking is a separate decision, saved by a person who can
+	// make the decisions it delegates.
+	request.Policy.Ask = AskPolicy{}
 	if request.Policy.RequireExpectations && len(protected) == 0 {
 		return Project{}, fault(CodeInvalid, "requiring expectations needs protected paths to keep them from the implementer", nil)
 	}

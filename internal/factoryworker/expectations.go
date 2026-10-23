@@ -20,7 +20,11 @@ type ExpectationAuthorOptions struct {
 	AllowedTools []string
 }
 
-const expectationInstruction = "Write the holdout tests described in the input. Do not implement the feature."
+const expectationInstruction = "Write the holdout tests described in the input. Do not implement the feature. Reply only with the JSON object the schema asks for."
+
+// ExpectationSchema is the structured report the author returns after writing tests:
+// which tests check which criterion, counted from 1, and any problems it found.
+const ExpectationSchema = `{"type":"object","properties":{"notes":{"type":"string"},"coverage":{"type":"array","items":{"type":"object","properties":{"criterion":{"type":"integer","minimum":1},"tests":{"type":"array","items":{"type":"string"}}},"required":["criterion","tests"],"additionalProperties":false}},"concerns":{"type":"array","items":{"type":"string"}}},"required":["notes","coverage","concerns"],"additionalProperties":false}`
 
 // ExpectationAuthor reads an ExpectationInput on in and lets Claude Code write tests in
 // the current directory, a temporary worktree at the base revision. The service keeps
@@ -35,7 +39,7 @@ func ExpectationAuthor(ctx context.Context, in io.Reader, out, log io.Writer, op
 	if binary == "" {
 		binary = "claude"
 	}
-	argv := []string{binary, "-p", expectationInstruction, "--output-format", "json", "--permission-mode", "acceptEdits", "--no-session-persistence"}
+	argv := []string{binary, "-p", expectationInstruction, "--output-format", "json", "--json-schema", ExpectationSchema, "--permission-mode", "acceptEdits", "--no-session-persistence"}
 	if options.Model != "" {
 		argv = append(argv, "--model", options.Model)
 	}
@@ -53,27 +57,53 @@ func ExpectationAuthor(ctx context.Context, in io.Reader, out, log io.Writer, op
 	if err := command.Run(); err != nil {
 		return fmt.Errorf("claude expectation author: %w", err)
 	}
-	var result struct {
-		IsError    bool           `json:"is_error"`
-		Result     string         `json:"result"`
-		SessionID  string         `json:"session_id"`
-		Turns      int            `json:"num_turns"`
-		CostUSD    float64        `json:"total_cost_usd"`
-		ModelUsage map[string]any `json:"modelUsage"`
+	output, err := parseExpectationResult(stdout.Bytes(), options.Model)
+	if err != nil {
+		return err
 	}
-	if err := json.Unmarshal(bytes.TrimSpace(stdout.Bytes()), &result); err != nil {
-		return fmt.Errorf("claude expectation author returned no result: %w", err)
+	return json.NewEncoder(out).Encode(output)
+}
+
+// parseExpectationResult reads Claude Code's JSON result. The structured report is
+// optional: without it the reply text becomes the notes and coverage stays unknown.
+func parseExpectationResult(raw []byte, model string) (factory.ExpectationOutput, error) {
+	var result struct {
+		IsError          bool            `json:"is_error"`
+		Result           string          `json:"result"`
+		StructuredOutput json.RawMessage `json:"structured_output"`
+		SessionID        string          `json:"session_id"`
+		Turns            int             `json:"num_turns"`
+		CostUSD          float64         `json:"total_cost_usd"`
+		ModelUsage       map[string]any  `json:"modelUsage"`
+	}
+	if err := json.Unmarshal(bytes.TrimSpace(raw), &result); err != nil {
+		return factory.ExpectationOutput{}, fmt.Errorf("claude expectation author returned no result: %w", err)
 	}
 	if result.IsError {
-		return fmt.Errorf("claude expectation author reported an error: %s", result.Result)
+		return factory.ExpectationOutput{}, fmt.Errorf("claude expectation author reported an error: %s", result.Result)
 	}
-	model := options.Model
 	for name := range result.ModelUsage {
 		if model == "" || !strings.Contains(name, "haiku") {
 			model = name
 		}
 	}
-	return json.NewEncoder(out).Encode(factory.ExpectationOutput{Notes: result.Result, Run: factory.RefinerRun{Model: model, SessionID: result.SessionID, Turns: result.Turns, CostUSD: result.CostUSD}})
+	output := factory.ExpectationOutput{Notes: result.Result, Run: factory.RefinerRun{Model: model, SessionID: result.SessionID, Turns: result.Turns, CostUSD: result.CostUSD}}
+	payload := bytes.TrimSpace(result.StructuredOutput)
+	if len(payload) == 0 || string(payload) == "null" {
+		payload = []byte(jsonObject(result.Result))
+	}
+	var report struct {
+		Notes    string                      `json:"notes"`
+		Coverage []factory.CriterionCoverage `json:"coverage"`
+		Concerns []string                    `json:"concerns"`
+	}
+	if len(payload) > 0 && json.Unmarshal(payload, &report) == nil {
+		output.Coverage, output.Concerns = report.Coverage, report.Concerns
+		if strings.TrimSpace(report.Notes) != "" {
+			output.Notes = report.Notes
+		}
+	}
+	return output, nil
 }
 
 // ExpectationPrompt renders the rules for an independent test author, then the work item
@@ -89,7 +119,14 @@ func ExpectationPrompt(input factory.ExpectationInput) string {
 	b.WriteString("- The tests must compile and pass once the criteria are met. They are expected to fail now, because the work does not exist yet. Do not add production code, stubs, or placeholders.\n")
 	b.WriteString("- Derive every expected value from the criteria. If a criterion's example contradicts its own rule, do not encode the contradiction; leave it out and report it.\n")
 	b.WriteString("- Do not edit the work item or any record.\n")
-	b.WriteString("- Finish with a short summary: which test covers which criterion, which criteria no test covers and why, and any contradictions you found.\n\n")
+	b.WriteString("- Finish with the JSON report: notes, a short summary for the person who reads your tests; coverage, the names of the tests that check each criterion, using the criterion numbers below, with an empty list for a criterion no test can check; and concerns, each contradiction or problem you found in the criteria.\n\n")
+	if len(input.Criteria) > 0 {
+		b.WriteString("## Criteria by number\n\n")
+		for index, criterion := range input.Criteria {
+			fmt.Fprintf(&b, "%d. %s\n", index+1, criterion)
+		}
+		b.WriteString("\n")
+	}
 	fmt.Fprintf(&b, "## Work item %s (%s)\n\n%s\n", input.WorkItemID, input.TicketPath, input.Ticket)
 	b.WriteString("\n## Context\n\n")
 	budget := maxRefinerContextRunes

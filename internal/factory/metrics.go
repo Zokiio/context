@@ -33,8 +33,18 @@ type ProjectMetrics struct {
 	MedianAdmitToAcceptSeconds float64 `json:"medianAdmitToAcceptSeconds"`
 	MedianAcceptToMergeSeconds float64 `json:"medianAcceptToMergeSeconds"`
 
+	// HumanDecisions counts decisions a person made. One click that reviews, accepts,
+	// and merges is one decision. DelegatedDecisions are the ones the autopilot made for
+	// a person, by their go-ahead or the project's ask policy.
 	HumanDecisions         int     `json:"humanDecisions"`
 	HumanDecisionsPerMerge float64 `json:"humanDecisionsPerMerge"`
+	DelegatedDecisions     int     `json:"delegatedDecisions"`
+
+	// Findings count what reviewers caught that the checks missed, by kind.
+	Findings         map[string]int `json:"findings"`
+	ProblemsReported int            `json:"problemsReported"`
+	// TrustedMerges counts the merges since the last reported problem.
+	TrustedMerges int `json:"trustedMerges"`
 
 	Refinements  DecisionCounts `json:"refinements"`
 	Expectations DecisionCounts `json:"expectations"`
@@ -60,7 +70,21 @@ func (s *Service) Metrics(ctx context.Context, actor Principal, projectID Projec
 	if _, err := authorizeProject(ctx, s.state.db, actor, projectID, CapabilityRead); err != nil {
 		return ProjectMetrics{}, err
 	}
-	metrics := ProjectMetrics{ProjectID: projectID, GeneratedAt: s.state.now().UTC()}
+	metrics := ProjectMetrics{ProjectID: projectID, GeneratedAt: s.state.now().UTC(), Findings: map[string]int{}}
+	decided := map[string]bool{}
+	decision := func(id, delegated string) {
+		if id != "" {
+			if decided[id] {
+				return
+			}
+			decided[id] = true
+		}
+		if delegated != "" {
+			metrics.DelegatedDecisions++
+		} else {
+			metrics.HumanDecisions++
+		}
+	}
 	type jobRow struct {
 		status          JobStatus
 		repairs         int
@@ -91,15 +115,15 @@ func (s *Service) Metrics(ctx context.Context, actor Principal, projectID Projec
 		jobs[id] = &row
 	}
 	rows.Close()
-	events, err := s.state.db.QueryContext(ctx, `SELECT e.job_id, e.kind, e.created_at, e.actor_id IS NOT NULL FROM events e JOIN jobs j ON j.id=e.job_id WHERE j.project_id=? ORDER BY e.sequence`, projectID)
+	events, err := s.state.db.QueryContext(ctx, `SELECT e.job_id, e.kind, e.data_json, e.created_at, e.actor_id IS NOT NULL FROM events e JOIN jobs j ON j.id=e.job_id WHERE j.project_id=? ORDER BY e.sequence`, projectID)
 	if err != nil {
 		return ProjectMetrics{}, fault(CodeInternal, "read events for metrics", err)
 	}
 	for events.Next() {
 		var id JobID
-		var kind, created string
+		var kind, encoded, created string
 		var byPerson bool
-		if err := events.Scan(&id, &kind, &created, &byPerson); err != nil {
+		if err := events.Scan(&id, &kind, &encoded, &created, &byPerson); err != nil {
 			events.Close()
 			return ProjectMetrics{}, fault(CodeInternal, "decode events for metrics", err)
 		}
@@ -114,9 +138,22 @@ func (s *Service) Metrics(ctx context.Context, actor Principal, projectID Projec
 			metrics.ProtectedRejections++
 		case "merge_failed":
 			metrics.MergeFailures++
+		case "problem_reported":
+			metrics.ProblemsReported++
+		}
+		var data struct {
+			Decision  string   `json:"decision"`
+			Delegated string   `json:"delegated"`
+			Findings  []string `json:"findings"`
+		}
+		_ = json.Unmarshal([]byte(encoded), &data)
+		if kind == "review_recorded" {
+			for _, finding := range data.Findings {
+				metrics.Findings[finding]++
+			}
 		}
 		if humanEvents[kind] || (kind == "job_merged" && byPerson) {
-			metrics.HumanDecisions++
+			decision(data.Decision, data.Delegated)
 		}
 	}
 	events.Close()
@@ -178,7 +215,7 @@ func (s *Service) Metrics(ctx context.Context, actor Principal, projectID Projec
 			metrics.RefinementCostUSD += refinement.Run.CostUSD
 		}
 		if refinement.Status == RefinementAccepted || refinement.Status == RefinementRejected {
-			metrics.HumanDecisions++
+			decision(refinement.DecisionID, refinement.Delegated)
 		}
 	}
 	expectations, err := s.ListExpectations(ctx, actor, projectID, "")
@@ -191,8 +228,11 @@ func (s *Service) Metrics(ctx context.Context, actor Principal, projectID Projec
 			metrics.ExpectationCostUSD += expectation.Run.CostUSD
 		}
 		if expectation.Status == ExpectationAccepted || expectation.Status == ExpectationRejected {
-			metrics.HumanDecisions++
+			decision(expectation.DecisionID, expectation.Delegated)
 		}
+	}
+	if metrics.TrustedMerges, err = trustedMerges(ctx, s.state.db, projectID); err != nil {
+		return ProjectMetrics{}, err
 	}
 	metrics.TotalCostUSD = metrics.ImplementationCostUSD + metrics.RefinementCostUSD + metrics.ExpectationCostUSD
 	if metrics.MergedJobs > 0 {

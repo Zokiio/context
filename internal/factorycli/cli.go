@@ -104,6 +104,13 @@ func projectsCommand(out io.Writer) *cli.Command {
 		{Name: "metrics", Usage: "Measured first-pass rate, lead times, human decisions and agent cost", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
 			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/metrics", nil)
 		}},
+		{Name: "board", Usage: "Show every work item's column, and which ones need you", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
+			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/board", nil)
+		}},
+		{Name: "ask", Usage: "Decide when the factory stops and waits for you", Flags: append(requestFlags(), &cli.StringFlag{Name: "project", Required: true}, &cli.StringFlag{Name: "before-build", Value: string(factory.AskBeforeAlways), Usage: "always, when_unclear, or never"}, &cli.StringFlag{Name: "after-build", Value: string(factory.AskAfterAlways), Usage: "always, when_untested, or never"}, &cli.BoolFlag{Name: "autopilot", Usage: "Start ready work and take the steps that need no decision"}), Action: func(ctx context.Context, c *cli.Command) error {
+			r := factory.SetAskPolicyRequest{RequestID: reqID(c), ProjectID: factory.ProjectID(c.String("project")), BeforeBuild: factory.AskBeforeBuild(c.String("before-build")), AfterBuild: factory.AskAfterBuild(c.String("after-build")), Autopilot: c.Bool("autopilot")}
+			return call(ctx, c, out, http.MethodPut, "/v1/projects/"+esc(c.String("project"))+"/ask", r)
+		}},
 		{Name: "grants", Usage: "List project access", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
 			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/grants", nil)
 		}},
@@ -258,6 +265,17 @@ func jobsCommand(out io.Writer) *cli.Command {
 		}
 		r := factory.MergeRequest{RequestID: reqID(c), JobID: factory.JobID(id), IfVersion: c.Int64("if-version"), CandidateRevision: c.String("candidate"), TargetBranch: c.String("target-branch")}
 		return call(ctx, c, out, http.MethodPost, "/v1/jobs/"+esc(id)+"/merge", r)
+	}})
+	commands = append(commands, &cli.Command{Name: "approve", Usage: "Review, accept, and merge a job in one decision", DisableSliceFlagSeparator: true, Flags: append(jobMutationFlags(), &cli.StringFlag{Name: "candidate", Required: true}, &cli.StringFlag{Name: "requirements", Required: true, Usage: "The admitted ticket fingerprint"}, &cli.StringFlag{Name: "summary"}, &cli.StringSliceFlag{Name: "finding", Usage: "What the checks missed: wrong_requirement, missing_test, bug, hard_to_read, out_of_scope"}, &cli.BoolFlag{Name: "no-merge", Usage: "Accept without merging"}, &cli.StringFlag{Name: "target-branch"}), Action: func(ctx context.Context, c *cli.Command) error {
+		id, e := jobID(c)
+		if e != nil {
+			return e
+		}
+		r := factory.ApproveRequest{RequestID: reqID(c), JobID: factory.JobID(id), IfVersion: c.Int64("if-version"), CandidateRevision: c.String("candidate"), RequirementFingerprint: c.String("requirements"), Summary: c.String("summary"), Findings: c.StringSlice("finding"), Merge: !c.Bool("no-merge"), TargetBranch: c.String("target-branch")}
+		return call(ctx, c, out, http.MethodPost, "/v1/jobs/"+esc(id)+"/approve", r)
+	}}, &cli.Command{Name: "report-problem", Usage: "Report that merged work turned out wrong", Flags: append(requestFlags(), &cli.StringFlag{Name: "job", Required: true}, &cli.StringFlag{Name: "summary", Required: true}), Action: func(ctx context.Context, c *cli.Command) error {
+		r := factory.ReportProblemRequest{RequestID: reqID(c), JobID: factory.JobID(c.String("job")), Summary: c.String("summary")}
+		return call(ctx, c, out, http.MethodPost, "/v1/jobs/"+esc(c.String("job"))+"/problems", r)
 	}})
 	return &cli.Command{Name: "jobs", Usage: "Submit, inspect, and coordinate factory jobs", Commands: commands}
 }

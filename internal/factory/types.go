@@ -193,6 +193,11 @@ type Options struct {
 	// ExpectationCommand is the argv run to write holdout tests. It reads an
 	// ExpectationInput on stdin in a temporary worktree and writes an ExpectationOutput.
 	ExpectationCommand []string
+	// Pilot runs the autopilot: for projects whose ask policy a person saved, it does the
+	// steps that need no decision and the decisions that person delegated.
+	Pilot bool
+	// PilotInterval is how often the autopilot looks for work. Zero means five seconds.
+	PilotInterval time.Duration
 }
 
 // DefaultDecisionThreshold flags criteria whose checkable probability falls below it.
@@ -321,6 +326,9 @@ type ProjectPolicy struct {
 	// RequireExpectations admits a job only when it starts from accepted holdout
 	// expectations. It needs protected paths to keep them out of the implementer's reach.
 	RequireExpectations bool `json:"requireExpectations,omitempty"`
+	// Ask says when the factory stops and waits for a person. Its zero value asks at
+	// both decisions and leaves the autopilot off.
+	Ask AskPolicy `json:"ask"`
 }
 
 type ReaderLimits struct {
@@ -469,7 +477,10 @@ type Review struct {
 	RequirementFingerprint string         `json:"requirementFingerprint"`
 	Decision               ReviewDecision `json:"decision"`
 	Summary                string         `json:"summary"`
-	CreatedAt              time.Time      `json:"createdAt"`
+	// Findings are what the reviewer caught that the checks missed, such as
+	// wrong_requirement. The factory learns from them.
+	Findings  []string  `json:"findings,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type Event struct {
@@ -590,6 +601,7 @@ type ReviewRequest struct {
 	RequirementFingerprint string         `json:"requirementFingerprint"`
 	Decision               ReviewDecision `json:"decision"`
 	Summary                string         `json:"summary"`
+	Findings               []string       `json:"findings,omitempty"`
 }
 
 type JobActionRequest struct {

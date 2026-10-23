@@ -54,12 +54,21 @@ type Expectation struct {
 	Files          []string          `json:"files,omitempty"`
 	Patch          string            `json:"patch,omitempty"`
 	Notes          string            `json:"notes,omitempty"`
-	Run            *RefinerRun       `json:"run,omitempty"`
-	Log            string            `json:"log,omitempty"`
-	Error          string            `json:"error,omitempty"`
-	DecidedBy      *UserID           `json:"decidedBy,omitempty"`
-	CreatedAt      time.Time         `json:"createdAt"`
-	UpdatedAt      time.Time         `json:"updatedAt"`
+	// Criteria are the acceptance criteria the author wrote tests for, in order.
+	Criteria []string `json:"criteria,omitempty"`
+	// Coverage is the author's own account of which test checks which criterion. Like
+	// the notes, it is a claim a person reads, not evidence.
+	Coverage []CriterionCoverage `json:"coverage,omitempty"`
+	// Concerns are contradictions or problems the author found in the criteria.
+	Concerns   []string    `json:"concerns,omitempty"`
+	Run        *RefinerRun `json:"run,omitempty"`
+	Log        string      `json:"log,omitempty"`
+	Error      string      `json:"error,omitempty"`
+	DecidedBy  *UserID     `json:"decidedBy,omitempty"`
+	DecisionID string      `json:"decisionId,omitempty"`
+	Delegated  string      `json:"delegated,omitempty"`
+	CreatedAt  time.Time   `json:"createdAt"`
+	UpdatedAt  time.Time   `json:"updatedAt"`
 }
 
 type StartExpectationsRequest struct {
@@ -92,8 +101,62 @@ type ExpectationInput struct {
 // ExpectationOutput is the JSON the author writes to standard output after editing the
 // worktree.
 type ExpectationOutput struct {
-	Notes string     `json:"notes"`
-	Run   RefinerRun `json:"run"`
+	Notes    string              `json:"notes"`
+	Coverage []CriterionCoverage `json:"coverage,omitempty"`
+	Concerns []string            `json:"concerns,omitempty"`
+	Run      RefinerRun          `json:"run"`
+}
+
+// CriterionCoverage names the tests that check one acceptance criterion, counted from 1
+// in the input's criteria.
+type CriterionCoverage struct {
+	Criterion int      `json:"criterion"`
+	Tests     []string `json:"tests"`
+}
+
+// Uncovered lists the criteria, counted from 1, that no test checks by the author's
+// account. Without coverage every criterion counts as uncovered.
+func (e Expectation) Uncovered() []int {
+	covered := map[int]bool{}
+	for _, entry := range e.Coverage {
+		if len(entry.Tests) > 0 {
+			covered[entry.Criterion] = true
+		}
+	}
+	result := []int{}
+	for index := range e.Criteria {
+		if !covered[index+1] {
+			result = append(result, index+1)
+		}
+	}
+	return result
+}
+
+func cleanCoverage(coverage []CriterionCoverage, criteria int) []CriterionCoverage {
+	result := []CriterionCoverage{}
+	for _, entry := range coverage {
+		if entry.Criterion < 1 || entry.Criterion > criteria {
+			continue
+		}
+		tests := []string{}
+		for _, test := range entry.Tests {
+			if test = strings.TrimSpace(test); test != "" && len(tests) < 20 {
+				tests = append(tests, truncateRunes(test, 200))
+			}
+		}
+		result = append(result, CriterionCoverage{Criterion: entry.Criterion, Tests: tests})
+	}
+	return result
+}
+
+func cleanConcerns(concerns []string) []string {
+	result := []string{}
+	for _, concern := range concerns {
+		if concern = strings.TrimSpace(concern); concern != "" && len(result) < 10 {
+			result = append(result, truncateRunes(concern, maxRefinementRunes))
+		}
+	}
+	return result
 }
 
 func (s *Service) StartExpectations(ctx context.Context, actor Principal, request StartExpectationsRequest) (Expectation, error) {
@@ -161,7 +224,7 @@ func (s *Service) StartExpectations(ctx context.Context, actor Principal, reques
 		return Expectation{}, fault(CodeInternal, "create expectation identity", err)
 	}
 	now := s.state.now().UTC()
-	expectation := Expectation{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, CriteriaSHA256: criteriaDigest, Status: ExpectationRunning, RequestedBy: current.UserID, BaseRevision: base, CreatedAt: now, UpdatedAt: now}
+	expectation := Expectation{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, CriteriaSHA256: criteriaDigest, Status: ExpectationRunning, RequestedBy: current.UserID, BaseRevision: base, Criteria: criteria, CreatedAt: now, UpdatedAt: now}
 	input := ExpectationInput{ExpectationID: expectation.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, BaseRevision: base}
 
 	s.state.mutations.Lock()
@@ -237,6 +300,8 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 		run := result.output.Run
 		expectation.Status, expectation.Commit, expectation.Files, expectation.Patch = ExpectationProposed, result.commit, result.files, result.patch
 		expectation.Notes, expectation.Run = truncateRunes(result.output.Notes, 4*maxRefinementRunes), &run
+		expectation.Coverage = cleanCoverage(result.output.Coverage, len(expectation.Criteria))
+		expectation.Concerns = cleanConcerns(result.output.Concerns)
 	}
 	tx, err := s.state.db.BeginTx(context.Background(), nil)
 	if err != nil {
@@ -366,6 +431,7 @@ func (s *Service) decideExpectations(ctx context.Context, actor Principal, reque
 	}
 	now := s.state.now().UTC()
 	expectation.Status, expectation.DecidedBy, expectation.UpdatedAt = decision, &current.UserID, now
+	stampDecision(ctx, &expectation.DecisionID, &expectation.Delegated)
 	tx, err := s.state.db.BeginTx(ctx, nil)
 	if err != nil {
 		return Expectation{}, fault(CodeInternal, "start expectation decision", err)
@@ -377,6 +443,11 @@ func (s *Service) decideExpectations(ctx context.Context, actor Principal, reque
 	}
 	if err := saveExpectation(ctx, tx, expectation, false); err != nil {
 		return Expectation{}, err
+	}
+	if decision == ExpectationRejected {
+		if err := dropConsent(ctx, tx, expectation.ProjectID, expectation.WorkItemID); err != nil {
+			return Expectation{}, err
+		}
 	}
 	if err := saveReceipt(ctx, tx, current.UserID, operation, request.RequestID, hash, expectation, false, now); err != nil {
 		return Expectation{}, err

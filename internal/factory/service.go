@@ -46,6 +46,10 @@ type serviceState struct {
 	background        context.Context
 	stopBackground    context.CancelFunc
 	refiners          sync.WaitGroup
+
+	pilot         bool
+	pilotInterval time.Duration
+	pilotNotes    pilotState
 }
 
 func Open(dataDir string, options Options) (*Service, error) {
@@ -149,8 +153,17 @@ func Open(dataDir string, options Options) (*Service, error) {
 	state.refiner = append([]string(nil), options.RefinerCommand...)
 	state.expectationAuthor = append([]string(nil), options.ExpectationCommand...)
 	state.background, state.stopBackground = context.WithCancel(context.Background())
+	state.pilot, state.pilotInterval = options.Pilot, options.PilotInterval
+	if state.pilotInterval <= 0 {
+		state.pilotInterval = defaultPilotInterval
+	}
 	cleanupLock, closeDB = false, false
-	return &Service{state: state}, nil
+	service := &Service{state: state}
+	if state.pilot {
+		state.refiners.Add(1)
+		go service.runPilot()
+	}
+	return service, nil
 }
 
 func (s *Service) Close() error {
@@ -343,6 +356,13 @@ CREATE TABLE IF NOT EXISTS expectations (
   updated_at TEXT NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS one_running_expectation ON expectations(project_id, work_item_id) WHERE status='running';
+CREATE TABLE IF NOT EXISTS plan_consents (
+  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  work_item_id TEXT NOT NULL,
+  data_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY(project_id, work_item_id)
+);
 CREATE TABLE IF NOT EXISTS criterion_signals (
   model TEXT NOT NULL,
   question TEXT NOT NULL,
@@ -364,7 +384,10 @@ CREATE TABLE IF NOT EXISTS criterion_signals (
 	if err := ensureColumn(db, "jobs", "merge_json", `ALTER TABLE jobs ADD COLUMN merge_json TEXT NOT NULL DEFAULT ''`); err != nil {
 		return err
 	}
-	return ensureColumn(db, "attempts", "purpose", `ALTER TABLE attempts ADD COLUMN purpose TEXT NOT NULL DEFAULT ''`)
+	if err := ensureColumn(db, "attempts", "purpose", `ALTER TABLE attempts ADD COLUMN purpose TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
+	}
+	return ensureColumn(db, "reviews", "findings_json", `ALTER TABLE reviews ADD COLUMN findings_json TEXT NOT NULL DEFAULT ''`)
 }
 
 func ensureColumn(db *sql.DB, table, column, statement string) error {

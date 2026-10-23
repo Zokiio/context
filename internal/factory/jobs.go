@@ -697,7 +697,7 @@ func loadArtifacts(ctx context.Context, q queryer, jobID JobID, attemptID *Attem
 }
 
 func loadReviews(ctx context.Context, q queryer, jobID JobID) ([]Review, error) {
-	rows, err := q.QueryContext(ctx, `SELECT id, reviewer_id, candidate_revision, requirement_fingerprint, decision, summary, created_at FROM reviews WHERE job_id=? ORDER BY created_at, id`, jobID)
+	rows, err := q.QueryContext(ctx, `SELECT id, reviewer_id, candidate_revision, requirement_fingerprint, decision, summary, findings_json, created_at FROM reviews WHERE job_id=? ORDER BY created_at, id`, jobID)
 	if err != nil {
 		return nil, fault(CodeInternal, "read reviews", err)
 	}
@@ -705,9 +705,12 @@ func loadReviews(ctx context.Context, q queryer, jobID JobID) ([]Review, error) 
 	reviews := []Review{}
 	for rows.Next() {
 		var review Review
-		var created string
-		if err := rows.Scan(&review.ID, &review.ReviewerID, &review.CandidateRevision, &review.RequirementFingerprint, &review.Decision, &review.Summary, &created); err != nil {
+		var findings, created string
+		if err := rows.Scan(&review.ID, &review.ReviewerID, &review.CandidateRevision, &review.RequirementFingerprint, &review.Decision, &review.Summary, &findings, &created); err != nil {
 			return nil, fault(CodeInternal, "decode review", err)
+		}
+		if findings != "" {
+			_ = json.Unmarshal([]byte(findings), &review.Findings)
 		}
 		review.CreatedAt, _ = parseTime(created)
 		reviews = append(reviews, review)
@@ -741,7 +744,7 @@ func loadEvents(ctx context.Context, q queryer, jobID JobID) ([]Event, error) {
 }
 
 func appendEvent(ctx context.Context, tx *sql.Tx, jobID JobID, actorID *UserID, kind string, data any, now time.Time) (Event, error) {
-	encoded, err := json.Marshal(data)
+	encoded, err := json.Marshal(annotate(ctx, data))
 	if err != nil {
 		return Event{}, fault(CodeInternal, "encode event", err)
 	}

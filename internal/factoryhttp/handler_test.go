@@ -342,3 +342,38 @@ func TestProjectIsolationAdmissionReplayStaleAndRestart(t *testing.T) {
 		t.Fatalf("reader escalated permissions: %d", status)
 	}
 }
+
+func TestBoardAskPlanAndApproveRoutes(t *testing.T) {
+	instance := start(t)
+	ctx := context.Background()
+	if _, err := instance.service.RegisterExecutor(ctx, instance.admin, factory.RegisterExecutorRequest{RequestID: "executor", Key: "fixture-executor", DisplayName: "Fixture", Command: []string{"fixture"}, Fixture: true}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := instance.service.RegisterCheck(ctx, instance.admin, factory.RegisterCheckRequest{RequestID: "check", Key: "fixture-check", DisplayName: "Fixture", Command: []string{"fixture"}, Environment: "local", Fixture: true}); err != nil {
+		t.Fatal(err)
+	}
+	p := project(t, instance, "routes")
+	base, path := instance.server.URL, "/v1/projects/"+string(p.ID)
+	status, _, raw := call(t, base, instance.token, "GET", path+"/board", "", nil)
+	var board factory.ProjectBoard
+	if status != 200 || json.Unmarshal(raw, &board) != nil || len(board.Cards) != 1 || board.Cards[0].Column != factory.ColumnNext || board.Cards[0].Decision != factory.CardDecisionPlan {
+		t.Fatalf("board = %d %s", status, raw)
+	}
+	if status, _, raw = call(t, base, instance.token, "PUT", path+"/ask", `{"requestId":"other","projectId":"elsewhere","beforeBuild":"always","afterBuild":"always"}`, nil); status != 400 {
+		t.Fatalf("ask policy for another project = %d %s", status, raw)
+	}
+	status, _, raw = call(t, base, instance.token, "PUT", path+"/ask", `{"requestId":"ask","beforeBuild":"when_unclear","afterBuild":"always","autopilot":true}`, nil)
+	var saved factory.Project
+	if status != 200 || json.Unmarshal(raw, &saved) != nil || saved.Policy.Ask.Before() != factory.AskBeforeWhenUnclear || !saved.Policy.Ask.Autopilot {
+		t.Fatalf("ask policy = %d %s", status, raw)
+	}
+	status, _, raw = call(t, base, instance.token, "POST", path+"/plan", `{"requestId":"plan","workItemId":"work-1"}`, nil)
+	var plan factory.PlanResult
+	if status != 200 || json.Unmarshal(raw, &plan) != nil || plan.Job == nil {
+		t.Fatalf("plan = %d %s", status, raw)
+	}
+	body := fmt.Sprintf(`{"requestId":"approve","jobId":"elsewhere","ifVersion":%d,"candidateRevision":"x","requirementFingerprint":"y"}`, plan.Job.Version)
+	if status, _, raw = call(t, base, instance.token, "POST", "/v1/jobs/"+string(plan.Job.ID)+"/approve", body, nil); status != 400 {
+		t.Fatalf("approval naming another job = %d %s", status, raw)
+	}
+}

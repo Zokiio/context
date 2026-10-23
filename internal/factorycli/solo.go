@@ -63,6 +63,8 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 			&cli.StringFlag{Name: "expectation-model", Value: "sonnet", Usage: "Model for the Claude Code expectation author"},
 			&cli.Float64Flag{Name: "expectation-budget-usd", Value: 1, Usage: "Spending cap for one expectation suite"},
 			&cli.BoolFlag{Name: "no-expectations", Usage: "Disable the expectation author"},
+			&cli.BoolFlag{Name: "no-pilot", Usage: "Do not run the autopilot, even for projects whose ask policy enables it"},
+			&cli.DurationFlag{Name: "pilot-interval", Value: 5 * time.Second},
 		}, append(append(decisionFlags(), refinerFlags()...), expectationFlags()...)...),
 		Action: func(ctx context.Context, c *cli.Command) error {
 			address := c.String("listen")
@@ -70,6 +72,7 @@ func soloCommand(stdout, stderr io.Writer) *cli.Command {
 				return errors.New("solo mode listens on loopback only; use serve with TLS for shared access")
 			}
 			options := serviceOptions(c)
+			options.Pilot, options.PilotInterval = !c.Bool("no-pilot"), c.Duration("pilot-interval")
 			refiner, err := soloRefiner(c)
 			if err != nil {
 				return err

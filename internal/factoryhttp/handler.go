@@ -121,6 +121,38 @@ func NewHandler(service *factory.Service) http.Handler {
 		q.JobID = factory.JobID(r.PathValue("job"))
 		return service.Merge(ctx, p, q)
 	})
+	mutationPath(mux, service, "POST /v1/jobs/{job}/approve", 200, func(ctx context.Context, p factory.Principal, q factory.ApproveRequest, r *http.Request) (factory.Job, error) {
+		if err := bindID(r.PathValue("job"), string(q.JobID)); err != nil {
+			return factory.Job{}, err
+		}
+		q.JobID = factory.JobID(r.PathValue("job"))
+		return service.Approve(ctx, p, q)
+	})
+	mutationPath(mux, service, "POST /v1/jobs/{job}/problems", 201, func(ctx context.Context, p factory.Principal, q factory.ReportProblemRequest, r *http.Request) (factory.Job, error) {
+		if err := bindID(r.PathValue("job"), string(q.JobID)); err != nil {
+			return factory.Job{}, err
+		}
+		q.JobID = factory.JobID(r.PathValue("job"))
+		return service.ReportProblem(ctx, p, q)
+	})
+	get("/v1/projects/{project}/board", func(w http.ResponseWriter, r *http.Request, p factory.Principal) {
+		v, err := service.Board(r.Context(), p, factory.ProjectID(r.PathValue("project")))
+		respond(w, 200, v, err)
+	})
+	mutationPath(mux, service, "POST /v1/projects/{project}/plan", 200, func(ctx context.Context, p factory.Principal, q factory.ApprovePlanRequest, r *http.Request) (factory.PlanResult, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.PlanResult{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.ApprovePlan(ctx, p, q)
+	})
+	mutationPath(mux, service, "PUT /v1/projects/{project}/ask", 200, func(ctx context.Context, p factory.Principal, q factory.SetAskPolicyRequest, r *http.Request) (factory.Project, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.Project{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.SetAskPolicy(ctx, p, q)
+	})
 	mutationPath(mux, service, "POST /v1/projects/{project}/expectations", 202, func(ctx context.Context, p factory.Principal, q factory.StartExpectationsRequest, r *http.Request) (factory.Expectation, error) {
 		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
 			return factory.Expectation{}, err

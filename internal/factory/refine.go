@@ -91,6 +91,8 @@ type Refinement struct {
 	AcceptedCriteria    []string            `json:"acceptedCriteria,omitempty"`
 	Answers             []RefinementAnswer  `json:"answers,omitempty"`
 	DecidedBy           *UserID             `json:"decidedBy,omitempty"`
+	DecisionID          string              `json:"decisionId,omitempty"`
+	Delegated           string              `json:"delegated,omitempty"`
 	UpdatedTicketSHA256 string              `json:"updatedTicketSHA256,omitempty"`
 	CreatedAt           time.Time           `json:"createdAt"`
 	UpdatedAt           time.Time           `json:"updatedAt"`
@@ -379,6 +381,7 @@ func (s *Service) AcceptRefinement(ctx context.Context, actor Principal, request
 	}
 	refinement.Status, refinement.AcceptedCriteria, refinement.Answers = RefinementAccepted, criteria, answers
 	refinement.DecidedBy, refinement.UpdatedTicketSHA256, refinement.UpdatedAt = &current.UserID, digestBytes(updated), now
+	stampDecision(ctx, &refinement.DecisionID, &refinement.Delegated)
 	if err := saveRefinement(ctx, tx, refinement, false); err != nil {
 		return Refinement{}, err
 	}
@@ -419,7 +422,11 @@ func (s *Service) RejectRefinement(ctx context.Context, actor Principal, request
 	}
 	now := s.state.now().UTC()
 	refinement.Status, refinement.DecidedBy, refinement.UpdatedAt = RefinementRejected, &current.UserID, now
+	stampDecision(ctx, &refinement.DecisionID, &refinement.Delegated)
 	if err := saveRefinement(ctx, tx, refinement, false); err != nil {
+		return Refinement{}, err
+	}
+	if err := dropConsent(ctx, tx, refinement.ProjectID, refinement.WorkItemID); err != nil {
 		return Refinement{}, err
 	}
 	if err := saveReceipt(ctx, tx, current.UserID, "reject_refinement", request.RequestID, hash, refinement, false, now); err != nil {
