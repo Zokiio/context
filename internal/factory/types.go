@@ -329,6 +329,9 @@ type ProjectPolicy struct {
 	// Ask says when the factory stops and waits for a person. Its zero value asks at
 	// both decisions and leaves the autopilot off.
 	Ask AskPolicy `json:"ask"`
+	// Instructions are the project's own guidance for each agent, added after the
+	// built-in rules.
+	Instructions AgentInstructions `json:"instructions"`
 }
 
 type ReaderLimits struct {
@@ -402,6 +405,8 @@ type Admission struct {
 	// starts from; the commit is the job's base.
 	ExpectationsID     ID     `json:"expectationsId,omitempty"`
 	ExpectationsCommit string `json:"expectationsCommit,omitempty"`
+	// Instructions freeze the project's builder instructions in force at admission.
+	Instructions string `json:"instructions,omitempty"`
 }
 
 type SubmitRequest struct {
@@ -554,6 +559,7 @@ type Assignment struct {
 	ContextSHA256          string          `json:"contextSHA256"`
 	ContextSources         []ContextSource `json:"contextSources"`
 	Instructions           string          `json:"instructions"`
+	ProjectInstructions    string          `json:"projectInstructions,omitempty"`
 	ProfileKey             string          `json:"profileKey"`
 	Command                []string        `json:"command"`
 	CheckEnvironment       string          `json:"checkEnvironment,omitempty"`

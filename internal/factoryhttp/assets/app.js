@@ -189,7 +189,7 @@ async function route(quiet = false) {
 	state.view = parts[0] || 'board';
 	const scroll = window.scrollY;
 	if (!quiet) { closeDrawer(false); notice(state.flash); state.flash = ''; }
-	const area = { board: 'board', list: 'board', graph: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask' }[state.view] || '';
+	const area = { board: 'board', list: 'board', graph: 'board', item: 'board', job: 'board', insights: 'insights', ask: 'ask', agents: 'agents' }[state.view] || '';
 	for (const anchor of document.querySelectorAll('[data-nav]')) {
 		if (anchor.dataset.nav === area) anchor.setAttribute('aria-current', 'page'); else anchor.removeAttribute('aria-current');
 	}
@@ -204,6 +204,7 @@ async function route(quiet = false) {
 		else if (state.view === 'job') content = await jobPage(parts[1] || '');
 		else if (state.view === 'insights') content = await insightsPage();
 		else if (state.view === 'ask') content = await askPage();
+		else if (state.view === 'agents') content = await agentsPage();
 		else if (state.view === 'access') content = await accessPage();
 		else content = await boardPage();
 		if (generation !== state.generation) return;
@@ -765,6 +766,45 @@ async function askPage() {
 		group('after', 'After the build', 'Approve the change', 'You check what tests can’t, and approve. Merging follows by itself.', [['always', 'Every time'], ['when_untested', 'Only when a requirement has no locked test'], ['never', 'Never. Merge when every check passes', trusted >= 10 ? 'Earned: ' + trusted + ' merges with no reported problem.' : 'Unlocks after 10 merges with no reported problem. ' + trusted + ' so far.', false, trusted < 10]]),
 		surface(element('label', { class: 'switch' }, autopilot, element('span', { class: 'stack tight' }, element('strong', {}, 'Run the autopilot'), element('span', { class: 'muted' }, 'Start ready work by itself, write locked tests, fix failed checks up to the limit, and retry a merge that failed without a failing check. It acts as you, and every step it takes is marked as delegated.')))),
 		element('div', { class: 'row spread' }, element('span', { class: 'fine' }, editable ? saved : saved + ' Only a project administrator can change it.'), editable ? button('Save', async () => { await command('/projects/' + e(state.project) + '/ask', { beforeBuild: choice.before, afterBuild: choice.after, autopilot: autopilot.checked }, 'PUT'); await route(); notice('Saved.'); }, 'primary') : null));
+}
+
+// The agents and what they are told
+
+// AGENTS summarizes each agent's built-in rules; the full prompts live in the worker.
+const AGENTS = [
+	{ key: 'refiner', when: 'Before the build', title: 'Sharpens requirements', what: 'Runs when requirements look vague. It reads the repository but cannot change anything.', example: 'For example: name the Go package and the exact function signature in every requirement.', rules: [
+		'Rewrite each requirement so it names a result someone can check: a command and its outcome, an output, a behaviour, or a file.',
+		'Keep the work item’s intent and scope. Never add features, drop a requirement, or weaken one.',
+		'Ask at most three questions, each with likely answers, and only when the answer would change the requirements or the build.',
+		'Rely on the protected tests as they are.'] },
+	{ key: 'testAuthor', when: 'Before the build', title: 'Writes locked tests', what: 'Writes the tests the builder is held to, in a copy of the repository the builder never sees.', example: 'For example: use table-driven tests, and name each test after its requirement.', rules: [
+		'Change files only under the protected paths. Any other change rejects the whole suite.',
+		'Follow the repository’s test conventions, with one focused test per requirement a test can check.',
+		'Derive expected values from the requirements, and report an example that contradicts its own rule instead of encoding it.',
+		'Report which test checks each requirement, and any problem found in the requirements.'] },
+	{ key: 'builder', when: 'The build', title: 'Builds the change', what: 'Writes the change in its own copy of the repository, starting from the locked tests.', example: 'For example: keep functions short and give every exported name a doc comment.', rules: [
+		'Satisfy every requirement. The requirements are frozen, and the project’s records are off limits.',
+		'Never commit. Waymark commits what the builder leaves as the candidate.',
+		'Never touch the protected paths. A candidate that does is rejected.',
+		'Stop and explain when a requirement cannot be met without changing the requirements or the tests.'] },
+];
+async function agentsPage() {
+	const board = await loadBoard();
+	const instructions = board.project.policy.instructions || {};
+	const editable = can('project_admin');
+	const inputs = {};
+	const agent = ({ key, when, title, what, example, rules }) => {
+		const id = 'instructions-' + key;
+		inputs[key] = element('textarea', { id, rows: 4, maxLength: 4000, readOnly: !editable, placeholder: editable ? example : 'None.', value: instructions[key] || '' });
+		return surface(element('span', { class: 'eyebrow' }, when), element('h2', { class: 'section' }, title), element('p', { class: 'muted' }, what),
+			fold('Its built-in rules', false, element('ul', { class: 'plain' }, rules.map((rule) => element('li', {}, rule)))),
+			element('div', { class: 'stack tight' }, element('label', { class: 'field-label', htmlFor: id }, 'Your instructions'), inputs[key]));
+	};
+	const saved = instructions.setBy ? 'Saved ' + ago(instructions.setAt) + (instructions.setBy === state.me.userId ? ' by you.' : '.') : 'No instructions yet, so each agent follows only its built-in rules.';
+	return page('mid',
+		element('div', { class: 'stack tight' }, element('h1', { class: 'title' }, 'Agents'), element('p', { class: 'subtitle' }, 'What each agent is told on this project. Your instructions come after its built-in rules, which win where the two disagree. A run keeps the instructions it started with.')),
+		AGENTS.map(agent),
+		element('div', { class: 'row spread' }, element('span', { class: 'fine' }, editable ? saved : saved + ' Only a project administrator can change them.'), editable ? button('Save', async () => { await command('/projects/' + e(state.project) + '/instructions', { refiner: inputs.refiner.value, testAuthor: inputs.testAuthor.value, builder: inputs.builder.value }, 'PUT'); await route(); notice('Saved. Runs that start from now on get these instructions.'); }, 'primary') : null));
 }
 
 // Administration

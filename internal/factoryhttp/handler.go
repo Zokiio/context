@@ -157,6 +157,13 @@ func NewHandler(service *factory.Service) http.Handler {
 		q.ProjectID = factory.ProjectID(r.PathValue("project"))
 		return service.SetAskPolicy(ctx, p, q)
 	})
+	mutationPath(mux, service, "PUT /v1/projects/{project}/instructions", 200, func(ctx context.Context, p factory.Principal, q factory.SetAgentInstructionsRequest, r *http.Request) (factory.Project, error) {
+		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
+			return factory.Project{}, err
+		}
+		q.ProjectID = factory.ProjectID(r.PathValue("project"))
+		return service.SetAgentInstructions(ctx, p, q)
+	})
 	mutationPath(mux, service, "POST /v1/projects/{project}/expectations", 202, func(ctx context.Context, p factory.Principal, q factory.StartExpectationsRequest, r *http.Request) (factory.Expectation, error) {
 		if err := bindID(r.PathValue("project"), string(q.ProjectID)); err != nil {
 			return factory.Expectation{}, err

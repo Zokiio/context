@@ -289,7 +289,7 @@ A change needs two decisions from a person, each made in a side panel:
 - **Agree what done means**, before the build. Answer the refiner's questions, read or edit the sharpened requirements, or read the locked tests next to the requirement each one checks. The test author's concerns and any requirement without a test come first.
 - **Approve the change**, after the checks pass. The panel shows the diff, the requirements no test covers, and a merge switch. Ask for a fix or reject from the same panel.
 
-Agents write the tests, build, and repair the change; workers verify and merge it. None of those steps needs a decision. Insights shows the [measured numbers](#measure-the-factory), and How much to ask you holds the [ask policy](#decide-how-often-the-factory-asks-you). The theme follows the system setting and can be switched to light or dark.
+Agents write the tests, build, and repair the change; workers verify and merge it. None of those steps needs a decision. Insights shows the [measured numbers](#measure-the-factory), How much to ask you holds the [ask policy](#decide-how-often-the-factory-asks-you), and Agents holds [each agent's instructions](#tell-the-agents-more-about-the-project). The theme follows the system setting and can be switched to light or dark.
 
 The browser retains the token in tab session storage. Sign out to remove it. Browser session restore can retain the credential.
 
@@ -437,6 +437,19 @@ wm_admin jobs report-problem --job "$wm_job_id" --summary 'Truncate splits flags
 ```
 
 A report resets the trust count and lowers `--after-build` one level, from `never` to `when_untested` or from `when_untested` to `always`.
+
+## Tell the agents more about the project
+
+Each agent follows built-in rules that the service's guarantees rely on. A project administrator can add instructions for each agent, for example the project's conventions:
+
+```sh
+wm_admin projects instructions --project "$wm_project_id" \
+	--test-author 'Use table-driven tests.' --builder 'Give every exported name a doc comment.'
+```
+
+`--refiner`, `--test-author` and `--builder` set the instructions for the agent that sharpens requirements, the one that writes locked tests, and the one that builds the change. A flag you leave out keeps its current text, and an empty one clears it. Each agent gets at most 4,000 characters. The browser's Agents page shows each agent's built-in rules next to the same fields.
+
+The instructions follow the agent's built-in rules in its prompt, which tells it that the rules win where the two disagree. They cannot lift a guarantee: the service still rejects a candidate that touches protected paths, and a test author's change outside them. A run keeps the instructions in force when it started. A refinement and a test run record theirs, and a job freezes the builder's at admission, so changing them never alters running work.
 
 ## Measure the factory
 

@@ -111,6 +111,28 @@ func projectsCommand(out io.Writer) *cli.Command {
 			r := factory.SetAskPolicyRequest{RequestID: reqID(c), ProjectID: factory.ProjectID(c.String("project")), BeforeBuild: factory.AskBeforeBuild(c.String("before-build")), AfterBuild: factory.AskAfterBuild(c.String("after-build")), Autopilot: c.Bool("autopilot")}
 			return call(ctx, c, out, http.MethodPut, "/v1/projects/"+esc(c.String("project"))+"/ask", r)
 		}},
+		{Name: "instructions", Usage: "Set what each agent is told on this project, after its built-in rules; a flag left out keeps its current text", Flags: append(requestFlags(), &cli.StringFlag{Name: "project", Required: true}, &cli.StringFlag{Name: "refiner"}, &cli.StringFlag{Name: "test-author"}, &cli.StringFlag{Name: "builder"}), Action: func(ctx context.Context, c *cli.Command) error {
+			cl, err := client(c)
+			if err != nil {
+				return err
+			}
+			var projects []factory.Project
+			if err := cl.DoJSON(ctx, http.MethodGet, "/v1/projects", nil, &projects); err != nil {
+				return err
+			}
+			r := factory.SetAgentInstructionsRequest{RequestID: reqID(c), ProjectID: factory.ProjectID(c.String("project"))}
+			for _, project := range projects {
+				if project.ID == r.ProjectID {
+					r.Refiner, r.TestAuthor, r.Builder = project.Policy.Instructions.Refiner, project.Policy.Instructions.TestAuthor, project.Policy.Instructions.Builder
+				}
+			}
+			for flag, field := range map[string]*string{"refiner": &r.Refiner, "test-author": &r.TestAuthor, "builder": &r.Builder} {
+				if c.IsSet(flag) {
+					*field = c.String(flag)
+				}
+			}
+			return call(ctx, c, out, http.MethodPut, "/v1/projects/"+esc(c.String("project"))+"/instructions", r)
+		}},
 		{Name: "grants", Usage: "List project access", Flags: projectFlags(), Action: func(ctx context.Context, c *cli.Command) error {
 			return call(ctx, c, out, http.MethodGet, "/v1/projects/"+esc(c.String("project"))+"/grants", nil)
 		}},

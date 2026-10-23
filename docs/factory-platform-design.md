@@ -50,6 +50,8 @@ Generated evidence and decisions follow project retention policy. A fresh checko
 
 `ctx factory agent` adapts Claude Code and Codex to the worker protocol. It supplies the admitted context and rules on standard input, keeps the agent from committing, and commits the agent's worktree changes as the candidate. Session, turns, and cost are execution observations, not evidence. A command may report progress notes, which the controller records as events without treating them as outcomes.
 
+A project's own instructions for an agent follow its built-in rules, which win where the two disagree. The service enforces its guarantees itself, so instructions can shape how an agent works but cannot lift a check. Each run records the instructions it was given, and a job freezes them at admission like the rest of its policy.
+
 ## Decision models are advisory
 
 An optional local decision model answers bounded questions in one forward pass, starting with whether each acceptance criterion names a checkable result. Answers carry the model, its digest, and a versioned question, and are cached by input digest. They inform people before admission and are copied into the admission snapshot, but readiness, admission, verification, and acceptance never read them.

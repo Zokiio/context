@@ -785,11 +785,11 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 	if err != nil {
 		return Assignment{}, err
 	}
-	var key, environment string
+	var key, environment, projectInstructions string
 	var command []string
 	var fixture bool
 	if attempt.Stage == StageImplementation {
-		key = attempt.Admission.ExecutorKey
+		key, projectInstructions = attempt.Admission.ExecutorKey, attempt.Admission.Instructions
 		var encoded string
 		if err := q.QueryRowContext(ctx, `SELECT command_json,fixture FROM executor_profiles WHERE key=?`, key).Scan(&encoded, &fixture); err != nil {
 			return Assignment{}, fault(CodeInternal, "read executor assignment", err)
@@ -816,7 +816,7 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 		instructions = "Run only the configured required check on this clean merge commit; do not modify it."
 		deadline = lease.Add(time.Duration(project.Policy.MaxJobDurationSeconds) * time.Second)
 	}
-	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: deadline, LeaseExpiresAt: lease, ProtectedPaths: append([]string(nil), attempt.Admission.ProtectedPaths...)}, nil
+	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: deadline, LeaseExpiresAt: lease, ProtectedPaths: append([]string(nil), attempt.Admission.ProtectedPaths...), ProjectInstructions: projectInstructions}, nil
 }
 
 func mustWorkItem(ctx context.Context, q queryer, jobID JobID) string {

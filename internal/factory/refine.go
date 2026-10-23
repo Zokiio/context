@@ -85,6 +85,7 @@ type Refinement struct {
 	PreviousID          ID                  `json:"previousId,omitempty"`
 	PreviousAnswers     []RefinementAnswer  `json:"previousAnswers,omitempty"`
 	Criteria            []string            `json:"criteria"`
+	Instructions        string              `json:"instructions,omitempty"`
 	Before              *CriterionSignals   `json:"before,omitempty"`
 	Proposal            *RefinementProposal `json:"proposal,omitempty"`
 	After               *CriterionSignals   `json:"after,omitempty"`
@@ -135,6 +136,7 @@ type RefinerInput struct {
 	PreviousProposal *RefinementProposal `json:"previousProposal,omitempty"`
 	PreviousAnswers  []RefinementAnswer  `json:"previousAnswers,omitempty"`
 	MaxQuestions     int                 `json:"maxQuestions"`
+	Instructions     string              `json:"instructions,omitempty"`
 }
 
 // RefinerOutput is the single JSON object a refiner command writes to standard output.
@@ -216,8 +218,8 @@ func (s *Service) StartRefinement(ctx context.Context, actor Principal, request 
 		return Refinement{}, fault(CodeInternal, "create refinement identity", err)
 	}
 	now := s.state.now().UTC()
-	refinement := Refinement{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, TicketSHA256: digestBytes(raw), Status: RefinementRunning, RequestedBy: current.UserID, PreviousID: request.PreviousID, PreviousAnswers: answers, Criteria: criteria, Before: s.scoreCriteria(ctx, title, criteria, true), CreatedAt: now, UpdatedAt: now}
-	input := RefinerInput{RefinementID: refinement.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Signals: refinement.Before, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, PreviousAnswers: answers, MaxQuestions: MaxRefinementQuestions}
+	refinement := Refinement{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, TicketSHA256: digestBytes(raw), Status: RefinementRunning, RequestedBy: current.UserID, PreviousID: request.PreviousID, PreviousAnswers: answers, Criteria: criteria, Instructions: project.Policy.Instructions.Refiner, Before: s.scoreCriteria(ctx, title, criteria, true), CreatedAt: now, UpdatedAt: now}
+	input := RefinerInput{RefinementID: refinement.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Signals: refinement.Before, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, PreviousAnswers: answers, MaxQuestions: MaxRefinementQuestions, Instructions: refinement.Instructions}
 	if previous != nil {
 		input.PreviousProposal = previous.Proposal
 	}

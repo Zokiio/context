@@ -395,9 +395,13 @@ tr:last-child td { border-bottom: 0; }
 .empty strong { color: var(--ink); font-size: 15px; }
 .secret { white-space: pre-wrap; word-break: break-all; padding: 14px; border: 1px dashed var(--warn-line); border-radius: 12px; background: var(--warn-surface); }
 
+@media (max-width: 1080px) {
+	.topbar .segmented { order: 3; width: 100%; flex-wrap: nowrap; overflow-x: auto; }
+	.topbar .segmented a { flex: none; }
+}
+
 @media (max-width: 700px) {
 	.topbar { gap: 10px; }
-	.topbar .segmented { order: 3; width: 100%; }
 	.content { padding: 20px 16px 48px; }
 	.title { font-size: 24px; line-height: 32px; }
 	.form-grid { grid-template-columns: minmax(0, 1fr); }

@@ -29,6 +29,7 @@ Requests and responses use the JSON-tagged domain structs in `internal/factory/t
 | `/v1/projects/{id}/board` | GET one card per open work item: its column, state, the decision it waits for, its cost so far, and the work items it depends on |
 | `/v1/projects/{id}/plan` | POST `ApprovePlanRequest`: answer, accept a refinement or locked tests, and start the next step; `continue` gives a go-ahead to build |
 | `/v1/projects/{id}/ask` | PUT `SetAskPolicyRequest`; requires a human project administrator who holds the delegated capabilities |
+| `/v1/projects/{id}/instructions` | PUT `SetAgentInstructionsRequest`, replacing the refiner, test author and builder instructions; requires a human project administrator |
 | `/v1/projects/{id}/expectations` | GET a project's holdout expectations, optionally `?workItemId=`, POST `StartExpectationsRequest` |
 | `/v1/expectations/{id}` | GET one suite with its files, patch, and notes |
 | `/v1/expectations/{id}/accept`, `/v1/expectations/{id}/reject` | POST `DecideExpectationsRequest`; accepting requires a human |

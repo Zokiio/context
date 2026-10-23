@@ -367,6 +367,10 @@ func TestBoardAskPlanAndApproveRoutes(t *testing.T) {
 	if status != 200 || json.Unmarshal(raw, &saved) != nil || saved.Policy.Ask.Before() != factory.AskBeforeWhenUnclear || !saved.Policy.Ask.Autopilot {
 		t.Fatalf("ask policy = %d %s", status, raw)
 	}
+	status, _, raw = call(t, base, instance.token, "PUT", path+"/instructions", `{"requestId":"instructions","builder":"Keep functions short."}`, nil)
+	if status != 200 || json.Unmarshal(raw, &saved) != nil || saved.Policy.Instructions.Builder != "Keep functions short." || !saved.Policy.Ask.Autopilot {
+		t.Fatalf("agent instructions = %d %s", status, raw)
+	}
 	status, _, raw = call(t, base, instance.token, "POST", path+"/plan", `{"requestId":"plan","workItemId":"work-1"}`, nil)
 	var plan factory.PlanResult
 	if status != 200 || json.Unmarshal(raw, &plan) != nil || plan.Job == nil {

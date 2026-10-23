@@ -121,6 +121,9 @@ func RefinerPrompt(input factory.RefinerInput) string {
 	if len(input.ProtectedPaths) > 0 {
 		fmt.Fprintf(&b, "- The implementer may not change files matching %s. Criteria may rely on those tests as they are.\n", strings.Join(input.ProtectedPaths, ", "))
 	}
+	if section := projectInstructions(input.Instructions); section != "" {
+		b.WriteString("\n" + section)
+	}
 	if input.Signals != nil && len(input.Signals.Criteria) > 0 {
 		fmt.Fprintf(&b, "\n## Decision-model flags\n\n%s estimated how likely each current criterion is to name a checkable result. The scores are advisory and uncalibrated; flagged ones fell below %.2f.\n\n", input.Signals.Model, input.Signals.Threshold)
 		for _, signal := range input.Signals.Criteria {

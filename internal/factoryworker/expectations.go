@@ -120,6 +120,7 @@ func ExpectationPrompt(input factory.ExpectationInput) string {
 	b.WriteString("- Derive every expected value from the criteria. If a criterion's example contradicts its own rule, do not encode the contradiction; leave it out and report it.\n")
 	b.WriteString("- Do not edit the work item or any record.\n")
 	b.WriteString("- Finish with the JSON report: notes, a short summary for the person who reads your tests; coverage, the names of the tests that check each criterion, using the criterion numbers below, with an empty list for a criterion no test can check; and concerns, each contradiction or problem you found in the criteria.\n\n")
+	b.WriteString(projectInstructions(input.Instructions))
 	if len(input.Criteria) > 0 {
 		b.WriteString("## Criteria by number\n\n")
 		for index, criterion := range input.Criteria {

@@ -162,6 +162,7 @@ func (s *Service) Submit(ctx context.Context, actor Principal, request SubmitReq
 		CriterionSignals:       s.cachedCriterionSignals(ctx, selected.Title, selected.Source),
 		ExpectationsID:         expectations.ID,
 		ExpectationsCommit:     expectations.Commit,
+		Instructions:           project.Policy.Instructions.Builder,
 	}
 	jobID, err := newID("job_")
 	if err != nil {

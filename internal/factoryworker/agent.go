@@ -178,11 +178,21 @@ func AgentPrompt(a factory.Assignment) string {
 		fmt.Fprintf(&b, "- Do not create, edit, rename, or delete files matching these protected paths; verification depends on them and a candidate that touches them is rejected: %s\n", strings.Join(a.ProtectedPaths, ", "))
 	}
 	b.WriteString("- If a criterion cannot be met without changing requirements or protected files, stop and explain why instead of working around it.\n\n")
+	b.WriteString(projectInstructions(a.ProjectInstructions))
 	b.WriteString("## Admitted context\n\n")
 	for _, source := range a.ContextSources {
 		fmt.Fprintf(&b, "### %s\n\nSHA-256: %s\nIncluded because: %s\n\n%s\n\n", source.Path, source.SHA256, strings.TrimSpace(string(source.Reasons)), source.Text)
 	}
 	return b.String()
+}
+
+// projectInstructions renders a project's own instructions as a section after the
+// built-in rules, or nothing when the project has none.
+func projectInstructions(text string) string {
+	if text = strings.TrimSpace(text); text == "" {
+		return ""
+	}
+	return "## The project's instructions\n\nA project administrator added these for you. Follow them as well; where they conflict with the rules above, the rules above win.\n\n" + text + "\n\n"
 }
 
 // agentEvent reads one JSON line of agent output, updates the result, and returns a

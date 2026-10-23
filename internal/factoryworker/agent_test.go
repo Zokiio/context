@@ -155,3 +155,21 @@ func TestAgentCommandConfinesEachHarness(t *testing.T) {
 		t.Fatal("unknown harness accepted")
 	}
 }
+
+func TestPromptsAddTheProjectsInstructionsAfterTheRules(t *testing.T) {
+	const instructions = "Keep functions short."
+	prompts := map[string]string{
+		"builder":     AgentPrompt(factory.Assignment{ProjectInstructions: instructions}),
+		"refiner":     RefinerPrompt(factory.RefinerInput{Instructions: instructions, MaxQuestions: 3}),
+		"test author": ExpectationPrompt(factory.ExpectationInput{Instructions: instructions, ProtectedPaths: []string{"tests/"}}),
+	}
+	for name, prompt := range prompts {
+		rules, added := strings.Index(prompt, "## Rules"), strings.Index(prompt, instructions)
+		if rules < 0 || added < rules || !strings.Contains(prompt, "the rules above win") {
+			t.Errorf("%s prompt does not add the instructions after its rules:\n%s", name, prompt)
+		}
+	}
+	if strings.Contains(AgentPrompt(factory.Assignment{}), "## The project's instructions") {
+		t.Error("a project without instructions got an instructions section")
+	}
+}

@@ -50,6 +50,7 @@ type Expectation struct {
 	Status         ExpectationStatus `json:"status"`
 	RequestedBy    UserID            `json:"requestedBy"`
 	BaseRevision   string            `json:"baseRevision"`
+	Instructions   string            `json:"instructions,omitempty"`
 	Commit         string            `json:"commit,omitempty"`
 	Files          []string          `json:"files,omitempty"`
 	Patch          string            `json:"patch,omitempty"`
@@ -96,6 +97,7 @@ type ExpectationInput struct {
 	Context        []ContextSource `json:"context"`
 	ProtectedPaths []string        `json:"protectedPaths"`
 	BaseRevision   string          `json:"baseRevision"`
+	Instructions   string          `json:"instructions,omitempty"`
 }
 
 // ExpectationOutput is the JSON the author writes to standard output after editing the
@@ -224,8 +226,8 @@ func (s *Service) StartExpectations(ctx context.Context, actor Principal, reques
 		return Expectation{}, fault(CodeInternal, "create expectation identity", err)
 	}
 	now := s.state.now().UTC()
-	expectation := Expectation{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, CriteriaSHA256: criteriaDigest, Status: ExpectationRunning, RequestedBy: current.UserID, BaseRevision: base, Criteria: criteria, CreatedAt: now, UpdatedAt: now}
-	input := ExpectationInput{ExpectationID: expectation.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, BaseRevision: base}
+	expectation := Expectation{ID: ID(id), ProjectID: project.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, CriteriaSHA256: criteriaDigest, Status: ExpectationRunning, RequestedBy: current.UserID, BaseRevision: base, Criteria: criteria, Instructions: project.Policy.Instructions.TestAuthor, CreatedAt: now, UpdatedAt: now}
+	input := ExpectationInput{ExpectationID: expectation.ID, WorkItemID: request.WorkItemID, Title: title, TicketPath: work.Source, Ticket: string(raw), Criteria: criteria, Context: sources, ProtectedPaths: project.Policy.ProtectedPaths, BaseRevision: base, Instructions: expectation.Instructions}
 
 	s.state.mutations.Lock()
 	defer s.state.mutations.Unlock()
