@@ -3,7 +3,7 @@ type: WorkItem
 id: d7621634-8707-425c-b93d-5fd7aac9e48d
 title: Manage tasks and observe factory runs from a permanent workspace
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 ## Spec
@@ -35,6 +35,9 @@ None.
 
 ## Acceptance
 
+- [Task workspace verification](../acceptances/01-task-workspace.md)
+
 ## Comments
 
 - 2026-10-23: The user approved implementation of the plan and requested one final combined PR.
+- 2026-10-23: Implemented and verified at `5579cd50721c05cdaff7a92d7eeaaa40ca717eb5`. Go 1.25 full tests, Go 1.27 race tests and vet, controlled browser regressions, and the real-service offline browser workflow passed. The browser exercised draft/edit/conflict handling, queue/archive/restore/delete, live progress, failed verification and repair, reviewed merge verification, confirmed stopping, reconnect, and responsive layouts. Generated evidence and the workflow acceptance decision remain local under the tracker conventions. Live model providers were not rerun for this milestone.
