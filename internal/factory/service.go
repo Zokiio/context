@@ -346,7 +346,10 @@ CREATE TABLE IF NOT EXISTS criterion_signals (
 	if err := ensureColumn(db, "attempts", "progress", `ALTER TABLE attempts ADD COLUMN progress TEXT NOT NULL DEFAULT ''`); err != nil {
 		return err
 	}
-	return ensureColumn(db, "jobs", "merge_json", `ALTER TABLE jobs ADD COLUMN merge_json TEXT NOT NULL DEFAULT ''`)
+	if err := ensureColumn(db, "jobs", "merge_json", `ALTER TABLE jobs ADD COLUMN merge_json TEXT NOT NULL DEFAULT ''`); err != nil {
+		return err
+	}
+	return ensureColumn(db, "attempts", "purpose", `ALTER TABLE attempts ADD COLUMN purpose TEXT NOT NULL DEFAULT ''`)
 }
 
 func ensureColumn(db *sql.DB, table, column, statement string) error {

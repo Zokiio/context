@@ -2,6 +2,7 @@ package factory_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,6 +30,62 @@ func acceptForTest(t *testing.T, harness jobHarness, prefix string) (factory.Job
 	return job, candidate
 }
 
+// runMergeChecks lets the verifier run every queued merge check with the given status.
+func runMergeChecks(t *testing.T, harness jobHarness, prefix string, status factory.CheckStatus) factory.Job {
+	t.Helper()
+	return runChecks(t, harness, prefix, status, true)
+}
+
+// runChecks lets the verifier claim and report every pending verification attempt.
+func runChecks(t *testing.T, harness jobHarness, prefix string, status factory.CheckStatus, merge bool) factory.Job {
+	t.Helper()
+	ctx := context.Background()
+	var job factory.Job
+	for i := 0; ; i++ {
+		assignment, err := harness.service.Claim(ctx, harness.verifier, factory.WorkerClaimRequest{RequestID: fmt.Sprintf("%s-merge-claim-%d", prefix, i), Stages: []factory.Stage{factory.StageVerification}, ProjectID: &harness.project.ID})
+		if isCode(err, factory.CodeNoWork) {
+			return job
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(assignment.Instructions, "merge commit") != merge {
+			t.Fatalf("claimed the wrong kind of check: %+v", assignment)
+		}
+		native := fmt.Sprintf("%s-merge-native-%d", prefix, i)
+		for _, kind := range []factory.WorkerReportKind{factory.ReportStartRegistered, factory.ReportStarted} {
+			if _, err := harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: fmt.Sprintf("%s-%s-%d", prefix, kind, i), AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: kind, ObservedAt: time.Now(), NativeRunID: native}); err != nil {
+				t.Fatal(err)
+			}
+		}
+		outcome := factory.OutcomeSucceeded
+		if status != factory.CheckPassed {
+			outcome = factory.OutcomeFailed
+		}
+		job, err = harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: fmt.Sprintf("%s-terminal-%d", prefix, i), AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: factory.ReportTerminal, ObservedAt: time.Now(), NativeRunID: native, Outcome: outcome, CheckStatus: status, TerminalReceipt: "merge check receipt"})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func mergeAndVerify(t *testing.T, harness jobHarness, job factory.Job, id, branch string) factory.Job {
+	t.Helper()
+	started, err := harness.service.Merge(context.Background(), harness.admin, mergeRequest(job, id, branch))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if started.Merge == nil || started.Merge.Status != factory.MergeStatusVerifying || started.Status != factory.JobAccepted {
+		t.Fatalf("merge did not start verifying: %+v", started.Merge)
+	}
+	runMergeChecks(t, harness, id, factory.CheckPassed)
+	merged, err := harness.service.GetJob(context.Background(), harness.admin, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return merged
+}
+
 func mergeRequest(job factory.Job, id, branch string) factory.MergeRequest {
 	return factory.MergeRequest{RequestID: id, JobID: job.ID, IfVersion: job.Version, CandidateRevision: job.CandidateRevision, TargetBranch: branch}
 }
@@ -44,12 +101,23 @@ func TestMergeIntegratesTheAcceptedCandidateInTheCheckout(t *testing.T) {
 	harness := setupJob(t)
 	job, candidate := acceptForTest(t, harness, "merge")
 	previous := head(t, harness.repository, "HEAD")
-	merged, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "merge", ""))
+	started, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "merge", ""))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if head(t, harness.repository, "HEAD") != previous {
+		t.Fatal("the branch moved before the merge commit was verified")
+	}
+	if _, err := harness.service.Merge(ctx, harness.admin, mergeRequest(started, "merge-during-verification", "")); !isCode(err, factory.CodeConflict) {
+		t.Fatalf("merge during verification = %v", err)
+	}
+	runMergeChecks(t, harness, "merge", factory.CheckPassed)
+	merged, err := harness.service.GetJob(ctx, harness.admin, job.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 	record := merged.Merge
-	if record == nil || record.Mode != factory.MergeModeCheckout || record.PreviousTip != previous || record.CandidateRevision != candidate || record.Revision != head(t, harness.repository, "HEAD") {
+	if record == nil || record.Status != factory.MergeStatusMerged || record.Mode != factory.MergeModeCheckout || record.PreviousTip != previous || record.CandidateRevision != candidate || record.Revision != head(t, harness.repository, "HEAD") {
 		t.Fatalf("merge record = %+v", record)
 	}
 	parents := strings.Fields(runGit(t, harness.repository, "log", "-1", "--format=%P"))
@@ -59,7 +127,7 @@ func TestMergeIntegratesTheAcceptedCandidateInTheCheckout(t *testing.T) {
 	if message := runGit(t, harness.repository, "log", "-1", "--format=%B"); !strings.Contains(message, "Merge Waymark job "+string(job.ID)) || !strings.Contains(message, "Approved-by: admin") || strings.Contains(message, string(filepath.Separator)+"private") || strings.Contains(message, os.TempDir()) {
 		t.Fatalf("merge message = %q", message)
 	}
-	if !hasEvent(merged, "job_merged", record.Revision) || record.TicketNote != "recorded" {
+	if !hasEvent(merged, "merge_verifying", record.Revision) || !hasEvent(merged, "job_merged", record.Revision) || record.TicketNote != "recorded" {
 		t.Fatalf("merge event or ticket note missing: note=%q events=%+v", record.TicketNote, merged.Events)
 	}
 	ticket, _ := os.ReadFile(merged.Admission.TicketPath)
@@ -79,6 +147,9 @@ func TestMergeIntegratesTheAcceptedCandidateInTheCheckout(t *testing.T) {
 	replayed, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "merge", ""))
 	if err != nil || replayed.Merge == nil || replayed.Merge.Revision != record.Revision {
 		t.Fatalf("replayed merge = %+v, %v", replayed.Merge, err)
+	}
+	if strings.Contains(runGit(t, harness.repository, "for-each-ref", "refs/waymark"), string(job.ID)) {
+		t.Fatal("the merge pin was not removed")
 	}
 }
 
@@ -158,15 +229,11 @@ func TestConflictingMergeIsAbortedAndRecorded(t *testing.T) {
 
 func TestMergeIntoAnUncheckedOutBranchLeavesTheCheckoutAlone(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	harness := setupJob(t)
 	runGit(t, harness.repository, "branch", "release", harness.job.Admission.BaseRevision)
 	job, candidate := acceptForTest(t, harness, "release")
 	checkout := head(t, harness.repository, "HEAD")
-	merged, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "release", "release"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	merged := mergeAndVerify(t, harness, job, "release", "release")
 	if merged.Merge.Mode != factory.MergeModeRef || head(t, harness.repository, "refs/heads/release") != merged.Merge.Revision {
 		t.Fatalf("ref merge = %+v", merged.Merge)
 	}
@@ -217,7 +284,14 @@ func TestDependentAdmissionWaitsForTheMergedPrerequisite(t *testing.T) {
 	if err := submit("unmerged", base); !isCode(err, factory.CodeNotReady) || !strings.Contains(err.Error(), "not merged") {
 		t.Fatalf("dependent admission before merge = %v", err)
 	}
-	merged, err := harness.service.Merge(ctx, harness.admin, mergeRequest(prerequisite, "merge-first", ""))
+	if _, err := harness.service.Merge(ctx, harness.admin, mergeRequest(prerequisite, "merge-first", "")); err != nil {
+		t.Fatal(err)
+	}
+	if err := submit("verifying", base); !isCode(err, factory.CodeNotReady) || !strings.Contains(err.Error(), "not merged") {
+		t.Fatalf("dependent admission while the merge verifies = %v", err)
+	}
+	runMergeChecks(t, harness, "merge-first", factory.CheckPassed)
+	merged, err := harness.service.GetJob(ctx, harness.admin, prerequisite.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -226,5 +300,115 @@ func TestDependentAdmissionWaitsForTheMergedPrerequisite(t *testing.T) {
 	}
 	if err := submit("merged-base", merged.Merge.Revision); err != nil {
 		t.Fatalf("dependent admission from the merged base = %v", err)
+	}
+}
+
+func TestFailedMergeCheckLeavesTheBranchAndAllowsRetry(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJobWithChecks(t, []string{"go-test", "lint"})
+	_, candidate := completeImplementationForTest(t, harness, "failing")
+	runChecks(t, harness, "failing-candidate", factory.CheckPassed, false)
+	job, err := harness.service.GetJob(ctx, harness.admin, harness.job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Review(ctx, harness.reviewer, factory.ReviewRequest{RequestID: "failing-review", JobID: job.ID, IfVersion: job.Version, CandidateRevision: candidate, RequirementFingerprint: job.Admission.TicketSHA256, Decision: factory.ReviewApproved, Summary: "ok"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	job, err = harness.service.Accept(ctx, harness.reviewer, factory.AcceptRequest{RequestID: "failing-accept", JobID: job.ID, IfVersion: job.Version, CandidateRevision: candidate, RequirementFingerprint: job.Admission.TicketSHA256, Summary: "ok"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := head(t, harness.repository, "HEAD")
+	if _, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "failing", "")); err != nil {
+		t.Fatal(err)
+	}
+	failed := runMergeChecks(t, harness, "failing", factory.CheckFailed)
+	if failed.Merge == nil || failed.Merge.Status != factory.MergeStatusFailed || !strings.Contains(failed.Merge.Failure, "on the merge commit") {
+		t.Fatalf("failed merge = %+v", failed.Merge)
+	}
+	if head(t, harness.repository, "HEAD") != before || failed.Status != factory.JobAccepted {
+		t.Fatalf("a failed merge check moved the branch or the job: status=%s", failed.Status)
+	}
+	cancelled := 0
+	for _, attempt := range failed.Attempts {
+		if attempt.Purpose == factory.AttemptPurposeMerge && attempt.Status == factory.AttemptCancelled {
+			cancelled++
+		}
+	}
+	if cancelled != 1 {
+		t.Fatalf("the second merge check was not stopped: %d cancelled", cancelled)
+	}
+	merged := mergeAndVerify(t, harness, failed, "retry", "")
+	if merged.Merge.Status != factory.MergeStatusMerged || head(t, harness.repository, "HEAD") != merged.Merge.Revision {
+		t.Fatalf("retried merge = %+v", merged.Merge)
+	}
+}
+
+func TestMergeFailsWhenTheCheckoutMovesDuringVerification(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, _ := acceptForTest(t, harness, "moving")
+	if _, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "moving", "")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(harness.repository, "elsewhere.txt"), []byte("moved\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	runGit(t, harness.repository, "add", "elsewhere.txt")
+	runGit(t, harness.repository, "commit", "-qm", "someone else committed")
+	moved := head(t, harness.repository, "HEAD")
+	failed := runMergeChecks(t, harness, "moving", factory.CheckPassed)
+	if failed.Merge.Status != factory.MergeStatusFailed || !strings.Contains(failed.Merge.Failure, "moved") || head(t, harness.repository, "HEAD") != moved {
+		t.Fatalf("merge after the checkout moved = %+v", failed.Merge)
+	}
+}
+
+func TestMergeChecksRunAfterTheAdmissionDeadline(t *testing.T) {
+	t.Parallel()
+	clock := time.Now()
+	harness := setupJobConfig(t, []string{"go-test"}, 2, func() time.Time { return clock })
+	job, _ := acceptForTest(t, harness, "late")
+	clock = clock.Add(2 * time.Hour)
+	merged := mergeAndVerify(t, harness, job, "late", "")
+	if merged.Merge.Status != factory.MergeStatusMerged {
+		t.Fatalf("merge after the admission deadline = %+v", merged.Merge)
+	}
+}
+
+func TestRestartDuringAMergeCheckFailsTheMerge(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	harness := setupJob(t)
+	job, _ := acceptForTest(t, harness, "restart")
+	if _, err := harness.service.Merge(ctx, harness.admin, mergeRequest(job, "restart", "")); err != nil {
+		t.Fatal(err)
+	}
+	assignment, err := harness.service.Claim(ctx, harness.verifier, factory.WorkerClaimRequest{RequestID: "restart-claim", Stages: []factory.Stage{factory.StageVerification}, ProjectID: &harness.project.ID})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, kind := range []factory.WorkerReportKind{factory.ReportStartRegistered, factory.ReportStarted} {
+		if _, err := harness.service.Report(ctx, harness.verifier, factory.WorkerReportRequest{RequestID: "restart-" + string(kind), AttemptID: assignment.AttemptID, DispatchID: assignment.DispatchID, Kind: kind, ObservedAt: time.Now(), NativeRunID: "restart-native"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := harness.service.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := factory.Open(harness.dataDir, factory.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reopened.Close()
+	after, err := reopened.GetJob(ctx, harness.admin, job.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if after.Merge.Status != factory.MergeStatusFailed || after.Status != factory.JobAccepted || !strings.Contains(after.Merge.Failure, "restarted") {
+		t.Fatalf("after restart: status=%s merge=%+v", after.Status, after.Merge)
 	}
 }

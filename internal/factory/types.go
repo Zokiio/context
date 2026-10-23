@@ -418,6 +418,7 @@ type Attempt struct {
 	Stage                 Stage         `json:"stage"`
 	Ordinal               int           `json:"ordinal"`
 	CheckKey              string        `json:"checkKey,omitempty"`
+	Purpose               string        `json:"purpose,omitempty"`
 	DispatchID            string        `json:"dispatchId"`
 	WorkerID              *UserID       `json:"workerId,omitempty"`
 	NativeRunID           string        `json:"nativeRunId,omitempty"`

@@ -66,7 +66,7 @@ func (s *Service) Claim(ctx context.Context, actor Principal, request WorkerClai
 		if err := authorizeWorkerStage(ctx, tx, current, attempt); err != nil {
 			return Assignment{}, err
 		}
-		if err := validateAdmissionFresh(ctx, tx, attempt.ProjectID, mustWorkItem(ctx, tx, attempt.JobID), attempt.Admission); err != nil {
+		if err := claimFresh(ctx, tx, attempt); err != nil {
 			return Assignment{}, err
 		}
 		return saved, nil
@@ -84,7 +84,7 @@ func (s *Service) Claim(ctx context.Context, actor Principal, request WorkerClai
 			if err := authorizeWorkerStage(ctx, tx, current, selected); err != nil {
 				return Assignment{}, err
 			}
-			if err := validateAdmissionFresh(ctx, tx, selected.ProjectID, mustWorkItem(ctx, tx, selected.JobID), selected.Admission); err != nil {
+			if err := claimFresh(ctx, tx, selected); err != nil {
 				return Assignment{}, err
 			}
 		} else {
@@ -92,7 +92,7 @@ func (s *Service) Claim(ctx context.Context, actor Principal, request WorkerClai
 			if err != nil {
 				return Assignment{}, err
 			}
-			if err := validateAdmissionFresh(ctx, tx, selected.ProjectID, mustWorkItem(ctx, tx, selected.JobID), selected.Admission); err != nil {
+			if err := claimFresh(ctx, tx, selected); err != nil {
 				return Assignment{}, err
 			}
 			if err := s.ensureWorkspace(ctx, selected); err != nil {
@@ -115,6 +115,10 @@ func (s *Service) Claim(ctx context.Context, actor Principal, request WorkerClai
 			if selected.Stage == StageImplementation {
 				if _, err := tx.ExecContext(ctx, `UPDATE jobs SET implementer_id=?, status=?, version=version+1, updated_at=? WHERE id=?`, current.UserID, jobStatus, formatTime(now), selected.JobID); err != nil {
 					return Assignment{}, fault(CodeInternal, "assign implementation", err)
+				}
+			} else if selected.mergeCheck() {
+				if _, err := tx.ExecContext(ctx, `UPDATE jobs SET version=version+1, updated_at=? WHERE id=?`, formatTime(now), selected.JobID); err != nil {
+					return Assignment{}, fault(CodeInternal, "assign merge check", err)
 				}
 			} else if _, err := tx.ExecContext(ctx, `UPDATE jobs SET status=?, version=version+1, updated_at=? WHERE id=?`, jobStatus, formatTime(now), selected.JobID); err != nil {
 				return Assignment{}, fault(CodeInternal, "assign verification", err)
@@ -158,6 +162,18 @@ func (s *Service) Heartbeat(ctx context.Context, actor Principal, request Heartb
 		return HeartbeatResult{}, err
 	}
 	now := s.state.now().UTC()
+	if attempt.LeaseExpiresAt != nil && !now.Before(*attempt.LeaseExpiresAt) && attempt.Status != AttemptUnknown && !terminalAttempt(attempt.Status) && attempt.mergeCheck() {
+		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,check_status=? WHERE id=?`, AttemptUnknown, OutcomeUnknown, CheckUnknown, attempt.ID); err != nil {
+			return HeartbeatResult{}, fault(CodeInternal, "mark missed merge heartbeat uncertain", err)
+		}
+		if err := failMergeVerification(ctx, tx, attempt.JobID, attempt.CandidateRevision, attempt.Ordinal, "a merge check missed its heartbeat", now); err != nil {
+			return HeartbeatResult{}, err
+		}
+		if err := tx.Commit(); err != nil {
+			return HeartbeatResult{}, fault(CodeInternal, "commit missed merge heartbeat", err)
+		}
+		return HeartbeatResult{}, fault(CodeUncertain, "worker lease expired and requires reconciliation", nil)
+	}
 	if attempt.LeaseExpiresAt != nil && !now.Before(*attempt.LeaseExpiresAt) && attempt.Status != AttemptUnknown && !terminalAttempt(attempt.Status) {
 		check := attempt.CheckStatus
 		if attempt.Stage == StageVerification {
@@ -195,7 +211,7 @@ func (s *Service) Heartbeat(ctx context.Context, actor Principal, request Heartb
 			return HeartbeatResult{}, fault(CodeInternal, "save heartbeat", err)
 		}
 		directive := DirectiveContinue
-		if !now.Before(attempt.Admission.Deadline) && !attempt.CancellationRequested {
+		if !attempt.mergeCheck() && !now.Before(attempt.Admission.Deadline) && !attempt.CancellationRequested {
 			attempt.CancellationRequested = true
 			if _, err := tx.ExecContext(ctx, `UPDATE attempts SET cancellation_requested=1 WHERE id=?`, attempt.ID); err != nil {
 				return HeartbeatResult{}, fault(CodeInternal, "request deadline cancellation", err)
@@ -255,8 +271,20 @@ func (s *Service) Report(ctx context.Context, actor Principal, request WorkerRep
 		}
 		if attempt.Status == AttemptAssigned {
 			now := s.state.now().UTC()
-			deadlineElapsed := !now.Before(attempt.Admission.Deadline)
+			deadlineElapsed := !attempt.mergeCheck() && !now.Before(attempt.Admission.Deadline)
 			leaseExpired := attempt.LeaseExpiresAt == nil || !now.Before(*attempt.LeaseExpiresAt)
+			if attempt.mergeCheck() && leaseExpired {
+				if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,check_status=?,native_run_id=? WHERE id=?`, AttemptUnknown, OutcomeUnknown, CheckUnknown, request.NativeRunID, attempt.ID); err != nil {
+					return Job{}, fault(CodeInternal, "retain expired merge check", err)
+				}
+				if err := failMergeVerification(ctx, tx, attempt.JobID, attempt.CandidateRevision, attempt.Ordinal, "a merge check lease expired before it started", now); err != nil {
+					return Job{}, err
+				}
+				if err := tx.Commit(); err != nil {
+					return Job{}, fault(CodeInternal, "commit expired merge check", err)
+				}
+				return Job{}, fault(CodeUncertain, "worker lease expired before start registration", nil)
+			}
 			if deadlineElapsed || leaseExpired {
 				checkStatus := attempt.CheckStatus
 				if attempt.Stage == StageVerification {
@@ -285,8 +313,10 @@ func (s *Service) Report(ctx context.Context, actor Principal, request WorkerRep
 				return Job{}, fault(CodeUncertain, "worker lease expired before start registration", nil)
 			}
 		}
-		if err := validateAdmissionFresh(ctx, tx, attempt.ProjectID, mustWorkItem(ctx, tx, attempt.JobID), attempt.Admission); err != nil {
-			return Job{}, err
+		if !attempt.mergeCheck() {
+			if err := validateAdmissionFresh(ctx, tx, attempt.ProjectID, mustWorkItem(ctx, tx, attempt.JobID), attempt.Admission); err != nil {
+				return Job{}, err
+			}
 		}
 	}
 	if saved, ok, hash, err := receipt[Job](ctx, tx, current.UserID, "worker_report", request.RequestID, request); err != nil {
@@ -381,6 +411,15 @@ func (s *Service) finishUnknown(ctx context.Context, tx *sql.Tx, actor Principal
 	if err := storeArtifacts(ctx, tx, attempt.JobID, attempt.ID, request.Artifacts, now); err != nil {
 		return err
 	}
+	if attempt.mergeCheck() {
+		if err := recordCheckResult(ctx, tx, actor.UserID, attempt, CheckUnknown, request.ObservedAt, now); err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?, outcome=?, check_status=?, terminal_receipt=?, finished_at=? WHERE id=?`, AttemptUnknown, OutcomeUnknown, CheckUnknown, request.TerminalReceipt, formatTime(request.ObservedAt), attempt.ID); err != nil {
+			return fault(CodeInternal, "mark merge check uncertain", err)
+		}
+		return failMergeVerification(ctx, tx, attempt.JobID, attempt.CandidateRevision, attempt.Ordinal, "a merge check outcome is unknown", now)
+	}
 	status := JobImplementationUnknown
 	if attempt.CancellationRequested {
 		status = JobCancellationUnknown
@@ -470,6 +509,9 @@ func (s *Service) finishImplementation(ctx context.Context, tx *sql.Tx, attempt 
 }
 
 func (s *Service) finishVerification(ctx context.Context, tx *sql.Tx, actor Principal, attempt attemptRecord, request WorkerReportRequest, now time.Time) error {
+	if attempt.mergeCheck() {
+		return s.finishMergeVerification(ctx, tx, actor, attempt, request, now)
+	}
 	if request.CandidateRevision == "" {
 		request.CandidateRevision = attempt.CandidateRevision
 	}
@@ -641,7 +683,7 @@ func selectPendingAttempt(ctx context.Context, q queryer, actor Principal, stage
 		if !actor.InstallationAdmin && (!hasCapability(caps, CapabilityRead) || !hasCapability(caps, capability)) {
 			continue
 		}
-		if !now.Before(attempt.Admission.Deadline) {
+		if !attempt.mergeCheck() && !now.Before(attempt.Admission.Deadline) {
 			continue
 		}
 		return attempt, nil
@@ -653,8 +695,8 @@ func readAttempt(ctx context.Context, q queryer, attemptID AttemptID) (attemptRe
 	var result attemptRecord
 	var worker, lease, heartbeat, started, finished sql.NullString
 	var admissionJSON string
-	err := q.QueryRowContext(ctx, `SELECT a.id,a.job_id,a.stage,a.ordinal,a.check_key,a.dispatch_id,a.worker_id,a.native_run_id,a.workspace_path,a.input_revision,a.candidate_revision,a.status,a.outcome,a.check_status,a.lease_expires_at,a.last_heartbeat_at,a.started_at,a.finished_at,a.cancellation_requested,j.project_id,j.coordinator_id,j.implementer_id,j.status,j.admission_json,p.repository_path FROM attempts a JOIN jobs j ON j.id=a.job_id JOIN projects p ON p.id=j.project_id WHERE a.id=?`, attemptID).Scan(
-		&result.ID, &result.JobID, &result.Stage, &result.Ordinal, &result.CheckKey, &result.DispatchID, &worker, &result.NativeRunID, &result.WorkspacePath, &result.InputRevision, &result.CandidateRevision, &result.Status, &result.Outcome, &result.CheckStatus, &lease, &heartbeat, &started, &finished, &result.CancellationRequested, &result.ProjectID, &result.CoordinatorID, &result.ImplementerID, &result.JobStatus, &admissionJSON, &result.Repository,
+	err := q.QueryRowContext(ctx, `SELECT a.id,a.job_id,a.stage,a.ordinal,a.check_key,a.dispatch_id,a.worker_id,a.native_run_id,a.workspace_path,a.input_revision,a.candidate_revision,a.status,a.outcome,a.check_status,a.lease_expires_at,a.last_heartbeat_at,a.started_at,a.finished_at,a.cancellation_requested,a.purpose,j.project_id,j.coordinator_id,j.implementer_id,j.status,j.admission_json,p.repository_path FROM attempts a JOIN jobs j ON j.id=a.job_id JOIN projects p ON p.id=j.project_id WHERE a.id=?`, attemptID).Scan(
+		&result.ID, &result.JobID, &result.Stage, &result.Ordinal, &result.CheckKey, &result.DispatchID, &worker, &result.NativeRunID, &result.WorkspacePath, &result.InputRevision, &result.CandidateRevision, &result.Status, &result.Outcome, &result.CheckStatus, &lease, &heartbeat, &started, &finished, &result.CancellationRequested, &result.Purpose, &result.ProjectID, &result.CoordinatorID, &result.ImplementerID, &result.JobStatus, &admissionJSON, &result.Repository,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return attemptRecord{}, fault(CodeNotFound, "attempt not found", nil)
@@ -766,7 +808,12 @@ func assignmentFor(ctx context.Context, q queryer, attempt attemptRecord, worker
 		instructions = "Run only the configured required check in this clean candidate workspace; do not modify the candidate."
 	}
 	base := attempt.InputRevision
-	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: attempt.Admission.Deadline, LeaseExpiresAt: lease, ProtectedPaths: append([]string(nil), attempt.Admission.ProtectedPaths...)}, nil
+	deadline := attempt.Admission.Deadline
+	if attempt.mergeCheck() {
+		instructions = "Run only the configured required check on this clean merge commit; do not modify it."
+		deadline = lease.Add(time.Duration(project.Policy.MaxJobDurationSeconds) * time.Second)
+	}
+	return Assignment{AttemptID: attempt.ID, JobID: attempt.JobID, ProjectID: attempt.ProjectID, WorkItemID: mustWorkItem(ctx, q, attempt.JobID), Stage: attempt.Stage, WorkerID: worker, DispatchID: attempt.DispatchID, WorkspacePath: attempt.WorkspacePath, BaseRevision: base, CandidateRevision: attempt.CandidateRevision, RequirementFingerprint: attempt.Admission.TicketSHA256, ContextSHA256: attempt.Admission.ContextSHA256, ContextSources: append([]ContextSource(nil), attempt.Admission.Sources...), Instructions: instructions, ProfileKey: key, Command: command, CheckEnvironment: environment, Fixture: project.Policy.Fixture && fixture, Deadline: deadline, LeaseExpiresAt: lease, ProtectedPaths: append([]string(nil), attempt.Admission.ProtectedPaths...)}, nil
 }
 
 func mustWorkItem(ctx context.Context, q queryer, jobID JobID) string {
@@ -913,7 +960,7 @@ func placeholders(count int) string {
 }
 
 func expireLeases(ctx context.Context, tx *sql.Tx, now time.Time) error {
-	rows, err := tx.QueryContext(ctx, `SELECT id,job_id,stage,cancellation_requested,lease_expires_at FROM attempts WHERE status IN (?,?,?,?) AND lease_expires_at IS NOT NULL`, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged)
+	rows, err := tx.QueryContext(ctx, `SELECT id,job_id,stage,cancellation_requested,lease_expires_at,purpose,candidate_revision,ordinal FROM attempts WHERE status IN (?,?,?,?) AND lease_expires_at IS NOT NULL`, AttemptAssigned, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged)
 	if err != nil {
 		return fault(CodeInternal, "find expired worker leases", err)
 	}
@@ -923,11 +970,14 @@ func expireLeases(ctx context.Context, tx *sql.Tx, now time.Time) error {
 		stage   Stage
 		cancel  bool
 		lease   string
+		purpose string
+		commit  string
+		ordinal int
 	}
 	values := []expired{}
 	for rows.Next() {
 		var value expired
-		if err := rows.Scan(&value.attempt, &value.job, &value.stage, &value.cancel, &value.lease); err != nil {
+		if err := rows.Scan(&value.attempt, &value.job, &value.stage, &value.cancel, &value.lease, &value.purpose, &value.commit, &value.ordinal); err != nil {
 			rows.Close()
 			return fault(CodeInternal, "read worker lease", err)
 		}
@@ -949,6 +999,12 @@ func expireLeases(ctx context.Context, tx *sql.Tx, now time.Time) error {
 		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,check_status=? WHERE id=?`, AttemptUnknown, OutcomeUnknown, check, value.attempt); err != nil {
 			return fault(CodeInternal, "mark expired worker lease uncertain", err)
 		}
+		if value.purpose == AttemptPurposeMerge {
+			if err := failMergeVerification(ctx, tx, value.job, value.commit, value.ordinal, "a merge check lease expired", now); err != nil {
+				return err
+			}
+			continue
+		}
 		jobStatus := JobImplementationUnknown
 		if value.cancel {
 			jobStatus = JobCancellationUnknown
@@ -969,7 +1025,7 @@ func (state *serviceState) recoverInterruptedAttempts(ctx context.Context) error
 		return fault(CodeInternal, "start interrupted-attempt recovery", err)
 	}
 	defer tx.Rollback()
-	rows, err := tx.QueryContext(ctx, `SELECT id,job_id,cancellation_requested FROM attempts WHERE status IN (?,?,?)`, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged)
+	rows, err := tx.QueryContext(ctx, `SELECT id,job_id,cancellation_requested,purpose,candidate_revision,ordinal FROM attempts WHERE status IN (?,?,?)`, AttemptStartRegistered, AttemptRunning, AttemptCancelAcknowledged)
 	if err != nil {
 		return fault(CodeInternal, "find interrupted attempts", err)
 	}
@@ -977,11 +1033,14 @@ func (state *serviceState) recoverInterruptedAttempts(ctx context.Context) error
 		attempt AttemptID
 		job     JobID
 		cancel  bool
+		purpose string
+		commit  string
+		ordinal int
 	}
 	var found []interrupted
 	for rows.Next() {
 		var value interrupted
-		if err := rows.Scan(&value.attempt, &value.job, &value.cancel); err != nil {
+		if err := rows.Scan(&value.attempt, &value.job, &value.cancel, &value.purpose, &value.commit, &value.ordinal); err != nil {
 			rows.Close()
 			return fault(CodeInternal, "read interrupted attempt", err)
 		}
@@ -996,6 +1055,12 @@ func (state *serviceState) recoverInterruptedAttempts(ctx context.Context) error
 	for _, value := range found {
 		if _, err := tx.ExecContext(ctx, `UPDATE attempts SET status=?,outcome=?,check_status=CASE WHEN stage=? THEN ? ELSE check_status END WHERE id=?`, AttemptUnknown, OutcomeUnknown, StageVerification, CheckUnknown, value.attempt); err != nil {
 			return fault(CodeInternal, "retain interrupted attempt", err)
+		}
+		if value.purpose == AttemptPurposeMerge {
+			if err := failMergeVerification(ctx, tx, value.job, value.commit, value.ordinal, "the controller restarted while a merge check ran", now); err != nil {
+				return err
+			}
+			continue
 		}
 		jobStatus := JobImplementationUnknown
 		if value.cancel {
@@ -1038,4 +1103,18 @@ func recordProgress(ctx context.Context, tx *sql.Tx, attempt attemptRecord, prog
 	}
 	_, err := appendEvent(ctx, tx, attempt.JobID, nil, "worker_progress", map[string]any{"attemptId": attempt.ID, "progress": progress}, now)
 	return err
+}
+
+// mergeCheck reports whether the attempt verifies a merge commit rather than the job's
+// candidate. Merge checks never change the job's own status or deadline handling.
+func (attempt attemptRecord) mergeCheck() bool { return attempt.Purpose == AttemptPurposeMerge }
+
+// claimFresh requires unchanged admitted sources for candidate work. A merge check runs
+// after acceptance, which legitimately rewrote the ticket; Merge checked that the
+// acceptance is still valid instead.
+func claimFresh(ctx context.Context, q queryer, attempt attemptRecord) error {
+	if attempt.mergeCheck() {
+		return nil
+	}
+	return validateAdmissionFresh(ctx, q, attempt.ProjectID, mustWorkItem(ctx, q, attempt.JobID), attempt.Admission)
 }

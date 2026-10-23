@@ -254,7 +254,11 @@ function nextAction(job) {
 	if (job.status === 'accepted' && job.acceptanceStatus !== 'valid') {
 		return job.acceptanceStatus === 'stale' ? 'Historical acceptance is retained, but current requirements or evidence no longer match it. Reassess the authored decision before relying on this work.' : 'Historical acceptance is retained, but its current decision or evidence cannot be validated. Restore the original decision and evidence together, or reassess the work.';
 	}
-	if (job.status === 'accepted') return job.merge ? 'Accepted and merged into ' + job.merge.branch + ' at ' + short(job.merge.revision) + '. Dependent work can build on it.' : 'Accepted but not merged. Merge the candidate so dependent work builds on it; until then the factory refuses to admit work that depends on this item.';
+	if (job.status === 'accepted') {
+		if (job.merge?.status === 'verifying') return 'The merge commit is being verified. Required checks run on it in clean worktrees, and the branch moves only if all of them pass.';
+		if (job.merge && job.merge.status !== 'failed') return 'Accepted and merged into ' + job.merge.branch + ' at ' + short(job.merge.revision) + '. Dependent work can build on it.';
+		return (job.merge ? 'The last merge failed: ' + job.merge.failure + ' ' : 'Accepted but not merged. ') + 'Merge the candidate so dependent work builds on it; until then the factory refuses to admit work that depends on this item.';
+	}
 	const descriptions = { queued: 'Waiting for an enrolled implementation worker to claim the recorded dispatch.', implementing: 'Implementation is active. Inspect its retained attempt or request cancellation.', implementation_unknown: 'The worker outcome is unknown. Keep the claim until an authorized reconciliation establishes what happened.', verifying: 'Waiting for an independent verification worker. Implementation success is not accepted evidence.', verification_failed: 'A required result has not passed. Inspect the original evidence before requesting a bounded repair.', ready_for_review: 'Independent checks passed. A different authorized reviewer must inspect this exact candidate.', ready_for_acceptance: 'A current independent review is recorded. An authorized acceptor can assess the exact candidate and requirements.', accepting: 'Acceptance publication is pending. The service must validate the authored record before declaring acceptance.', accepted: 'The authored acceptance record was validated. Its original revision and evidence remain inspectable.', cancel_requested: 'Stop requested. An acknowledgement or expired lease does not prove the execution stopped.', cancellation_unknown: 'Cancellation remains uncertain. No replacement should run while the old execution may still exist.', cancelled: 'The recorded execution is confirmed cancelled. Its workspace and observations remain retained.', failed: 'The job has a known failure. Inspect retained evidence and original requirements before new work.', stale: 'Requirements or candidate identity changed. Reassess before relying on previous checks or review.' };
 	return descriptions[job.status] || 'Inspect retained state and ask an authorized coordinator for the next action.';
 }
@@ -319,14 +323,21 @@ function reviewPanels(job, capabilities) {
 	return result;
 }
 function mergePanel(job, capabilities) {
-	if (job.merge) return panel('Merge', element('div', { class: 'panel-body' }, metadata([['Branch', job.merge.branch], ['Merge commit', code(job.merge.revision)], ['Previous tip', code(job.merge.previousTip)], ['Candidate', code(job.merge.candidateRevision)], ['Mode', human(job.merge.mode)], ['Merged by', code(job.merge.mergedBy)], ['Merged at', time(job.merge.mergedAt)], ['Ticket note', job.merge.ticketNote || 'Not recorded']])), 'merged');
-	if (!capabilities.includes('merge')) return element('div', { class: 'notice' }, 'The candidate is accepted but not merged. Someone with merge access must merge it before dependent work can be admitted.');
+	const merge = job.merge;
+	if (merge && merge.status !== 'failed') {
+		const checks = list(job.attempts).filter((attempt) => attempt.purpose === 'merge' && attempt.candidateRevision === merge.revision);
+		const facts = metadata([['Status', badge(merge.status || 'merged')], ['Branch', merge.branch], ['Merge commit', code(merge.revision)], ['Previous tip', code(merge.previousTip)], ['Candidate', code(merge.candidateRevision)], ['Mode', human(merge.mode)], ['Approved by', code(merge.mergedBy)], ['Merged at', merge.mergedAt ? time(merge.mergedAt) : 'Not yet'], ['Ticket note', merge.ticketNote || 'Not recorded']]);
+		const checkTable = checks.length ? table(['MERGE CHECK', 'STATUS', 'RESULT'], checks.map((attempt) => [attempt.checkKey, badge(attempt.status), attempt.checkStatus ? badge(attempt.checkStatus) : '—'])) : null;
+		return panel(merge.status === 'verifying' ? 'Merge being verified' : 'Merge', element('div', { class: 'panel-body' }, facts, checkTable), merge.status || 'merged');
+	}
+	const failure = merge ? element('div', { class: 'notice' }, 'The last merge failed and no branch moved: ' + merge.failure) : null;
+	if (!capabilities.includes('merge')) return element('div', {}, failure, element('div', { class: 'notice' }, 'The candidate is accepted but not merged. Someone with merge access must merge it before dependent work can be admitted.'));
 	if (job.acceptanceStatus !== 'valid') return element('div', { class: 'notice' }, 'Merging needs a valid current acceptance. Current acceptance: ' + human(job.acceptanceStatus) + '.');
 	const form = element('form', {}, field('Target branch', 'targetBranch', { placeholder: 'Branch checked out in the project repository', help: 'Leave empty to merge into the branch checked out in the project repository.' }));
-	const submit = element('button', { type: 'submit', class: 'primary' }, 'Merge accepted candidate');
-	form.append(element('p', { class: 'fine' }, 'The service rechecks the acceptance, merges the exact candidate with a commit that names this job and you, and aborts cleanly on a conflict.'), element('div', { class: 'form-actions' }, submit));
+	const submit = element('button', { type: 'submit', class: 'primary' }, merge ? 'Merge again' : 'Merge accepted candidate');
+	form.append(element('p', { class: 'fine' }, 'The service rechecks the acceptance and builds a merge commit that names this job and you. Independent workers run the required checks on that commit, and the branch moves only if every check passes.'), element('div', { class: 'form-actions' }, submit));
 	form.addEventListener('submit', (event) => { event.preventDefault(); run(async () => { await command('/jobs/' + encodeURIComponent(job.id) + '/merge', { jobId: job.id, ifVersion: job.version, candidateRevision: job.candidateRevision, targetBranch: (data(form).targetBranch || '').trim() }); await route(); }, submit); });
-	return panel('Merge into the project', element('div', { class: 'panel-body' }, metadata([['Accepted candidate', code(job.candidateRevision)], ['Acceptance record', code(job.acceptanceRecordPath)]]), element('hr'), form), 'accepted, not merged');
+	return panel('Merge into the project', element('div', { class: 'panel-body' }, failure, metadata([['Accepted candidate', code(job.candidateRevision)], ['Acceptance record', code(job.acceptanceRecordPath)]]), element('hr'), form), merge ? 'merge failed' : 'accepted, not merged');
 }
 async function adminPage(tab) {
 	if (!state.me.installationAdmin) throw new Error('Installation administration access is required.');

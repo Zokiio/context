@@ -89,7 +89,14 @@ func TestSoloModeRunsOnePersonsWholeFlow(t *testing.T) {
 		t.Fatalf("solo job = %s acceptance %s", job.Status, job.AcceptanceStatus)
 	}
 	job = call[factory.Job](t, operator, "POST", jobPath+"/merge", factory.MergeRequest{RequestID: "merge", JobID: job.ID, IfVersion: job.Version, CandidateRevision: job.CandidateRevision})
-	if job.Merge == nil || job.Merge.Mode != factory.MergeModeCheckout || job.Merge.TicketNote != "recorded" {
+	if job.Merge == nil || job.Merge.Status != factory.MergeStatusVerifying {
+		t.Fatalf("solo merge did not start verifying: %+v", job.Merge)
+	}
+	waitFor(t, 60*time.Second, func() bool {
+		job = call[factory.Job](t, operator, "GET", jobPath, nil)
+		return job.Merge.Status != factory.MergeStatusVerifying
+	}, func() string { return job.Merge.Status + "\n" + stderr.String() })
+	if job.Merge.Status != factory.MergeStatusMerged || job.Merge.Mode != factory.MergeModeCheckout || job.Merge.TicketNote != "recorded" {
 		t.Fatalf("solo merge = %+v", job.Merge)
 	}
 	if _, err := os.Stat(filepath.Join(repository, "waymark-fixture.txt")); err != nil {

@@ -568,7 +568,7 @@ func loadJob(ctx context.Context, q queryer, jobID JobID) (Job, error) {
 }
 
 func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error) {
-	rows, err := q.QueryContext(ctx, `SELECT id, job_id, stage, ordinal, check_key, dispatch_id, worker_id, native_run_id, workspace_path, input_revision, candidate_revision, status, outcome, check_status, lease_expires_at, last_heartbeat_at, started_at, finished_at, cancellation_requested, summary, terminal_receipt FROM attempts WHERE job_id=? ORDER BY ordinal, stage, check_key`, jobID)
+	rows, err := q.QueryContext(ctx, `SELECT id, job_id, stage, ordinal, check_key, dispatch_id, worker_id, native_run_id, workspace_path, input_revision, candidate_revision, status, outcome, check_status, lease_expires_at, last_heartbeat_at, started_at, finished_at, cancellation_requested, summary, terminal_receipt, purpose FROM attempts WHERE job_id=? ORDER BY ordinal, stage, check_key`, jobID)
 	if err != nil {
 		return nil, fault(CodeInternal, "read attempts", err)
 	}
@@ -576,7 +576,7 @@ func loadAttempts(ctx context.Context, q queryer, jobID JobID) ([]Attempt, error
 	for rows.Next() {
 		var attempt Attempt
 		var worker, lease, heartbeat, started, finished sql.NullString
-		if err := rows.Scan(&attempt.ID, &attempt.JobID, &attempt.Stage, &attempt.Ordinal, &attempt.CheckKey, &attempt.DispatchID, &worker, &attempt.NativeRunID, &attempt.WorkspacePath, &attempt.InputRevision, &attempt.CandidateRevision, &attempt.Status, &attempt.Outcome, &attempt.CheckStatus, &lease, &heartbeat, &started, &finished, &attempt.CancellationRequested, &attempt.Summary, &attempt.TerminalReceipt); err != nil {
+		if err := rows.Scan(&attempt.ID, &attempt.JobID, &attempt.Stage, &attempt.Ordinal, &attempt.CheckKey, &attempt.DispatchID, &worker, &attempt.NativeRunID, &attempt.WorkspacePath, &attempt.InputRevision, &attempt.CandidateRevision, &attempt.Status, &attempt.Outcome, &attempt.CheckStatus, &lease, &heartbeat, &started, &finished, &attempt.CancellationRequested, &attempt.Summary, &attempt.TerminalReceipt, &attempt.Purpose); err != nil {
 			rows.Close()
 			return nil, fault(CodeInternal, "decode attempt", err)
 		}
