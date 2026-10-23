@@ -7,3 +7,7 @@ This branch holds only these assets so the PR can show them; it is not meant to 
 ## `ui/`: the board and the two decisions
 
 Screenshots and metrics from a second trial on 2026-10-23, run against the rebuilt web UI in solo mode at 1440×900 and 2x scale, in light and dark. Claude Code did the agent work: `claude-sonnet-5-5` for refining and test writing, and Claude Code's default model, `claude-fable-5-1`, for builds. Kev 0.8B scored the criteria at `--decision-threshold 0.32`. Pad and Truncate were decided by a person through the board. Slugify ran under a saved ask policy and reached `main` without a human decision. `ui/metrics.json` is the project's measured metrics at the end.
+
+## `graph/` and `agents/`: follow-up PRs
+
+Screenshots of the work graph view and the Agents page, captured on 2026-10-23 from a read-only copy of the second trial's database at 2x scale. The agent instructions shown were set on that copy only.
