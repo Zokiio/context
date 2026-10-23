@@ -3,7 +3,7 @@ type: WorkItem
 id: 3b90e1e3-cc70-46c9-a116-8cc36d59382a
 title: Judge implementation disputes and show the next responsible agent
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 ## Spec
@@ -33,6 +33,10 @@ None.
 
 ## Acceptance
 
+- [Verified judge handoffs](../acceptances/03-judge-disputes.md)
+
 ## Comments
 
 - 2026-10-24: The user approved implementation of the judge design and specifically requested the decision and next agent in Run, in the same PR.
+
+- 2026-10-24: Implemented in the combined PR #55. Go 1.25 full tests, targeted race checks, vet, controlled browser regressions, and the real service/browser judge-to-test-author-to-replacement flow passed at `7bfae39227a2ddbf6cd463adbaf32127dd01cc04`. Native model providers were not invoked during verification.
