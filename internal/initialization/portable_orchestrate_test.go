@@ -81,7 +81,7 @@ func TestPortableOrchestrateInstallsClosedExplicitSkill(t *testing.T) {
 			t.Fatalf("installed %s skill has no description: %v", name, skill.Metadata)
 		}
 		if skill.Metadata["disable-model-invocation"] != true {
-			t.Fatalf("installed %s skill must disable model invocation for Claude Code: %v", name, skill.Metadata)
+			t.Fatalf("installed %s skill must disable model invocation for Claude Code and Copilot: %v", name, skill.Metadata)
 		}
 		var metadata struct {
 			Policy struct {
@@ -157,7 +157,7 @@ func TestPortableOrchestrateInstallsClosedExplicitSkill(t *testing.T) {
 }
 
 func TestPortableOrchestratePreservesExistingFilesAndSymlinks(t *testing.T) {
-	for _, name := range []string{"SKILL.md", "agents/openai.yaml"} {
+	for _, name := range []string{"SKILL.md", "COPILOT.md", "agents/openai.yaml"} {
 		for _, symlink := range []bool{false, true} {
 			t.Run(name+"/symlink="+map[bool]string{false: "false", true: "true"}[symlink], func(t *testing.T) {
 				request := portableRequest(t)

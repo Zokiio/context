@@ -74,4 +74,4 @@ If a receipt or service outcome is `unknown`, preserve the receipts and workspac
 
 Exit `0` reports a complete read. Exit `1` retains a partial report or incomplete evaluation; inspect its diagnostics and completeness fields. Exit `2` requires correcting the invocation or execution failure. Resolve missing required context before dependent work, while keeping unrelated gaps visible.
 
-All three readers are read-only. A complete report establishes neither permission to start nor acceptance. Follow [Record acceptance]({{.AcceptanceLink}}) for a completion decision. Invoke `$orchestrate` only when the user explicitly requests checkpoint orchestration or approves a plan that invokes it.
+All three readers are read-only. A complete report establishes neither permission to start nor acceptance. Follow [Record acceptance]({{.AcceptanceLink}}) for a completion decision. Invoke `$orchestrate`, or `/orchestrate` in Copilot, only when the user explicitly requests checkpoint orchestration or approves a plan that invokes it.
