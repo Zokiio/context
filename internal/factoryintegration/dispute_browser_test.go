@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -47,7 +48,27 @@ func TestDisputeBrowserProcess(t *testing.T) {
 				err = json.Unmarshal(raw, &input)
 				if err == nil {
 					time.Sleep(4 * time.Second)
-					err = json.NewEncoder(os.Stdout).Encode(factory.JudgeOutput{Decision: factory.JudgeDecision{Kind: factory.DisputeReviseTests, Rationale: "The protected expectation contradicts the approved requirement for actual marker content.", EvidenceRefs: []string{"criterion:1", "tests/marker.expect", string(input.Job.ID)}, PreservesIntent: true, WeakensAcceptance: false, Directive: "Change tests/marker.expect to require nonempty content. Keep the approved requirement unchanged."}, Run: factory.RefinerRun{Model: "offline-dispute-judge", Turns: 1}})
+					decision := factory.JudgeDecision{Kind: factory.DisputeReviseTests, Rationale: "The protected expectation contradicts the approved requirement for actual marker content.", EvidenceRefs: []string{"criterion:1", "tests/marker.expect", string(input.Job.ID)}, PreservesIntent: true, WeakensAcceptance: false, Directive: "Change tests/marker.expect to require nonempty content. Keep the approved requirement unchanged."}
+					if proposal := input.ProposedTests; proposal != nil {
+						if proposal.Commit == "" || !strings.Contains(proposal.Patch, "\n-empty") {
+							err = fmt.Errorf("proposal review lacks a pinned cumulative patch against the original tests")
+						}
+						decision.EvidenceRefs = append(decision.EvidenceRefs, proposal.Commit)
+						switch {
+						case strings.Contains(proposal.Patch, "\n+present"):
+							decision.Rationale = "The first proposal checks that the marker exists, but still permits empty content."
+							decision.Directive = "Require nonempty marker content, not only presence. Preserve the existing criterion and valid coverage."
+						case strings.Contains(proposal.Patch, "\n+nonempty"):
+							decision.Kind = factory.DisputeAcceptTests
+							decision.Rationale = "The improved proposal now checks actual marker content and preserves the approved requirement."
+							decision.Directive = "Build against this reviewed test revision and run fresh independent verification."
+						default:
+							err = fmt.Errorf("judge did not receive the exact proposal patch: %+v", proposal)
+						}
+					}
+					if err == nil {
+						err = json.NewEncoder(os.Stdout).Encode(factory.JudgeOutput{Decision: decision, Run: factory.RefinerRun{Model: "offline-dispute-judge", Turns: 1}})
+					}
 				}
 			case "dispute-tests":
 				var input factory.ExpectationInput
@@ -55,12 +76,26 @@ func TestDisputeBrowserProcess(t *testing.T) {
 				if err == nil && input.Dispute == nil {
 					err = fmt.Errorf("fixture expects a judge-directed test revision")
 				}
-				if err == nil {
-					time.Sleep(4 * time.Second)
-					err = os.WriteFile(filepath.Join("tests", "marker.expect"), []byte("nonempty\n"), 0600)
+				content := "present\n"
+				notes := "The first proposal checks marker presence but does not yet require content."
+				if err == nil && input.PreviousProposal != nil {
+					if len(input.Dispute.TestReviews) != 1 || input.Dispute.TestReviews[0].Decision == nil || !strings.Contains(input.Dispute.TestReviews[0].Decision.Directive, "not only presence") {
+						err = fmt.Errorf("improvement lacks the judge's specific feedback")
+					}
+					if input.BaseRevision != input.PreviousProposal.Commit {
+						err = fmt.Errorf("improvement did not start from the previous proposal")
+					} else if previous, readErr := os.ReadFile(filepath.Join("tests", "marker.expect")); readErr != nil || string(previous) != "present\n" {
+						err = fmt.Errorf("previous test proposal missing from improvement workspace: %q, %v", previous, readErr)
+					}
+					content = "nonempty\n"
+					notes = "Improved the protected expectation to require nonempty marker content."
 				}
 				if err == nil {
-					err = json.NewEncoder(os.Stdout).Encode(factory.ExpectationOutput{Notes: "Corrected the protected expectation to require nonempty marker content.", Coverage: []factory.CriterionCoverage{{Criterion: 1, Tests: []string{"tests/marker.expect"}}}, Run: factory.RefinerRun{Model: "offline-dispute-test-author", Turns: 1}})
+					time.Sleep(4 * time.Second)
+					err = os.WriteFile(filepath.Join("tests", "marker.expect"), []byte(content), 0600)
+				}
+				if err == nil {
+					err = json.NewEncoder(os.Stdout).Encode(factory.ExpectationOutput{Notes: notes, Coverage: []factory.CriterionCoverage{{Criterion: 1, Tests: []string{"tests/marker.expect"}}}, Run: factory.RefinerRun{Model: "offline-dispute-test-author", Turns: 1}})
 				}
 			}
 		}

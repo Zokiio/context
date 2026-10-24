@@ -3,9 +3,12 @@ package factory
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 )
+
+const maxDisputeTestProposals = 3
 
 func (s *Service) prepareDisputeTests(ctx context.Context, tx *sql.Tx, d *Dispute, job Job, project Project, actor UserID, now time.Time) (*ExpectationInput, error) {
 	if !s.canWriteExpectations(project) {
@@ -21,12 +24,29 @@ func (s *Service) prepareDisputeTests(ctx context.Context, tx *sql.Tx, d *Disput
 	if err != nil {
 		return nil, err
 	}
+	if err = countDisputeProposals(ctx, tx, d); err != nil {
+		return nil, err
+	}
+	if d.TestProposalCount >= maxDisputeTestProposals {
+		return nil, fault(CodeConflict, "The judge has reached the three-proposal limit; a person must decide.", nil)
+	}
+	var previous *Expectation
+	base := job.Admission.BaseRevision
+	if d.ExpectationID != "" {
+		proposal, err := loadExpectation(ctx, tx, d.ExpectationID)
+		if err != nil {
+			return nil, err
+		}
+		if proposal.DisputeID == d.ID && proposal.Status == ExpectationProposed && proposal.Commit != "" {
+			previous, base = &proposal, proposal.Commit
+		}
+	}
 	id, err := newID("exp_")
 	if err != nil {
 		return nil, err
 	}
-	expectation := Expectation{ID: ID(id), DisputeID: d.ID, ProjectID: d.ProjectID, WorkItemID: d.WorkItemID, Title: d.Input.Summary, TicketPath: job.Admission.TicketPath, CriteriaSHA256: job.Admission.CriteriaSHA256, Status: ExpectationRunning, RequestedBy: actor, BaseRevision: job.Admission.BaseRevision, Criteria: criteria, Instructions: project.Policy.Instructions.TestAuthor, CreatedAt: now, UpdatedAt: now}
-	input := ExpectationInput{ExpectationID: expectation.ID, WorkItemID: d.WorkItemID, Title: expectation.Title, TicketPath: expectation.TicketPath, Criteria: criteria, Context: job.Admission.Sources, ProtectedPaths: job.Admission.ProtectedPaths, BaseRevision: expectation.BaseRevision, Instructions: expectation.Instructions}
+	expectation := Expectation{ID: ID(id), DisputeID: d.ID, ProjectID: d.ProjectID, WorkItemID: d.WorkItemID, Title: d.Input.Summary, TicketPath: job.Admission.TicketPath, CriteriaSHA256: job.Admission.CriteriaSHA256, Status: ExpectationRunning, RequestedBy: actor, BaseRevision: base, Criteria: criteria, Instructions: project.Policy.Instructions.TestAuthor, CreatedAt: now, UpdatedAt: now}
+	input := ExpectationInput{PreviousProposal: previous, ExpectationID: expectation.ID, WorkItemID: d.WorkItemID, Title: expectation.Title, TicketPath: expectation.TicketPath, Criteria: criteria, Context: job.Admission.Sources, ProtectedPaths: job.Admission.ProtectedPaths, BaseRevision: expectation.BaseRevision, Instructions: expectation.Instructions}
 	for _, source := range job.Admission.Sources {
 		if source.Path == job.Admission.TicketPath {
 			input.Ticket = source.Text
@@ -42,6 +62,7 @@ func (s *Service) prepareDisputeTests(ctx context.Context, tx *sql.Tx, d *Disput
 	if err = saveExpectation(ctx, tx, expectation, true); err != nil {
 		return nil, err
 	}
+	d.TestProposalCount++
 	d.Status, d.NextOwner, d.ExpectationID = "authoring_tests", "test_author", expectation.ID
 	snapshot := *d
 	input.Dispute = &snapshot
@@ -122,47 +143,89 @@ func (s *Service) finishDisputeTests(ctx context.Context, tx *sql.Tx, expectatio
 	}
 	d.Version++
 	d.UpdatedAt = now
-	job, project, err := s.disputeRouteReady(ctx, tx, d)
+	_, _, err = s.disputeRouteReady(ctx, tx, d)
 	if err != nil {
 		d.Status, d.NextOwner, d.Error = "stopped", "none", err.Error()
 	} else if expectation.Status != ExpectationProposed {
 		d.Status, d.NextOwner, d.Error = "needs_human", "you", expectation.Error
-	} else {
-		d.Status, d.NextOwner = "tests_proposed", "you"
-		// Existing deliberate delegation is narrower than a judge's recommendation.
-		// Intent changes, weakening, author concerns, and repeated cycles never auto-accept.
-		var count int
-		if err = tx.QueryRowContext(ctx, `SELECT count(*) FROM disputes WHERE lineage_id=?`, d.LineageID).Scan(&count); err != nil {
-			return err
-		}
-		if s.state.pilot && count == 1 && project.Policy.Ask.SetBy != nil && project.Policy.Ask.Autopilot && project.Policy.Ask.BeforeBuild == AskBeforeNever && d.Decision != nil && d.Decision.PreservesIntent && !d.Decision.WeakensAcceptance && len(expectation.Concerns) == 0 {
-			current, e := authorizeProject(ctx, tx, Principal{UserID: *project.Policy.Ask.SetBy}, project.ID, CapabilityCoordinate)
-			if e == nil {
-				if _, e = tx.ExecContext(ctx, "SAVEPOINT dispute_replace"); e != nil {
-					return e
-				}
-				delegated := withDecision(ctx, decisionNote{ID: "dispute/" + string(d.ID) + "/tests", Delegated: "autopilot: the project's ask policy permits this scope-preserving test revision"})
-				e = s.replaceDisputedJob(delegated, tx, &d, job, project, current.UserID, now)
-				if e == nil {
-					d.ResolvedBy, d.Resolution, d.Rationale = &current.UserID, "accept_tests", "Delegated by the project's ask policy"
-				}
-				if e != nil {
-					_, _ = tx.ExecContext(ctx, "ROLLBACK TO dispute_replace")
-				}
-				if _, releaseErr := tx.ExecContext(ctx, "RELEASE dispute_replace"); releaseErr != nil {
-					return releaseErr
-				}
-			}
-			if e != nil {
-				d.Status, d.NextOwner, d.Error = "needs_human", "you", e.Error()
-			}
-		}
+	} else if err = s.prepareDisputeReview(ctx, tx, &d, now); err != nil {
+		d.Status, d.NextOwner, d.Error = "needs_human", "you", err.Error()
 	}
 	if err = saveDispute(ctx, tx, d, false); err != nil {
 		return err
 	}
 	_, err = appendEvent(ctx, tx, d.JobID, nil, "dispute_tests_ready", map[string]any{"disputeId": d.ID, "expectationId": expectation.ID, "status": d.Status, "nextOwner": d.NextOwner, "replacementJobId": d.ReplacementJobID}, now)
 	return err
+}
+
+func countDisputeProposals(ctx context.Context, q queryer, d *Dispute) error {
+	// Older pending proposals predate the explicit count. The retained authored
+	// records, including failed attempts, are the durable bounded-work ledger.
+	rows, err := q.QueryContext(ctx, `SELECT data_json FROM expectations WHERE project_id=? AND work_item_id=?`, d.ProjectID, d.WorkItemID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	count := 0
+	for rows.Next() {
+		var raw string
+		if err = rows.Scan(&raw); err != nil {
+			return err
+		}
+		var e Expectation
+		if err = json.Unmarshal([]byte(raw), &e); err != nil {
+			return err
+		}
+		if e.DisputeID == d.ID {
+			count++
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return err
+	}
+	if count > d.TestProposalCount {
+		d.TestProposalCount = count
+	}
+	return nil
+}
+
+func (s *Service) prepareDisputeReview(ctx context.Context, tx *sql.Tx, d *Dispute, now time.Time) error {
+	if len(s.state.judge) == 0 {
+		return fault(CodeNotReady, "No independent judge is configured.", nil)
+	}
+	job, project, err := s.disputeRouteReady(ctx, tx, *d)
+	if err != nil {
+		return err
+	}
+	if !now.Before(job.Admission.Deadline) {
+		return fault(CodeDeadline, "The original run deadline has elapsed.", nil)
+	}
+	if err = validateAdmissionFresh(ctx, tx, project.ID, job.WorkItemID, job.Admission); err != nil {
+		return err
+	}
+	actor := job.CoordinatorID
+	if d.Resolution == "review_tests" && d.ResolvedBy != nil {
+		actor = *d.ResolvedBy
+	}
+	if _, err = authorizeProject(ctx, tx, Principal{UserID: actor}, project.ID, CapabilityCoordinate); err != nil {
+		return err
+	}
+	proposal, err := loadExpectation(ctx, tx, d.ExpectationID)
+	if err != nil {
+		return err
+	}
+	if proposal.DisputeID != d.ID || proposal.Status != ExpectationProposed || proposal.Commit == "" {
+		return fault(CodeConflict, "The test proposal is not ready for review.", nil)
+	}
+	if err = countDisputeProposals(ctx, tx, d); err != nil {
+		return err
+	}
+	if d.TestProposalCount > maxDisputeTestProposals {
+		return fault(CodeConflict, "The three-proposal limit requires a person to decide.", nil)
+	}
+	d.TestReviews = append(d.TestReviews, DisputeTestReview{ExpectationID: proposal.ID, Commit: proposal.Commit, Round: d.TestProposalCount, NextOwner: "judge", CreatedAt: now})
+	d.Status, d.NextOwner, d.Error = "reviewing_tests", "judge", ""
+	return nil
 }
 
 func (s *Service) finishDisputedAttempt(ctx context.Context, tx *sql.Tx, actor Principal, attempt attemptRecord, request WorkerReportRequest, now time.Time) error {

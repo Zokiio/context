@@ -148,31 +148,68 @@ func (s *Service) WorkItemRun(ctx context.Context, actor Principal, projectID Pr
 		repairStep(job, card),
 	}
 	if in.dispute != nil {
-		d := in.dispute
-		step := RunStep{Key: "judge", Kind: "agent", Title: "Judge the dispute", Status: RunDone, Summary: "Decision recorded"}
-		switch d.Status {
-		case "judging":
-			step.Status, step.Summary = RunRunning, "Independent judge reviewing"
-		case "authoring_tests":
-			step.Status, step.Summary = RunRunning, "Decision sent to the test author"
-		case "needs_human", "tests_proposed":
-			step.Status, step.Summary = RunNeedsYou, "Waiting for your decision"
-		case "stopped":
-			step.Status, step.Summary = RunSkipped, "Dispute stopped"
-		}
-		if d.Decision != nil {
-			step.Notes = append(step.Notes, d.Decision.Rationale, d.Decision.Directive)
-		}
-		step.Notes = append(step.Notes, "Next owner: "+d.NextOwner)
-		if d.Error != "" {
-			step.Notes = append(step.Notes, d.Error)
-		}
-		if d.Run != nil {
-			step.Model, step.Turns, step.CostUSD = d.Run.Model, d.Run.Turns, d.Run.CostUSD
-		}
-		run.Steps = append(run.Steps, step)
+		run.Steps = append(run.Steps, judgeStep(in.dispute))
 	}
 	return run, nil
+}
+
+func judgeStep(d *Dispute) RunStep {
+	step := RunStep{Key: "judge", Kind: "agent", Title: "Judge the dispute", Status: RunDone, Summary: "Decision recorded"}
+	if len(d.TestReviews) > 0 || d.Status == "reviewing_tests" {
+		step.Title = "Review the test proposal"
+	}
+	addRun := func(run *RefinerRun) {
+		if run != nil {
+			step.Model = run.Model
+			step.Turns += run.Turns
+			step.CostUSD += run.CostUSD
+		}
+	}
+	if d.Decision != nil {
+		step.Notes = append(step.Notes, "Original dispute verdict: "+d.Decision.Rationale, d.Decision.Directive)
+	}
+	addRun(d.Run)
+	for _, review := range d.TestReviews {
+		step.Notes = append(step.Notes, fmt.Sprintf("Test proposal review %d · revision %s", review.Round, review.Commit))
+		if review.Decision != nil {
+			step.Notes = append(step.Notes, review.Decision.Rationale, review.Decision.Directive)
+		}
+		if review.Error != "" {
+			step.Notes = append(step.Notes, review.Error)
+		}
+		addRun(review.Run)
+	}
+	switch d.Status {
+	case "judging":
+		step.Status, step.Summary = RunRunning, "Independent judge reviewing"
+	case "reviewing_tests":
+		step.Status, step.Summary = RunRunning, "Independent judge reviewing the test proposal"
+	case "authoring_tests":
+		step.Status, step.Summary = RunRunning, "Decision sent to the test author"
+		if len(d.TestReviews) > 0 {
+			step.Summary = "Tests returned to the author for improvement"
+		}
+	case "tests_proposed":
+		step.Status, step.Summary = RunNeedsYou, "Test proposal ready for judge review"
+	case "needs_human":
+		step.Status, step.Summary = RunNeedsYou, "Waiting for your decision"
+	case "routing":
+		step.Status, step.Summary = RunRunning, "Controller arranging the handoff"
+	case "resolved":
+		if len(d.TestReviews) > 0 && d.NextOwner == "implementer" {
+			latest := d.TestReviews[len(d.TestReviews)-1]
+			if latest.Decision != nil && latest.Decision.Kind == DisputeAcceptTests {
+				step.Summary = "Tests accepted; handed to the builder"
+			}
+		}
+	case "stopped":
+		step.Status, step.Summary = RunSkipped, "Dispute stopped"
+	}
+	step.Notes = append(step.Notes, "Next owner: "+d.NextOwner)
+	if d.Error != "" {
+		step.Notes = append(step.Notes, d.Error)
+	}
+	return step
 }
 
 func sharpenStep(in boardInputs, refinements []Refinement) RunStep {

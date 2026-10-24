@@ -122,13 +122,18 @@ func ExpectationPrompt(input factory.ExpectationInput) string {
 	b.WriteString("- Finish with the JSON report: notes, a short summary for the person who reads your tests; coverage, the names of the tests that check each criterion, using the criterion numbers below, with an empty list for a criterion no test can check; and concerns, each contradiction or problem you found in the criteria.\n\n")
 	b.WriteString(projectInstructions(input.Instructions))
 	if input.Dispute != nil {
-		b.WriteString("## Judge-directed revision\n\nRevise only the protected tests identified by this independent decision, against the captured criteria and base revision. Preserve valid existing coverage; do not weaken assertions to fit the implementation. Do not change production code or requirements. If the directive needs changed intent, weaker acceptance, or unsupported assumptions, leave the affected tests unchanged and report concerns for a person. The old suite and run remain retained; your patch needs approval under project policy.\n\n")
+		b.WriteString("## Judge-directed revision\n\nRevise only the protected tests identified by this independent decision, against the captured criteria and base revision. Preserve valid existing coverage; do not weaken assertions to fit the implementation. Do not change production code or requirements. If the directive needs changed intent, weaker acceptance, or unsupported assumptions, leave the affected tests unchanged and report concerns for a person. The old suite and run remain retained. The judge will review your exact patch, coverage, and concerns before sending it to the implementer or returning it for improvement.\n\n")
 		decision, _ := json.MarshalIndent(input.Dispute, "", "  ")
 		b.Write(decision)
 		if input.OriginalTests != nil {
 			original, _ := json.MarshalIndent(input.OriginalTests, "", "  ")
 			b.WriteString("\n\n### Original test suite and coverage\n\n")
 			b.Write(original)
+		}
+		if input.PreviousProposal != nil {
+			previous, _ := json.MarshalIndent(input.PreviousProposal, "", "  ")
+			b.WriteString("\n\n### Improve the previous proposal\n\nYour checkout starts at this previous proposal's commit. Address the latest test review's directive in Dispute.testReviews. Keep the earlier changes that were correct, and report how you addressed the feedback.\n\n")
+			b.Write(previous)
 		}
 		fmt.Fprintf(&b, "\n\nRevision base: %s\n\n", input.BaseRevision)
 	}

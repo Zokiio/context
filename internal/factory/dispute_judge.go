@@ -23,9 +23,10 @@ func (s *Service) registerDisputeCancel(id ID, cancel context.CancelFunc) func()
 func (s *Service) runDisputeJudge(id ID) {
 	defer s.state.refiners.Done()
 	d, err := loadDispute(s.state.background, s.state.db, id)
-	if err != nil || d.Status != "judging" {
+	if err != nil || (d.Status != "judging" && d.Status != "reviewing_tests") {
 		return
 	}
+	reviewing := d.Status == "reviewing_tests"
 	job, err := loadJob(s.state.background, s.state.db, d.JobID)
 	if err != nil {
 		return
@@ -37,7 +38,7 @@ func (s *Service) runDisputeJudge(id ID) {
 	ctx, cancel := context.WithDeadline(s.state.background, deadline)
 	defer cancel()
 	defer s.registerDisputeCancel(id, cancel)()
-	if latest, err := loadDispute(ctx, s.state.db, id); err != nil || latest.Status != "judging" || latest.Version != d.Version {
+	if latest, err := loadDispute(ctx, s.state.db, id); err != nil || latest.Status != d.Status || latest.Version != d.Version {
 		return
 	}
 	project, err := readProject(ctx, s.state.db, d.ProjectID)
@@ -51,9 +52,25 @@ func (s *Service) runDisputeJudge(id ID) {
 		input.TestSources, err = s.disputeTestSources(ctx, project, job.Admission)
 	}
 	if err == nil && job.CandidateRevision != "" {
-		input.CandidatePatch, err = s.git(ctx, project.RepositoryPath, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", job.Admission.BaseRevision, job.CandidateRevision, "--")
+		input.CandidatePatch, err = s.disputePatch(ctx, project.RepositoryPath, job.Admission.BaseRevision, job.CandidateRevision)
 		if len(input.CandidatePatch) > maxExpectationPatch {
 			err = fmt.Errorf("candidate patch exceeds the judge input limit; human review required")
+		}
+	}
+	if err == nil && reviewing {
+		var proposal Expectation
+		proposal, err = loadExpectation(ctx, s.state.db, d.ExpectationID)
+		if err == nil && (len(d.TestReviews) == 0 || proposal.Status != ExpectationProposed || proposal.DisputeID != d.ID || d.TestReviews[len(d.TestReviews)-1].ExpectationID != proposal.ID || d.TestReviews[len(d.TestReviews)-1].Commit != proposal.Commit || proposal.CriteriaSHA256 != job.Admission.CriteriaSHA256) {
+			err = fmt.Errorf("the test proposal changed before review")
+		}
+		if err == nil {
+			// Recompute the complete, bounded diff from immutable Git objects;
+			// legacy proposals may have stored only their incremental patch.
+			proposal.Patch, err = s.disputePatch(ctx, project.RepositoryPath, job.Admission.BaseRevision, proposal.Commit)
+			if len(proposal.Patch) > maxExpectationPatch {
+				err = fmt.Errorf("proposed test patch exceeds the judge input limit")
+			}
+			input.ProposedTests = &proposal
 		}
 	}
 	var output JudgeOutput
@@ -69,21 +86,39 @@ func (s *Service) runDisputeJudge(id ID) {
 	}
 	defer tx.Rollback()
 	current, e := loadDispute(context.Background(), tx, id)
-	if e != nil || current.Status != "judging" || current.Version != d.Version {
+	if e != nil || current.Status != d.Status || current.Version != d.Version {
 		return
 	}
 	now := s.state.now().UTC()
 	current.Version++
 	current.UpdatedAt = now
-	current.Log = log
+	current.Error = ""
+	if reviewing {
+		review := &current.TestReviews[len(current.TestReviews)-1]
+		review.Log = log
+		if err == nil {
+			review.Decision, review.Run = &output.Decision, &output.Run
+		}
+	} else {
+		current.Log = log
+		if err == nil {
+			current.Decision, current.Run = &output.Decision, &output.Run
+		}
+	}
 	job, project, e = s.disputeRouteReady(context.Background(), tx, current)
+	if e == nil && reviewing {
+		proposal, proposalErr := loadExpectation(context.Background(), tx, current.ExpectationID)
+		review := current.TestReviews[len(current.TestReviews)-1]
+		if proposalErr != nil || proposal.ID != review.ExpectationID || proposal.Commit != review.Commit || proposal.Status != ExpectationProposed || proposal.CriteriaSHA256 != job.Admission.CriteriaSHA256 {
+			err = fmt.Errorf("the exact test proposal is no longer available for this judgment")
+		}
+	}
 	var authorInput *ExpectationInput
 	if e != nil {
 		current.Status, current.NextOwner, current.Error = "stopped", "none", e.Error()
 	} else if err != nil {
 		current.Status, current.NextOwner, current.Error = "needs_human", "you", truncateRunes(err.Error(), maxRefinementRunes)
 	} else {
-		current.Decision, current.Run = &output.Decision, &output.Run
 		decision := output.Decision
 		var cycles int
 		if e = tx.QueryRowContext(context.Background(), `SELECT count(*) FROM disputes WHERE lineage_id=?`, current.LineageID).Scan(&cycles); e != nil {
@@ -92,36 +127,55 @@ func (s *Service) runDisputeJudge(id ID) {
 		if !decision.PreservesIntent || decision.WeakensAcceptance || decision.Kind == DisputeNeedsHuman || cycles > 1 {
 			current.Status, current.NextOwner = "needs_human", "you"
 		} else {
-			// Routing is still attributed to the original coordinator and rechecks their
-			// current access. A worker's report never grants coordination authority.
-			coordinator, e := authorizeProject(context.Background(), tx, Principal{UserID: job.CoordinatorID}, project.ID, CapabilityCoordinate)
-			if e == nil {
+			// This continuation uses the currently authorized run owner, or the
+			// person who explicitly requested this proposal review. It does not
+			// inherit broader build/review delegation from the project's policy.
+			actor := job.CoordinatorID
+			if current.Resolution == "review_tests" && current.ResolvedBy != nil {
+				actor = *current.ResolvedBy
+			}
+			coordinator, routeErr := authorizeProject(context.Background(), tx, Principal{UserID: actor}, project.ID, CapabilityCoordinate)
+			if routeErr == nil {
 				if _, e = tx.ExecContext(context.Background(), "SAVEPOINT dispute_route"); e != nil {
 					return
 				}
+				before := current
 				switch decision.Kind {
 				case DisputeRepair:
-					e = s.repairDispute(context.Background(), tx, &current, job, now)
+					routeErr = s.repairDispute(context.Background(), tx, &current, job, now)
 				case DisputeReviseTests, DisputeAddTests:
-					authorInput, e = s.prepareDisputeTests(context.Background(), tx, &current, job, project, coordinator.UserID, now)
+					authorInput, routeErr = s.prepareDisputeTests(context.Background(), tx, &current, job, project, coordinator.UserID, now)
+				case DisputeAcceptTests:
+					delegated := withDecision(context.Background(), decisionNote{ID: fmt.Sprintf("dispute/%s/tests/%s", current.ID, current.ExpectationID), Delegated: "independent judge approved this scope-preserving test correction"})
+					routeErr = s.replaceDisputedJob(delegated, tx, &current, job, project, coordinator.UserID, now)
+					if routeErr == nil {
+						current.ResolvedBy, current.Resolution, current.Rationale = &coordinator.UserID, "accept_tests", decision.Rationale
+						current.Delegated = "independent judge approved this scope-preserving test correction"
+					}
 				}
-				if e != nil {
+				if routeErr != nil {
 					_, _ = tx.ExecContext(context.Background(), "ROLLBACK TO dispute_route")
-					authorInput = nil
+					current, authorInput = before, nil
 				}
 				if _, releaseErr := tx.ExecContext(context.Background(), "RELEASE dispute_route"); releaseErr != nil {
 					return
 				}
 			}
-			if e != nil {
-				current.Status, current.NextOwner, current.Error = "needs_human", "you", e.Error()
+			if routeErr != nil {
+				current.Status, current.NextOwner, current.Error = "needs_human", "you", routeErr.Error()
 			}
 		}
+	}
+	event := "dispute_judged"
+	if reviewing {
+		review := &current.TestReviews[len(current.TestReviews)-1]
+		review.NextOwner, review.Error = current.NextOwner, current.Error
+		event = "dispute_tests_reviewed"
 	}
 	if saveDispute(context.Background(), tx, current, false) != nil {
 		return
 	}
-	if _, e = appendEvent(context.Background(), tx, current.JobID, nil, "dispute_judged", map[string]any{"disputeId": id, "decision": current.Decision, "nextOwner": current.NextOwner, "error": current.Error}, now); e != nil {
+	if _, e = appendEvent(context.Background(), tx, current.JobID, nil, event, map[string]any{"disputeId": id, "expectationId": d.ExpectationID, "decision": output.Decision, "nextOwner": current.NextOwner, "error": current.Error}, now); e != nil {
 		return
 	}
 	if tx.Commit() != nil {
@@ -172,9 +226,12 @@ func (s *Service) execDisputeJudge(ctx context.Context, directory string, input 
 		return output, log.String(), fmt.Errorf("judge must explicitly assess intent preservation and weakened acceptance")
 	}
 	switch output.Decision.Kind {
-	case DisputeRepair, DisputeReviseTests, DisputeAddTests, DisputeNeedsHuman:
+	case DisputeRepair, DisputeReviseTests, DisputeAddTests, DisputeNeedsHuman, DisputeAcceptTests:
 	default:
 		return output, log.String(), fmt.Errorf("unknown judge decision")
+	}
+	if (output.Decision.Kind == DisputeAcceptTests && input.ProposedTests == nil) || (output.Decision.Kind == DisputeRepair && input.ProposedTests != nil) {
+		return output, log.String(), fmt.Errorf("judge decision does not apply to this review stage")
 	}
 	if strings.TrimSpace(output.Decision.Rationale) == "" || len(output.Decision.Rationale) > 16000 || len(output.Decision.Directive) > 16000 || len(output.Decision.EvidenceRefs) == 0 || len(output.Decision.EvidenceRefs) > 20 {
 		return output, log.String(), fmt.Errorf("judge decision needs bounded rationale and evidence")
@@ -188,6 +245,21 @@ func (s *Service) execDisputeJudge(ctx context.Context, directory string, input 
 		}
 	}
 	return output, log.String(), nil
+}
+
+// disputePatch preserves whitespace and rejects incomplete evidence instead of
+// silently presenting a truncated patch for judgment.
+func (s *Service) disputePatch(ctx context.Context, directory, base, revision string) (string, error) {
+	command := exec.CommandContext(ctx, s.state.gitBinary, "-C", directory, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", base, revision, "--")
+	output := &limitedBuffer{limit: maxExpectationPatch}
+	command.Stdout = output
+	if err := command.Run(); err != nil {
+		return "", err
+	}
+	if output.truncated {
+		return "", fmt.Errorf("patch exceeds the judge input limit; human review required")
+	}
+	return output.String(), nil
 }
 
 func (s *Service) disputeTestSources(ctx context.Context, project Project, admission Admission) ([]ContextSource, error) {
@@ -254,6 +326,10 @@ func stopDisputes(ctx context.Context, tx *sql.Tx, jobID JobID, now time.Time) (
 	ids := []ID{}
 	for _, d := range records {
 		d.Version++
+		if d.Status == "reviewing_tests" && len(d.TestReviews) > 0 {
+			review := &d.TestReviews[len(d.TestReviews)-1]
+			review.NextOwner, review.Error = "none", "Stopped during test proposal review."
+		}
 		d.Status, d.NextOwner, d.UpdatedAt = "stopped", "none", now
 		if err = saveDispute(ctx, tx, d, false); err != nil {
 			return nil, err

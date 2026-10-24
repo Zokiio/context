@@ -45,12 +45,14 @@ func TestDisputeCommandsPreserveEvidenceAndVersion(t *testing.T) {
 	if report.RequestID != "report-1" || report.JobID != "job-1" || report.IfVersion != 7 || !reflect.DeepEqual(report.Dispute.CriterionRefs, []int{1, 3}) || !reflect.DeepEqual(report.Dispute.TestPaths, []string{"test,one_test.go"}) || !reflect.DeepEqual(report.Dispute.EvidenceRefs, []string{"command-1.log:22", "test,one_test.go:40"}) {
 		t.Fatalf("report changed: %+v", report)
 	}
-	out, err = run(t, "--url", s.URL, "--token-file", token, "disputes", "resolve", "--id", "dispute-1", "--if-version", "9", "--request-id", "resolve-1", "--action", "accept_tests", "--rationale", "The corrected test preserves the criterion")
-	if err == nil || out != "" || requests != 2 {
-		t.Fatalf("stale resolution retried or succeeded: %q %v, requests=%d", out, err, requests)
-	}
-	if resolve.RequestID != "resolve-1" || resolve.DisputeID != "dispute-1" || resolve.IfVersion != 9 || resolve.Action != "accept_tests" {
-		t.Fatalf("resolution changed: %+v", resolve)
+	for i, action := range []string{"accept_tests", "review_tests"} {
+		out, err = run(t, "--url", s.URL, "--token-file", token, "disputes", "resolve", "--id", "dispute-1", "--if-version", "9", "--request-id", action+"-1", "--action", action, "--rationale", "Review the corrected test against the criterion")
+		if err == nil || out != "" || requests != i+2 {
+			t.Fatalf("stale resolution retried or succeeded: %q %v, requests=%d", out, err, requests)
+		}
+		if resolve.RequestID != action+"-1" || resolve.DisputeID != "dispute-1" || resolve.IfVersion != 9 || resolve.Action != action {
+			t.Fatalf("resolution changed: %+v", resolve)
+		}
 	}
 }
 

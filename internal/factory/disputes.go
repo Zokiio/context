@@ -63,14 +63,24 @@ func (s *Service) disputeActions(ctx context.Context, q queryer, actor Principal
 	switch d.Status {
 	case "needs_human":
 		d.AvailableActions = []string{"repair_implementation", "return_to_planning", "dismiss"}
-		if len(s.state.judge) > 0 {
+		if d.ExpectationID != "" {
+			if proposal, err := loadExpectation(ctx, q, d.ExpectationID); err == nil && proposal.Status == ExpectationProposed {
+				d.AvailableActions = append(d.AvailableActions, "accept_tests")
+				if len(s.state.judge) > 0 {
+					d.AvailableActions = append(d.AvailableActions, "review_tests")
+				}
+			}
+		} else if len(s.state.judge) > 0 {
 			d.AvailableActions = append(d.AvailableActions, "retry_judge")
 		}
-		if len(s.state.expectationAuthor) > 0 {
+		if len(s.state.expectationAuthor) > 0 && d.TestProposalCount < maxDisputeTestProposals {
 			d.AvailableActions = append(d.AvailableActions, "revise_tests", "add_tests")
 		}
 	case "tests_proposed":
 		d.AvailableActions = []string{"accept_tests", "return_to_planning", "dismiss"}
+		if len(s.state.judge) > 0 {
+			d.AvailableActions = append(d.AvailableActions, "review_tests")
+		}
 	}
 	return d
 }
@@ -207,7 +217,7 @@ func (s *Service) ReportDispute(ctx context.Context, actor Principal, r ReportDi
 	return d, nil
 }
 func (s *Service) launchJudge(d Dispute) {
-	if d.Status == "judging" {
+	if d.Status == "judging" || d.Status == "reviewing_tests" {
 		s.state.refiners.Add(1)
 		go s.runDisputeJudge(d.ID)
 	}
@@ -255,11 +265,13 @@ func (s *Service) ResolveDispute(ctx context.Context, actor Principal, r Resolve
 	}
 	now := s.state.now().UTC()
 	d.ResolvedBy, d.Resolution, d.Rationale = &current.UserID, r.Action, r.Rationale
-	d.Error = ""
+	d.Error, d.Delegated = "", ""
 	var input *ExpectationInput
 	switch r.Action {
 	case "retry_judge":
 		d.Status, d.NextOwner = "judging", "judge"
+	case "review_tests":
+		err = s.prepareDisputeReview(ctx, tx, &d, now)
 	case "repair_implementation":
 		err = s.repairDispute(ctx, tx, &d, job, now)
 	case "revise_tests", "add_tests":
@@ -334,7 +346,7 @@ func (s *Service) repairDispute(ctx context.Context, tx *sql.Tx, d *Dispute, job
 	return nil
 }
 func recoverDisputes(ctx context.Context, db *sql.DB, now time.Time) error {
-	rows, err := db.QueryContext(ctx, `SELECT data_json FROM disputes WHERE status IN ('judging','authoring_tests','routing')`)
+	rows, err := db.QueryContext(ctx, `SELECT data_json FROM disputes WHERE status IN ('judging','reviewing_tests','authoring_tests','routing')`)
 	if err != nil {
 		return err
 	}
@@ -357,6 +369,10 @@ func recoverDisputes(ctx context.Context, db *sql.DB, now time.Time) error {
 	}
 	for _, d := range records {
 		d.Version++
+		if d.Status == "reviewing_tests" && len(d.TestReviews) > 0 {
+			review := &d.TestReviews[len(d.TestReviews)-1]
+			review.NextOwner, review.Error = "you", "The service stopped during test proposal review."
+		}
 		d.Status, d.NextOwner, d.Error, d.UpdatedAt = "needs_human", "you", "The service stopped during this handoff. Review before retrying.", now
 		tx, err := db.BeginTx(ctx, nil)
 		if err != nil {

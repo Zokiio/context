@@ -89,18 +89,19 @@ type DecideExpectationsRequest struct {
 // ExpectationInput is written to the expectation author's standard input. The author
 // runs in a temporary worktree at the base revision.
 type ExpectationInput struct {
-	Dispute        *Dispute        `json:"dispute,omitempty"`
-	OriginalTests  *Expectation    `json:"originalTests,omitempty"`
-	ExpectationID  ID              `json:"expectationId"`
-	WorkItemID     string          `json:"workItemId"`
-	Title          string          `json:"title"`
-	TicketPath     string          `json:"ticketPath"`
-	Ticket         string          `json:"ticket"`
-	Criteria       []string        `json:"criteria"`
-	Context        []ContextSource `json:"context"`
-	ProtectedPaths []string        `json:"protectedPaths"`
-	BaseRevision   string          `json:"baseRevision"`
-	Instructions   string          `json:"instructions,omitempty"`
+	PreviousProposal *Expectation    `json:"previousProposal,omitempty"`
+	Dispute          *Dispute        `json:"dispute,omitempty"`
+	OriginalTests    *Expectation    `json:"originalTests,omitempty"`
+	ExpectationID    ID              `json:"expectationId"`
+	WorkItemID       string          `json:"workItemId"`
+	Title            string          `json:"title"`
+	TicketPath       string          `json:"ticketPath"`
+	Ticket           string          `json:"ticket"`
+	Criteria         []string        `json:"criteria"`
+	Context          []ContextSource `json:"context"`
+	ProtectedPaths   []string        `json:"protectedPaths"`
+	BaseRevision     string          `json:"baseRevision"`
+	Instructions     string          `json:"instructions,omitempty"`
 }
 
 // ExpectationOutput is the JSON the author writes to standard output after editing the
@@ -283,7 +284,7 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 			defer deadlineCancel()
 		}
 		defer s.registerDisputeCancel(input.Dispute.ID, cancel)()
-		if current, err := loadDispute(ctx, s.state.db, input.Dispute.ID); err != nil || current.Status != "authoring_tests" {
+		if current, err := loadDispute(ctx, s.state.db, input.Dispute.ID); err != nil || current.Status != "authoring_tests" || current.ExpectationID != id {
 			return
 		}
 	}
@@ -314,8 +315,31 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 			}
 		}
 		if result.err == nil {
-			patch, _ := s.git(ctx, directory, "show", "--format=", "--patch", result.commit)
-			result.patch = truncateRunes(patch, maxExpectationPatch)
+			if input.Dispute != nil {
+				// Improvements start at the preceding proposal, but review always
+				// compares the complete correction to the original frozen tests.
+				job, err := loadJob(ctx, s.state.db, input.Dispute.JobID)
+				if err == nil {
+					result.patch, err = s.disputePatch(ctx, directory, job.Admission.BaseRevision, result.commit)
+					if len(result.patch) > maxExpectationPatch {
+						err = fmt.Errorf("proposed test patch exceeds the review limit")
+					}
+				}
+				if err == nil {
+					var names string
+					names, err = s.git(ctx, directory, "diff", "--name-only", "--no-renames", "-z", job.Admission.BaseRevision, result.commit, "--")
+					result.files = nil
+					for _, name := range strings.Split(names, "\x00") {
+						if name != "" {
+							result.files = append(result.files, name)
+						}
+					}
+				}
+				result.err = err
+			} else {
+				patch, _ := s.git(ctx, directory, "show", "--format=", "--patch", result.commit)
+				result.patch = truncateRunes(patch, maxExpectationPatch)
+			}
 		}
 	}
 	s.state.mutations.Lock()
@@ -342,8 +366,18 @@ func (s *Service) runExpectationAuthor(id ID, input ExpectationInput, project Pr
 		return
 	}
 	defer tx.Rollback()
-	if saveExpectation(context.Background(), tx, expectation, false) == nil && s.finishDisputeTests(context.Background(), tx, expectation, expectation.UpdatedAt) == nil {
-		_ = tx.Commit()
+	if saveExpectation(context.Background(), tx, expectation, false) != nil || s.finishDisputeTests(context.Background(), tx, expectation, expectation.UpdatedAt) != nil {
+		return
+	}
+	var dispute Dispute
+	if expectation.DisputeID != "" {
+		dispute, err = loadDispute(context.Background(), tx, expectation.DisputeID)
+		if err != nil {
+			return
+		}
+	}
+	if tx.Commit() == nil {
+		s.launchJudge(dispute)
 	}
 }
 

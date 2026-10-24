@@ -46,6 +46,7 @@ const (
 	DisputeReviseTests DisputeDecisionKind = "revise_tests"
 	DisputeAddTests    DisputeDecisionKind = "add_tests"
 	DisputeNeedsHuman  DisputeDecisionKind = "needs_human"
+	DisputeAcceptTests DisputeDecisionKind = "accept_tests"
 )
 
 type JudgeDecision struct {
@@ -56,30 +57,48 @@ type JudgeDecision struct {
 	WeakensAcceptance bool                `json:"weakensAcceptance"`
 	Directive         string              `json:"directive,omitempty"`
 }
+
+// DisputeTestReview binds a retained judge invocation to one immutable test proposal.
+type DisputeTestReview struct {
+	ExpectationID ID             `json:"expectationId"`
+	Commit        string         `json:"commit"`
+	Round         int            `json:"round"`
+	Decision      *JudgeDecision `json:"decision,omitempty"`
+	Run           *RefinerRun    `json:"run,omitempty"`
+	Log           string         `json:"log,omitempty"`
+	LogTruncated  bool           `json:"logTruncated,omitempty"`
+	Error         string         `json:"error,omitempty"`
+	NextOwner     string         `json:"nextOwner"`
+	CreatedAt     time.Time      `json:"createdAt"`
+}
+
 type Dispute struct {
-	ID               ID             `json:"id"`
-	ProjectID        ProjectID      `json:"projectId"`
-	WorkItemID       string         `json:"workItemId"`
-	JobID            JobID          `json:"jobId"`
-	LineageID        JobID          `json:"lineageId"`
-	Version          int64          `json:"version"`
-	Status           string         `json:"status"`
-	Input            DisputeInput   `json:"input"`
-	Decision         *JudgeDecision `json:"decision,omitempty"`
-	NextOwner        string         `json:"nextOwner"`
-	ExpectationID    ID             `json:"expectationId,omitempty"`
-	ReplacementJobID JobID          `json:"replacementJobId,omitempty"`
-	RequestedBy      UserID         `json:"requestedBy"`
-	ResolvedBy       *UserID        `json:"resolvedBy,omitempty"`
-	Resolution       string         `json:"resolution,omitempty"`
-	Rationale        string         `json:"rationale,omitempty"`
-	Error            string         `json:"error,omitempty"`
-	Run              *RefinerRun    `json:"run,omitempty"`
-	Log              string         `json:"log,omitempty"`
-	LogTruncated     bool           `json:"logTruncated,omitempty"`
-	AvailableActions []string       `json:"availableActions"`
-	CreatedAt        time.Time      `json:"createdAt"`
-	UpdatedAt        time.Time      `json:"updatedAt"`
+	Delegated         string              `json:"delegated,omitempty"`
+	TestProposalCount int                 `json:"testProposalCount"`
+	TestReviews       []DisputeTestReview `json:"testReviews,omitempty"`
+	ID                ID                  `json:"id"`
+	ProjectID         ProjectID           `json:"projectId"`
+	WorkItemID        string              `json:"workItemId"`
+	JobID             JobID               `json:"jobId"`
+	LineageID         JobID               `json:"lineageId"`
+	Version           int64               `json:"version"`
+	Status            string              `json:"status"`
+	Input             DisputeInput        `json:"input"`
+	Decision          *JudgeDecision      `json:"decision,omitempty"`
+	NextOwner         string              `json:"nextOwner"`
+	ExpectationID     ID                  `json:"expectationId,omitempty"`
+	ReplacementJobID  JobID               `json:"replacementJobId,omitempty"`
+	RequestedBy       UserID              `json:"requestedBy"`
+	ResolvedBy        *UserID             `json:"resolvedBy,omitempty"`
+	Resolution        string              `json:"resolution,omitempty"`
+	Rationale         string              `json:"rationale,omitempty"`
+	Error             string              `json:"error,omitempty"`
+	Run               *RefinerRun         `json:"run,omitempty"`
+	Log               string              `json:"log,omitempty"`
+	LogTruncated      bool                `json:"logTruncated,omitempty"`
+	AvailableActions  []string            `json:"availableActions"`
+	CreatedAt         time.Time           `json:"createdAt"`
+	UpdatedAt         time.Time           `json:"updatedAt"`
 }
 type ReportDisputeRequest struct {
 	RequestID string       `json:"requestId"`
@@ -95,7 +114,8 @@ type ResolveDisputeRequest struct {
 	Rationale string `json:"rationale"`
 }
 type JudgeInput struct {
-	CandidatePatch string `json:"candidatePatch,omitempty"`
+	ProposedTests       *Expectation    `json:"proposedTests,omitempty"`
+	CandidatePatch      string          `json:"candidatePatch,omitempty"`
 	Dispute             Dispute         `json:"dispute"`
 	Job                 Job             `json:"job"`
 	OriginalTests       *Expectation    `json:"originalTests,omitempty"`

@@ -22,7 +22,12 @@ func judgeCommand(t *testing.T, kind factory.DisputeDecisionKind, extra string) 
 	dump := filepath.Join(dir, "input.json")
 	output, _ := json.Marshal(factory.JudgeOutput{Decision: factory.JudgeDecision{Kind: kind, Rationale: "The admitted requirement establishes the intended result", EvidenceRefs: []string{"criterion:1"}, PreservesIntent: true, Directive: "Follow criterion one exactly; preserve all other behavior"}, Run: factory.RefinerRun{Model: "independent-fixture", Turns: 1}})
 	path := filepath.Join(dir, "judge")
-	script := "#!/bin/sh\ncat > '" + dump + "'\n" + extra + "\ncat <<'RESULT'\n" + string(output) + "\nRESULT\n"
+	script := "#!/bin/sh\ncat > '" + dump + "'\n" + extra + "\n"
+	if kind == factory.DisputeReviseTests || kind == factory.DisputeAddTests {
+		approved := strings.Replace(string(output), `"kind":"`+string(kind)+`"`, `"kind":"accept_tests"`, 1)
+		script += "if grep -q 'proposedTests' '" + dump + "'; then\ncat <<'APPROVED'\n" + approved + "\nAPPROVED\nexit 0\nfi\n"
+	}
+	script += "cat <<'RESULT'\n" + string(output) + "\nRESULT\n"
 	if err := os.WriteFile(path, []byte(script), 0700); err != nil {
 		t.Fatal(err)
 	}
@@ -160,7 +165,7 @@ func TestDisputeRoutesImplementationRepairAndBoundsRepeatedDisagreement(t *testi
 	}
 }
 
-func TestDisputeTestRevisionRequiresApprovalAndCreatesFreshReplacement(t *testing.T) {
+func TestDisputeTestRevisionJudgeApprovesAndCreatesFreshReplacement(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	oldAuthor := fakeAuthor(t, map[string]string{"tests/expected.txt": "original expectation\n"})
@@ -179,9 +184,9 @@ func TestDisputeTestRevisionRequiresApprovalAndCreatesFreshReplacement(t *testin
 	newAuthor := fakeAuthor(t, map[string]string{"tests/expected.txt": "corrected expectation\n"})
 	reopenDisputeService(t, &h.jobHarness, judge, newAuthor)
 	reportWorkerDispute(t, h.jobHarness, "test-dispute")
-	d := waitDispute(t, h.jobHarness, "tests_proposed")
-	if d.NextOwner != "you" || d.ReplacementJobID != "" {
-		t.Fatalf("test revision skipped default approval: %+v", d)
+	d := waitDispute(t, h.jobHarness, "resolved")
+	if d.NextOwner != "implementer" || d.ReplacementJobID == "" || len(d.TestReviews) != 1 || d.TestReviews[0].Decision.Kind != factory.DisputeAcceptTests || d.Decision.Kind != factory.DisputeReviseTests {
+		t.Fatalf("test revision did not receive independent review: %+v", d)
 	}
 	raw, err := os.ReadFile(dump)
 	if err != nil {
@@ -201,10 +206,7 @@ func TestDisputeTestRevisionRequiresApprovalAndCreatesFreshReplacement(t *testin
 	if _, err = h.service.AcceptExpectations(ctx, h.coordinator, factory.DecideExpectationsRequest{RequestID: "bypass", ExpectationID: proposal.ID}); factory.ErrorCodeOf(err) != factory.CodeConflict {
 		t.Fatalf("ordinary accept bypassed dispute: %v", err)
 	}
-	resolved, err := h.service.ResolveDispute(ctx, h.coordinator, factory.ResolveDisputeRequest{RequestID: "approve-tests", DisputeID: d.ID, IfVersion: d.Version, Action: "accept_tests", Rationale: "The corrected test preserves criterion one"})
-	if err != nil {
-		t.Fatal(err)
-	}
+	resolved := d
 	old, err := h.service.GetJob(ctx, h.coordinator, h.job.ID)
 	if err != nil || old.Status != factory.JobSuperseded || !reflect.DeepEqual(old.Admission, admitted) {
 		t.Fatalf("old run changed: %+v %v", old, err)
@@ -337,7 +339,7 @@ func waitDisputeFile(t *testing.T, path string) {
 	t.Fatal("subprocess did not reach gate")
 }
 
-func TestDisputeDelegatedTestApprovalUsesCurrentPolicyOwner(t *testing.T) {
+func TestDisputeJudgeTestApprovalRechecksCurrentRunOwner(t *testing.T) {
 	t.Parallel()
 	for _, revoked := range []bool{false, true} {
 		name := "authorized"
@@ -348,36 +350,17 @@ func TestDisputeDelegatedTestApprovalUsesCurrentPolicyOwner(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			h := setupJobWith(t, []string{"go-test"}, 2, nil, func(p *factory.ProjectPolicy) { p.ProtectedPaths = []string{"tests/"} })
-			user, err := h.service.CreateUser(ctx, h.admin, factory.CreateUserRequest{RequestID: "delegator", Username: "delegator", Kind: factory.UserKindHuman})
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err = h.service.GrantProject(ctx, h.admin, factory.GrantProjectRequest{RequestID: "delegate-access", ProjectID: h.project.ID, UserID: user.ID, Capabilities: []factory.Capability{factory.CapabilityRead, factory.CapabilityCoordinate, factory.CapabilityProjectAdmin}}); err != nil {
-				t.Fatal(err)
-			}
-			owner := factory.Principal{UserID: user.ID}
-			if _, err = h.service.SetAskPolicy(ctx, owner, factory.SetAskPolicyRequest{RequestID: "delegate-tests", ProjectID: h.project.ID, BeforeBuild: factory.AskBeforeNever, AfterBuild: factory.AskAfterAlways, Autopilot: true}); err != nil {
-				t.Fatal(err)
-			}
 			judge, _ := judgeCommand(t, factory.DisputeAddTests, "")
 			author, started, gate := gatedDisputeAuthor(t)
-			if err = h.service.Close(); err != nil {
-				t.Fatal(err)
-			}
-			service, err := factory.Open(h.dataDir, factory.Options{JudgeCommand: judge, ExpectationCommand: author, Pilot: true, PilotInterval: time.Hour, LeaseDuration: time.Minute})
-			if err != nil {
-				t.Fatal(err)
-			}
-			h.service = service
-			t.Cleanup(func() { _ = service.Close() })
+			reopenDisputeService(t, &h, judge, author)
 			reportWorkerDispute(t, h, "delegated-test-dispute")
 			waitDisputeFile(t, started)
 			if revoked {
-				if _, err = h.service.GrantProject(ctx, h.admin, factory.GrantProjectRequest{RequestID: "revoke-delegator", ProjectID: h.project.ID, UserID: user.ID, Capabilities: []factory.Capability{factory.CapabilityRead}}); err != nil {
+				if _, err := h.service.GrantProject(ctx, h.admin, factory.GrantProjectRequest{RequestID: "revoke-owner", ProjectID: h.project.ID, UserID: h.coordinator.UserID, Capabilities: []factory.Capability{factory.CapabilityRead}}); err != nil {
 					t.Fatal(err)
 				}
 			}
-			if err = os.WriteFile(gate, []byte("go"), 0600); err != nil {
+			if err := os.WriteFile(gate, []byte("go"), 0600); err != nil {
 				t.Fatal(err)
 			}
 			status := "resolved"
@@ -385,21 +368,21 @@ func TestDisputeDelegatedTestApprovalUsesCurrentPolicyOwner(t *testing.T) {
 				status = "needs_human"
 			}
 			d := waitDispute(t, h, status)
-			proposal, err := h.service.GetExpectations(ctx, h.coordinator, d.ExpectationID)
+			proposal, err := h.service.GetExpectations(ctx, h.admin, d.ExpectationID)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if revoked {
 				if d.NextOwner != "you" || d.ReplacementJobID != "" || proposal.Status != factory.ExpectationProposed {
-					t.Fatalf("revoked policy still dispatched: %+v %+v", d, proposal)
+					t.Fatalf("revoked coordinator dispatched: %+v %+v", d, proposal)
 				}
 			} else {
-				replacement, err := h.service.GetJob(ctx, h.coordinator, d.ReplacementJobID)
+				replacement, err := h.service.GetJob(ctx, h.admin, d.ReplacementJobID)
 				if err != nil {
 					t.Fatal(err)
 				}
-				if proposal.DecidedBy == nil || *proposal.DecidedBy != user.ID || proposal.Delegated == "" || d.ResolvedBy == nil || *d.ResolvedBy != user.ID || replacement.CoordinatorID != user.ID {
-					t.Fatalf("auto acceptance misattributed: %+v %+v", d, proposal)
+				if proposal.DecidedBy == nil || *proposal.DecidedBy != h.coordinator.UserID || !strings.Contains(proposal.Delegated, "independent judge") || d.ResolvedBy == nil || *d.ResolvedBy != h.coordinator.UserID || replacement.CoordinatorID != h.coordinator.UserID {
+					t.Fatalf("judge continuation misattributed: %+v %+v", d, proposal)
 				}
 			}
 		})

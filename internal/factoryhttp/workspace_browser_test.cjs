@@ -12,7 +12,7 @@ const now = () => new Date().toISOString();
 const store = { records: [], activity: { jobs: [], refinements: [], expectations: [], disputes: [], held: false }, offline: false, createBodies: [], disputeBodies: [], resolutions: [], scoreRequests: 0, updates: [], staleStop: false, stopAttempts: 0, jobReads: 0, admin: true, capabilities: ['read', 'coordinate', 'review', 'accept', 'merge'] };
 const draftRecord = (id, draft) => ({ projectId: project.id, workItemId: id, path: id + '.md', ticketSHA256: 'revision-1', draft, queued: false, archived: false, frozen: false, canDelete: true, dependents: [], actions: ['queue', 'archive', 'delete'] });
 const board = () => ({ project, publicationPending: !!store.publicationPending, pilot: false, running: 0, mergedToday: 0, generatedAt: now(), cards: store.records.filter((record) => record.queued).map((record) => ({ workItemId: record.workItemId, title: record.draft.title, column: 'next', state: 'waiting', status: 'Ready', step: 0, decision: ['ready_for_review', 'ready_for_acceptance'].includes(store.activity.jobs[0]?.status) ? 'approve' : 'plan', jobId: store.activity.jobs[0]?.id, updatedAt: '2026-10-23T00:00:00Z', line: 'Ready to start' })) });
-const stages = () => ({ workItemId: 'task-1', title: store.records[0]?.draft.title, costUsd: 0, steps: [{ key: 'sharpen', title: 'Sharpen requirements', kind: 'agent', status: 'done', summary: 'Requirements are clear.' }, { key: 'build', title: 'Build the change', kind: 'agent', status: store.activity.jobs[0]?.status === 'cancelled' ? 'failed' : 'running', summary: 'Fixture builder', notes: ['## Agent note\n\n- Real reported text\n\n```go\nreturn 1\n```'] }, ...(store.activity.disputes.length ? [{ key: 'judge', title: 'Judge the dispute', kind: 'agent', status: store.activity.disputes[0].status === 'judging' ? 'running' : store.activity.disputes[0].status === 'resolved' ? 'done' : 'needs_you', summary: 'Recorded judge routing.' }] : [])] });
+const stages = () => ({ workItemId: 'task-1', title: store.records[0]?.draft.title, costUsd: 0, steps: [{ key: 'sharpen', title: 'Sharpen requirements', kind: 'agent', status: 'done', summary: 'Requirements are clear.' }, { key: 'build', title: 'Build the change', kind: 'agent', status: store.activity.jobs[0]?.status === 'cancelled' ? 'failed' : 'running', summary: 'Fixture builder', notes: ['## Agent note\n\n- Real reported text\n\n```go\nreturn 1\n```'] }, ...(store.activity.disputes.length ? [{ key: 'judge', title: store.activity.disputes[0].status === 'reviewing_tests' || store.activity.disputes[0].testReviews?.length ? 'Review the test proposal' : 'Judge the dispute', kind: 'agent', status: ['judging', 'reviewing_tests', 'authoring_tests'].includes(store.activity.disputes[0].status) ? 'running' : store.activity.disputes[0].status === 'resolved' ? 'done' : 'needs_you', summary: 'Recorded judge routing.' }] : [])] });
 const server = http.createServer(async (request, response) => {
 	const url = new URL(request.url, 'http://localhost');
 	if (!url.pathname.startsWith('/v1')) {
@@ -59,6 +59,7 @@ const server = http.createServer(async (request, response) => {
 		store.resolutions.push(body); const dispute = store.activity.disputes[0];
 		if (store.staleResolve) { store.staleResolve = false; dispute.version++; return send({ code: 'stale', message: 'Decision changed.' }, 409); }
 		if (body.ifVersion !== dispute.version) return send({ code: 'stale', message: 'Decision changed.' }, 409);
+		if (body.action === 'review_tests') { dispute.status = 'reviewing_tests'; dispute.nextOwner = 'judge'; dispute.version++; dispute.availableActions = []; return send(dispute); }
 		dispute.status = 'resolved'; dispute.nextOwner = 'implementer'; dispute.replacementJobId = 'job-2'; dispute.version++; dispute.availableActions = []; return send(dispute);
 	}
 	if (route === '/jobs/job-1/actions') {
@@ -328,6 +329,53 @@ const server = http.createServer(async (request, response) => {
 		await page.setViewportSize({ width: 390, height: 844 });
 		assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'judge view fits a narrow viewport');
 		await capture('judge-mobile');
+
+		// A saved legacy proposal can enter the new judge review loop. Its original
+		// verdict and both reviewed revisions remain distinct as ownership changes.
+		dispute.status = 'tests_proposed'; dispute.nextOwner = 'you'; dispute.availableActions = ['review_tests']; dispute.replacementJobId = ''; dispute.testProposalCount = 1; dispute.version++;
+		await asCapabilities([], 'disputed', 'run');
+		assert.equal(await page.getByRole('button', { name: 'Ask judge to review tests', exact: true }).count(), 0, 'read-only access cannot route a legacy proposal');
+		await asCapabilities(['coordinate'], 'disputed', 'run');
+		await page.getByRole('textbox', { name: 'Reason for your decision', exact: true }).fill('Ask the independent judge to assess the existing proposal.');
+		const legacyVersion = dispute.version;
+		await page.getByRole('button', { name: 'Ask judge to review tests', exact: true }).click();
+		await page.locator('.dispute-list').getByText('Judge is reviewing the finished test proposal', { exact: true }).waitFor();
+		assert.equal(store.resolutions.at(-1).action, 'review_tests');
+		assert.equal(store.resolutions.at(-1).ifVersion, legacyVersion);
+		await page.getByRole('button', { name: /Review the test proposal/ }).waitFor();
+		assert.equal(await page.getByRole('button', { name: 'Approve tests and start replacement run', exact: true }).count(), 0, 'active judge review does not expose a competing manual action');
+		const firstReview = { expectationId: 'expectation-2', commit: 'first-reviewed-commit', round: 1, decision: { kind: 'revise_tests', rationale: 'The first proposal still omits empty input.', directive: 'Preserve the corrected case and add empty-input coverage.', evidenceRefs: ['tests/empty_case'], preservesIntent: true, weakensAcceptance: false }, run: { model: 'fixture-judge', turns: 2, costUsd: .02 }, nextOwner: 'test_author', createdAt: now() };
+		dispute.testReviews = [firstReview]; dispute.status = 'authoring_tests'; dispute.nextOwner = 'test_author'; dispute.testProposalCount = 2; dispute.expectationId = 'expectation-3'; dispute.version++;
+		store.activity.expectations.push({ id: 'expectation-3', status: 'running', createdAt: now() });
+		await page.locator('.dispute-list .next-owner').getByText('Test author', { exact: true }).waitFor({ timeout: 7000 });
+		const reviews = page.locator('.dispute-list .test-proposal-review');
+		await reviews.getByRole('heading', { name: 'Improve the tests', exact: true }).waitFor();
+		assert.equal(await reviews.getByText('first-reviewed-commit', { exact: true }).count(), 1);
+		assert.equal(await page.locator('.dispute-list .original-dispute-verdict').getByText('The approved criterion excludes empty tokens.', { exact: true }).count(), 1);
+		const priorProposalSummary = reviews.getByText('Test author proposal expectation-', { exact: true });
+		if (!await priorProposalSummary.evaluate((node) => node.parentElement.open)) await priorProposalSummary.click();
+		await reviews.getByText('Changed only the incorrect expectation.', { exact: true }).waitFor();
+		const improved = store.activity.expectations.at(-1); improved.status = 'proposed'; improved.notes = 'Added empty-input coverage without dropping the original correction.'; improved.patch = 'diff --git a/test.go b/test.go\n--- a/test.go\n+++ b/test.go\n@@ -1 +1,2 @@\n keepOriginalCase()\n+checkEmptyInput()\n';
+		dispute.status = 'reviewing_tests'; dispute.nextOwner = 'judge'; dispute.version++;
+		await page.locator('.dispute-list .next-owner').getByText('Judge', { exact: true }).waitFor({ timeout: 7000 });
+		dispute.testReviews.push({ expectationId: 'expectation-3', commit: 'second-reviewed-commit', round: 2, decision: { kind: 'accept_tests', rationale: 'The improved tests preserve both the original case and the empty-input requirement.', evidenceRefs: ['tests/original_case', 'tests/empty_case'], preservesIntent: true, weakensAcceptance: false }, run: { model: 'fixture-judge', turns: 1, costUsd: .01 }, nextOwner: 'implementer', createdAt: now() });
+		dispute.status = 'resolved'; dispute.nextOwner = 'implementer'; dispute.replacementJobId = 'job-3'; dispute.resolution = 'accept_tests'; dispute.delegated = 'judge_test_review'; dispute.rationale = 'Judge accepted the exact second proposal.'; dispute.version++;
+		await page.locator('.dispute-list .next-owner').getByText('Builder', { exact: true }).waitFor({ timeout: 7000 });
+		assert.equal(await reviews.count(), 2);
+		await reviews.getByRole('heading', { name: 'Accept the tests', exact: true }).waitFor();
+		assert.equal(await reviews.getByText('second-reviewed-commit', { exact: true }).count(), 1);
+		assert.equal(await page.getByText('Recorded human decision', { exact: true }).count(), 0, 'delegated judge routing is not described as human approval');
+		await page.locator('.dispute-list').getByText('Delegated: judge_test_review', { exact: true }).waitFor();
+		await capture('proposal-review-mobile');
+		await page.setViewportSize({ width: 1440, height: 1000 });
+		await capture('proposal-review-desktop');
+		await page.getByRole('link', { name: 'History', exact: true }).click();
+		await page.locator('.history-entry > summary').filter({ hasText: 'Judge · Correct the tests' }).click();
+		const historyReviews = page.locator('[aria-label="History"] .test-proposal-review');
+		assert.equal(await historyReviews.count(), 2, 'history retains each proposal review');
+		await page.locator('[aria-label="History"]').getByText('Earlier test proposal review 1', { exact: true }).click();
+		await historyReviews.getByText('The first proposal still omits empty input.', { exact: true }).waitFor();
+		await historyReviews.getByText('The improved tests preserve both the original case and the empty-input requirement.', { exact: true }).waitFor();
 
 		assert.deepEqual(errors, []);
 		console.log('Workspace browser regressions passed: task editing, safe formatting, live runs, permissions, stop, disputes, judge handoffs, stale decisions, retained input and mobile layout.');

@@ -62,6 +62,12 @@ func (s *Service) WorkItemActivity(ctx context.Context, actor Principal, project
 		return WorkItemActivity{}, err
 	}
 	for i := range result.Disputes {
+		for j := range result.Disputes[i].TestReviews {
+			review := &result.Disputes[i].TestReviews[j]
+			if len([]rune(review.Log)) > 2000 {
+				review.Log, review.LogTruncated = truncateRunes(review.Log, 2000), true
+			}
+		}
 		result.Disputes[i] = s.disputeActions(ctx, tx, current, result.Disputes[i])
 		if len([]rune(result.Disputes[i].Log)) > 2000 {
 			result.Disputes[i].Log = truncateRunes(result.Disputes[i].Log, 2000)
