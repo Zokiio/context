@@ -3,7 +3,7 @@ type: WorkItem
 id: 3b90e1e3-cc70-46c9-a116-8cc36d59382a
 title: Judge implementation disputes and show the next responsible agent
 triage: ready-for-agent
-execution: in-progress
+execution: completed
 ---
 
 ## Spec
@@ -33,7 +33,7 @@ None.
 
 ## Acceptance
 
-- [Verified judge handoffs](../acceptances/03-judge-disputes.md)
+- [Verified judge proposal review](../acceptances/03-judge-proposal-review.md)
 
 ## Comments
 
@@ -42,3 +42,5 @@ None.
 - 2026-10-24: Implemented in the combined PR #55. Go 1.25 full tests, targeted race checks, vet, controlled browser regressions, and the real service/browser judge-to-test-author-to-replacement flow passed at `7bfae39227a2ddbf6cd463adbaf32127dd01cc04`. Native model providers were not invoked during verification.
 
 - 2026-10-24: A live Claude builder, judge, and test author demonstrated the dispute-to-test-proposal handoff. The user then requested that the judge decide whether to return the proposal to the test builder for improvement or pass it to the next step. This extends the same PR and supersedes the default manual approval for scope-preserving dispute test corrections. Final implementation review remains separate.
+
+- 2026-10-24: Completed automatic judge review of each test proposal in PR #55 at `a9ef74390b0cf99802f7b4c5ee3560b0066f32e1`. Full Go tests, targeted race checks, vet, HTTP tests, and controlled browser checks passed. The deterministic service/browser trial returned an inadequate proposal for improvement, then accepted the correction and verified a replacement. Live Claude agents accepted the first corrected proposal and a fresh implementation passed independent tests; its final human review remains pending. The [earlier handoff acceptance](../acceptances/03-judge-disputes.md) remains historical evidence for the previous requirements.
