@@ -13,6 +13,8 @@ Use this skill when the user explicitly requests checkpoint orchestration for a 
 
 This is an opt-in workflow in the existing agent environment. The ctx readers supply records and evaluations. They do not route tasks, supervise execution, or manage implementation claims.
 
+When running in GitHub Copilot, read [Run checkpoints with Copilot](COPILOT.md) before dispatching work or continuing at a checkpoint boundary. It covers CLI workers and the Copilot harness in an Agent Host.
+
 ## Establish the current basis
 
 Read the project's instructions and [tracker guidance]({{.TrackerLink}}). Use [task-context]({{.TaskContextLink}}) to collect and read the full ticket requirements with explicit project scope. Keep the exact context JSON and source identities used. Use [recovery-notes]({{.RecoveryNotesLink}}) to inspect continuation state.

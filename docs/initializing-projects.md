@@ -21,6 +21,8 @@ For a project using GitHub Issues and `.agents/skills`, run:
 
 Choose the directory your active agent uses. The trials exercised ordinary files under `.agents/skills` with Codex and individual links into that directory from `.claude/skills` with Claude Code. Init writes ordinary files into the supplied directory. It does not detect tools or create symlinks.
 
+For Copilot CLI or VS Code's Copilot harness, use `.agents/skills` for a shared installation or `.github/skills` for a Copilot-specific installation. Both are [supported skill locations](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#skill-locations). Add the printed instruction pointers to the project's `AGENTS.md` or `.github/copilot-instructions.md`. The installed orchestration and retrospective skills each include a `COPILOT.md` reference for CLI workers and Agent Host sessions.
+
 All path flags resolve from the current directory. `--records` defaults to `.context/records` and can select a separate record store. `--local-dir` defaults to `.context/trial` and must stay inside the target project. Keep records separate from disposable local files and recovery cache. Init rejects layouts that would ignore its durable guidance or records.
 
 Repeat `--allow-source` for each existing source directory the reader needs. Roots are explicit; init does not authorize the entire project automatically. When tasks need root `CONTEXT.md` or `CONTEXT-MAP.md`, select the directory containing those files. Future task selection may require a reviewed setup change.
@@ -30,8 +32,8 @@ Repeat `--allow-source` for each existing source directory the reader needs. Roo
 Init reports each file it creates, preserves, skips, or appends to, plus the binding result. It installs:
 
 - `task-context/SKILL.md`, `recovery-notes/SKILL.md`, and `recovery-notes/PROFILE.md` under the selected skills directory.
-- `orchestrate/SKILL.md` and its required `VERIFICATION.md` reference under that skills directory. Its frontmatter disables Claude Code's automatic invocation, and its `agents/openai.yaml` disables Codex's.
-- `retro/SKILL.md` under that skills directory. Its frontmatter disables Claude Code's automatic invocation, and its `agents/openai.yaml` disables Codex's.
+- `orchestrate/SKILL.md`, its required `VERIFICATION.md`, and its conditional `COPILOT.md` reference under that skills directory. Its frontmatter disables automatic invocation in Claude Code and Copilot, and its `agents/openai.yaml` disables Codex's.
+- `retro/SKILL.md` and its conditional `COPILOT.md` reference under that skills directory, with the same explicit invocation settings.
 - `cli.md`, `acceptance.md`, and `tracker.md` under the selected docs directory.
 - `project.md` under the records directory, with a new UUID, the supplied title, empty commitments, and no decisions.
 - `ctx-version.txt` under the local directory, containing the running binary's exact version output.
@@ -62,7 +64,7 @@ The installed task-context and recovery-notes skills use the saved binding. Veri
 
 ## Invoke checkpoint orchestration explicitly
 
-Use `$orchestrate` for a named work item when you want the agent environment to coordinate test-first checkpoint implementation, checks, reviews, and corrections. Installation alone does not invoke this workflow. Init keeps its metadata explicit-only and leaves routing, hooks, and the normal implementation workflow under the project's control.
+Use `$orchestrate`, or `/orchestrate` in Copilot, for a named work item when you want the agent environment to coordinate test-first checkpoint implementation, checks, reviews, and corrections. Installation alone does not invoke this workflow. Init keeps its metadata explicit-only and leaves routing, hooks, and the normal implementation workflow under the project's control.
 
 The orchestrator holds the whole task in its records on disk and continues in a fresh session at each checkpoint boundary. It dispatches fresh implementing and repairing agents by pointer to one checkpoint file, with one writer active at a time. Required testing and Standards and Specification review procedures ship in `orchestrate/VERIFICATION.md`. Target projects need no separate TDD or code-review skill, trial documents, or Waymark source checkout. Links resolve from the configured skills and docs directories, and reader commands use the supplied binary and target project binding.
 
@@ -70,7 +72,7 @@ Apply the target project's human review and publication policy. Reuse existing a
 
 ## Review a work item's sessions explicitly
 
-Use `$retro` with named Claude Code or Codex sessions of one work item when you want to measure a run and improve the environment for the next one. Installation alone does not invoke it; init keeps its metadata explicit-only.
+Use `$retro` with named Claude Code or Codex sessions, or `/retro` with Copilot sessions, of one work item when you want to measure a run and improve the environment for the next one. Installation alone does not invoke it; init keeps its metadata explicit-only.
 
 The skill reads the transcripts and the work item's records, reports measures of the run with their sources, and gives each proposed change one home. The installed `retro/SKILL.md` lists the measures and homes.
 

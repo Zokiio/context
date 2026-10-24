@@ -293,11 +293,14 @@ func checkInitLinks(t *testing.T, path string, data []byte) {
 	doc := parser.New().Parse(data)
 	_ = ast.Walk(doc, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
 		if link, ok := node.(*ast.Link); ok && entering {
-			target, err := url.PathUnescape(link.Destination.Value(data))
+			target, err := url.Parse(link.Destination.Value(data))
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := os.Stat(filepath.Join(filepath.Dir(path), target)); err != nil {
+			if target.IsAbs() || target.Host != "" || target.Path == "" {
+				return ast.WalkContinue, nil
+			}
+			if _, err := os.Stat(filepath.Join(filepath.Dir(path), filepath.FromSlash(target.Path))); err != nil {
 				t.Errorf("broken reference in %s to %s: %v", path, target, err)
 			}
 		}
