@@ -68,6 +68,18 @@ If an older command used `--project` for a directory without a discoverable Proj
 
 `--bundle` bypasses discovery configuration. Supply each required supporting-document directory with `--allow-source`.
 
+## Run the factory
+
+Use [Run a local factory with offline workers](docs/factory-platform.md) to start the durable service, register a project, create separate users, and complete an offline job through independent verification, review, and recorded acceptance.
+
+```sh
+/tmp/ctx factory --help
+```
+
+The CLI and browser use the same service and permissions. Factory commands require explicit service startup and private token files. The existing readers remain usable without a service.
+
+The [software-factory research](docs/research/README.md) records source comparisons and their historical pins.
+
 ## Verify changes
 
 Run the repository checks:

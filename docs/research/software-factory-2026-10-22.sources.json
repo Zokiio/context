@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "research_title": "Software factory research for Waymark",
+  "as_of_date": "2026-10-22",
+  "user_date_timezone": "Europe/Stockholm",
+  "scope": {
+    "report_path": "docs/research/software-factory-2026-10-22.md",
+    "implementation_status": "Source research only; subsequent factory-platform implementation is outside this comparison",
+    "new_candidate_test_runs": 0,
+    "new_provider_runs": 0,
+    "license_status": "Observed source terms, not a transitive rights audit or dependency selection"
+  },
+  "method": {
+    "agents": [
+      "attractor_implementations: Fabro and Lightspeed implementation paths",
+      "workflow_platforms: SuperPlane and Open-Inspect",
+      "agentfield_factories: CodeAF and SWE-AF"
+    ],
+    "root": "StrongDM method/spec, Waymark context and acceptance model, independent checks of SWE-AF review fallback and Petri ACP permissions",
+    "review": "Each research agent reviewed its memo sections; corrections applied for success conventions, direct citations, budget scope, enterprise boundary, and incomplete container backups",
+    "limits": "Read-only source inspection. Test source is not a passing test result; publisher claims and benchmarks are not reliability certification. Adoption recommendations are engineering judgment."
+  },
+  "requested_urls": [
+    "https://github.com/strongdm/attractor",
+    "https://factory.strongdm.ai/products/attractor",
+    "https://github.com/smartcomputer-ai/lightspeed",
+    "https://github.com/fabro-sh/fabro",
+    "https://factory.strongdm.ai/",
+    "https://github.com/superplanehq/superplane",
+    "https://github.com/ColeMurray/background-agents",
+    "https://github.com/Agent-Field/CodeAF",
+    "https://github.com/Agent-Field/SWE-AF"
+  ],
+  "web_sources": [
+    {
+      "id": "strongdm-attractor-product",
+      "url": "https://factory.strongdm.ai/products/attractor",
+      "sha256": "12e927695cfd18a395e8e530b7b803ddabb933fa266f4e90452f0bd30aa5a902",
+      "representation": "UTF-8 web tool returned extract, including tool metadata; not canonical HTML"
+    },
+    {
+      "id": "strongdm-factory",
+      "url": "https://factory.strongdm.ai/",
+      "sha256": "45bc72b2084544e32f8eebff2fe5d59eb11736f9f3b2bf54906f2ff46b3e1cb8",
+      "representation": "UTF-8 web tool returned extract, including tool metadata; not canonical HTML"
+    }
+  ],
+  "repositories": [
+    {
+      "id": "attractor",
+      "repository": "strongdm/attractor",
+      "branch": "main",
+      "commit": "fb57a55ed97372a27ac90102f436947e29f48426",
+      "license": "Apache-2.0",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+          "url": "https://github.com/strongdm/attractor/blob/fb57a55ed97372a27ac90102f436947e29f48426/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "root",
+      "url": "https://github.com/strongdm/attractor",
+      "inspected_files": [
+        "LICENSE",
+        "README.md",
+        "attractor-spec.md"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "fabro",
+      "repository": "fabro-sh/fabro",
+      "branch": "main",
+      "commit": "9d9cbe9f417006603a4bbc4372ffdb2477afa314",
+      "license": "MIT root; bundled review rules carry Apache-2.0 and notices",
+      "license_files": [
+        {
+          "path": "LICENSE.md",
+          "git_blob_sha1": "c6289e5fc0f16ee471b4a6dfbfec3bfc1dc3cdca",
+          "url": "https://github.com/fabro-sh/fabro/blob/9d9cbe9f417006603a4bbc4372ffdb2477afa314/LICENSE.md",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        },
+        {
+          "path": ".fabro/workflows/code-review/rules/builtin/LICENSE",
+          "git_blob_sha1": "5db038258492ce47a5f3d27d78562c90d3f78331",
+          "url": "https://github.com/fabro-sh/fabro/blob/9d9cbe9f417006603a4bbc4372ffdb2477afa314/.fabro/workflows/code-review/rules/builtin/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        },
+        {
+          "path": ".fabro/workflows/code-review/rules/builtin/NOTICE.md",
+          "git_blob_sha1": "4fb22a23a6ca64fe26368d254856aca159d773ea",
+          "url": "https://github.com/fabro-sh/fabro/blob/9d9cbe9f417006603a4bbc4372ffdb2477afa314/.fabro/workflows/code-review/rules/builtin/NOTICE.md",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "attractor_implementations",
+      "url": "https://github.com/fabro-sh/fabro",
+      "inspected_files": [
+        ".fabro/workflows/code-review/rules/builtin/LICENSE",
+        ".fabro/workflows/code-review/rules/builtin/NOTICE.md",
+        "Cargo.toml",
+        "LICENSE.md",
+        "README.md",
+        "lib/components/fabro-petri/src/providers.rs",
+        "lib/components/fabro-petri/tests/interview.rs"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "lightspeed",
+      "repository": "smartcomputer-ai/lightspeed",
+      "branch": "main",
+      "commit": "86f6adf3cd28cde11644403c886ae08324cf21bb",
+      "license": "Apache-2.0 root",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "a7038f95c1199ee88883feb13865c0ff6b4ec542",
+          "url": "https://github.com/smartcomputer-ai/lightspeed/blob/86f6adf3cd28cde11644403c886ae08324cf21bb/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "attractor_implementations",
+      "url": "https://github.com/smartcomputer-ai/lightspeed",
+      "inspected_files": [
+        "LICENSE",
+        "README.md",
+        "crates/harness/src/core/components/approval.rs",
+        "crates/tools/src/environment/jobs.rs",
+        "docs/documentation/how-it-works/agent-loop-and-durability.md"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "superplane",
+      "repository": "superplanehq/superplane",
+      "branch": "main",
+      "commit": "1be6b59d8c884084457c0bb3248580e173115822",
+      "license": "Apache-2.0 except ee/; ee/ has separate license terms",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "087803c35fa2cec5d93eefd9be31267872f06a3d",
+          "url": "https://github.com/superplanehq/superplane/blob/1be6b59d8c884084457c0bb3248580e173115822/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        },
+        {
+          "path": "ee/LICENSE",
+          "git_blob_sha1": "a396ca3619dcfa9edd139d498b7a930b532add73",
+          "url": "https://github.com/superplanehq/superplane/blob/1be6b59d8c884084457c0bb3248580e173115822/ee/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "workflow_platforms",
+      "url": "https://github.com/superplanehq/superplane",
+      "inspected_files": [
+        "LICENSE",
+        "README.md",
+        "ee/LICENSE",
+        "pkg/fleets/README.md",
+        "pkg/grpc/actions/factories/pr_feedback_checks_template.go",
+        "pkg/licensing/features.go",
+        "pkg/runners/README.md",
+        "pkg/workers/node_executor.go",
+        "pkg/workers/node_executor_test.go"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "open-inspect",
+      "repository": "ColeMurray/background-agents",
+      "branch": "main",
+      "commit": "776c771acf9e5fd389722f3506ea8587e22a54de",
+      "license": "MIT root",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "08903ef7ff35cbd8e0b9b0c0a89baf06d61ee094",
+          "url": "https://github.com/ColeMurray/background-agents/blob/776c771acf9e5fd389722f3506ea8587e22a54de/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "workflow_platforms",
+      "url": "https://github.com/ColeMurray/background-agents",
+      "inspected_files": [
+        "LICENSE",
+        "README.md",
+        "packages/control-plane/src/auth/model-provider-account-broker.ts",
+        "packages/control-plane/src/session/event-repository.ts",
+        "packages/sandbox-runtime/src/sandbox_runtime/harness/base.py"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "codeaf",
+      "repository": "Agent-Field/CodeAF",
+      "branch": "dev",
+      "commit": "c740a5417230dcabe074c7a7919c3403a44ebc79",
+      "license": "Apache-2.0 root; third-party notices separately inspected",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+          "url": "https://github.com/Agent-Field/CodeAF/blob/c740a5417230dcabe074c7a7919c3403a44ebc79/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        },
+        {
+          "path": "THIRD-PARTY-NOTICES.md",
+          "git_blob_sha1": "fd9c7ca8cdf412494545acbe7e59b48aaca8e589",
+          "url": "https://github.com/Agent-Field/CodeAF/blob/c740a5417230dcabe074c7a7919c3403a44ebc79/THIRD-PARTY-NOTICES.md",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "agentfield_factories",
+      "url": "https://github.com/Agent-Field/CodeAF",
+      "inspected_files": [
+        "LICENSE",
+        "README.md",
+        "THIRD-PARTY-NOTICES.md",
+        "doc",
+        "internal/orche",
+        "internal/orchestrate/orchestrate.go",
+        "internal/seniordev/seniordev.go",
+        "internal/session/task_run_recover.go",
+        "internal/session/task_run_recover_test.go",
+        "internal/verify/noop_evidence_te",
+        "internal/verify/run.go"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "swe-af",
+      "repository": "Agent-Field/SWE-AF",
+      "branch": "main",
+      "commit": "4d3dfe719e5ce9e2e8cd454722295bbe6512542f",
+      "license": "Apache-2.0 root",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "e01975ebb1e1673779e923ee701014411849b8f6",
+          "url": "https://github.com/Agent-Field/SWE-AF/blob/4d3dfe719e5ce9e2e8cd454722295bbe6512542f/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "agentfield_factories; critical reviewer fallback independently checked by root",
+      "url": "https://github.com/Agent-Field/SWE-AF",
+      "inspected_files": [
+        "",
+        "LICENSE",
+        "README.md",
+        "swe_af/runtime/codex_harness_patch.py",
+        "swe_af/runtime/providers.py",
+        "te"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    },
+    {
+      "id": "petri-locked",
+      "repository": "lithoscomputer/petri",
+      "commit": "e34d60586a92719ba02a4f1a6c85a723d6376406",
+      "license": "MIT root",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "e59d6deea9e155bd09d8fbdc3ae6e31ddc65dbd8",
+          "url": "https://github.com/lithoscomputer/petri/blob/e34d60586a92719ba02a4f1a6c85a723d6376406/LICENSE",
+          "representation": "Observed GitHub blob SHA-1; no source bytes copied into this repository"
+        }
+      ],
+      "reviewer": "attractor_implementations; ACP defaults independently checked by root",
+      "url": "https://github.com/lithoscomputer/petri",
+      "inspected_files": [
+        "LICENSE"
+      ],
+      "evidence_kind": "Primary documentation, implementation and tests read at this revision; tests not executed"
+    }
+  ],
+  "fabro_locked_dependencies": {
+    "petri": "e34d60586a92719ba02a4f1a6c85a723d6376406",
+    "pebble": "65a3bab8b35f4ce46ef0742599511a331de5885b",
+    "sandbox-driver": "691cb4e5b8425434c1fe24becc47962a4fae9ce4",
+    "lithos-llm": "e8fd3ecf593fa943646ad5cd7bf584fa117dfca9"
+  },
+  "independent_observations": [
+    {
+      "repository": "Agent-Field/SWE-AF",
+      "path": "swe_af/execution/coding_loop.py",
+      "git_blob_sha1": "394d5e2055740308af05a36c561994298e118694",
+      "observed_lines": "300-360",
+      "finding": "Nonfatal reviewer exception returns approved true and blocking false"
+    },
+    {
+      "repository": "lithoscomputer/petri",
+      "path": "crates/attractor/steps/src/acp/mod.rs",
+      "git_blob_sha1": "183a49a7321f76f10bc36b4f0b95dc0012e11482",
+      "observed_lines": "1-110",
+      "finding": "Module documentation states auto-allow permission and best-effort hook behavior; implementation inspected by subagent"
+    }
+  ],
+  "local_sources": [
+    {
+      "id": "waymark",
+      "root": "/Users/zoki/code/context",
+      "commit": "abe3da6beac25a42620be363830d03c108ba9d9d",
+      "fingerprints": "Working-tree file bytes observed after source review; local revisions recorded separately",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "b7bb2ce1ebcd3d9a75263f7de432c767e740b396822976b9400de8d25acde655",
+          "bytes": 3761
+        },
+        {
+          "path": "CONTEXT.md",
+          "sha256": "fe1b20b08dd8bc9479e09bb2ff9c61bd054d4c00a7a14a6e5015f8ba93f154af",
+          "bytes": 5284
+        },
+        {
+          "path": "docs/vision.md",
+          "sha256": "79a3eb6c8ec1ee2c1afb5d589ce0e304adf3be57b9b0fee19f13123e4117ade4",
+          "bytes": 18558
+        },
+        {
+          "path": "docs/readers.md",
+          "sha256": "d3860fc1211c514d9fc8de7771116fa9de70a895805db346675872aa1d171f1a",
+          "bytes": 29829
+        },
+        {
+          "path": "docs/resuming-work.md",
+          "sha256": "1508c8645b0526561133f6717373b13765b70e78894a10d79fc41e86e41119cb",
+          "bytes": 7979
+        },
+        {
+          "path": "internal/taskcontext/context.go",
+          "sha256": "98caf2cb6acef891555e8e6442bf92266f8946fb89dae2dab7450ba1542ae63a",
+          "bytes": 8181
+        },
+        {
+          "path": "internal/orientation/readiness.go",
+          "sha256": "f2483521cf65932b4f9c508986dd67306c5007092ee335d9465dc6e7af696ef3",
+          "bytes": 7180
+        },
+        {
+          "path": "internal/orientation/acceptance.go",
+          "sha256": "2e29941b7293fc4dc163004d95b1abddbc6ef4d51cc767cb0ef397e030aac87e",
+          "bytes": 11104
+        },
+        {
+          "path": "internal/resumption/resumption.go",
+          "sha256": "01ab32f0aa4dd7763e4ce57b2408159dfc484a2417b143b529e53cdfef1916d0",
+          "bytes": 6308
+        },
+        {
+          "path": "internal/cli/cli.go",
+          "sha256": "37f3ce3fc4a395ea52e20174d634d235159beddcb3c6a3136bb6957efde06bbb",
+          "bytes": 6029
+        }
+      ]
+    }
+  ],
+  "edition": {
+    "description": "Waymark-focused edition of the seven-project software-factory comparison; no particular application target designated",
+    "source_report_sha256": "eee33131e7c80103d12efaa710568468007f12b7d732b70840c47e2503f04e52",
+    "source_ledger_sha256": "0b28b819912bb9a87ab46937a6854bdf2b45ba0eee0c38a0550a061ece2a58f0",
+    "changes": "Product direction and ownership sections refocused on Waymark; application-specific comparisons omitted; primary project findings retained."
+  }
+}

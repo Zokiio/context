@@ -9,6 +9,7 @@ import (
 	"io"
 
 	"github.com/Zokiio/context/internal/discovery"
+	"github.com/Zokiio/context/internal/factorycli"
 	"github.com/Zokiio/context/internal/orientation"
 	"github.com/Zokiio/context/internal/taskcontext"
 	urfave "github.com/urfave/cli/v3"
@@ -37,10 +38,10 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 	usageError := func(_ context.Context, _ *urfave.Command, err error, _ bool) error { return err }
 	exitHandler := func(context.Context, *urfave.Command, error) {}
 	command := &urfave.Command{
-		Name: "ctx", Usage: "Read project orientation and ticket context", Writer: stderr, ErrWriter: stderr,
+		Name: "ctx", Usage: "Read project context and operate factory jobs", Writer: stderr, ErrWriter: stderr,
 		ExitErrHandler: exitHandler, OnUsageError: usageError,
 		Action: func(context.Context, *urfave.Command) error {
-			return errors.New("expected context, orient, resume, init, setup, or version subcommand")
+			return errors.New("expected context, orient, resume, init, setup, version, or factory subcommand")
 		},
 		Commands: []*urfave.Command{{
 			DisableSliceFlagSeparator: true,
@@ -144,6 +145,7 @@ func RunWithEnvironment(ctx context.Context, args []string, stdout, stderr io.Wr
 	command.Commands = append(command.Commands, setupCommand(stdout, stderr, environment))
 	command.Commands = append(command.Commands, initCommand(stdout, stderr, environment, &status))
 	command.Commands = append(command.Commands, versionCommand(stdout, stderr))
+	command.Commands = append(command.Commands, factorycli.Command(stdout, stderr))
 	if err := command.Run(ctx, args); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 2
