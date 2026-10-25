@@ -28,7 +28,7 @@ execution: unstarted
 
 ## Blocked by
 
-- [Tell a repair attempt why it is repairing](01-repair-brief.md)
+- [Tell a repair why the previous attempt failed](../../factory-harnesses/issues/01-repair-brief.md)
 - [Publish a checked candidate as a draft pull request](02-draft-pull-request.md)
 
 ## Blocked by decisions

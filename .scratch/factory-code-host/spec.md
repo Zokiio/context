@@ -83,6 +83,8 @@ A repair attempt currently tells the agent nothing about why it is repairing. `a
 
 Every repair assignment carries a repair brief. The brief lists the previous candidate's failed required checks, each with its status and a bounded excerpt of its retained output or host summary, and every change request on that candidate, each with its reviewer, summary, findings, and quoted comments. The brief is attempt data. It is not a requirement and does not change the admission fingerprints.
 
+The agent harnesses plan's [repair brief ticket](../records/factory-harnesses/issues/01-repair-brief.md) builds the brief. The host check and change request tickets here add their entries to it.
+
 ## Merge through the host
 
 Approve with the merge switch on, or `jobs merge`, for a bound project:

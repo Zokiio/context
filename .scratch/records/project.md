@@ -41,7 +41,7 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Commitment notes
 
-2026-10-25: The [code host plan](../factory-code-host/spec.md) is recorded as six WorkItems under `factory-code-host/issues/`, with an [ADR draft](../../docs/adr/0006-deliver-accepted-work-through-the-code-host.md). The user settled its decisions: the pull request opens before approval, a mapped reviewer's change request repairs automatically, the service uses the operator's `gh` login, and GitHub comes first. None is selected.
+2026-10-25: The [code host plan](../factory-code-host/spec.md) is recorded as five WorkItems under `factory-code-host/issues/`, with an [ADR draft](../../docs/adr/0006-deliver-accepted-work-through-the-code-host.md). Its repair brief ticket was folded into the [agent harnesses plan's](factory-harnesses/issues/01-repair-brief.md). The user settled its decisions: the pull request opens before approval, a mapped reviewer's change request repairs automatically, the service uses the operator's `gh` login, and GitHub comes first. None is selected.
 
 2026-10-23: The user approved the task workspace plan: explicit drafts and queue control, archive and safe deletion, spacious formatted editing, live run activity, and retained history. Deliver this milestone together in one pull request.
 
@@ -95,6 +95,8 @@ Completed execution and merged publication do not establish current acceptance. 
 ## Open decisions
 
 - [Choose how a project shapes its factory pipeline](factory-parallel-runs/decisions/01-pipeline-shape.md)
+- [Resume native sessions on repair only if briefed repairs keep failing](factory-harnesses/decisions/01-resume-native-sessions.md)
+- [Where the pilot's records live](factory-team-scale/decisions/01-record-location.md)
 
 ## Context
 
