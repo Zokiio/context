@@ -1,10 +1,11 @@
 # Run the factory for a small team
 
-The vision names a possible pilot: a small team working in one monorepo inside an enterprise. This spec says what the factory service needs before three to six people can share it, and which extra interfaces come first. It was planned on 2026-10-25 against `dev` at `afe9989`. Joakim settled the decisions recorded below in the same session, except where the records live, which is an [open decision](../records/factory-team-scale/decisions/01-record-location.md). Nothing here is a current commitment until he selects the tickets.
+The vision names a possible pilot: a small team working in one monorepo inside an enterprise. This spec says what the factory service needs before three to six people can share it, and which extra interfaces come first. It was planned on 2026-10-25 against `dev` at `afe9989`. Joakim settled the decisions recorded below in the same session. Where the records live has its own [decision record](../records/factory-team-scale/decisions/01-record-location.md). Nothing here is a current commitment until he selects the tickets.
 
 ## The pilot this plan serves
 
 - Three to six people work in one monorepo, possibly across several registered projects.
+- The pilot's records live in a separate records repository, cloned beside the monorepo.
 - One factory service runs on an always-on host the team can reach over TLS. Workers run on that host.
 - Teammates use the browser and the `ctx factory` CLI from their own machines.
 - A person agrees what done means for their own change, and a different teammate approves it. The two decisions per change stay as they are.
@@ -34,7 +35,7 @@ In this order:
 
 1. Sign in once per browser ([01](../records/factory-team-scale/issues/01-browser-session.md)). Links from a notification need it.
 2. Each card names who its decision waits on, and "Needs you" means the viewer ([02](../records/factory-team-scale/issues/02-decision-owners.md)).
-3. The service builds from the team's current target branch ([07](../records/factory-team-scale/issues/07-current-target-base.md)) and publishes its record writes to the team ([08](../records/factory-team-scale/issues/08-publish-record-writes.md)), once the record-location decision is made.
+3. The service builds from the team's current target branch ([07](../records/factory-team-scale/issues/07-current-target-base.md)) and publishes its record writes to the records repository ([08](../records/factory-team-scale/issues/08-publish-record-writes.md)).
 4. A project webhook announces work that waits on a person ([03](../records/factory-team-scale/issues/03-notification-webhook.md)), formatted for the team's chat once that is known ([04](../records/factory-team-scale/issues/04-chat-formats.md)).
 5. A guide for running the factory on a shared host, with backup and restore, rehearsed end to end ([06](../records/factory-team-scale/issues/06-team-host-guide.md)).
 
@@ -50,7 +51,9 @@ The pilot needs the data directory to survive a disk loss. An online SQLite back
 
 Before admitting a job or starting locked tests, the service fetches the project's target branch and fast-forwards its local copy. It never merges, rebases or discards local changes. If the local copy has diverged, or the fetch fails, nothing starts and the card says why.
 
-Every record write becomes a commit by the acting person and reaches the team's remote. The route is open. A record commit can't ride on a `waymark/<job>` pull request, because it would change the head and discard its host evidence. A protected target branch refuses a direct push. The [decision record](../records/factory-team-scale/decisions/01-record-location.md) compares three routes: a separate records repository (recommended), a rolling records pull request, and a direct push with a bypass.
+Every record write becomes a commit by the acting person and reaches the team's remote. A record commit can't ride on a `waymark/<job>` pull request, because it would change the head and discard its host evidence. A protected target branch refuses a direct push.
+
+Joakim chose a separate records repository. The pilot's bundle lives in its own Git repository, and the service pushes record commits to it directly by compare-and-swap. Code, locked tests and merges stay in the monorepo and go through the code-host plan's pull requests. Teammates clone both repositories side by side. The [decision record](../records/factory-team-scale/decisions/01-record-location.md) keeps the rejected routes, a rolling records pull request and a direct push with a bypass, along with their costs.
 
 ### Sign in with a token, then a session
 
@@ -116,7 +119,7 @@ Each item below waits for a need the pilot shows:
 
 ## Pilot entry conditions
 
-- The record-location decision is resolved.
+- The pilot's records are in a separate records repository that the bot account can push to.
 - Tickets 01, 02, 03, 06, 07 and 08 are accepted, and 04 is accepted for the team's chat.
 - The code-host plan's pull request delivery is accepted.
 - The pilot project uses the ask policy above, and every teammate holds read, coordinate, review, accept and merge.
