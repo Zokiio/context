@@ -2,7 +2,7 @@
 type: WorkItem
 id: 311220e7-59a4-4ff5-89f0-e5af2cef5248
 title: Send blocking agent findings to a bounded repair
-triage: needs-triage
+triage: ready-for-agent
 execution: unstarted
 ---
 
@@ -21,6 +21,7 @@ The findings reach the builder through the repair brief that the agent harnesses
 ## Blocked by
 
 - [Review each verified candidate with an independent agent](01-agent-review-stage.md)
+- [Tell a repair why the previous attempt failed](../../factory-harnesses/issues/01-repair-brief.md)
 
 ## Blocked by decisions
 
@@ -40,3 +41,4 @@ None.
 ## Comments
 
 - 2026-10-25: Triage stays `needs-triage` until the repair-brief ticket from the agent harnesses plan exists on the same branch. Then link it under Blocked by and set `ready-for-agent`. That plan was not yet written when this ticket was split, so a link here would not resolve.
+- 2026-10-25: Both plans are now on `feat/factory-gap-plans`. The repair-brief ticket is linked under Blocked by, and triage is `ready-for-agent`.
