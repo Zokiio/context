@@ -1,6 +1,6 @@
 # Run the factory for a small team
 
-The vision names a possible pilot: a small team working in one monorepo inside an enterprise. This spec says what the factory service needs before three to six people can share it, and which extra interfaces come first. It was planned on 2026-10-25 against `dev` at `afe9989`. Joakim settled the open decisions recorded below in the same session. Nothing here is a current commitment until he selects the tickets.
+The vision names a possible pilot: a small team working in one monorepo inside an enterprise. This spec says what the factory service needs before three to six people can share it, and which extra interfaces come first. It was planned on 2026-10-25 against `dev` at `afe9989`. Joakim settled the decisions recorded below in the same session, except where the records live, which is an [open decision](../records/factory-team-scale/decisions/01-record-location.md). Nothing here is a current commitment until he selects the tickets.
 
 ## The pilot this plan serves
 
@@ -9,7 +9,7 @@ The vision names a possible pilot: a small team working in one monorepo inside a
 - Teammates use the browser and the `ctx factory` CLI from their own machines.
 - A person agrees what done means for their own change, and a different teammate approves it. The two decisions per change stay as they are.
 
-Remote workers, parallel builds and pushing to the team's remote belong to sibling plans. See [Dependencies](#dependencies-on-sibling-plans).
+Remote workers, parallel builds and pull requests belong to sibling plans. See [Dependencies](#dependencies-on-sibling-plans).
 
 ## What breaks for a team today
 
@@ -19,7 +19,10 @@ These were checked in the code. None of them shows up in solo use.
 2. A link opened in a new tab asks for the token again. The browser keeps the bearer token in per-tab `sessionStorage` (`internal/factoryhttp/assets/app.js:7`). Every link from a chat message would open a sign-in screen.
 3. Nothing tells a person that work is waiting on them. Events exist only per job, and nothing leaves the service.
 4. One person's ask policy approves everyone's changes. The autopilot acts as `Ask.SetBy` for every job in the project (`internal/factory/pilot.go`). If that person saved "ask only when untested", the autopilot approves a teammate's change in their name, and nobody read the diff.
-5. The service's record writes never reach the team. Task edits, accepted refinements and acceptance publication land as uncommitted files in the host's checkout, and nothing in `internal/factory` or `internal/factoryrecords` commits, fetches or pushes them. The plan for pushes, PRs and CI owns the fix.
+5. The service's record writes never reach the team. Task edits, accepted refinements and acceptance publication land as uncommitted files in the host's checkout, and nothing in `internal/factory` or `internal/factoryrecords` commits, fetches or pushes them.
+6. The service builds from a stale base. Admission uses local `HEAD` (`internal/factory/plan.go:182`), so commits that teammates merge on the remote never reach the next build, and neither do their record edits.
+
+The code-host plan (`claude/plan-pr-ci-375e4f`) pushes job branches, opens pull requests and merges through GitHub. Its session confirmed that it covers neither 5 nor 6, and asked for both to live here.
 
 The store is not on this list. One SQLite connection behind one process (`SetMaxOpenConns(1)`, `controller.lock`) is plenty for a few people and a handful of workers. The real risk is losing the data directory, and a backup covers that.
 
@@ -31,8 +34,9 @@ In this order:
 
 1. Sign in once per browser ([01](../records/factory-team-scale/issues/01-browser-session.md)). Links from a notification need it.
 2. Each card names who its decision waits on, and "Needs you" means the viewer ([02](../records/factory-team-scale/issues/02-decision-owners.md)).
-3. A project webhook announces work that waits on a person ([03](../records/factory-team-scale/issues/03-notification-webhook.md)), formatted for the team's chat once that is known ([04](../records/factory-team-scale/issues/04-chat-formats.md)).
-4. A guide for running the factory on a shared host, with backup and restore, rehearsed end to end ([06](../records/factory-team-scale/issues/06-team-host-guide.md)).
+3. The service builds from the team's current target branch ([07](../records/factory-team-scale/issues/07-current-target-base.md)) and publishes its record writes to the team ([08](../records/factory-team-scale/issues/08-publish-record-writes.md)), once the record-location decision is made.
+4. A project webhook announces work that waits on a person ([03](../records/factory-team-scale/issues/03-notification-webhook.md)), formatted for the team's chat once that is known ([04](../records/factory-team-scale/issues/04-chat-formats.md)).
+5. A guide for running the factory on a shared host, with backup and restore, rehearsed end to end ([06](../records/factory-team-scale/issues/06-team-host-guide.md)).
 
 The read-only MCP server ([05](../records/factory-team-scale/issues/05-read-only-mcp.md)) is independent and can land at any point. It isn't a pilot entry condition.
 
@@ -41,6 +45,12 @@ The read-only MCP server ([05](../records/factory-team-scale/issues/05-read-only
 ADR 0005 stands, so this plan needs no ADR. One controller with a private SQLite store already serves several users and clients. It is also the shared claim authority the vision asks for: teammates on other machines submit jobs to the same controller, and the unique active-claim index (`one_active_implementation_claim`) does the rest. The separate claim service proposed under Team mode in `docs/software-factory-plan.md` isn't needed.
 
 The pilot needs the data directory to survive a disk loss. An online SQLite backup plus a copy of the immutable evidence directory covers that with no new command. Restoring that backup behaves like a crash: on start, `recoverInterruptedAttempts` marks attempts that were running as unknown, and they need reconciliation. Ticket 06 documents and rehearses this.
+
+### Build from the team's base and publish records
+
+Before admitting a job or starting locked tests, the service fetches the project's target branch and fast-forwards its local copy. It never merges, rebases or discards local changes. If the local copy has diverged, or the fetch fails, nothing starts and the card says why.
+
+Every record write becomes a commit by the acting person and reaches the team's remote. The route is open. A record commit can't ride on a `waymark/<job>` pull request, because it would change the head and discard its host evidence. A protected target branch refuses a direct push. The [decision record](../records/factory-team-scale/decisions/01-record-location.md) compares three routes: a separate records repository (recommended), a rolling records pull request, and a direct push with a bypass.
 
 ### Sign in with a token, then a session
 
@@ -100,14 +110,15 @@ Each item below waits for a need the pilot shows:
 
 ## Dependencies on sibling plans
 
-- **Pushes, PRs and CI.** The pilot can't start until merges and the service's own record writes reach the team's remote, and the service fetches the base it builds from (finding 5). On protected-main repositories this interacts with the PR flow, so that plan owns it.
+- **Pushes, PRs and CI.** The code-host plan pushes job branches, opens pull requests and merges them through GitHub. It also fast-forwards the local target after a factory merge. The pilot needs it accepted. Its pull requests appear as the operator's `gh` login, so ticket 06's guide logs `gh` in as a dedicated bot account. That plan names a GitHub App as the later answer if the enterprise forbids machine users.
 - **Parallel runs.** The autopilot builds one change per project at a time (`pilotBusy`). For three to six people that limits throughput but doesn't block the pilot.
 - **Sandboxes.** Until isolation lands, candidate code runs as the worker's OS user. Ticket 06's guide runs workers as a different OS user from the service and keeps no human token files on the host. This follows the sandboxes plan's finding that candidate code can read a same-user token file.
 
 ## Pilot entry conditions
 
-- Tickets 01, 02, 03 and 06 are accepted, and 04 is accepted for the team's chat.
-- The PR plan's push, fetch and record-commit work is accepted.
+- The record-location decision is resolved.
+- Tickets 01, 02, 03, 06, 07 and 08 are accepted, and 04 is accepted for the team's chat.
+- The code-host plan's pull request delivery is accepted.
 - The pilot project uses the ask policy above, and every teammate holds read, coordinate, review, accept and merge.
 
 ## Verification approach
