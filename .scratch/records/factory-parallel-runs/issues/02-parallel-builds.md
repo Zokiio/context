@@ -14,7 +14,7 @@ The autopilot starts one build per project at a time, and `ctx factory solo` run
 
 ## Context
 
-- [Work item is the factory's unit](../../../../docs/adr/0006-work-item-is-the-factory-unit.md)
+- [Work item is the factory's unit](../../../../docs/adr/0008-work-item-is-the-factory-unit.md)
 
 ## Blocked by
 

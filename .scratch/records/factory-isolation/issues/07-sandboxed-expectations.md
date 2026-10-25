@@ -14,7 +14,7 @@ The expectation author writes and runs its tests inside a container. Its protect
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 - [Factory platform architecture](../../../../docs/factory-platform-design.md)
 
 ## Blocked by

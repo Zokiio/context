@@ -14,7 +14,7 @@ Grooming is meant to propose ticket splits around independently verifiable outco
 
 ## Context
 
-- [Work item is the factory's unit](../../../../docs/adr/0006-work-item-is-the-factory-unit.md)
+- [Work item is the factory's unit](../../../../docs/adr/0008-work-item-is-the-factory-unit.md)
 - [Product vision](../../../../docs/vision.md)
 
 ## Blocked by

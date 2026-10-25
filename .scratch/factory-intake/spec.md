@@ -1,6 +1,6 @@
 # Bring tracker work into the factory
 
-Decided with the user on 25 October 2026. Work enters the factory today only through the board or `ctx factory work add`, and the autopilot picks only from Current commitments. This plan imports GitHub issues and Jira Data Center issues into the project record and lets a pickup trigger queue matching work on a person's behalf. The [intake decision](../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md) records the ownership and start rules this spec depends on.
+Decided with the user on 25 October 2026. Work enters the factory today only through the board or `ctx factory work add`, and the autopilot picks only from Current commitments. This plan imports GitHub issues and Jira Data Center issues into the project record and lets a pickup trigger queue matching work on a person's behalf. The [intake decision](../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md) records the ownership and start rules this spec depends on.
 
 ## Observed need
 

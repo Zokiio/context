@@ -16,7 +16,7 @@ Grooming already proposes "ticket splits around independently verifiable outcome
 
 ## Decisions
 
-- **The work item is the factory's unit of planning and parallelism.** The refiner may propose splitting an item. A person accepts the split as the plan decision. Each child runs through the normal line on its own. A job keeps one implementation writer. The engine doesn't port the orchestrate skill's checkpoints. [ADR 0006](../../docs/adr/0006-work-item-is-the-factory-unit.md) records the reasons and the alternatives.
+- **The work item is the factory's unit of planning and parallelism.** The refiner may propose splitting an item. A person accepts the split as the plan decision. Each child runs through the normal line on its own. A job keeps one implementation writer. The engine doesn't port the orchestrate skill's checkpoints. [ADR 0008](../../docs/adr/0008-work-item-is-the-factory-unit.md) records the reasons and the alternatives.
 - **Parallel builds rely on a verified merge queue.** Each build keeps its own claim, worktree and frozen protected paths, as today. Merges into one branch run one at a time. A change that no longer merges cleanly is rebuilt from the branch tip. Nobody predicts write scopes up front; the trial counts conflicts first.
 - **Each split child gets its own approval.** A split always waits for a person, even on autopilot. Accepting it is the plan decision for every child. Each child is then approved by the person or by the ask policy, and merges by itself.
 - **Pipeline shape stays open.** [Decision 01](../records/factory-parallel-runs/decisions/01-pipeline-shape.md) holds the options and the recommendation, a fixed line with policy switches. No ticket here depends on it.

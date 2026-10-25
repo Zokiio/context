@@ -14,7 +14,7 @@ Refresh is manual after tickets 01 and 02. This ticket makes the service poll ea
 
 ## Context
 
-- [Tracker intake decision](../../../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md)
+- [Tracker intake decision](../../../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md)
 
 ## Blocked by
 

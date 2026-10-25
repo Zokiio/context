@@ -14,7 +14,7 @@ A sandbox can reach only the hosts its profile lists, through a Waymark proxy th
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 
 ## Blocked by
 

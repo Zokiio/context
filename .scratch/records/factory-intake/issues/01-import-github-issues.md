@@ -14,7 +14,7 @@ The Opsbase grooming trial captured 15 GitHub issues with a hand-written script.
 
 ## Context
 
-- [Tracker intake decision](../../../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md)
+- [Tracker intake decision](../../../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md)
 - [Factory controller decision](../../../../docs/adr/0005-factory-controller-owns-operational-state.md)
 - [Tracker snapshots](../../../../docs/tracker-snapshots.md)
 
@@ -39,4 +39,4 @@ None.
 - A test against the fake GitHub server fails if the import sends any request other than a read.
 - A card for an imported item shows one source fact, such as "GitHub #170", linked to the issue. The Task page shows tracker-owned fields read-only with an "Edit in GitHub" link and the snapshot time. The service refuses an edit to those fields with a message naming GitHub. Record-owned fields stay editable.
 - Tests use a fake GitHub server serving fixtures shaped like the Opsbase capture, including pagination, a pull request in the issues feed, a hidden HTML comment and a bidirectional control. A real-browser check covers the card and the Task page.
-- The operator guide and the HTTP reference describe connections, bindings and refresh. `docs/vision.md`, `docs/tracker-snapshots.md` and `CONTEXT.md` reflect ADR 0006.
+- The operator guide and the HTTP reference describe connections, bindings and refresh. `docs/vision.md`, `docs/tracker-snapshots.md` and `CONTEXT.md` reflect ADR 0007.

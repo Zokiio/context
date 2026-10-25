@@ -14,7 +14,7 @@ Ticket 01 refreshes only items with no history, which is safe but leaves refined
 
 ## Context
 
-- [Tracker intake decision](../../../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md)
+- [Tracker intake decision](../../../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md)
 - [Acceptance fingerprints decision](../../../../docs/adr/0003-recorded-acceptance-for-readiness.md)
 
 ## Blocked by

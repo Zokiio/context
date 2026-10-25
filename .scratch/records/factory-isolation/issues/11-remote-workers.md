@@ -14,7 +14,7 @@ A worker with no access to the service's paths can claim a sandboxed build or ch
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 - [Factory controller decision](../../../../docs/adr/0005-factory-controller-owns-operational-state.md)
 - [Factory HTTP and browser access](../../../../docs/factory-http.md)
 

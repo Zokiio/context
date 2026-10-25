@@ -14,7 +14,7 @@ The builder agent and every command it runs work inside a container. The candida
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 - [Factory platform architecture](../../../../docs/factory-platform-design.md)
 
 ## Blocked by

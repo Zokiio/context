@@ -14,7 +14,7 @@ When another change lands first, a candidate built from an older base may no lon
 
 ## Context
 
-- [Work item is the factory's unit](../../../../docs/adr/0006-work-item-is-the-factory-unit.md)
+- [Work item is the factory's unit](../../../../docs/adr/0008-work-item-is-the-factory-unit.md)
 - [Factory controller decision](../../../../docs/adr/0005-factory-controller-owns-operational-state.md)
 
 ## Blocked by

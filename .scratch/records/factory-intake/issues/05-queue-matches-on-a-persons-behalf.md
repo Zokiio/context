@@ -14,7 +14,7 @@ This is the ticket that lets work start without anyone queueing it. A trigger a 
 
 ## Context
 
-- [Tracker intake decision](../../../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md)
+- [Tracker intake decision](../../../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md)
 
 ## Blocked by
 

@@ -14,7 +14,7 @@ A project administrator can require that every build, check and expectation suit
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 
 ## Blocked by
 

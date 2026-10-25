@@ -65,7 +65,7 @@ Waymark ships a reference Dockerfile for Go projects: Git, the Go toolchain, Nod
 
 ## Code moves in and out as Git bundles
 
-A sandbox never mounts a service worktree or the project's `.git`. A worktree shares hooks, refs and config with the repository, so mounting one would let a confined agent plant a hook that runs the next time the operator commits. Running Git on the host inside a directory the sandbox wrote would also obey that directory's config. `core.fsmonitor` is one way that config can run a program. [ADR 0006](../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md) records this decision.
+A sandbox never mounts a service worktree or the project's `.git`. A worktree shares hooks, refs and config with the repository, so mounting one would let a confined agent plant a hook that runs the next time the operator commits. Running Git on the host inside a directory the sandbox wrote would also obey that directory's config. `core.fsmonitor` is one way that config can run a program. [ADR 0009](../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md) records this decision.
 
 1. The service writes a bundle containing the attempt's input revision. For a build, that is the base or the previous candidate. For a check, it is the candidate.
 2. The worker mounts that bundle read-only, clones it inside the container, and checks out the input revision.

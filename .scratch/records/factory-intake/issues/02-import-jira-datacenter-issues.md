@@ -14,7 +14,7 @@ The team project the user wants to groom runs on Jira Data Center. Its acceptanc
 
 ## Context
 
-- [Tracker intake decision](../../../../docs/adr/0006-tracker-intake-ownership-and-delegated-pickup.md)
+- [Tracker intake decision](../../../../docs/adr/0007-tracker-intake-ownership-and-delegated-pickup.md)
 
 ## Blocked by
 

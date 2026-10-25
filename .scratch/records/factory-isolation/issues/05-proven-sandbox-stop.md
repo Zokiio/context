@@ -14,7 +14,7 @@ Stopping a sandboxed build or check ends as `cancelled` when the container runti
 
 ## Context
 
-- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0006-sandboxed-runs-exchange-git-bundles.md)
+- [Sandboxed runs exchange code as Git bundles](../../../../docs/adr/0009-sandboxed-runs-exchange-git-bundles.md)
 - [Factory controller decision](../../../../docs/adr/0005-factory-controller-owns-operational-state.md)
 
 ## Blocked by

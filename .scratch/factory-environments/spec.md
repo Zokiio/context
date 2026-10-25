@@ -22,7 +22,7 @@ StrongDM's [factory site](https://factory.strongdm.ai/) describes twins of Okta,
 
 ## Decisions
 
-The user made these decisions on 25 October 2026. The [environment ADR draft](../../docs/adr/0006-factory-environments-observe-deployed-revisions.md) records the rationale.
+The user made these decisions on 25 October 2026. The [environment ADR draft](../../docs/adr/0010-factory-environments-observe-deployed-revisions.md) records the rationale.
 
 1. **Observe after merge first.** The project's own pipeline deploys merged work. The factory asks the environment which revision it runs, waits until that revision contains the change, runs the environment's checks, and records what it saw. Deploying a candidate before approval comes later.
 2. **The controller registers environments.** An environment is operational configuration, like a check profile. It is not a project record. The implementer can edit project files, so it must not be able to change what an environment check runs or how a revision is reported.

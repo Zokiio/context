@@ -14,7 +14,7 @@ A split is part of agreeing what done means, which happens in the board's plan p
 
 ## Context
 
-- [Work item is the factory's unit](../../../../docs/adr/0006-work-item-is-the-factory-unit.md)
+- [Work item is the factory's unit](../../../../docs/adr/0008-work-item-is-the-factory-unit.md)
 
 ## Blocked by
 
