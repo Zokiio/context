@@ -41,6 +41,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Commitment notes
 
+2026-10-25: The [code host plan](../factory-code-host/spec.md) is recorded as six WorkItems under `factory-code-host/issues/`, with an [ADR draft](../../docs/adr/0006-deliver-accepted-work-through-the-code-host.md). The user settled its decisions: the pull request opens before approval, a mapped reviewer's change request repairs automatically, the service uses the operator's `gh` login, and GitHub comes first. None is selected.
+
 2026-10-23: The user approved the task workspace plan: explicit drafts and queue control, archive and safe deletion, spacious formatted editing, live run activity, and retained history. Deliver this milestone together in one pull request.
 
 2026-10-22: The user selected the complete factory platform, including the core, service, CLI, web workspace and shared multi-user access. Gups pilot work follows whole-platform acceptance. Earlier commitments are preserved.
