@@ -19,7 +19,7 @@ The reviewer adapter that `solo` uses by default, and the project's reviewer ins
 
 ## Blocked by
 
-- [Review each verified candidate with an independent agent](02-agent-review-stage.md)
+- [Review each verified candidate with an independent agent](01-agent-review-stage.md)
 
 ## Blocked by decisions
 

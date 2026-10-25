@@ -18,7 +18,7 @@ None.
 
 ## Blocked by
 
-- [Send blocking agent findings to a bounded repair](05-review-repair.md)
+- [Send blocking agent findings to a bounded repair](04-review-repair.md)
 
 ## Blocked by decisions
 

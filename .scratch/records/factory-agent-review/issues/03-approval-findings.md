@@ -18,7 +18,7 @@ The browser's approval view, in the drawer and on the page. The person's decisio
 
 ## Blocked by
 
-- [Review each verified candidate with an independent agent](02-agent-review-stage.md)
+- [Review each verified candidate with an independent agent](01-agent-review-stage.md)
 
 ## Blocked by decisions
 

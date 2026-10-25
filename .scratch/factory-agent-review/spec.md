@@ -11,7 +11,7 @@ Only a person reviews a change today. Two paths leave a gap:
 
 The judge (`internal/factory/dispute_judge.go`) only settles disputes the builder raises about frozen tests or requirements. It never sees a candidate that passed.
 
-No factory trial has shown yet that an agent reviewer catches what the checks miss. The Axpilot orchestrate runs on 2026-10-04 ran the two-axis review on every checkpoint, and it verified the spec. The person's first demo still changed the UI. So this plan measures what the reviewer finds and what the person still catches after it (ticket 06), and leaves a second harness out until those numbers exist.
+No factory trial has shown yet that an agent reviewer catches what the checks miss. The Axpilot orchestrate runs on 2026-10-04 ran the two-axis review on every checkpoint, and it verified the spec. The person's first demo still changed the UI. So this plan measures what the reviewer finds and what the person still catches after it (ticket 05), and leaves a second harness out until those numbers exist.
 
 ## Decisions
 
@@ -88,7 +88,7 @@ Stopping the job cancels its reviewer processes. A result that arrives after the
 ### Where findings go
 
 - `clear`: the job waits for the person's approval, or the autopilot approves under decision 3.
-- `blocking`, when a repair is possible: in the transaction that records the result, the controller starts a repair as the job's coordinator. A repair is possible when repairs are left, the deadline hasn't passed, no execution is uncertain, the requirements are unchanged and the coordinator still has `coordinate`. The repair draws on the same admitted limit as failed checks, two by default (`startBuild` uses `min(2, maxRepairAttempts)`). Its instructions carry the blocking findings, attributed to the agent reviewer, with the reviewed candidate. The new candidate goes through the required checks and a fresh agent review.
+- `blocking`, when a repair is possible: in the transaction that records the result, the controller starts a repair as the job's coordinator. A repair is possible when repairs are left, the deadline hasn't passed, no execution is uncertain, the requirements are unchanged and the coordinator still has `coordinate`. The repair draws on the same admitted limit as failed checks, two by default (`startBuild` uses `min(2, maxRepairAttempts)`). Its repair brief carries the blocking findings in their own section, attributed to the agent reviewer, with the reviewed candidate. The new candidate goes through the required checks and a fresh agent review.
 - `blocking`, when no repair is possible: the person gets the Approve decision with the blocking findings first. They can approve over them or reject the change. Nothing is accepted with debt.
 - Advisory findings never start a repair. The person sees them with the change, and Run and History keep them.
 
@@ -122,20 +122,23 @@ The approval view shows the agent's findings in their own section, blocking firs
 - `solo` configures `ctx factory reviewer` when `claude` is installed, with `--review-model` (default `sonnet`), `--review-budget-usd` per axis (default `1`) and `--no-review`.
 - The adapter runs Claude Code in print mode with only Read, Grep and Glob, no session persistence, and a JSON schema for the output, as the judge adapter does.
 - The Agents settings gain reviewer instructions next to the refiner, test author and builder.
+- The agent harnesses plan turns the refiner, test author and judge into per-project role profiles. When those land, the reviewer registers as one more role, as the judge does. This plan doesn't wait for them.
 
 ### Metrics
 
 Insights adds agent reviews by outcome, blocking findings by axis, repairs the reviewer started, and the reviewer's cost within agent cost. It also counts the person's findings on changes the agent review cleared. That last number says whether the reviewer is worth its cost.
 
-## Fix first: a repair doesn't know why it runs
+## A repair doesn't know why it runs
 
-When a person clicks "Send back for a fix", `Review` stores their note as a `changes_requested` review and the browser starts a repair. `assignmentFor` in `internal/factory/workers.go` adds only a resolved judge decision to the repair builder's instructions, so the person's note never reaches the builder. Ticket 01 fixes that for the person's note, and ticket 05 uses the same path for the agent's findings.
+When a person clicks "Send back for a fix", `Review` stores their note as a `changes_requested` review and the browser starts a repair. `assignmentFor` in `internal/factory/workers.go` adds only a resolved judge decision to the repair builder's instructions. The person's note never reaches the builder, and neither does a failed check's output.
+
+The agent harnesses plan (`.scratch/factory-harnesses/spec.md`) owns the fix, a repair brief that tells the attempt about failed checks, protected-path rejections, the previous agent's final message and the person's note. Ticket 04 adds the agent reviewer's blocking findings as one section of that brief and no second channel. It stays `needs-triage` until the repair-brief ticket exists to link as its blocker.
 
 ## Not in this plan
 
-- A second harness for the reviewer. Revisit once ticket 06 has numbers and Codex can run read-only with a spending cap and a cost report. Harness adapters belong to the plan-harnesses work.
+- A second harness for the reviewer. Revisit once ticket 05 has numbers. Harness adapters, and Codex's missing dollar cap, belong to the agent harnesses plan.
 - Rerunning a failed review on the same candidate. Add it if trials show failures are common. Until then the person approves by hand.
-- Giving a repair the failed check's output. Repairs after a failed check get none today. That is a separate outcome.
+- The repair brief itself, which the agent harnesses plan owns.
 - Agent review evidence in the Acceptance record. Add it only when an audit needs it.
 - Review comments and CI results from a code host. Those belong to the plan-pr-ci work.
 
@@ -145,11 +148,10 @@ Deterministic subprocess reviewers exercise a clear review, a blocking one, an a
 
 ## Tickets
 
-1. [Tell a repair attempt why its candidate was sent back](../records/factory-agent-review/issues/01-repair-feedback.md)
-2. [Review each verified candidate with an independent agent](../records/factory-agent-review/issues/02-agent-review-stage.md)
-3. [Run the agent review with read-only Claude Code](../records/factory-agent-review/issues/03-claude-reviewer.md)
-4. [Show agent findings where the person approves](../records/factory-agent-review/issues/04-approval-findings.md)
-5. [Send blocking agent findings to a bounded repair](../records/factory-agent-review/issues/05-review-repair.md)
-6. [Measure what the agent review catches](../records/factory-agent-review/issues/06-review-metrics.md)
+1. [Review each verified candidate with an independent agent](../records/factory-agent-review/issues/01-agent-review-stage.md)
+2. [Run the agent review with read-only Claude Code](../records/factory-agent-review/issues/02-claude-reviewer.md)
+3. [Show agent findings where the person approves](../records/factory-agent-review/issues/03-approval-findings.md)
+4. [Send blocking agent findings to a bounded repair](../records/factory-agent-review/issues/04-review-repair.md)
+5. [Measure what the agent review catches](../records/factory-agent-review/issues/05-review-metrics.md)
 
-01 and 02 are independent. 03 and 04 follow 02. 05 needs 01 and 02, and 06 follows 05. Until 05 lands, a blocking review goes to the person. Tickets 02 and 03 together give a working reviewer that gates delegated approval, and 04 makes its findings readable where the person approves.
+01 is ready now. 02 and 03 follow 01. 04 needs 01 and the agent harnesses plan's repair brief, and 05 follows 04. Until 04 lands, a blocking review goes to the person. Tickets 01 and 02 together give a working reviewer that gates delegated approval, and 03 makes its findings readable where the person approves.

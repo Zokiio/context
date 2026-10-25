@@ -6,7 +6,7 @@ triage: ready-for-agent
 execution: unstarted
 ---
 
-The controller stage, its records and its failure rules. A configured reviewer command reads each candidate that passed its checks, and its result gates the autopilot's delegated approval. Until ticket 05, a blocking review goes to the person.
+The controller stage, its records and its failure rules. A configured reviewer command reads each candidate that passed its checks, and its result gates the autopilot's delegated approval. Until ticket 04, a blocking review goes to the person.
 
 ## Spec
 
