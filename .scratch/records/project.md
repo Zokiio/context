@@ -92,7 +92,7 @@ Completed execution and merged publication do not establish current acceptance. 
 
 ## Open decisions
 
-None
+- [Choose how a project shapes its factory pipeline](factory-parallel-runs/decisions/01-pipeline-shape.md)
 
 ## Context
 
