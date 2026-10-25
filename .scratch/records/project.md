@@ -107,7 +107,6 @@ Completed execution and merged publication do not establish current acceptance. 
 
 - [Choose how a project shapes its factory pipeline](factory-parallel-runs/decisions/01-pipeline-shape.md)
 - [Resume native sessions on repair only if briefed repairs keep failing](factory-harnesses/decisions/01-resume-native-sessions.md)
-- [Where the pilot's records live](factory-team-scale/decisions/01-record-location.md)
 
 ## Context
 
