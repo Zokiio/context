@@ -20,6 +20,9 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Review each verified candidate with an independent agent](factory-agent-review/issues/01-agent-review-stage.md)
+- [Run the agent review with read-only Claude Code](factory-agent-review/issues/02-claude-reviewer.md)
+
 - [Judge implementation disputes and show the next responsible agent](factory-task-workspace/issues/03-judge-disputes.md)
 - [Give requirement refinement the configured test ownership](factory-task-workspace/issues/02-refiner-test-ownership.md)
 - [Manage tasks and observe factory runs from a permanent workspace](factory-task-workspace/issues/01-task-control-and-live-runs.md)
@@ -40,6 +43,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 - [Decide an implementer's open questions before review](workflow-feedback/issues/07-decide-open-questions.md)
 
 ## Commitment notes
+
+2026-10-25: The user committed the agent review stage and its Claude reviewer from the [agent review plan](../factory-agent-review/spec.md). Tickets 03 to 05 of that plan remain uncommitted.
 
 2026-10-23: The user approved the task workspace plan: explicit drafts and queue control, archive and safe deletion, spacious formatted editing, live run activity, and retained history. Deliver this milestone together in one pull request.
 
