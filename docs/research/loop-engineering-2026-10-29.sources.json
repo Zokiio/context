@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "research_title": "Loop Engineering research for Waymark",
+  "as_of_date": "2026-10-29",
+  "user_date_timezone": "Europe/Stockholm",
+  "scope": {
+    "report_path": "docs/research/loop-engineering-2026-10-29.md",
+    "implementation_status": "Source research only; no Waymark change proposed or made",
+    "new_candidate_test_runs": 0,
+    "new_provider_runs": 0,
+    "license_status": "Observed source terms, not a transitive rights audit or dependency selection"
+  },
+  "method": {
+    "agents": [
+      "code_audit: read every tools/*/src file, every tools/*/test file, all .github/workflows, the root scripts and package manifests at the pinned commit with git, cat, sed, grep and wc only; wrote a draft audit of what each tool does, what the tests assert, and what CI runs"
+    ],
+    "root": "Lead session: cloned cobusgreyling/loop-engineering with hooks disabled into an empty scratch directory and read README.md, LOOP.md, docs/concepts.md, docs/primitives.md, docs/refactor.md, docs/loop-design-checklist.md, patterns/ci-sweeper.md, the loop-verifier, minimal-fix and budget-negotiator skills, templates/SKILL.md.loop-guard, gate.yaml, .github/workflows/daily-triage.yml, loop-run-log.md, scripts/github-triage.mjs (header and exec call), stories/README.md and the cited stories, resources/sources.md, and tools/loop-context/src/context-manager.ts (types, defaults, error signature, similarity and checkCircuitBreaker) in full. Read git history for commit counts per month, bot share and the commit that added each story. Read GitHub metadata through gh api and npm registry metadata with curl. Fetched and read the three linked web sources.",
+    "review": "Every loop-engineering citation in the note was checked mechanically against the pinned commit: the path exists and each cited line range ends within the file. The lead rechecked the code audit's decision-relevant claims by hand at the cited lines: no model or agent call in tools, workflows or scripts; loop-gate built only by its release workflow; required_approving_review_count 0; the daily-triage and star-history workflows auto-merge their own PRs; loop-pause-all read by no code; constant tokens_estimate and actions_taken; the loop-drill canary header; the skills/ fast path in fork-pr-gate; the unquoted action input; 11,690 source lines and 433 tool test cases; 14 release workflows with provenance.",
+    "limits": "Read-only source inspection. No install, build, npx command, script, test or workflow from the repository was run. Test source is not a passing test result. Starters, per-tool examples, the remaining patterns and docs, and scripts/issue-bodies were read by search only. npm tarballs were not compared with the repository. Adopter claims, sibling repositories and open-spek/loop were not checked. README and story claims are publisher statements unless the note says they were checked.",
+    "lead": "Wrote the Relevance to Waymark section from the Waymark sources listed under local_sources."
+  },
+  "requested_urls": [
+    "https://github.com/cobusgreyling/loop-engineering"
+  ],
+  "web_sources": [
+    {
+      "id": "osmani-loop-engineering",
+      "url": "https://addyosmani.com/blog/loop-engineering/",
+      "observed": "Published 2026-06-07 (article:published_time). Author described as a Member of Technical Staff at Anthropic working on Claude Code. Defines loop engineering as designing the system that prompts the agent; five primitives plus a state layer mapped to Codex and Claude Code features; one daily triage-to-PR example with a separate reviewing sub-agent. No retry limits and no explicit approval gate before merge. No mention of Greyling or this repository.",
+      "representation": "HTML fetched with curl on 2026-10-29; read through the web tool and grep",
+      "sha256": "fd0d099af06cddf8d542e2026c27b3941fd1f4ddbfbe2329b1c53f590c3ca68e",
+      "bytes": 199021
+    },
+    {
+      "id": "greyling-loop-engineering-essay",
+      "url": "https://cobusgreyling.substack.com/p/loop-engineering",
+      "observed": "datePublished 2026-06-09T10:40:46+00:00, the repository's creation day. Credits Osmani for the framing and cites Steinberger and Cherny; does not claim the term. Warns that sub-agents and short cadences multiply token cost. Links the repository as the practical reference without describing its contents.",
+      "representation": "HTML fetched with curl on 2026-10-29; read through the web tool and grep",
+      "sha256": "361cf1df905e0d0c2393cf4e80bd613c6f236d3f590e82baf348bd6def0801cd",
+      "bytes": 239278
+    },
+    {
+      "id": "lulla-2026-arxiv-abs",
+      "url": "https://arxiv.org/abs/2608.21884",
+      "observed": "Loop Engineering: Building Blocks, Adoption, and Impact. Lulla, Nersesyan, Mohsenimofidi, Treude, Baltes. v1 2026-08-22, v2 2026-08-26, v3 2026-10-22. Gray-literature review, traceability analysis and mining study of 36,710 repositories, and a proposed controlled experiment that has not been run.",
+      "representation": "Abstract page fetched with curl on 2026-10-29",
+      "sha256": "72ec6371fab2eafc1677a38daa523be3b3223698245df17eae437e7524ab5433",
+      "bytes": 43126
+    },
+    {
+      "id": "lulla-2026-arxiv-html-v3",
+      "url": "https://arxiv.org/html/2608.21884v3",
+      "observed": "Section 2.2 summarizes this repository's seven patterns, readiness levels L0-L3, failure-mode catalogs and tooling (Greyling 2026b, accessed 2026-07-15). Section 3 lists a snapshot of the repository and the essay among reviewed sources, notes the sources are not independent and build on Osmani's posts, and finds no systematic evidence of benefit. Section 4.1 says the detection heuristics and thresholds were drafted from this repository. Mining: 217 of 36,487 analyzed repositories had autonomous agent loops; no confirmed committed state file; verifiers and budgets found only through session annotation. The cost row says observed run logs hold template values, not measurements, citing this repository.",
+      "representation": "HTML rendering of v3 fetched with curl on 2026-10-29; text extracted and searched for Greyling and loop-engineering",
+      "sha256": "3e71b83c3a3eb868a91b8e0d9a8b1f7bf4644cb3968dac8ef9ae183bc16d81a4",
+      "bytes": 289764
+    },
+    {
+      "id": "npm-cobusgreyling-packages",
+      "url": "https://registry.npmjs.org/@cobusgreyling%2Floop",
+      "observed": "@cobusgreyling/loop 0.2.0 latest (2026-08-28), 3 versions since 2026-07-24. Also read: loop-audit 1.9.0 (11 versions since 2026-06-09), loop-init 1.7.0 (11 versions), loop-context 1.5.0 (2026-07-22), loop-gate 1.0.0 (2026-07-19, one version). All MIT; no install-time scripts in the latest version manifests.",
+      "representation": "Registry JSON fetched with curl on 2026-10-29; packages not downloaded or installed"
+    }
+  ],
+  "repositories": [
+    {
+      "id": "loop-engineering",
+      "repository": "cobusgreyling/loop-engineering",
+      "branch": "main",
+      "commit": "18b16342aca27b40f3cac0bb0ab42b7df3ee2cd1",
+      "commit_date": "2026-10-29T08:02:07Z",
+      "commit_subject": "chore(loop): daily triage update STATE.md + run log [automated] (#731)",
+      "license": "MIT",
+      "license_files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "771efae60a01bed1628b2d0e1235b496360f9360",
+          "url": "https://github.com/cobusgreyling/loop-engineering/blob/18b16342aca27b40f3cac0bb0ab42b7df3ee2cd1/LICENSE",
+          "representation": "Observed Git blob SHA-1; MIT text, Copyright (c) 2026 Cobus Greyling and contributors; no source bytes copied into this repository"
+        }
+      ],
+      "github_metadata_2026_10_29": {
+        "created_at": "2026-06-09T06:28:20Z",
+        "pushed_at": "2026-10-29T08:02:08Z",
+        "stargazers": 11665,
+        "forks": 1573,
+        "watchers": 71,
+        "open_issues_and_prs": 18,
+        "commits_on_main": 618,
+        "merge_commits_on_main": 46,
+        "commits_by_month_people_then_bots": {
+          "2026-06": [
+            103,
+            16
+          ],
+          "2026-07": [
+            177,
+            62
+          ],
+          "2026-08": [
+            54,
+            59
+          ],
+          "2026-09": [
+            4,
+            65
+          ],
+          "2026-10": [
+            10,
+            68
+          ]
+        },
+        "releases": [
+          "v1.5.0 (2026-06-30)",
+          "v1.6.0 (2026-07-20)"
+        ],
+        "contributors_api_top": {
+          "github-actions[bot]": 216,
+          "cobusgreyling": 135,
+          "dependabot[bot]": 55,
+          "Cobus Greyling (unlinked address)": 54,
+          "KhaiTrang1995": 30,
+          "THRISHAL12345": 27,
+          "AIMindCrafter": 22
+        },
+        "contributors_api_entries": 48,
+        "archived": false
+      },
+      "reviewer": "root and code_audit",
+      "url": "https://github.com/cobusgreyling/loop-engineering",
+      "inspected_files": [
+        {
+          "path": ".github/ruleset-main-protection.json",
+          "git_blob_sha1": "d011cafe6a6bae3a52de7e6f38f5aae704e1de17",
+          "lines": 36,
+          "cited_lines": "17"
+        },
+        {
+          "path": ".github/workflows/changelog-drafter.yml",
+          "git_blob_sha1": "c16b98de6eca8b3a5c1d88a7e2c5363a653df488",
+          "lines": 85,
+          "cited_lines": "20-86"
+        },
+        {
+          "path": ".github/workflows/daily-triage.yml",
+          "git_blob_sha1": "81f220948ddbec658a787b05749c39bee36cad0a",
+          "lines": 244,
+          "cited_lines": "97-101, 108-110, 110, 183-220"
+        },
+        {
+          "path": ".github/workflows/fork-pr-gate.yml",
+          "git_blob_sha1": "a21d85263e031b94b8390c0460bdaa25d0384e49",
+          "lines": 118,
+          "cited_lines": "50-91"
+        },
+        {
+          "path": "CODEOWNERS",
+          "git_blob_sha1": "71dfadfba4c49838c9e0116d2afc292b5e55a1dd",
+          "lines": 17
+        },
+        {
+          "path": "LICENSE",
+          "git_blob_sha1": "771efae60a01bed1628b2d0e1235b496360f9360",
+          "lines": 21
+        },
+        {
+          "path": "LOOP.md",
+          "git_blob_sha1": "71f2c5a493fcc6eaff3ef1685b1a8d942bdca1cb",
+          "lines": 101,
+          "cited_lines": "59, 63, 66, 80-94"
+        },
+        {
+          "path": "README.md",
+          "git_blob_sha1": "23f7276729e59ba6bd872540c91130bd92ecf67e",
+          "lines": 129,
+          "cited_lines": "17, 31-34, 44, 50, 63-72, 86, 88, 116, 120-125, 124"
+        },
+        {
+          "path": "docs/loop-design-checklist.md",
+          "git_blob_sha1": "d97514b495745bfaf40d305d74c6e2126972c811",
+          "lines": 98,
+          "cited_lines": "84-87"
+        },
+        {
+          "path": "docs/primitives.md",
+          "git_blob_sha1": "b6c4dad145c806e721fba6341690f69870b4a3f9",
+          "lines": 99
+        },
+        {
+          "path": "docs/refactor.md",
+          "git_blob_sha1": "6bffa76f1f6809fceb582bd3e77d915a019f4d47",
+          "lines": 79,
+          "cited_lines": "3, 35, 37-44"
+        },
+        {
+          "path": "gate.yaml",
+          "git_blob_sha1": "976f4b7463399145fc1f0bbf870b60e032cb1b49",
+          "lines": 25
+        },
+        {
+          "path": "loop-constraints.md",
+          "git_blob_sha1": "9774aaf0c38f12838acd89916a613f2ade1d4e12",
+          "lines": 31,
+          "cited_lines": "8, 20-21"
+        },
+        {
+          "path": "loop-drill.json",
+          "git_blob_sha1": "5be231d8f471edb51d52be64509216b890521991",
+          "lines": 135,
+          "cited_lines": "20-26"
+        },
+        {
+          "path": "loop-run-log.md",
+          "git_blob_sha1": "b064b04e3c36b0532acc4c9edaef1f6dca06a19b",
+          "lines": 45,
+          "cited_lines": "24-45"
+        },
+        {
+          "path": "patterns/ci-sweeper.md",
+          "git_blob_sha1": "2bc2258912847e6c341fae04c80e39c927e69d59",
+          "lines": 118,
+          "cited_lines": "43-59, 57-59"
+        },
+        {
+          "path": "resources/sources.md",
+          "git_blob_sha1": "5a06f232ecedac372673bf95c8563a94f7e6c4e1",
+          "lines": 65,
+          "cited_lines": "47-48"
+        },
+        {
+          "path": "scripts/ci-audit-gates.sh",
+          "git_blob_sha1": "236c21d2f1bd16de20baee7a746e76008fa72a11",
+          "lines": 107,
+          "cited_lines": "77-100"
+        },
+        {
+          "path": "scripts/ci-validate-gates.sh",
+          "git_blob_sha1": "18456808c458a9fe4ca5fc0a059aa8e15f13338a",
+          "lines": 132,
+          "cited_lines": "20-25"
+        },
+        {
+          "path": "scripts/github-triage.mjs",
+          "git_blob_sha1": "03155918e4c2c9f587f5516a2a8f667bb4e7c1d7",
+          "lines": 346,
+          "cited_lines": "1-9, 120-210, 267"
+        },
+        {
+          "path": "skills/loop-verifier/SKILL.md",
+          "git_blob_sha1": "48f070f8b0f306d49bb399241389ced57db943b2",
+          "lines": 61,
+          "cited_lines": "21-47, 50-60"
+        },
+        {
+          "path": "skills/minimal-fix/SKILL.md",
+          "git_blob_sha1": "482a9dabf0e5b95e3de9133f252807ac3e43e8e7",
+          "lines": 65,
+          "cited_lines": "47-52"
+        },
+        {
+          "path": "stories/README.md",
+          "git_blob_sha1": "6a8af1cd3e1767b39efff31819fb53e437d51751",
+          "lines": 33,
+          "cited_lines": "3"
+        },
+        {
+          "path": "stories/pr-babysitter-week-one.md",
+          "git_blob_sha1": "a6dca196302bb8cad23e57d4babf14645ba4131d",
+          "lines": 38,
+          "cited_lines": "1-3"
+        },
+        {
+          "path": "stories/quant-loop-the-verifier-problem.md",
+          "git_blob_sha1": "ddaff05f9784c1e03e007b5a7645fd67a5acdfeb",
+          "lines": 67,
+          "cited_lines": "63-66"
+        },
+        {
+          "path": "stories/thirty-weekday-runs.md",
+          "git_blob_sha1": "d84b49b8a26c03e9643f33bf6b2a48bf0be5bd86",
+          "lines": 52
+        },
+        {
+          "path": "stories/why-we-killed-ci-sweeper.md",
+          "git_blob_sha1": "9046b6c2436ef79602f1ffd33d087e12537d8c72",
+          "lines": 29,
+          "cited_lines": "7-9"
+        },
+        {
+          "path": "templates/SKILL.md.loop-guard",
+          "git_blob_sha1": "d8a700ca610ff8bb1b8eaf052ecaeef5ba3a33e3",
+          "lines": 116
+        },
+        {
+          "path": "tools/loop-action/action.yml",
+          "git_blob_sha1": "ad1e1e755760f0c72cc723c8f481d4f5bbfabeff",
+          "lines": 67,
+          "cited_lines": "28-67, 36"
+        },
+        {
+          "path": "tools/loop-audit/src/auditor.ts",
+          "git_blob_sha1": "553e39c798d1017e824ef17ce1ca0d841b89388d",
+          "lines": 1055,
+          "cited_lines": "73-117, 138, 268-305, 339-395"
+        },
+        {
+          "path": "tools/loop-context/src/cli.ts",
+          "git_blob_sha1": "6bc097cbcaecda98166255c892a4ed0f87312bf6",
+          "lines": 343,
+          "cited_lines": "162"
+        },
+        {
+          "path": "tools/loop-context/src/context-manager.ts",
+          "git_blob_sha1": "3bca4d20e6afb75acb23184d0184204efc8b63c2",
+          "lines": 483,
+          "cited_lines": "19-45, 71-77, 136-150, 224-314"
+        },
+        {
+          "path": "tools/loop-cost/src/estimator.ts",
+          "git_blob_sha1": "834158469f10c817fda45fe32af6e3c939328751",
+          "lines": 297,
+          "cited_lines": "43-74"
+        },
+        {
+          "path": "tools/loop-drill/src/canary.ts",
+          "git_blob_sha1": "f2158f8be867ec0ea90d22635f031500c9193945",
+          "lines": 314,
+          "cited_lines": "1-9, 139-230"
+        },
+        {
+          "path": "tools/loop-drill/test/canary.test.mjs",
+          "git_blob_sha1": "d5dcbdc43989048fcdb0d1c8353856e635eced1d",
+          "lines": 166,
+          "cited_lines": "50-115"
+        },
+        {
+          "path": "tools/loop-gate/src/gate.ts",
+          "git_blob_sha1": "4268e7fe04aabaf86127e0cd728515b7c564c350",
+          "lines": 140,
+          "cited_lines": "99-140"
+        },
+        {
+          "path": "tools/loop-init/src/cli.ts",
+          "git_blob_sha1": "daea5a4875e9066d199990fe269f233ef38eb8a2",
+          "lines": 1244,
+          "cited_lines": "811-862"
+        },
+        {
+          "path": "tools/loop-metrics/src/metrics.ts",
+          "git_blob_sha1": "94e93e1c2308cd9497bb89755c4a7857da505754",
+          "lines": 118,
+          "cited_lines": "105-106"
+        },
+        {
+          "path": "tools/loop-sandbox/src/sandbox.ts",
+          "git_blob_sha1": "7751b498d3784c5e2cd40504bb6ab75f7ae9b52e",
+          "lines": 276,
+          "cited_lines": "55-227"
+        },
+        {
+          "path": "tools/loop-swarm/src/swarm.ts",
+          "git_blob_sha1": "abef436b308f05eb4a5bcf90feb95bf97088a3af",
+          "lines": 116,
+          "cited_lines": "50-60"
+        },
+        {
+          "path": "tools/loop-swarm/test/swarm.test.mjs",
+          "git_blob_sha1": "e5fa2f70f1b7ae3a7f2290a6d42ecee10a878052",
+          "lines": 155,
+          "cited_lines": "24"
+        },
+        {
+          "path": "tools/loop-sync/src/sync.ts",
+          "git_blob_sha1": "5a5d52aad3be707c36eb90116128d7f5c8bff4ec",
+          "lines": 644,
+          "cited_lines": "336-404"
+        },
+        {
+          "path": "tools/loop-worktree/src/worktree.ts",
+          "git_blob_sha1": "d26540eb402e7c115302165f886cc2d7c891621b",
+          "lines": 360,
+          "cited_lines": "148-181"
+        },
+        {
+          "path": "tools/loop/src/pass-through.ts",
+          "git_blob_sha1": "aa16998df4f6f157cc10a3d9f84450bb137c2f9c",
+          "lines": 198,
+          "cited_lines": "104-183"
+        },
+        {
+          "path": "tools/mcp-server/src/index.ts",
+          "git_blob_sha1": "dcf94cb3aabefe56ded5567c4eb9f16d3af0e37d",
+          "lines": 561,
+          "cited_lines": "202-514"
+        }
+      ]
+    }
+  ],
+  "local_sources": [
+    {
+      "id": "waymark-dev",
+      "root": "/Users/zoki/code/context",
+      "branch": "dev",
+      "commit": "afe99890950d4332f3203a19d2cb18dcb53f0ff6",
+      "fingerprints": "Git blob bytes at the dev commit",
+      "files": [
+        {
+          "path": "docs/factory-platform.md",
+          "sha256": "578a2ffe9e962762a8b2b5aef839556708848a4f3a4ad1b662c7a1cd7a5f24ef",
+          "bytes": 45851
+        },
+        {
+          "path": "docs/factory-platform-design.md",
+          "sha256": "018af385afa0b33bdb077e4f7721eb7d4e12fb6e2a90e2a2bcc32e96a71f6409",
+          "bytes": 12168
+        },
+        {
+          "path": ".agents/skills/orchestrate/SKILL.md",
+          "sha256": "b4737fbddca7ebc8a5e59f7fbcad127ab4a313f073e060a260c02c0241e00d3f",
+          "bytes": 10374
+        },
+        {
+          "path": "internal/factory/pilot.go",
+          "sha256": "824a3b4fccd408ec50cf4a1a32bb4a78a9425e00595702dc69a82ef216b000bf",
+          "bytes": 10929
+        },
+        {
+          "path": "docs/research/README.md",
+          "sha256": "0e79285c7b5d43d18c91e7b9b6d0cd17b8abd981c7e0d4700e6c6863bde4166e",
+          "bytes": 589
+        },
+        {
+          "path": "docs/research/software-factory-2026-10-22.md",
+          "sha256": "d34e14e993c9c66224065d8031fe0caaa4896a8e47dda85ee5c105eec7eb630b",
+          "bytes": 20913
+        }
+      ]
+    },
+    {
+      "id": "waymark-factory-gap-plans",
+      "root": "/Users/zoki/code/context",
+      "pull_request": "https://github.com/Zokiio/context/pull/57",
+      "branch": "feat/factory-gap-plans",
+      "commit": "44e137962ca364bdf215f381509cbb7084b56921",
+      "fingerprints": "Git blob bytes at the pinned PR head",
+      "files": [
+        {
+          "path": ".scratch/factory-intake/spec.md",
+          "sha256": "ac78188691c7851d8fdf5bec2df27f198684cbe79f9e51da965e12cf95f45c85",
+          "bytes": 16284
+        },
+        {
+          "path": ".scratch/factory-harnesses/spec.md",
+          "sha256": "103ffb61ef0499d9713ec247ba2a6ca8d4bbceb7e3e30d0b5452921471752038",
+          "bytes": 15546
+        },
+        {
+          "path": ".scratch/factory-agent-review/spec.md",
+          "sha256": "0f876fc7e6a393de994c0a9d445fc3fb6d58c5c7940b40aa6e60915c2959a64f",
+          "bytes": 14679
+        },
+        {
+          "path": ".scratch/records/factory-harnesses/issues/01-repair-brief.md",
+          "sha256": "c6f23d817e42c9a0e7e2282f5be089eb61327127aed9ffb6bbb5e1e476891d07",
+          "bytes": 2906
+        },
+        {
+          "path": ".scratch/records/factory-harnesses/issues/02-repair-pass-count.md",
+          "sha256": "d3a0c690a5f4965ceba0f1b05613f6d18f6e74fdf4c8bfb7c30fd3c04891f013",
+          "bytes": 1063
+        },
+        {
+          "path": ".scratch/records/factory-agent-review/issues/04-review-repair.md",
+          "sha256": "317d847df270e13908aa50a0ee527e20f556327b31e6e507f189445cdace42a6",
+          "bytes": 2884
+        },
+        {
+          "path": ".scratch/records/factory-isolation/issues/01-installation-halt.md",
+          "sha256": "891042dd2a93c01959465f76906cc9cb90e9acc31d35a23fbf06a76ad23f6beb",
+          "bytes": 2340
+        },
+        {
+          "path": ".scratch/records/factory-isolation/issues/09-job-budgets.md",
+          "sha256": "7c08b3a909f1870c58f05f4eb3486219818768146d690742ecdbd621fc38afc2",
+          "bytes": 2559
+        }
+      ]
+    }
+  ],
+  "independent_observations": [
+    {
+      "repository": "cobusgreyling/loop-engineering",
+      "path": "tools/loop-context/src/context-manager.ts",
+      "observed_lines": "19-45, 71-77, 136-150, 224-314",
+      "finding": "Deterministic breaker over an attempt ledger: stagnation on 3 trailing failures whose normalized first error line has trigram Jaccard similarity of at least 0.85, frustration on 3 similar actions, no progress after 5 failures, optional token cap, 10 iterations. The ledger is written by the guarded agent."
+    },
+    {
+      "repository": "cobusgreyling/loop-engineering",
+      "path": ".github/workflows/daily-triage.yml",
+      "observed_lines": "97-101, 108-110, 183-220",
+      "finding": "Rule-based triage with no model; escalated means a failing validate or audit run on main; constant actions_taken 1 and tokens_estimate 52000; the workflow posts the required statuses itself and auto-merges its PR."
+    },
+    {
+      "repository": "cobusgreyling/loop-engineering",
+      "path": ".github/ruleset-main-protection.json",
+      "observed_lines": "17",
+      "finding": "required_approving_review_count is 0, against loop-constraints.md:8 'Never auto-merge to main without human approval'."
+    },
+    {
+      "repository": "cobusgreyling/loop-engineering",
+      "path": "tools/loop-drill/src/canary.ts",
+      "observed_lines": "1-9",
+      "finding": "The repository's own header says loop-audit gates L3 on a file whose name contains verifier, and that an empty file passes."
+    },
+    {
+      "repository": "cobusgreyling/loop-engineering",
+      "path": "stories/why-we-killed-ci-sweeper.md",
+      "observed_lines": "7-9",
+      "finding": "Added in 49a92b6 on 2026-06-09, the repository's first day, with nine other stories; names no project, team or date. Lulla et al. repeat its eight-million-token figure."
+    },
+    {
+      "repository": "Zokiio/context",
+      "path": "internal/factory/pilot.go",
+      "observed_lines": "13-17",
+      "finding": "Waymark's autopilot never retries a failed step until the work item changes; with the default repair limit of one, a repeat-failure breaker would not fire."
+    }
+  ]
+}
