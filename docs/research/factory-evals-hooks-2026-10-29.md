@@ -1,12 +1,12 @@
 # Software factory evals and hooks research for Waymark, 29 October 2026
 
-Research date: 29 October 2026, Europe/Stockholm. The starting point was the AI Hero cohort page [Software Factories for Real Engineers](https://www.aihero.dev/cohorts/software-factories-for-real-engineers-xdy1m), Matt Pocock's two-week course starting 9 November 2026. The page has a syllabus but no materials, so this note reads the public code behind it, then the primary sources on hooks and evals, and compares both with Waymark's factory. It is source research. Nothing was installed or run, and no agent, hook or eval was executed. [Pinned source records](factory-evals-hooks-2026-10-29.sources.json)
+Research date: 29 October 2026, Europe/Stockholm. The starting point was the AI Hero cohort page [Software Factories for Real Engineers](https://www.aihero.dev/cohorts/software-factories-for-real-engineers-xdy1m), Matt Pocock's two-week course starting 9 November 2026. The page has a syllabus but no materials, so this note reads the public code behind it, then the primary sources on hooks and evals, and compares both with Waymark's factory. It is source research plus one local probe of how Waymark's agent sessions load configuration. Nothing from the researched repositories was installed or run. [Pinned source records](factory-evals-hooks-2026-10-29.sources.json)
 
 ## Verdict
 
 **The course is Matt Pocock's factory, and its public code shows what that is.** Agent sessions start from GitHub labels, a cron job and closed issues. Each runs Claude Code through his `sandcastle` library. A reviewer agent fixes what it finds, and Matt merges by hand. The brakes are deterministic: typecheck, lint, a complexity ratchet and 20 custom check scripts. Waymark's factory already goes further on verification: holdout tests the builder can't change, a separate verifier on a clean worktree, a dispute judge, and two human decisions. There is nothing to adopt from the course's factory. Its retro rule, that a mechanical mistake gets a check and not a sentence, is already in Waymark's `retro` skill.
 
-**Hooks: fix what Waymark already runs before adding any hook of its own.** Every Claude Code role in the factory starts `claude -p` without an isolating flag. Claude Code's own docs say that this runs the target repository's hooks, `env` block, project skills' `allowed-tools` and `.mcp.json` servers, and the operator's hooks, with the operator's permissions. The refiner and judge, which the isolation plan treats as having no shell, do this in the main checkout. That is the most important finding here. Once runs are isolated, the only hook worth having is an optional `Stop` gate that makes the builder run the holdouts before it finishes. The popular community hook enforcers fail open or get bypassed, and none is stronger than Waymark's check after the session.
+**Hooks: fix what Waymark already runs before adding any hook of its own.** Every Claude Code role in the factory starts `claude -p` without an isolating flag. Claude Code's own docs say that this runs the target repository's hooks, `env` block, project skills' `allowed-tools` and `.mcp.json` servers, and the operator's hooks, with the operator's permissions. The refiner and judge, which the isolation plan treats as having no shell, do this in the main checkout. A local probe confirmed it: a repository hook widened the builder's permissions, and an operator's Codex rule let a sandboxed build push outside its workspace. `--restricted` with an explicit tool list was the only Claude Code flag that loaded nothing. That is the most important finding here. Once runs are isolated, the only hook worth having is an optional `Stop` gate that makes the builder run the holdouts before it finishes. The popular community hook enforcers fail open or get bypassed, and none is stronger than Waymark's check after the session.
 
 **Evals: test the tests first.** Every factory metric is graded by the required checks and the holdout tests. Benchmark audits keep finding those graders wrong. OpenAI dropped SWE-bench Verified after finding that at least 59.4% of 138 audited hard tasks had tests that rejected correct solutions. The smallest useful eval runs the accepted holdout tests at the base revision and requires them to fail. All three research threads reached that independently, it needs no model, and nothing in Waymark does it today. Agent evals come later. The local factory databases hold 136 refinements and no build jobs. Runs don't record which prompt version they were given, and replaying old tickets in today's worktrees would leak the answers through later commits.
 
@@ -99,7 +99,33 @@ The flags that isolate a run, per the [CLI reference](https://code.claude.com/do
 | `--setting-sources user` | Ignores the project's settings and `.mcp.json`. | User hooks still run. |
 | `--settings '{"disableAllHooks": true}'` | Turns off user, project, local and plugin hooks for the run. | Doesn't stop `.mcp.json`. |
 
-Two behaviors weren't documented and need a probe: whether `--safe-mode` keeps the project's `env` and `apiKeyHelper`, and whether `--restricted` loads CLAUDE.md or `.mcp.json`.
+### Probe, 29 October 2026
+
+A local probe settled what the docs left open. It used Claude Code 2.1.308 on Haiku with `--max-budget-usd 0.05` per run, and Codex 0.165.0. The scratch repository committed a `.claude/settings.json` with `SessionStart` and `PreToolUse` hooks, an `env` value, a `.mcp.json` stdio server and a CLAUDE.md canary word, each leaving a marker. The main checkout also had an untracked `settings.local.json` hook. Runs used a detached worktree, as Waymark's do, and Waymark's own arguments for each role plus `--include-hook-events`. The repository's `PreToolUse` hook returned `allow` for one `python3 -c` command that the builder's allowed tools didn't cover.
+
+| Claude Code run | Repository hooks | Main checkout's local hook | Repository `env` | Repository MCP server | CLAUDE.md | Operator's hooks | Operator's MCP tools | Command the hook allowed |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Builder, Waymark's arguments | ran | ran in the worktree | applied | started, tool offered | loaded | ran | 199 offered | **ran** |
+| Builder with `--safe-mode` | none | none | **applied** | none | none | none | none | denied |
+| Builder with `disableAllHooks` | none | none | applied | **started**, tool offered | loaded | none | 199 offered | denied |
+| Builder with `--setting-sources user --strict-mcp-config` | none | none | none | none | none | **ran** | none | not tested |
+| Builder with `--restricted --tools Bash Read` | none | none | none | none | none | none | none | denied |
+| Judge, Waymark's `--tools Read Grep Glob` | ran | ran | applied | started, tool offered | loaded | ran | 199 offered | — |
+| Judge with `--disallowedTools "mcp__*"` | ran | ran | applied | **started**, no tools | loaded | ran | none | — |
+| Judge with `--restricted` | none | none | — | none | none | none | none | — |
+
+Findings beyond the docs:
+
+- **A repository hook widened the builder's permissions.** The `python3 -c` command ran when the repository's hook said `allow`, and was denied in every run where hooks were off.
+- **The main checkout's untracked `settings.local.json` applied inside the worktree.** A local setting on the operator's checkout reaches every factory build.
+- **`--safe-mode` still applies the repository's `env` block.** An `env` value such as `NODE_OPTIONS` or `PYTHONPATH` runs repository code as soon as the builder runs a test, so `--safe-mode` is not enough for the builder.
+- **Hiding MCP tools doesn't stop the server.** With `disableAllHooks` or `--disallowedTools "mcp__*"`, the repository's MCP server process still started, which is repository code running on the host.
+- **The operator's MCP servers can break the read-only roles.** With `--tools Read Grep Glob` the session has no tool-search tool, so all 199 of the operator's MCP tool definitions went into the judge's prompt. One Haiku turn cost $0.115, and the run failed on its $0.05 budget. The cap stopped the run only after the turn that crossed it.
+- **`--restricted` with an explicit `--tools` list was the only flag that loaded nothing** from the repository or the operator. Login worked, structured output worked, and the run cost $0.0007. It also confines file tools to the working directories. A builder would list its tools explicitly, for example `Bash Read Edit Write Glob Grep`.
+
+For Codex, with an operator rule that allows `git push`, the factory-shaped `codex exec --sandbox workspace-write` pushed to a bare remote outside the workspace and outside `/tmp`. The rule ran the command outside the sandbox. With `--ignore-user-config --ignore-rules`, the sandbox refused the same push. A push to a network remote wasn't tested.
+
+The probe cost about $0.18 for 14 Claude Code runs and four short Codex runs. Its scripts and raw output stayed in the session's scratch directory and are not part of this note.
 
 ### What hooks could add, once runs are isolated
 
@@ -188,9 +214,10 @@ None of these is a boundary. Waymark's check after the session, which rejects a 
 
 The course's factory and the community projects add little to Waymark's design. Waymark already keeps the tests out of the builder's reach, verifies in a separate worktree, and has a person approve. What this research changes is three concrete gaps, in order of urgency.
 
-**1. Isolate every role's agent session. This is a defect, not a feature.** Each Claude Code role runs a target repository's hooks, `env`, skills' `allowed-tools` and `.mcp.json` servers, and the operator's own hooks, with the operator's permissions. The refiner and judge do it in the main checkout. The fix is to choose isolating flags per role. Before choosing, run a small local probe: a scratch repository whose hooks, MCP server and CLAUDE.md each leave a marker, run with the exact builder and refiner arguments and then with each candidate flag, and Codex with and without `--ignore-user-config --ignore-rules`. Then:
+**1. Isolate every role's agent session. This is a defect, not a feature.** Each Claude Code role runs a target repository's hooks, `env`, skills' `allowed-tools` and `.mcp.json` servers, and the operator's own hooks, with the operator's permissions. The refiner and judge do it in the main checkout. The [probe](#probe-29-october-2026) confirmed all of this and showed which flags work. Then:
 
-- pass the chosen flags for every role and record in the run which configuration loaded;
+- start every Claude Code role with `--restricted` and an explicit `--tools` list, which was the only flag that loaded nothing. `--safe-mode` still applies the repository's `env` block, and `disableAllHooks` still starts its MCP server. Record in each run which configuration loaded;
+- start Codex with `--ignore-user-config --ignore-rules`, so an operator's rule can't run commands outside the sandbox;
 - add `.claude/`, `.mcp.json`, `.codex/` and `.github/hooks/` to the default protected paths, so a candidate can't plant configuration for a repair or the reviewer;
 - fail a run when a hook Waymark didn't configure fires (`--include-hook-events`).
 
@@ -218,10 +245,10 @@ Later, once the factory has real job history (the local databases hold none yet)
 
 ## Evidence and limitations
 
-- **Read, not run.** Repositories were cloned into empty scratch directories and read with `git`, `cat`, `sed` and `grep`. No package, hook, agent, eval or probe was installed or run. Test files show what is asserted, not that it passes.
+- **Read, not run.** Repositories were cloned into empty scratch directories and read with `git`, `cat`, `sed` and `grep`. Nothing from them was installed or run. Test files show what is asserted, not that it passes. The only agent sessions run were the [probe](#probe-29-october-2026)'s, in a scratch repository with the probe's own hooks and MCP server.
 - **Delegated reading.** Three research agents read the hook documentation, the eval literature and the community projects. Every claim this note relies on for a recommendation was rechecked by hand: the Claude Code permissions, hooks, CLI and environment-variable pages; the Codex rules, hooks page and `cli.rs`; the Copilot programmatic reference; the Anthropic evals post; OpenAI's SWE-bench figure through its indexed text, because the page refused automated fetches; SWE-Bench+ through arXiv; the cited GitHub issues; Gremlins' release; Inspect's reducers; Aider's test reset; Harbor's hardening commit; and every Waymark file and line cited.
 - **Docs move.** The Claude Code, Codex and Copilot pages carry no version. They were read on 29 October 2026, when the Claude Code changelog was at 2.1.312 and Codex at `rust-v0.166.0`.
-- **Not established.** Whether `--safe-mode` keeps a project's `env` block and `apiKeyHelper`. Whether `--restricted` loads CLAUDE.md or `.mcp.json`. Whether a planted hook would reach the planned reviewer in practice. The probe in recommendation 1 settles all three.
+- **Not established.** Whether a planted hook would reach the planned reviewer in practice; the reviewer isn't built. Whether an operator's Codex rule lets a build push to a network remote; only a local remote was tested. The probe ran on one machine, with one Claude Code and one Codex version.
 - **Local data.** The factory database counts come from read-only queries of the three trial databases under `~/.waymark/` on this machine. The research agents also read this machine's user-level Claude Code and Codex configuration. Those findings were reported to the user directly and are not recorded in this public note.
 - **Not covered.** The course's lessons, which are unreleased. Matt Pocock's `ai-hero-cli`, beyond one hooks reference. OpenAI Codex cloud, Cursor and Cline. Whether any adopter's factory outcome matches its claims.
 - **Waymark side.** Statements about Waymark come from `dev` at `afe9989` and the PR #57 plans at `44e1379`. Nothing in Waymark was changed or run for this note.

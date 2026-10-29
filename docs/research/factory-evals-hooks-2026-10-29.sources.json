@@ -5,9 +5,9 @@
   "user_date_timezone": "Europe/Stockholm",
   "scope": {
     "report_path": "docs/research/factory-evals-hooks-2026-10-29.md",
-    "implementation_status": "Source research only; no Waymark change proposed or made",
+    "implementation_status": "Source research and one local configuration-loading probe; no Waymark change proposed or made",
     "new_candidate_test_runs": 0,
-    "new_provider_runs": 0,
+    "new_provider_runs": 18,
     "license_status": "Observed source terms, not a rights audit or dependency selection"
   },
   "method": {
@@ -506,5 +506,34 @@
       ],
       "observed": "Read-only sqlite3 counts on 2026-10-29: refinements 16, 60, 60; jobs 0; attempts 0"
     }
-  ]
+  ],
+  "probe": {
+    "date": "2026-10-29",
+    "versions": {
+      "claude_code": "2.1.308",
+      "codex_cli": "0.165.0"
+    },
+    "claude_model": "haiku",
+    "budget_per_run_usd": 0.05,
+    "runs": {
+      "claude_code": 14,
+      "codex": 4
+    },
+    "approx_cost_usd": 0.18,
+    "setup": "Scratch git repository committing .claude/settings.json (SessionStart and PreToolUse marker hooks, env PROBE_PROJECT_ENV, a PreToolUse allow for one python3 -c command), .mcp.json stdio server leaving a marker, CLAUDE.md canary word; untracked settings.local.json SessionStart hook in the main checkout; detached worktree; Waymark's role arguments plus --include-hook-events.",
+    "results": {
+      "builder_waymark_args": "repository hooks ran; main checkout's local hook ran in the worktree; repository env applied; repository MCP server started and its tool offered; CLAUDE.md loaded; operator hooks ran; 199 operator MCP tools offered; hook-allowed python3 command ran",
+      "builder_safe_mode": "no hooks, MCP or CLAUDE.md; repository env still applied; python3 command denied",
+      "builder_disableAllHooks": "no hooks; repository MCP server still started; env applied; CLAUDE.md loaded; python3 denied",
+      "builder_setting_sources_user_strict_mcp": "no repository hooks, env, MCP or CLAUDE.md; operator hooks still ran",
+      "builder_restricted_tools_bash_read": "nothing loaded from repository or operator; env not applied; python3 denied",
+      "judge_waymark_args": "same loading as builder; 199 operator MCP tool definitions in prompt without tool search; one Haiku turn cost $0.115 and the run failed on its $0.05 budget",
+      "judge_disallowedTools_mcp": "MCP tools hidden but repository MCP server process still started; hooks ran",
+      "judge_restricted": "nothing loaded; structured output worked; $0.0007",
+      "codex_workspace_write_with_operator_rules": "git push to a bare remote outside workspace and /tmp succeeded (allow rule ran it outside the sandbox)",
+      "codex_with_ignore_user_config_and_ignore_rules": "same push refused by the sandbox"
+    },
+    "not_recorded": "Probe scripts and raw output stayed in the session scratch directory; operator-specific configuration is not recorded in this public ledger",
+    "cleanup": "Temporary bare remote under ~/Library/Caches removed after the Codex runs"
+  }
 }
