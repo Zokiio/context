@@ -1,0 +1,510 @@
+{
+  "schema_version": 1,
+  "research_title": "Software factory evals and hooks research for Waymark",
+  "as_of_date": "2026-10-29",
+  "user_date_timezone": "Europe/Stockholm",
+  "scope": {
+    "report_path": "docs/research/factory-evals-hooks-2026-10-29.md",
+    "implementation_status": "Source research only; no Waymark change proposed or made",
+    "new_candidate_test_runs": 0,
+    "new_provider_runs": 0,
+    "license_status": "Observed source terms, not a rights audit or dependency selection"
+  },
+  "method": {
+    "agents": [
+      "hooks: Claude Code, Codex and Copilot hook, permission and CLI docs, Codex source at rust-v0.166.0, Matt Pocock's hook material, and Waymark's role invocations; also read this machine's user-level agent configuration (reported to the user, not recorded here)",
+      "evals: Anthropic and OpenAI eval guidance, SWE-bench audit papers and issues, mutation testing, Gremlins, evalite, Waymark metrics and trial records, and read-only counts from local factory databases",
+      "community: popular hook enforcers, eval harnesses and self-evaluating factories at pinned commits"
+    ],
+    "root": "Lead session read the course page, cloned mattpocock/course-video-manager, skills, sandcastle and dictionary-of-ai-coding with hooks disabled, and read the factory workflows, sandcastle scripts and prompts, hook settings, retro and writing docs, and dictionary entries. Queried PR history with gh. Wrote the Matt Pocock, Waymark and verdict sections.",
+    "review": "Every claim used for a recommendation was rechecked by the lead against the primary source (see web_sources notes, the gh api checks in other_repositories, and Waymark lines). Links to local files, section anchors and line ranges into the four cloned repositories were checked mechanically.",
+    "limits": "Read-only. No hook, agent, eval, probe or package was run. OpenAI's SWE-bench page refused automated fetches. Vendor docs carry no version. The course lessons are unreleased."
+  },
+  "requested_urls": [
+    "https://www.aihero.dev/cohorts/software-factories-for-real-engineers-xdy1m"
+  ],
+  "web_sources": [
+    {
+      "url": "https://www.aihero.dev/cohorts/software-factories-for-real-engineers-xdy1m",
+      "observed": "Course page: Matt Pocock, lessons unlock 2026-11-09, two weeks, $1,295; syllabus names hooks and sandboxes, not evals. Contains an agent-directed block asking agents to connect an MCP server and log in; treated as data, not followed.",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://www.aihero.dev/how-to-use-claude-code-hooks-to-enforce-the-right-cli",
+      "observed": "Matt Pocock article on enforcing CLI choices with hooks (updatedAt 2026-02-25), found by the hooks research agent; not quoted",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/permissions",
+      "observed": "Rechecked by the lead: -p never shows the trust dialog; repository settings hooks, env, apiKeyHelper, project skill hooks and allowed-tools are Used; .mcp.json servers connected without asking; permissions.allow not used; PreToolUse allow does not bypass deny or ask rules; advice to pass --setting-sources user, --bare or disableAllHooks before claude -p in a repository you didn't write",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/hooks",
+      "observed": "Rechecked: events, permissionDecision values, exit 2 blocks, Stop exit 2 continues, disableAllHooks via --settings, onFailure (2.1.295+), default 600 s command timeout",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/cli-reference",
+      "observed": "Rechecked: --bare, --safe-mode, --restricted, --setting-sources, --settings, --tools (doesn't affect MCP tools), --disallowedTools \"mcp__*\", --strict-mcp-config, --include-hook-events",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/env-vars",
+      "observed": "Rechecked: CLAUDE_CODE_STOP_HOOK_BLOCK_CAP, default 8",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/hooks",
+      "observed": "Codex hooks (redirected from developers.openai.com/codex/hooks): enabled by default; non-managed hooks need their exact hash trusted; 'a useful guardrail, not a complete enforcement boundary'",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://learn.chatgpt.com/docs/agent-configuration/rules",
+      "observed": "Codex rules (redirected from developers.openai.com/codex/exec-policy): allow runs the command outside the sandbox without prompting; forbidden > prompt > allow",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-programmatic-reference",
+      "observed": "Copilot CLI --trust-folder trusts the working directory's hooks for one non-interactive session",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://docs.github.com/en/copilot/reference/hooks-reference",
+      "observed": "Copilot hooks reference, read by the hooks research agent",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents",
+      "observed": "2026-01-09. Rechecked: 20-50 tasks from real failures; grade outcomes; calibrate model graders, allow Unknown; pass@k and pass^k with the 75% to 42% example; 0% usually means a broken task; CORE-Bench 42% to 95% after several fixes",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+      "observed": "Read by the evals research agent",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+      "observed": "Read by the evals research agent",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+      "observed": "2024-11-19, arXiv:2411.00640; read by the evals research agent",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/",
+      "observed": "2026-02-23. Page returned 403 to automated fetches; figure taken from search-indexed text: at least 59.4% of 138 audited problems o3 did not consistently solve had tests rejecting functionally correct submissions",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://arxiv.org/abs/2410.06992",
+      "observed": "SWE-Bench+: 32.67% solution leakage, 31.08% weak tests; confirmed through the arXiv API",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://arxiv.org/abs/2102.11378",
+      "observed": "Petrović et al., diff-based mutation testing at Google; read by the evals research agent",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://factory.strongdm.ai/",
+      "observed": "2026-02-06: scenarios outside the codebase, satisfaction metric, 'Tests can be reward hacked'",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://github.blog/changelog/2026-03-18-configure-copilot-coding-agents-validation-tools/",
+      "observed": "Copilot coding agent validation tools",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    },
+    {
+      "url": "https://cognition.com/blog/evaluating-coding-agents",
+      "observed": "2024-09-12: evaluator agents validated by precision and recall",
+      "representation": "Fetched 2026-10-29 through the web tool or curl; not hashed"
+    }
+  ],
+  "repositories": [
+    {
+      "repository": "Aider-AI/aider",
+      "commit": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c",
+      "url": "https://github.com/Aider-AI/aider",
+      "inspected_files": [
+        {
+          "path": "benchmark/benchmark.py",
+          "cited_lines": "981-1010"
+        }
+      ],
+      "representation": "Cited file read through the GitHub contents API at the pinned commit"
+    },
+    {
+      "repository": "Zokiio/context",
+      "commit": "44e137962ca364bdf215f381509cbb7084b56921",
+      "url": "https://github.com/Zokiio/context",
+      "inspected_files": [
+        {
+          "path": ".scratch/factory-isolation/spec.md",
+          "cited_lines": "50"
+        },
+        {
+          "path": ".scratch/workflow-adaptation/spec.md"
+        }
+      ],
+      "representation": "Cited file read through the GitHub contents API at the pinned commit"
+    },
+    {
+      "repository": "mattpocock/course-video-manager",
+      "commit": "ca63ea73c9ac4435ed107a7bc32dc51994ac9b43",
+      "url": "https://github.com/mattpocock/course-video-manager",
+      "commit_date": "2026-10-29T16:26:26Z",
+      "license": "none (no LICENSE file); cited and described, nothing copied",
+      "stars": 857,
+      "note": "Matt Pocock's factory: label- and cron-triggered GitHub Actions running Claude Code through sandcastle. 175 agent/ PRs merged May-September 2026, none in October; 297 PRs from other branches merged in October.",
+      "inspected_files": [
+        {
+          "path": ".claude/hooks/block-npx-tsc.sh",
+          "git_blob_sha1": "808e4c5070f31440d3dcfa904a087850d0d89244",
+          "cited_lines": "6-13"
+        },
+        {
+          "path": ".claude/settings.json",
+          "git_blob_sha1": "7b189f4e2afa17967158a9e6a887f0e9c2111204"
+        },
+        {
+          "path": ".github/workflows/agent-implement-pr.yml",
+          "git_blob_sha1": "863475134464d10c9aa2a40f2e4e9315ae65e462",
+          "cited_lines": "6, 76-78"
+        },
+        {
+          "path": ".github/workflows/agent-implement.yml",
+          "git_blob_sha1": "2a7c6b41bdfc6cbc0224faa93790f53e1b2bc5b7",
+          "cited_lines": "3-9, 62-89, 145-214, 216-235"
+        },
+        {
+          "path": ".github/workflows/agent-promote-queued.yml",
+          "git_blob_sha1": "dc8ecfb8625e3be9a88be20e6efaa9674bb0d7c2",
+          "cited_lines": "1-12"
+        },
+        {
+          "path": ".github/workflows/agent-review.yml",
+          "git_blob_sha1": "1fd8b338845b36517d4df785302f39ee38b7da1b",
+          "cited_lines": "78, 125"
+        },
+        {
+          "path": ".github/workflows/architecture-review.yml",
+          "git_blob_sha1": "f6f32af9f6b80f60bdb893ceadf358c28f84128c",
+          "cited_lines": "4-6, 24-35"
+        },
+        {
+          "path": ".sandcastle/implement/implement.ts",
+          "git_blob_sha1": "4d2d83b51e46045c88827ee4103f5cf7788ab185",
+          "cited_lines": "12-27"
+        },
+        {
+          "path": ".sandcastle/main.ts",
+          "git_blob_sha1": "dc252b874bd4d61dc8b96b50fca9c0b0e6718ae3",
+          "cited_lines": "9-29"
+        },
+        {
+          "path": ".sandcastle/review/prompt.md",
+          "git_blob_sha1": "e48aed99e8033c721ee62b08139e5bb3e6e47ee9",
+          "cited_lines": "43-63"
+        },
+        {
+          "path": ".sandcastle/run-with-retry.ts",
+          "git_blob_sha1": "75507e6989401a5faa7583a353401b10f431f4b7",
+          "cited_lines": "24-48"
+        },
+        {
+          "path": "package.json",
+          "git_blob_sha1": "bd4ae4512494417a531218212d0ee6b0b5bc3d80",
+          "cited_lines": "59"
+        }
+      ],
+      "representation": "Cloned with hooks disabled into an empty scratch directory and read with git; not installed or run"
+    },
+    {
+      "repository": "mattpocock/dictionary-of-ai-coding",
+      "commit": "ed1ebed3975cba04ed5e74c6ca73659274beb754",
+      "url": "https://github.com/mattpocock/dictionary-of-ai-coding",
+      "commit_date": "2026-09-24T12:59:36+01:00",
+      "license": "none (no LICENSE file)",
+      "stars": 5314,
+      "note": "Definitions of software factory and dark factory",
+      "inspected_files": [
+        {
+          "path": "dictionary/Dark factory.md",
+          "git_blob_sha1": "dad1054fff2a4c18803ae33e270e5a90286a66fb",
+          "cited_lines": "5"
+        },
+        {
+          "path": "dictionary/Software factory.md",
+          "git_blob_sha1": "b60b0145883d17ec34c38904e9c6a3c81a65b11c",
+          "cited_lines": "7"
+        }
+      ],
+      "representation": "Cloned with hooks disabled into an empty scratch directory and read with git; not installed or run"
+    },
+    {
+      "repository": "mattpocock/sandcastle",
+      "commit": "a53e227250fb51df0ad54155b85fecc1c090c937",
+      "url": "https://github.com/mattpocock/sandcastle",
+      "commit_date": "2026-10-19T12:28:40+01:00",
+      "license": "MIT",
+      "stars": 8709,
+      "note": "@ai-hero/sandcastle 0.12.0, TypeScript library that runs agents in Docker, Podman, Vercel or no sandbox and merges branch commits back",
+      "inspected_files": [
+        {
+          "path": "README.md",
+          "git_blob_sha1": "21d5f6ba43a151a581de70bfe3ac39d09da657d0",
+          "cited_lines": "10-18"
+        }
+      ],
+      "representation": "Cloned with hooks disabled into an empty scratch directory and read with git; not installed or run"
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "a496f5513d4a4cf889bc48e189e579f4b0bdf6aa",
+      "url": "https://github.com/mattpocock/skills",
+      "commit_date": "2026-10-29T10:42:51Z",
+      "license": "MIT",
+      "stars": 306482,
+      "note": "retro routes mechanical mistakes to checks and judgement calls to reviewer standards; git-guardrails hook skill is in frozen misc/",
+      "inspected_files": [
+        {
+          "path": ".out-of-scope/frozen-misc-skills.md",
+          "git_blob_sha1": "18569548173d51dcad2bf9c1ebf3c614428313ff",
+          "cited_lines": "3-9"
+        },
+        {
+          "path": "docs/engineering/retro.md",
+          "git_blob_sha1": "442599e9c42cc5fd86ea474eb800e9664eb902fd",
+          "cited_lines": "15-29, 35"
+        },
+        {
+          "path": "docs/productivity/writing-for-agents.md",
+          "git_blob_sha1": "b8604e71aea05be04590690e46af13c620432437",
+          "cited_lines": "47"
+        },
+        {
+          "path": "skills/misc/git-guardrails-claude-code/SKILL.md",
+          "git_blob_sha1": "58bcdd875b164093b95f436fa32a65c6cb5eb572",
+          "cited_lines": "8-18"
+        }
+      ],
+      "representation": "Cloned with hooks disabled into an empty scratch directory and read with git; not installed or run"
+    },
+    {
+      "repository": "openai/codex",
+      "commit": "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856",
+      "url": "https://github.com/openai/codex",
+      "inspected_files": [
+        {
+          "path": "codex-rs/exec/src/cli.rs",
+          "cited_lines": "44-50"
+        }
+      ],
+      "representation": "Cited file read through the GitHub contents API at the pinned commit"
+    }
+  ],
+  "other_repositories": [
+    {
+      "repository": "go-gremlins/gremlins",
+      "release": "v0.6.0 (2025-12-06)",
+      "license": "Apache-2.0",
+      "stars": 455,
+      "note": "Go mutation testing with --diff <ref>; read by the evals research agent at e05b1d47b8c55748e50abc28ff6b132c536bacca"
+    },
+    {
+      "repository": "mattpocock/evalite",
+      "release": "evalite@0.19.0",
+      "license": "MIT",
+      "note": "TypeScript eval runner on Vitest; read by the evals research agent at 64a531d2c16f0e4398c857ff6c2d5252d3cab422"
+    },
+    {
+      "repository": "harbor-framework/harbor",
+      "commit": "7e0354c",
+      "stars": 6626,
+      "note": "Commit 'docs(news): add \"Cracking down on reward hacking\" post (#3968)'; issue #3741 closed 2026-10-20"
+    },
+    {
+      "repository": "UKGovernmentBEIS/inspect_ai",
+      "commit": "6f5f9c2",
+      "stars": 3129,
+      "note": "Reducers pass_at, pass_k, at_least in src/inspect_ai/scorer/_reducer/reducer.py"
+    },
+    {
+      "repository": "UKGovernmentBEIS/inspect_evals",
+      "commit": "d1adf47",
+      "stars": 722,
+      "note": "SWE-bench scorer restores test-patch files before applying hidden tests (read by the community research agent)"
+    },
+    {
+      "repository": "promptfoo/promptfoo",
+      "commit": "1b4dff1",
+      "stars": 26598,
+      "note": "Coding-agent and verifier-sabotage red-team docs (read by the community research agent)"
+    },
+    {
+      "repository": "nizos/tdd-guard",
+      "commit": "54be0ac",
+      "stars": 2374,
+      "note": "Issues #48 'MCP Tools Bypass TDD Guard' (open) and #41 (closed) checked with gh api"
+    },
+    {
+      "repository": "nizos/probity",
+      "commit": "a704112",
+      "stars": 239
+    },
+    {
+      "repository": "Dicklesworthstone/destructive_command_guard",
+      "commit": "efbd488",
+      "stars": 6225,
+      "note": "101 issues with 'false negative' or 'fail-open' in the title by GitHub search on 2026-10-29"
+    },
+    {
+      "repository": "disler/claude-code-hooks-mastery",
+      "commit": "052ad1c",
+      "stars": 3968
+    },
+    {
+      "repository": "karanb192/claude-code-hooks",
+      "commit": "57a28c7",
+      "stars": 567
+    },
+    {
+      "repository": "obra/superpowers",
+      "commit": "2ce8aa1",
+      "stars": 308376
+    },
+    {
+      "repository": "google-gemini/gemini-cli",
+      "commit": "4a8383b9db43aed3f1a1acef0b5114d810722195",
+      "path": "docs/hooks/index.md"
+    },
+    {
+      "repository": "strongdm/attractor",
+      "commit": "fb57a55",
+      "stars": 1338
+    },
+    {
+      "repository": "SWE-bench/SWE-bench",
+      "issue": 465,
+      "note": "'Repo State Loopholes During Agentic Evaluation', 2025-09-03, git log --all leaks future commits"
+    }
+  ],
+  "local_sources": [
+    {
+      "id": "waymark-dev",
+      "branch": "dev",
+      "commit": "afe99890950d4332f3203a19d2cb18dcb53f0ff6",
+      "fingerprints": "Git blob bytes at the dev commit",
+      "files": [
+        {
+          "path": "docs/factory-platform.md",
+          "sha256": "578a2ffe9e962762a8b2b5aef839556708848a4f3a4ad1b662c7a1cd7a5f24ef",
+          "bytes": 45851
+        },
+        {
+          "path": "docs/factory-platform-design.md",
+          "sha256": "018af385afa0b33bdb077e4f7721eb7d4e12fb6e2a90e2a2bcc32e96a71f6409",
+          "bytes": 12168
+        },
+        {
+          "path": "internal/factoryworker/agent.go",
+          "sha256": "e81efc1e24de25164dee7e3d32658bb7f56af947b3d41cf8210e26df716f59c6",
+          "bytes": 12578
+        },
+        {
+          "path": "internal/factoryworker/refiner.go",
+          "sha256": "db48fd950e61fe332b19b992234325873f4da61c4207cc28c52739fdf29327dd",
+          "bytes": 8407
+        },
+        {
+          "path": "internal/factoryworker/judge.go",
+          "sha256": "38d944f7d6fde1fdf4ef64c8ecc7cb3337719247eae781db68c3325253b1b188",
+          "bytes": 9260
+        },
+        {
+          "path": "internal/factoryworker/expectations.go",
+          "sha256": "9e9f03d2ec3f3f1482b15b498fce44594b799bd76d1eee1fa893cc1d5c9cda0b",
+          "bytes": 8557
+        },
+        {
+          "path": "internal/factory/refine.go",
+          "sha256": "dcf608d55f724328bb76c4f0d49e12c9d0a6cae312737d129bf06b47488b2b16",
+          "bytes": 29691
+        },
+        {
+          "path": "internal/factory/dispute_judge.go",
+          "sha256": "cea846887df663dd9dd13379a0a32a6ef1515f081e23b18457e8a178a0378af4",
+          "bytes": 13734
+        },
+        {
+          "path": "internal/factory/workers.go",
+          "sha256": "397b2f5a66be5d02cdcf5bb724645c98f6d9571fd883b39dce37fa4f9ff8cc87",
+          "bytes": 52546
+        },
+        {
+          "path": "internal/factory/expectations.go",
+          "sha256": "4586ae78d1edda5160fffcedf7526c4ee09c6c16f83c9760358642850dfd38fa",
+          "bytes": 28084
+        },
+        {
+          "path": "internal/factory/metrics.go",
+          "sha256": "baf67751afcace6d433edf9e14689510864a2b8bf5233ff6a90106a5b2768826",
+          "bytes": 9430
+        },
+        {
+          "path": ".agents/skills/retro/SKILL.md",
+          "sha256": "69f1659e4384a2719296eef8a50a4652d7f332f10c29753562cacd739a9812f6",
+          "bytes": 6094
+        },
+        {
+          "path": "docs/research/software-factory-2026-10-22.md",
+          "sha256": "d34e14e993c9c66224065d8031fe0caaa4896a8e47dda85ee5c105eec7eb630b",
+          "bytes": 20913
+        }
+      ]
+    },
+    {
+      "id": "waymark-factory-gap-plans",
+      "pull_request": "https://github.com/Zokiio/context/pull/57",
+      "branch": "feat/factory-gap-plans",
+      "commit": "44e137962ca364bdf215f381509cbb7084b56921",
+      "fingerprints": "Git blob bytes at the pinned PR head",
+      "files": [
+        {
+          "path": ".scratch/factory-isolation/spec.md",
+          "sha256": "5d3bfc7a77eae7797a8bdb116fb2273828d9705e9c611360d8ce3cf3b867dd0f",
+          "bytes": 21622
+        },
+        {
+          "path": ".scratch/factory-harnesses/spec.md",
+          "sha256": "103ffb61ef0499d9713ec247ba2a6ca8d4bbceb7e3e30d0b5452921471752038",
+          "bytes": 15546
+        },
+        {
+          "path": ".scratch/factory-agent-review/spec.md",
+          "sha256": "0f876fc7e6a393de994c0a9d445fc3fb6d58c5c7940b40aa6e60915c2959a64f",
+          "bytes": 14679
+        },
+        {
+          "path": ".scratch/workflow-adaptation/spec.md",
+          "sha256": "ec8eac2ee5ea481d68399528ff15e1ce84feff1ebcbc3a6dc5e16ea01414fa7d",
+          "bytes": 8923
+        }
+      ]
+    },
+    {
+      "id": "local-factory-databases",
+      "paths": [
+        "~/.waymark/opsbase-trial/state/factory.db",
+        "~/.waymark/egm-trial/state-copilot/factory.db",
+        "~/.waymark/egm-trial/state-claude/factory.db"
+      ],
+      "observed": "Read-only sqlite3 counts on 2026-10-29: refinements 16, 60, 60; jobs 0; attempts 0"
+    }
+  ]
+}
