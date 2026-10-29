@@ -20,6 +20,13 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Current commitments
 
+- [Review each verified candidate with an independent agent](factory-agent-review/issues/01-agent-review-stage.md)
+- [Run the agent review with read-only Claude Code](factory-agent-review/issues/02-claude-reviewer.md)
+
+- [Halt all factory execution from one switch](factory-isolation/issues/01-installation-halt.md)
+- [Run required checks in a Docker sandbox](factory-isolation/issues/02-sandboxed-checks.md)
+- [Cap a job's agent spend by reserving each run's cap](factory-isolation/issues/09-job-budgets.md)
+
 - [Judge implementation disputes and show the next responsible agent](factory-task-workspace/issues/03-judge-disputes.md)
 - [Give requirement refinement the configured test ownership](factory-task-workspace/issues/02-refiner-test-ownership.md)
 - [Manage tasks and observe factory runs from a permanent workspace](factory-task-workspace/issues/01-task-control-and-live-runs.md)
@@ -40,6 +47,12 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 - [Decide an implementer's open questions before review](workflow-feedback/issues/07-decide-open-questions.md)
 
 ## Commitment notes
+
+2026-10-25: The user committed the agent review stage and its Claude reviewer from the [agent review plan](../factory-agent-review/spec.md). Tickets 03 to 05 of that plan remain uncommitted.
+
+2026-10-25: The user approved the [factory isolation plan](../factory-isolation/spec.md): Docker sandboxes with Git bundle transport, deny-by-default egress, worker-held secrets, proven stops, reserved job and project budgets, and an installation halt. The user selected three ready tickets: the halt, sandboxed checks and job budgets. The other isolation tickets wait for their prerequisites. The two remote-worker tickets stay in `needs-triage` until a second host is needed.
+
+2026-10-25: The [code host plan](../factory-code-host/spec.md) is recorded as five WorkItems under `factory-code-host/issues/`, with an [ADR draft](../../docs/adr/0006-deliver-accepted-work-through-the-code-host.md). Its repair brief ticket was folded into the [agent harnesses plan's](factory-harnesses/issues/01-repair-brief.md). The user settled its decisions: the pull request opens before approval, a mapped reviewer's change request repairs automatically, the service uses the operator's `gh` login, and GitHub comes first. None is selected.
 
 2026-10-23: The user approved the task workspace plan: explicit drafts and queue control, archive and safe deletion, spacious formatted editing, live run activity, and retained history. Deliver this milestone together in one pull request.
 
@@ -92,7 +105,8 @@ Completed execution and merged publication do not establish current acceptance. 
 
 ## Open decisions
 
-None
+- [Choose how a project shapes its factory pipeline](factory-parallel-runs/decisions/01-pipeline-shape.md)
+- [Resume native sessions on repair only if briefed repairs keep failing](factory-harnesses/decisions/01-resume-native-sessions.md)
 
 ## Context
 
