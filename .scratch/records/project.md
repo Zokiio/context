@@ -48,6 +48,8 @@ Use the [trial conclusions](../workflow-improvements/orchestration-conclusions.m
 
 ## Commitment notes
 
+2026-10-30: The user asked for a rework of the web workspace. The [plan](../factory-webui/spec.md) is recorded as six WorkItems under `factory-webui/issues/` with one open decision on the browser stack. None is selected.
+
 2026-10-25: The user committed the agent review stage and its Claude reviewer from the [agent review plan](../factory-agent-review/spec.md). Tickets 03 to 05 of that plan remain uncommitted.
 
 2026-10-25: The user approved the [factory isolation plan](../factory-isolation/spec.md): Docker sandboxes with Git bundle transport, deny-by-default egress, worker-held secrets, proven stops, reserved job and project budgets, and an installation halt. The user selected three ready tickets: the halt, sandboxed checks and job budgets. The other isolation tickets wait for their prerequisites. The two remote-worker tickets stay in `needs-triage` until a second host is needed.
@@ -105,6 +107,7 @@ Completed execution and merged publication do not establish current acceptance. 
 
 ## Open decisions
 
+- [Choose the browser workspace stack](factory-webui/decisions/01-frontend-stack.md)
 - [Choose how a project shapes its factory pipeline](factory-parallel-runs/decisions/01-pipeline-shape.md)
 - [Resume native sessions on repair only if briefed repairs keep failing](factory-harnesses/decisions/01-resume-native-sessions.md)
 
